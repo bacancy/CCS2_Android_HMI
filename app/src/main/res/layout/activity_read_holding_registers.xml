@@ -1,0 +1,45 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:context=".views.ReadHoldingRegistersActivity">
+
+    <EditText
+        android:id="@+id/edtStartAddress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:hint="Enter Register Start Address"
+        android:inputType="number"
+        android:paddingHorizontal="20dp" />
+
+    <EditText
+        android:id="@+id/edtRegistersCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:hint="Enter No. of Registers To Read"
+        android:inputType="number"
+        android:paddingHorizontal="20dp" />
+
+    <Button
+        android:id="@+id/btnReadData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:backgroundTint="@color/green"
+        android:onClick="readHoldingRegisters"
+        android:text="Read Data"
+        android:textColor="@color/white" />
+
+    <TextView
+        android:id="@+id/txtDataRead"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        tools:text="Hello World!" />
+
+</LinearLayout>

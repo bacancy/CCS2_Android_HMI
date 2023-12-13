@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <include
+        android:id="@+id/incVoltageL1"
+        layout="@layout/common_layout"/>
+    <include
+        android:id="@+id/incVoltageL2"
+        layout="@layout/common_layout"/>
+    <include
+        android:id="@+id/incVoltageL3"
+        layout="@layout/common_layout"/>
+    <include
+        android:id="@+id/incVoltageAvg"
+        layout="@layout/common_layout"/>
+
+    <include
+        android:id="@+id/incCurrentL1"
+        layout="@layout/common_layout"/>
+    <include
+        android:id="@+id/incCurrentL2"
+        layout="@layout/common_layout"/>
+    <include
+        android:id="@+id/incCurrentL3"
+        layout="@layout/common_layout"/>
+    <include
+        android:id="@+id/incCurrentAvg"
+        layout="@layout/common_layout"/>
+
+    <include
+        android:id="@+id/incTotalKW"
+        layout="@layout/common_layout"/>
+    <include
+        android:id="@+id/incTotalKWH"
+        layout="@layout/common_layout"/>
+    <include
+        android:id="@+id/incFrequency"
+        layout="@layout/common_layout"/>
+    <include
+        android:id="@+id/incAvgPowerFactor"
+        layout="@layout/common_layout"/>
+
+</LinearLayout>

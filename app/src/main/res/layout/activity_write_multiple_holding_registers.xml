@@ -1,0 +1,45 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:context=".views.WriteMultipleHoldingRegistersActivity">
+
+    <EditText
+        android:id="@+id/edtStartAddress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:hint="Enter Registers Start Address"
+        android:inputType="number"
+        android:paddingHorizontal="20dp" />
+
+    <EditText
+        android:id="@+id/edtRegistersCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:hint="Enter Number of Registers to Write in.."
+        android:inputType="number"
+        android:paddingHorizontal="20dp" />
+
+    <Button
+        android:id="@+id/btnReadData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:backgroundTint="@color/green"
+        android:onClick="writeInMultipleRegisters"
+        android:text="Write Registers"
+        android:textColor="@color/white" />
+
+    <TextView
+        android:id="@+id/txtDataRead"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        tools:text="Hello World!" />
+
+</LinearLayout>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".views.ReadMiscInfoActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:padding="10dp"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/txtMCUFirmwareVersion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            tools:text="Firmware Version = 2.3.3" />
+
+        <TextView
+            android:id="@+id/txtOCPPFirmwareVersion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            tools:text="OCPP Firmware Version = 2.3.3" />
+
+        <TextView
+            android:id="@+id/txtRFIDFirmwareVersion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            tools:text="RFID Firmware Version = 2.3.3" />
+
+        <TextView
+            android:id="@+id/txtLEDFirmwareVersion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            tools:text="LED Module Firmware Version = 2.3.3" />
+
+        <TextView
+            android:id="@+id/txtPLC1ModuleFirmwareVersion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            tools:text="PLC1 Module Firmware Version = 2.3.3" />
+
+        <TextView
+            android:id="@+id/txtPLC2ModuleFirmwareVersion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            tools:text="PLC2 Module Firmware Version = 2.3.3" />
+
+        <TextView
+            android:id="@+id/txtChargerSerialID"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            tools:text="Charger Serial ID = 2.3.3" />
+
+        <TextView
+            android:id="@+id/txtEthernetMacAddress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            tools:text="Ethernet MAC Address = A1:B2:C3:D4:E5:F6" />
+
+        <TextView
+            android:id="@+id/txtBluetoohMacAddress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            tools:text="Bluetooth MAC Address = A1:B2:C3:D4:E5:F6" />
+
+        <TextView
+            android:id="@+id/txtWifiStationModeMacAddress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            tools:text="Wifi Station Mode MAC Address = A1:B2:C3:D4:E5:F6" />
+
+        <TextView
+            android:id="@+id/txtWifiAPModeMacAddress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            tools:text="Wifi AP Mode MAC Address = A1:B2:C3:D4:E5:F6" />
+
+        <TextView
+            android:id="@+id/txtRFIDNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            tools:text="RFID Number = A1:B2:C3:D4:E5:F6" />
+    </LinearLayout>
+
+
+</androidx.core.widget.NestedScrollView>

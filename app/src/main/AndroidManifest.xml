@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <application
+        android:name=".HMIApp"
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.CCS2AndroidHMI"
+        tools:targetApi="31">
+        <activity
+            android:name=".views.Gun1InformationActivity"
+            android:exported="false" />
+        <activity
+            android:name=".views.NewScreensActivity"
+            android:exported="false" />
+        <activity
+            android:name=".views.ReadGun1DCMeterInfoActivity"
+            android:exported="false" />
+        <activity
+            android:name=".views.ReadGun2DCMeterInfoActivity"
+            android:exported="false" />
+        <activity
+            android:name=".views.ReadMiscInfoActivity"
+            android:exported="false" />
+        <activity
+            android:name=".views.ReadACMeterInfoActivity"
+            android:exported="false" />
+        <activity
+            android:name=".views.ReadACChargerACMeterInfoActivity"
+            android:exported="false" />
+        <activity
+            android:name=".views.WriteMultipleHoldingRegistersActivity"
+            android:exported="false" />
+        <activity
+            android:name=".views.WriteSingleHoldingRegisterActivity"
+            android:exported="false" />
+        <activity
+            android:name=".views.ReadHoldingRegistersActivity"
+            android:exported="false" />
+        <activity
+            android:name=".views.ReadInputRegistersActivity"
+            android:exported="false" />
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
+
+        <activity
+            android:name=".views.Dashboard"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
