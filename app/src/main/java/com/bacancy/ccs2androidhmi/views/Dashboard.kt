@@ -7,8 +7,11 @@ import android.view.View
 import androidx.lifecycle.lifecycleScope
 import com.bacancy.ccs2androidhmi.base.SerialPortBaseActivity
 import com.bacancy.ccs2androidhmi.databinding.ActivityDashboardBinding
+import com.bacancy.ccs2androidhmi.util.CommonUtils
 import com.bacancy.ccs2androidhmi.util.ModBusUtils
 import com.bacancy.ccs2androidhmi.util.ModbusReadObserver
+import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.getIntValueFromByte
+import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.toHex
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

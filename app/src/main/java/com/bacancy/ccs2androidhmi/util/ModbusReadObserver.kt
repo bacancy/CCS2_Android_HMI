@@ -29,11 +29,13 @@ class ModbusReadObserver {
 
                     withContext(Dispatchers.IO) {
                         mOutputStream?.write(requestFrame)
+                        //mOutputStream?.close()
                     }
 
                     val responseFrame = ByteArray(responseSize)
                     withContext(Dispatchers.IO) {
                         mInputStream?.read(responseFrame)
+                        //mInputStream?.close()
                     }
 
                     onResponse(responseFrame)

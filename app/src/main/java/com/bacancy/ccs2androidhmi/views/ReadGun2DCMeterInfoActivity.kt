@@ -11,6 +11,7 @@ import com.bacancy.ccs2androidhmi.util.ModBusUtils.parseInputRegistersResponse
 import com.bacancy.ccs2androidhmi.util.ModbusReadObserver
 import com.bacancy.ccs2androidhmi.util.ModbusRequestFrames
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.floatArrayToHexString
+import com.bacancy.ccs2androidhmi.util.ResponseSizes.GUN_DC_METER_INFORMATION_RESPONSE_SIZE
 import com.bacancy.ccs2androidhmi.views.adapters.GunsDCMeterListAdapter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -46,7 +47,7 @@ class ReadGun2DCMeterInfoActivity : SerialPortBaseActivity() {
                     observer = ModbusReadObserver()
                     observer.startObserving(
                         mOutputStream,
-                        mInputStream, 64,
+                        mInputStream, GUN_DC_METER_INFORMATION_RESPONSE_SIZE,
                         ModbusRequestFrames.getGunTwoDCMeterInfoRequestFrame()
                     ) { responseFrameArray ->
                         onDataReceived(responseFrameArray)

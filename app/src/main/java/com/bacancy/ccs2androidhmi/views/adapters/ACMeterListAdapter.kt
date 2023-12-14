@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bacancy.ccs2androidhmi.databinding.RowItemAcMeterInfoBinding
 import com.bacancy.ccs2androidhmi.models.ACMeterModel
+import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.formatFloatToString
 
 class ACMeterListAdapter(var onItemClick: (ACMeterModel) -> Unit): ListAdapter<ACMeterModel, ACMeterListAdapter.SampleViewHolder>(
     DiffCallback()
@@ -77,9 +78,7 @@ class ACMeterListAdapter(var onItemClick: (ACMeterModel) -> Unit): ListAdapter<A
         }
     }
 
-    fun Float.formatFloatToString(): String{
-        return String.format("%.2f", this)
-    }
+
 
 
     class DiffCallback : DiffUtil.ItemCallback<ACMeterModel>(){

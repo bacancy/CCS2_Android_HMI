@@ -11,6 +11,7 @@ import com.bacancy.ccs2androidhmi.util.ModBusUtils.parseInputRegistersResponse
 import com.bacancy.ccs2androidhmi.util.ModbusReadObserver
 import com.bacancy.ccs2androidhmi.util.ModbusRequestFrames
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.floatArrayToHexString
+import com.bacancy.ccs2androidhmi.util.ResponseSizes.AC_CHARGER_AC_METER_INFORMATION_RESPONSE_SIZE
 import com.bacancy.ccs2androidhmi.views.adapters.ACMeterListAdapter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -46,7 +47,7 @@ class ReadACChargerACMeterInfoActivity : SerialPortBaseActivity() {
                     observer = ModbusReadObserver()
                     observer.startObserving(
                         mOutputStream,
-                        mInputStream, 53,
+                        mInputStream, AC_CHARGER_AC_METER_INFORMATION_RESPONSE_SIZE,
                         ModbusRequestFrames.getACChargerACMeterInfoRequestFrame()
                     ) { responseFrameArray ->
                         onDataReceived(responseFrameArray)

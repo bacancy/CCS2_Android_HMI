@@ -29,9 +29,9 @@ object ModBusUtils {
      * Error Check (LRC or CRC) ––
      * */
     fun createReadInputRegistersRequest(
-        slaveAddress: Int,
         startAddress: Int,
-        quantity: Int
+        quantity: Int,
+        slaveAddress: Int = 1
     ): ByteArray {
         val byteArrayBeforeCRC = byteArrayOf(
             slaveAddress.toByte(),
@@ -78,9 +78,9 @@ object ModBusUtils {
      * Error Check (LRC or CRC) ––
      * */
     fun createWriteMultipleRegistersRequest(
-        slaveAddress: Int,
         startAddress: Int,
-        data: IntArray
+        data: IntArray,
+        slaveAddress: Int = 1
     ): ByteArray {
         val quantity = data.size
         val byteCount = quantity * 2 // Each register is 2 bytes
@@ -128,9 +128,9 @@ object ModBusUtils {
      * Error Check (LRC or CRC) ––
      * */
     fun createReadHoldingRegistersRequest(
-        slaveAddress: Int,
         startAddress: Int,
-        quantity: Int
+        quantity: Int,
+        slaveAddress: Int = 1
     ): ByteArray {
         val byteArrayBeforeCRC = byteArrayOf(
             slaveAddress.toByte(),
@@ -170,9 +170,9 @@ object ModBusUtils {
      * Error Check (LRC or CRC) ––
      * */
     fun createWriteSingleRegisterRequest(
-        slaveAddress: Int,
         registerAddress: Int,
-        registerValue: Int
+        registerValue: Int,
+        slaveAddress: Int = 1
     ): ByteArray {
 
         val byteArrayBeforeCRC = byteArrayOf(
@@ -219,9 +219,9 @@ object ModBusUtils {
      * Error Check (LRC or CRC) ––
      * */
     fun createWriteStringToSingleRegisterRequest(
-        slaveAddress: Int,
         registerAddress: Int,
-        inputString: String
+        inputString: String,
+        slaveAddress: Int = 1
     ): ByteArray {
 
         val binaryData = inputString.toByteArray(Charsets.UTF_8)

@@ -6,14 +6,19 @@ import android.util.Log
 import androidx.lifecycle.lifecycleScope
 import com.bacancy.ccs2androidhmi.base.SerialPortBaseActivity
 import com.bacancy.ccs2androidhmi.databinding.ActivityReadMiscInfoBinding
+import com.bacancy.ccs2androidhmi.util.CommonUtils.getSimpleMacAddress
+import com.bacancy.ccs2androidhmi.util.CommonUtils.getSwappedMacAddress
 import com.bacancy.ccs2androidhmi.util.ModbusReadObserver
 import com.bacancy.ccs2androidhmi.util.ModbusRequestFrames
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.bytesToAsciiString
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.decimalArrayToHexArray
+import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.getActualIntValueFromHighAndLowBytes
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.getIntValueFromByte
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.toHex
+import com.bacancy.ccs2androidhmi.util.ResponseSizes.MISC_INFORMATION_RESPONSE_SIZE
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.IOException
@@ -29,11 +34,6 @@ class ReadMiscInfoActivity : SerialPortBaseActivity() {
         binding = ActivityReadMiscInfoBinding.inflate(layoutInflater)
         setContentView(binding.root)
         supportActionBar?.title = "Misc Information"
-        Log.d("TAG", "onCreate: DEC TO HEX = ${
-            decimalArrayToHexArray(listOf(224,226, 230, 48, 158, 115)).joinToString(":").uppercase(
-                Locale.ROOT
-            )
-        }")
         startReadingMiscInformation()
     }
 
@@ -44,11 +44,13 @@ class ReadMiscInfoActivity : SerialPortBaseActivity() {
                     observer = ModbusReadObserver()
                     observer.startObserving(
                         mOutputStream,
-                        mInputStream, 256,
+                        mInputStream, MISC_INFORMATION_RESPONSE_SIZE,
                         ModbusRequestFrames.getMiscInfoRequestFrame()
                     ) { responseFrameArray ->
                         onDataReceived(responseFrameArray)
                     }
+                    delay(5000)
+                    observer.stopObserving()
                 } catch (e: IOException) {
                     e.printStackTrace()
                 }
@@ -61,6 +63,7 @@ class ReadMiscInfoActivity : SerialPortBaseActivity() {
         Log.d("TAG", "onDataReceived: ${buffer.toHex()}")
         lifecycleScope.launch(Dispatchers.Main) {
             binding.apply {
+                Log.d("TAG", "onDataReceived: Network Module Status = ${getNetworkModuleStatus(buffer)}")
                 txtMCUFirmwareVersion.text = "MCU FIRMWARE VERSION = ${getMCUFirmwareVersion(buffer)}"
                 txtOCPPFirmwareVersion.text = "OCPP FIRMWARE VERSION = ${getOCPPFirmwareVersion(buffer)}"
                 txtRFIDFirmwareVersion.text = "RFID FIRMWARE VERSION = ${getRFIDFirmwareVersion(buffer)}"
@@ -75,19 +78,12 @@ class ReadMiscInfoActivity : SerialPortBaseActivity() {
                 txtRFIDNumber.text = "RFID NUMBER = ${getRFIDNumber(buffer)}"
             }
         }
-        Log.d("TAG", "onDataReceived: MCU FIRMWARE VERSION = ${getMCUFirmwareVersion(buffer)}")
-        Log.d("TAG", "onDataReceived: OCPP FIRMWARE VERSION = ${getOCPPFirmwareVersion(buffer)}")
-        Log.d("TAG", "onDataReceived: RFID FIRMWARE VERSION = ${getRFIDFirmwareVersion(buffer)}")
-        Log.d("TAG", "onDataReceived: LED FIRMWARE VERSION = ${getLEDModuleFirmwareVersion(buffer)}")
-        Log.d("TAG", "onDataReceived: PLC1 Module FIRMWARE VERSION = ${getPLC1ModuleFirmwareVersion(buffer)}")
-        Log.d("TAG", "onDataReceived: PLC2 Module FIRMWARE VERSION = ${getPLC2ModuleFirmwareVersion(buffer)}")
-        Log.d("TAG", "onDataReceived: CHARGER SERIAL ID = ${getChargerSerialID(buffer)}")
-        Log.d("TAG", "onDataReceived: Ethernet MAC Address = ${getEthernetMacAddress(buffer)}")
-        Log.d("TAG", "onDataReceived: Bluetooth MAC Address = ${getBluetoothMacAddress(buffer)}")
-        Log.d("TAG", "onDataReceived: Wifi Station Mode MAC Address = ${getWifiStationModeMacAddress(buffer)}")
-        Log.d("TAG", "onDataReceived: Wifi AP Mode MAC Address = ${getWifiAPModeMacAddress(buffer)}")
-        Log.d("TAG", "onDataReceived: RFID NUMBER = ${getRFIDNumber(buffer)}")
 
+    }
+
+    private fun getNetworkModuleStatus(response: ByteArray): String {
+        val statusNumber = getActualIntValueFromHighAndLowBytes(response[3].getIntValueFromByte(), response[4].getIntValueFromByte())
+        return statusNumber.toString()
     }
 
     private fun getAmbientTemperature(response: ByteArray): String {
@@ -155,65 +151,25 @@ class ReadMiscInfoActivity : SerialPortBaseActivity() {
     }
 
     private fun getEthernetMacAddress(response: ByteArray): String {
-        //129-130 131-132 133-134
-        val macAddressArray = response.copyOfRange(129, 134)
-        Log.d("TAG", "getEthernetMacAddress: ${macAddressArray.toHex()}")
-        val address1MSB = response[129].getIntValueFromByte()
-        val address1LSB = response[130].getIntValueFromByte()
-
-        val address2MSB = response[131].getIntValueFromByte()
-        val address2LSB = response[132].getIntValueFromByte()
-
-        val address3MSB = response[133].getIntValueFromByte()
-        val address3LSB = response[134].getIntValueFromByte()
-        return decimalArrayToHexArray(listOf(address1LSB,address1MSB, address2LSB, address2MSB, address3LSB, address3MSB)).joinToString(":").uppercase(
-            Locale.ROOT
-        )
+        val macAddressArray = response.copyOfRange(129, 129+6)
+        return getSwappedMacAddress(macAddressArray)
     }
 
     private fun getBluetoothMacAddress(response: ByteArray): String {
-        //135-136 137-138 139-140
-        val address1MSB = response[135].getIntValueFromByte()
-        val address1LSB = response[136].getIntValueFromByte()
-
-        val address2MSB = response[137].getIntValueFromByte()
-        val address2LSB = response[138].getIntValueFromByte()
-
-        val address3MSB = response[139].getIntValueFromByte()
-        val address3LSB = response[140].getIntValueFromByte()
-        return decimalArrayToHexArray(listOf(address1LSB,address1MSB, address2LSB, address2MSB, address3LSB, address3MSB)).joinToString(":").uppercase(
-            Locale.ROOT
-        )
+        val macAddressArray = response.copyOfRange(135, 135+6)
+        return getSwappedMacAddress(macAddressArray)
     }
 
     private fun getWifiStationModeMacAddress(response: ByteArray): String {
         //141-142 143-144 145-146
-        val address1MSB = response[141].getIntValueFromByte()
-        val address1LSB = response[142].getIntValueFromByte()
-
-        val address2MSB = response[143].getIntValueFromByte()
-        val address2LSB = response[144].getIntValueFromByte()
-
-        val address3MSB = response[145].getIntValueFromByte()
-        val address3LSB = response[146].getIntValueFromByte()
-        return decimalArrayToHexArray(listOf(address1LSB,address1MSB, address2LSB, address2MSB, address3LSB, address3MSB)).joinToString(":").uppercase(
-            Locale.ROOT
-        )
+        val macAddressArray = response.copyOfRange(141, 141+6)
+        return getSwappedMacAddress(macAddressArray)
     }
 
     private fun getWifiAPModeMacAddress(response: ByteArray): String {
         //147-148 149-150 151-152
-        val address1MSB = response[147].getIntValueFromByte()
-        val address1LSB = response[148].getIntValueFromByte()
-
-        val address2MSB = response[149].getIntValueFromByte()
-        val address2LSB = response[150].getIntValueFromByte()
-
-        val address3MSB = response[151].getIntValueFromByte()
-        val address3LSB = response[152].getIntValueFromByte()
-        return decimalArrayToHexArray(listOf(address1LSB,address1MSB, address2LSB, address2MSB, address3LSB, address3MSB)).joinToString(":").uppercase(
-            Locale.ROOT
-        )
+        val macAddressArray = response.copyOfRange(147, 147+6)
+        return getSwappedMacAddress(macAddressArray)
     }
 
     private fun getPLC1Fault(response: ByteArray): String {
@@ -247,20 +203,8 @@ class ReadMiscInfoActivity : SerialPortBaseActivity() {
     }
 
     private fun getRFIDNumber(response: ByteArray): String {
-        val address1MSB = response[51].getIntValueFromByte()
-        val address1LSB = response[52].getIntValueFromByte()
-
-        val address2MSB = response[53].getIntValueFromByte()
-        val address2LSB = response[54].getIntValueFromByte()
-
-        val address3MSB = response[55].getIntValueFromByte()
-        val address3LSB = response[56].getIntValueFromByte()
-
-        val address4MSB = response[57].getIntValueFromByte()
-        val address4LSB = response[58].getIntValueFromByte()
-        return decimalArrayToHexArray(listOf(address1LSB,address1MSB, address2LSB, address2MSB, address3LSB, address3MSB, address4LSB, address4MSB)).joinToString(":").uppercase(
-            Locale.ROOT
-        )
+        val macAddressArray = response.copyOfRange(51, 51+8)
+        return getSimpleMacAddress(macAddressArray)
     }
 
     override fun onPause() {

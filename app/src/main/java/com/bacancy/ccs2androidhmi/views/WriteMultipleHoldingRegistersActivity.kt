@@ -41,7 +41,7 @@ class WriteMultipleHoldingRegistersActivity : SerialPortBaseActivity() {
         }
 
         val requestFrame: ByteArray =
-            ModBusUtils.createWriteMultipleRegistersRequest(1, startAddress, dateToWrite.toIntArray())
+            ModBusUtils.createWriteMultipleRegistersRequest(startAddress, dateToWrite.toIntArray())
 
         mOutputStream?.write(requestFrame)
 

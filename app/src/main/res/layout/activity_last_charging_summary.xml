@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".views.Gun1InformationActivity">
+    android:padding="10dp"
+    tools:context=".views.LastChargingSummaryActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -13,82 +14,61 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/txtConnectorStatus"
+            android:id="@+id/txtEvMacAddress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             tools:text="Connector Status = ON/OFF" />
 
         <TextView
-            android:id="@+id/txtChargingState"
+            android:id="@+id/txtChargingDuration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            tools:text="Charging State = " />
+            tools:text="Connector Status = ON/OFF" />
 
         <TextView
-            android:id="@+id/txtInitialSoc"
+            android:id="@+id/txtChargingStartDateTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            tools:text="Initial Soc = " />
+            tools:text="Connector Status = ON/OFF" />
 
         <TextView
-            android:id="@+id/txtCurrentSoc"
+            android:id="@+id/txtChargingEndDateTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            tools:text="Current Soc = " />
+            tools:text="Connector Status = ON/OFF" />
 
         <TextView
-            android:id="@+id/txtDurationInHoursMinutes"
+            android:id="@+id/txtChargingStartSOC"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            tools:text="Duration (hh:mm) = 04:20" />
+            tools:text="Connector Status = ON/OFF" />
 
         <TextView
-            android:id="@+id/txtDemandVoltage"
+            android:id="@+id/txtChargingEndSOC"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            tools:text="Demand Voltage = " />
-
-        <TextView
-            android:id="@+id/txtDemandCurrent"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            tools:text="Demand Current = " />
-
-        <TextView
-            android:id="@+id/txtChargingVoltage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            tools:text="Charging Voltage = " />
-
-        <TextView
-            android:id="@+id/txtChargingCurrent"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            tools:text="Charging Current = " />
+            tools:text="Connector Status = ON/OFF" />
 
         <TextView
             android:id="@+id/txtEnergyConsumption"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            tools:text="Energy Consumption = " />
+            tools:text="Connector Status = ON/OFF" />
 
-        <Button
+        <TextView
+            android:id="@+id/txtSessionEndReason"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:backgroundTint="@color/green"
-            android:onClick="goToLastChargingSummary"
-            android:text="Last Charging Summary"
-            android:textColor="@color/white" />
+            tools:text="Connector Status = ON/OFF" />
+
     </LinearLayout>
+
 </androidx.core.widget.NestedScrollView>

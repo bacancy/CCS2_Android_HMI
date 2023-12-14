@@ -5,8 +5,16 @@ import java.nio.ByteOrder
 
 object ModbusTypeConverter {
 
+    fun Float.formatFloatToString(): String{
+        return String.format("%.2f", this)
+    }
+
     fun Byte.getIntValueFromByte(): Int {
         return this.toInt() and 0xFF
+    }
+
+    fun getActualIntValueFromHighAndLowBytes(highByte: Int, lowByte: Int): Int {
+        return (highByte shl 8) or lowByte
     }
 
     fun byteArrayToFloat(bytes: ByteArray): Float {
@@ -18,7 +26,7 @@ object ModbusTypeConverter {
         return String(bytes, Charsets.US_ASCII)
     }
 
-    fun decimalToHex(decimalValue: Int): String {
+    private fun decimalToHex(decimalValue: Int): String {
         return Integer.toHexString(decimalValue)
     }
 
@@ -43,5 +51,15 @@ object ModbusTypeConverter {
         }
 
         return hexStringBuilder.toString()
+    }
+
+    fun String.hexStringToDecimal(): Int {
+        // Assuming the hexString is a valid hexadecimal representation
+        if (this.isEmpty()) {
+            // Handle the case of an empty string, e.g., return a default value or throw an exception
+            return 0
+        }
+
+        return this.toInt(radix = 16)
     }
 }

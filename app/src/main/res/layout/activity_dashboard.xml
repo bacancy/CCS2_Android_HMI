@@ -1,135 +1,141 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    android:orientation="vertical"
     tools:context=".views.Dashboard">
 
-    <TextView
-        android:id="@+id/txtDataRead"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="Charge Configuration = Loading..." />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:visibility="gone"
-        android:backgroundTint="@color/green"
-        android:onClick="goToReadInputRegisterScreen"
-        android:text="Read Input Registers"
-        android:textColor="@color/white" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:backgroundTint="@color/green"
-        android:visibility="gone"
-        android:onClick="goToReadHoldingRegistersScreen"
-        android:text="Read Holding Registers"
-        android:textColor="@color/white" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:backgroundTint="@color/green"
-        android:visibility="gone"
-        android:onClick="goToWriteSingleHoldingRegisterScreen"
-        android:text="Write Single Holding Register"
-        android:textColor="@color/white" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:backgroundTint="@color/green"
-        android:visibility="gone"
-        android:onClick="goToWriteMultipleHoldingRegistersScreen"
-        android:text="Write Multiple Holding Registers"
-        android:textColor="@color/white" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:backgroundTint="@color/green"
-        android:onClick="goToReadACMeterInfoScreen"
-        android:text="AC Meter Information"
-        android:textColor="@color/white" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:backgroundTint="@color/green"
-        android:onClick="goToReadACChargerACMeterInfoScreen"
-        android:text="AC Charger AC Meter Information"
-        android:textColor="@color/white" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:backgroundTint="@color/green"
-        android:onClick="goToReadMiscInfoScreen"
-        android:text="Read Misc Information"
-        android:textColor="@color/white" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:backgroundTint="@color/green"
-        android:onClick="goToGun1DCMeterInfoScreen"
-        android:text="Gun 1 DC Meter Information"
-        android:textColor="@color/white" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:backgroundTint="@color/green"
-        android:onClick="goToGun2DCMeterInfoScreen"
-        android:text="Gun 2 DC Meter Information"
-        android:textColor="@color/white" />
-
     <LinearLayout
-        android:layout_marginTop="20dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txtDataRead"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Charge Configuration = Loading..." />
 
         <Button
-            android:layout_width="0dp"
-            android:layout_weight="1"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             android:backgroundTint="@color/green"
-            android:onClick="goToUseGun1"
-            android:text="USE GUN 1"
-            android:textColor="@color/white" />
+            android:onClick="goToReadInputRegisterScreen"
+            android:text="Read Input Registers"
+            android:textColor="@color/white"
+            android:visibility="gone" />
+
         <Button
-            android:layout_width="0dp"
-            android:layout_weight="1"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             android:backgroundTint="@color/green"
-            android:onClick="goToUseGun2"
-            android:text="USE Gun 2"
+            android:onClick="goToReadHoldingRegistersScreen"
+            android:text="Read Holding Registers"
+            android:textColor="@color/white"
+            android:visibility="gone" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:backgroundTint="@color/green"
+            android:onClick="goToWriteSingleHoldingRegisterScreen"
+            android:text="Write Single Holding Register"
+            android:textColor="@color/white"
+            android:visibility="gone" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:backgroundTint="@color/green"
+            android:onClick="goToWriteMultipleHoldingRegistersScreen"
+            android:text="Write Multiple Holding Registers"
+            android:textColor="@color/white"
+            android:visibility="gone" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:backgroundTint="@color/green"
+            android:onClick="goToReadACMeterInfoScreen"
+            android:text="AC Meter Information"
+            android:textColor="@color/white" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:backgroundTint="@color/green"
+            android:onClick="goToReadACChargerACMeterInfoScreen"
+            android:text="AC Charger AC Meter Information"
+            android:textColor="@color/white" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:backgroundTint="@color/green"
+            android:onClick="goToReadMiscInfoScreen"
+            android:text="Read Misc Information"
+            android:textColor="@color/white" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:backgroundTint="@color/green"
+            android:onClick="goToGun1DCMeterInfoScreen"
+            android:text="Gun 1 DC Meter Information"
+            android:textColor="@color/white" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:backgroundTint="@color/green"
+            android:onClick="goToGun2DCMeterInfoScreen"
+            android:text="Gun 2 DC Meter Information"
+            android:textColor="@color/white" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp">
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:backgroundTint="@color/green"
+                android:onClick="goToUseGun1"
+                android:text="USE GUN 1"
+                android:textColor="@color/white" />
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:backgroundTint="@color/green"
+                android:onClick="goToUseGun2"
+                android:text="USE Gun 2"
+                android:textColor="@color/white" />
+        </LinearLayout>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:backgroundTint="@color/green"
+            android:onClick="goToViewNewScreens"
+            android:text="View New Screens"
             android:textColor="@color/white" />
     </LinearLayout>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:backgroundTint="@color/green"
-        android:onClick="goToViewNewScreens"
-        android:text="View New Screens"
-        android:textColor="@color/white" />
-
-</LinearLayout>
+</androidx.core.widget.NestedScrollView>
