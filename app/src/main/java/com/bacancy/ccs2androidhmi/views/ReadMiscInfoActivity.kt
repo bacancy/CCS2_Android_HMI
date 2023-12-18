@@ -11,12 +11,17 @@ import com.bacancy.ccs2androidhmi.util.CommonUtils.getSwappedMacAddress
 import com.bacancy.ccs2androidhmi.util.ModbusReadObserver
 import com.bacancy.ccs2androidhmi.util.ModbusRequestFrames
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter
+import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.byteArrayToBinaryString
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.bytesToAsciiString
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.decimalArrayToHexArray
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.getActualIntValueFromHighAndLowBytes
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.getIntValueFromByte
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.toHex
 import com.bacancy.ccs2androidhmi.util.ResponseSizes.MISC_INFORMATION_RESPONSE_SIZE
+import com.bacancy.ccs2androidhmi.util.StateAndModesUtils.checkGSMNetworkStrength
+import com.bacancy.ccs2androidhmi.util.StateAndModesUtils.checkIfEthernetIsConnected
+import com.bacancy.ccs2androidhmi.util.StateAndModesUtils.checkServerConnectedWith
+import com.bacancy.ccs2androidhmi.util.StateAndModesUtils.checkWifiNetworkStrength
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -49,8 +54,8 @@ class ReadMiscInfoActivity : SerialPortBaseActivity() {
                     ) { responseFrameArray ->
                         onDataReceived(responseFrameArray)
                     }
-                    delay(5000)
-                    observer.stopObserving()
+                    /*delay(5000)
+                    observer.stopObserving()*/
                 } catch (e: IOException) {
                     e.printStackTrace()
                 }
@@ -63,7 +68,28 @@ class ReadMiscInfoActivity : SerialPortBaseActivity() {
         Log.d("TAG", "onDataReceived: ${buffer.toHex()}")
         lifecycleScope.launch(Dispatchers.Main) {
             binding.apply {
-                Log.d("TAG", "onDataReceived: Network Module Status = ${getNetworkModuleStatus(buffer)}")
+                Log.d("TAG", "onDataReceived: Network Module Status HEX= ${getNetworkModuleStatus(buffer)}")
+                val networkStatusBits = byteArrayToBinaryString(buffer.copyOfRange(3,5)).reversed().substring(0,11)
+                val arrayOfNetworkStatusBits = networkStatusBits.toCharArray()
+                val wifiNetworkStrengthBits = arrayOfNetworkStatusBits.copyOfRange(0,3)
+                val gsmNetworkStrengthBits = arrayOfNetworkStatusBits.copyOfRange(3,7)
+                val ethernetConnectedBits = arrayOfNetworkStatusBits.copyOfRange(7,8)
+                val serverConnectedWithBits = arrayOfNetworkStatusBits.copyOfRange(8,11)
+                /*Log.d("TAG", "onDataReceived: serverConnectedWithBits= ${serverConnectedWithBits.joinToString(", ")}")
+                Log.d("TAG", "onDataReceived: ethernetConnectedBits= ${ethernetConnectedBits.joinToString(", ")}")
+                Log.d("TAG", "onDataReceived: gsmNetworkStrengthBits= ${gsmNetworkStrengthBits.joinToString(", ")}")
+                Log.d("TAG", "onDataReceived: wifiNetworkStrengthBits= ${wifiNetworkStrengthBits.joinToString(", ")}")*/
+
+                txtServerConnection.text = "Server connection = ${checkServerConnectedWith(serverConnectedWithBits)}"
+                txtEthernetConnection.text = "Ethernet = ${checkIfEthernetIsConnected(ethernetConnectedBits)}"
+                txtGSMStrength.text = "GSM Strength = ${checkGSMNetworkStrength(gsmNetworkStrengthBits)}"
+                txtWifiStrength.text = "Wifi Strength = ${checkWifiNetworkStrength(wifiNetworkStrengthBits)}"
+                Log.d("TAG", "onDataReceived: Server connected with ${checkServerConnectedWith(serverConnectedWithBits)}")
+                Log.d("TAG", "onDataReceived: Ethernet Status = ${checkIfEthernetIsConnected(ethernetConnectedBits)}")
+                Log.d("TAG", "onDataReceived: GSM Strength = ${checkGSMNetworkStrength(gsmNetworkStrengthBits)}")
+                Log.d("TAG", "onDataReceived: Wifi Strength = ${checkWifiNetworkStrength(wifiNetworkStrengthBits)}")
+
+
                 txtMCUFirmwareVersion.text = "MCU FIRMWARE VERSION = ${getMCUFirmwareVersion(buffer)}"
                 txtOCPPFirmwareVersion.text = "OCPP FIRMWARE VERSION = ${getOCPPFirmwareVersion(buffer)}"
                 txtRFIDFirmwareVersion.text = "RFID FIRMWARE VERSION = ${getRFIDFirmwareVersion(buffer)}"

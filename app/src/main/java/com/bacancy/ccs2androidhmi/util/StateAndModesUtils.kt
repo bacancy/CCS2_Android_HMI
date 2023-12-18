@@ -49,4 +49,79 @@ object StateAndModesUtils {
         }
     }
 
+    fun checkServerConnectedWith(array: CharArray): String {
+
+        val arrayContainsOne = array.filter { it == '1' }
+
+        if (arrayContainsOne.isNotEmpty()) {
+            array.forEachIndexed { index, char ->
+                if (char == '1') {
+                    when (index) {
+                        0 -> return "Ethernet"
+                        1 -> return "GSM"
+                        2 -> return "Wifi"
+                    }
+                }
+            }
+        } else {
+            return "Not Found"
+        }
+
+        return "Unknown"
+    }
+
+    fun checkIfEthernetIsConnected(array: CharArray): String {
+        if(array.isNotEmpty()){
+            return if(array[0] == '1'){
+                "Connected"
+            }else{
+                "Not Connected"
+            }
+        }
+        return "Unknown"
+    }
+
+    fun checkGSMNetworkStrength(array: CharArray): String {
+
+        val arrayContainsOne = array.filter { it == '1' }
+
+        if (arrayContainsOne.isNotEmpty()) {
+            array.forEachIndexed { index, char ->
+                if (char == '1') {
+                    when (index) {
+                        0 -> return "1"
+                        1 -> return "2"
+                        2 -> return "3"
+                        3 -> return "4"
+                    }
+                }
+            }
+        } else {
+            return "0"
+        }
+
+        return "-1"
+    }
+
+    fun checkWifiNetworkStrength(array: CharArray): String {
+
+        val arrayContainsOne = array.filter { it == '1' }
+
+        if (arrayContainsOne.isNotEmpty()) {
+            array.forEachIndexed { index, char ->
+                if (char == '1') {
+                    when (index) {
+                        0 -> return "1"
+                        1 -> return "2"
+                        2 -> return "3"
+                    }
+                }
+            }
+        } else {
+            return "0"
+        }
+
+        return "-1"
+    }
+
 }

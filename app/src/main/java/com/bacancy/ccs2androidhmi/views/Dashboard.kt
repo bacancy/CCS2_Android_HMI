@@ -31,12 +31,12 @@ class Dashboard : SerialPortBaseActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(false)
         readChargeConfiguration()
     }
-    fun readChargeConfiguration() {
+    private fun readChargeConfiguration() {
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
                 try {
-                    var address = 436
-                    var quantity = 1
+                    val address = 436
+                    val quantity = 1
                     observer = ModbusReadObserver()
                     observer.startObserving(
                         mOutputStream, mInputStream, 16,
@@ -44,7 +44,7 @@ class Dashboard : SerialPortBaseActivity() {
                     ) { responseFrameArray ->
                         onDataReceived(responseFrameArray)
                     }
-                    delay(3000)
+                    delay(10000)
                     observer.stopObserving()
                 } catch (e: IOException) {
                     e.printStackTrace()
@@ -61,10 +61,12 @@ class Dashboard : SerialPortBaseActivity() {
                 1 -> {
                     Log.d("TAG", "onDataReceived: SINGLE GUN")
                     binding.txtDataRead.text = "Charge Configuration = Single Gun"
+                    binding.btnGun1.visibility = View.VISIBLE
                 }
                 2 -> {
                     Log.d("TAG", "onDataReceived: DUAL GUN")
                     binding.txtDataRead.text = "Charge Configuration = Dual Gun"
+                    binding.btnGun1.visibility = View.VISIBLE
                 }
             }
         }

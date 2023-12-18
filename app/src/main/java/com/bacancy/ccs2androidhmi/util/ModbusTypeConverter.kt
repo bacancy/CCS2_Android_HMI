@@ -62,4 +62,10 @@ object ModbusTypeConverter {
 
         return this.toInt(radix = 16)
     }
+
+    fun byteArrayToBinaryString(byteArray: ByteArray): String {
+        return byteArray.joinToString("") { byte ->
+            String.format("%8s", Integer.toBinaryString(byte.toInt() and 0xFF)).replace(' ', '0')
+        }
+    }
 }

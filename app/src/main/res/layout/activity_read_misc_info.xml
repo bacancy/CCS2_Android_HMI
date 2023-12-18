@@ -11,11 +11,56 @@
         android:orientation="vertical"
         android:padding="10dp"
         android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/txtServerConnection"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                tools:text="Server Connected = Wifi" />
+
+            <TextView
+                android:id="@+id/txtEthernetConnection"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                tools:text="Ethernet = Connected" />
+
+            <TextView
+                android:id="@+id/txtGSMStrength"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                tools:text="GSM Strength = 1" />
+
+            <TextView
+                android:id="@+id/txtWifiStrength"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                tools:text="Wifi Strength = 2" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:background="@color/green"
+            android:layout_marginTop="10dp"
+            android:layout_height="1dp"/>
+
         <TextView
             android:id="@+id/txtMCUFirmwareVersion"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             tools:text="Firmware Version = 2.3.3" />
 
         <TextView
