@@ -7,19 +7,17 @@ import android.view.View
 import androidx.lifecycle.lifecycleScope
 import com.bacancy.ccs2androidhmi.base.SerialPortBaseActivity
 import com.bacancy.ccs2androidhmi.databinding.ActivityDashboardBinding
-import com.bacancy.ccs2androidhmi.util.CommonUtils
 import com.bacancy.ccs2androidhmi.util.ModBusUtils
 import com.bacancy.ccs2androidhmi.util.ModbusReadObserver
-import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.getIntValueFromByte
-import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.toHex
+import com.bacancy.ccs2androidhmi.util.ReadWriteUtil.writeToSingleHoldingRegisterNew
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.IOException
 
 class Dashboard : SerialPortBaseActivity() {
 
+    private var CHARGE_CONFIG: Int = 0
     private lateinit var binding: ActivityDashboardBinding
     private lateinit var observer: ModbusReadObserver
 
@@ -31,6 +29,7 @@ class Dashboard : SerialPortBaseActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(false)
         readChargeConfiguration()
     }
+
     private fun readChargeConfiguration() {
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
@@ -44,8 +43,8 @@ class Dashboard : SerialPortBaseActivity() {
                     ) { responseFrameArray ->
                         onDataReceived(responseFrameArray)
                     }
-                    delay(10000)
-                    observer.stopObserving()
+                    //delay(10000)
+                    //observer.stopObserving()
                 } catch (e: IOException) {
                     e.printStackTrace()
                 }
@@ -59,11 +58,14 @@ class Dashboard : SerialPortBaseActivity() {
         lifecycleScope.launch(Dispatchers.Main) {
             when (decodeResponse) {
                 1 -> {
+                    CHARGE_CONFIG = 1
                     Log.d("TAG", "onDataReceived: SINGLE GUN")
                     binding.txtDataRead.text = "Charge Configuration = Single Gun"
                     binding.btnGun1.visibility = View.VISIBLE
                 }
+
                 2 -> {
+                    CHARGE_CONFIG = 2
                     Log.d("TAG", "onDataReceived: DUAL GUN")
                     binding.txtDataRead.text = "Charge Configuration = Dual Gun"
                     binding.btnGun1.visibility = View.VISIBLE
@@ -75,12 +77,15 @@ class Dashboard : SerialPortBaseActivity() {
     fun goToReadInputRegisterScreen(view: View) {
         startActivity(Intent(this, ReadInputRegistersActivity::class.java))
     }
+
     fun goToReadHoldingRegistersScreen(view: View) {
         startActivity(Intent(this, ReadHoldingRegistersActivity::class.java))
     }
+
     fun goToWriteSingleHoldingRegisterScreen(view: View) {
         startActivity(Intent(this, WriteSingleHoldingRegisterActivity::class.java))
     }
+
     fun goToWriteMultipleHoldingRegistersScreen(view: View) {
         startActivity(Intent(this, WriteMultipleHoldingRegistersActivity::class.java))
     }
@@ -115,9 +120,58 @@ class Dashboard : SerialPortBaseActivity() {
     }
 
     fun goToUseGun1(view: View) {
-        startActivity(Intent(this, Gun1InformationActivity::class.java).putExtra("IS_GUN1",true))
+        if (CHARGE_CONFIG == 2) {
+            authenticateGun(1)
+        } else {
+            startActivity(
+                Intent(this, Gun1InformationActivity::class.java).putExtra(
+                    "IS_GUN1",
+                    true
+                )
+            )
+        }
     }
+
     fun goToUseGun2(view: View) {
-        startActivity(Intent(this, Gun1InformationActivity::class.java).putExtra("IS_GUN1",false))
+        if (CHARGE_CONFIG == 2) {
+            authenticateGun(2)
+        } else {
+            startActivity(
+                Intent(this, Gun1InformationActivity::class.java).putExtra(
+                    "IS_GUN1",
+                    false
+                )
+            )
+        }
     }
+
+    private fun authenticateGun(gunNumber: Int) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            writeToSingleHoldingRegisterNew(mOutputStream, mInputStream, 30, gunNumber) { responseFrame ->
+                val decodeResponse = ModBusUtils.convertModbusResponseFrameToString(responseFrame)
+                Log.d("TAG", "onDataReceived: $decodeResponse")
+                if (gunNumber == 1) {
+                    startActivity(
+                        Intent(this@Dashboard, Gun1InformationActivity::class.java).putExtra(
+                            "IS_GUN1",
+                            true
+                        )
+                    )
+                } else {
+                    startActivity(
+                        Intent(this@Dashboard, Gun1InformationActivity::class.java).putExtra(
+                            "IS_GUN1",
+                            false
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+    fun goToAllChargingSummary(view: View) {
+        startActivity(Intent(this, CheckAllChargingSummariesActivity::class.java))
+    }
+
+
 }

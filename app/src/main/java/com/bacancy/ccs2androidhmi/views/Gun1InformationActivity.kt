@@ -5,24 +5,40 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.bacancy.ccs2androidhmi.base.SerialPortBaseActivity
 import com.bacancy.ccs2androidhmi.databinding.ActivityGun1InformationBinding
+import com.bacancy.ccs2androidhmi.db.entity.ChargingSummary
+import com.bacancy.ccs2androidhmi.util.LastChargingSummaryUtils.getChargingEndTime
+import com.bacancy.ccs2androidhmi.util.LastChargingSummaryUtils.getChargingStartTime
+import com.bacancy.ccs2androidhmi.util.LastChargingSummaryUtils.getEVMacAddress
+import com.bacancy.ccs2androidhmi.util.LastChargingSummaryUtils.getEndSoc
+import com.bacancy.ccs2androidhmi.util.LastChargingSummaryUtils.getEnergyConsumption
+import com.bacancy.ccs2androidhmi.util.LastChargingSummaryUtils.getSessionEndReason
+import com.bacancy.ccs2androidhmi.util.LastChargingSummaryUtils.getStartSoc
+import com.bacancy.ccs2androidhmi.util.LastChargingSummaryUtils.getTotalChargingTime
 import com.bacancy.ccs2androidhmi.util.StateAndModesUtils
 import com.bacancy.ccs2androidhmi.util.ModbusReadObserver
 import com.bacancy.ccs2androidhmi.util.ModbusRequestFrames
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.getActualIntValueFromHighAndLowBytes
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.getIntValueFromByte
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.toHex
+import com.bacancy.ccs2androidhmi.util.ResponseSizes
 import com.bacancy.ccs2androidhmi.util.ResponseSizes.GUN_INFORMATION_RESPONSE_SIZE
+import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.IOException
 
+@AndroidEntryPoint
 class Gun1InformationActivity : SerialPortBaseActivity() {
 
     private var isGun1: Boolean? = null
+    private val appViewModel: AppViewModel by viewModels()
     private lateinit var observer: ModbusReadObserver
     private lateinit var binding: ActivityGun1InformationBinding
 
@@ -85,13 +101,6 @@ class Gun1InformationActivity : SerialPortBaseActivity() {
                     txtConnectorStatus.text = "Connector Status = ON"
                 }
 
-                val chargingStateLSB = buffer[5].getIntValueFromByte()
-                val chargingStateMSB = buffer[6].getIntValueFromByte()
-                txtChargingState.text = "Charging State = ${
-                    StateAndModesUtils.GunChargingState.fromStateValue(
-                        getActualIntValueFromHighAndLowBytes(chargingStateLSB, chargingStateMSB)
-                    ).description
-                }"
 
                 val initialSocLSB = buffer[7].getIntValueFromByte()
                 val initialSocMSB = buffer[8].getIntValueFromByte()
@@ -165,9 +174,94 @@ class Gun1InformationActivity : SerialPortBaseActivity() {
                 val gunTemperatureDCNegative =
                     ModbusTypeConverter.byteArrayToFloat(buffer.copyOfRange(27, 28))
                 val totalCost = ModbusTypeConverter.byteArrayToFloat(buffer.copyOfRange(29, 30))*/
+
+                val chargingStateLSB = buffer[5].getIntValueFromByte()
+                val chargingStateMSB = buffer[6].getIntValueFromByte()
+                val gunChargingState = StateAndModesUtils.GunChargingState.fromStateValue(
+                    getActualIntValueFromHighAndLowBytes(chargingStateLSB, chargingStateMSB)
+                )
+                txtChargingState.text = "Charging State = ${gunChargingState.description}"
+
+                when (gunChargingState) {
+                    StateAndModesUtils.GunChargingState.COMPLETE -> getLastChargingSummary()
+                    StateAndModesUtils.GunChargingState.EMERGENCY_STOP -> getLastChargingSummary()
+                    else -> {}
+                }
+
             }
         }
 
+
+    }
+
+    private fun getLastChargingSummary() {
+        observer.stopObserving()
+        val lastChargingSummaryRequestFrame: ByteArray = if (isGun1 == true) {
+            ModbusRequestFrames.getGun1LastChargingSummaryRequestFrame()
+        } else {
+            ModbusRequestFrames.getGun2LastChargingSummaryRequestFrame()
+        }
+
+        lifecycleScope.launch {
+            withContext(Dispatchers.IO) {
+                try {
+                    observer = ModbusReadObserver()
+                    observer.startObserving(
+                        mOutputStream,
+                        mInputStream, ResponseSizes.LAST_CHARGING_SUMMARY_RESPONSE_SIZE,
+                        lastChargingSummaryRequestFrame
+                    ) { responseFrameArray ->
+                        onLastChargingSummaryDataReceived(responseFrameArray)
+                    }
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+            }
+        }
+    }
+
+    private fun onLastChargingSummaryDataReceived(responseFrameArray: ByteArray) {
+        Log.d("TAG", "onLastChargingSummaryDataReceived: ${responseFrameArray.toHex()}")
+        lifecycleScope.launch(Dispatchers.Main) {
+
+            if(responseFrameArray.toHex().startsWith("0103")){
+
+                Log.d("TAG", "onLastChargingSummaryDataReceived: EV MAC ADDRESS - ${getEVMacAddress(responseFrameArray)}")
+                Log.d(
+                    "TAG",
+                    "onLastChargingSummaryDataReceived: Total Charging Time - ${getTotalChargingTime(responseFrameArray)}"
+                )
+                Log.d(
+                    "TAG",
+                    "onLastChargingSummaryDataReceived: Charging Start Time - ${getChargingStartTime(responseFrameArray)}"
+                )
+                Log.d(
+                    "TAG",
+                    "onLastChargingSummaryDataReceived: Charging End Time - ${getChargingEndTime(responseFrameArray)}"
+                )
+
+                Log.d("TAG", "onLastChargingSummaryDataReceived: Start SOC = ${getStartSoc(responseFrameArray)}")
+                Log.d("TAG", "onLastChargingSummaryDataReceived: End SOC = ${getEndSoc(responseFrameArray)}")
+                Log.d("TAG", "onLastChargingSummaryDataReceived: ${getEnergyConsumption(responseFrameArray)}")
+                Log.d("TAG", "onLastChargingSummaryDataReceived: ${getSessionEndReason(responseFrameArray)}")
+
+                observer.stopObserving()
+                val chargingSummary = ChargingSummary(
+                    evMacAddress = getEVMacAddress(responseFrameArray),
+                    chargingStartTime = getChargingStartTime(responseFrameArray),
+                    chargingEndTime = getChargingEndTime(responseFrameArray),
+                    totalChargingTime = getTotalChargingTime(responseFrameArray),
+                    startSoc = getStartSoc(responseFrameArray),
+                    endSoc = getEndSoc(responseFrameArray),
+                    energyConsumption = getEnergyConsumption(responseFrameArray),
+                    sessionEndReason = getSessionEndReason(responseFrameArray),
+                    customSessionEndReason = "NA",
+                    totalCost = "0.00"
+                )
+                appViewModel.insertChargingSummary(chargingSummary)
+
+            }
+        }
 
     }
 

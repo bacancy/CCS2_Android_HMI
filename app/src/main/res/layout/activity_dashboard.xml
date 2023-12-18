@@ -130,7 +130,18 @@
                 android:onClick="goToUseGun2"
                 android:text="USE Gun 2"
                 android:textColor="@color/white" />
+
+
         </LinearLayout>
+
+        <Button
+            android:id="@+id/btnChargingHistory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/green"
+            android:onClick="goToAllChargingSummary"
+            android:text="Charging History"
+            android:textColor="@color/white" />
 
         <Button
             android:layout_width="wrap_content"

@@ -14,6 +14,9 @@
         android:theme="@style/Theme.CCS2AndroidHMI"
         tools:targetApi="31">
         <activity
+            android:name=".views.CheckAllChargingSummariesActivity"
+            android:exported="false" />
+        <activity
             android:name=".views.LastChargingSummaryActivity"
             android:exported="false" />
         <activity
