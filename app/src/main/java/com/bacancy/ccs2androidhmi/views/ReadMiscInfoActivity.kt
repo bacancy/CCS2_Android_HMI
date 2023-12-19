@@ -13,7 +13,6 @@ import com.bacancy.ccs2androidhmi.util.ModbusRequestFrames
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.byteArrayToBinaryString
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.bytesToAsciiString
-import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.decimalArrayToHexArray
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.getActualIntValueFromHighAndLowBytes
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.getIntValueFromByte
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.toHex
@@ -23,11 +22,9 @@ import com.bacancy.ccs2androidhmi.util.StateAndModesUtils.checkIfEthernetIsConne
 import com.bacancy.ccs2androidhmi.util.StateAndModesUtils.checkServerConnectedWith
 import com.bacancy.ccs2androidhmi.util.StateAndModesUtils.checkWifiNetworkStrength
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.IOException
-import java.util.Locale
 
 class ReadMiscInfoActivity : SerialPortBaseActivity() {
 
@@ -50,10 +47,11 @@ class ReadMiscInfoActivity : SerialPortBaseActivity() {
                     observer.startObserving(
                         mOutputStream,
                         mInputStream, MISC_INFORMATION_RESPONSE_SIZE,
-                        ModbusRequestFrames.getMiscInfoRequestFrame()
-                    ) { responseFrameArray ->
-                        onDataReceived(responseFrameArray)
-                    }
+                        ModbusRequestFrames.getMiscInfoRequestFrame(), { responseFrameArray ->
+                            onDataReceived(responseFrameArray)
+                        }, {
+                            //OnFailure
+                        })
                     /*delay(5000)
                     observer.stopObserving()*/
                 } catch (e: IOException) {
@@ -68,48 +66,68 @@ class ReadMiscInfoActivity : SerialPortBaseActivity() {
         Log.d("TAG", "onDataReceived: ${buffer.toHex()}")
         lifecycleScope.launch(Dispatchers.Main) {
             binding.apply {
-                Log.d("TAG", "onDataReceived: Network Module Status HEX= ${getNetworkModuleStatus(buffer)}")
-                val networkStatusBits = byteArrayToBinaryString(buffer.copyOfRange(3,5)).reversed().substring(0,11)
+                val networkStatusBits =
+                    byteArrayToBinaryString(buffer.copyOfRange(3, 5)).reversed()
+                        .substring(0, 11)
                 val arrayOfNetworkStatusBits = networkStatusBits.toCharArray()
-                val wifiNetworkStrengthBits = arrayOfNetworkStatusBits.copyOfRange(0,3)
-                val gsmNetworkStrengthBits = arrayOfNetworkStatusBits.copyOfRange(3,7)
-                val ethernetConnectedBits = arrayOfNetworkStatusBits.copyOfRange(7,8)
-                val serverConnectedWithBits = arrayOfNetworkStatusBits.copyOfRange(8,11)
-                /*Log.d("TAG", "onDataReceived: serverConnectedWithBits= ${serverConnectedWithBits.joinToString(", ")}")
-                Log.d("TAG", "onDataReceived: ethernetConnectedBits= ${ethernetConnectedBits.joinToString(", ")}")
-                Log.d("TAG", "onDataReceived: gsmNetworkStrengthBits= ${gsmNetworkStrengthBits.joinToString(", ")}")
-                Log.d("TAG", "onDataReceived: wifiNetworkStrengthBits= ${wifiNetworkStrengthBits.joinToString(", ")}")*/
+                val wifiNetworkStrengthBits = arrayOfNetworkStatusBits.copyOfRange(0, 3)
+                val gsmNetworkStrengthBits = arrayOfNetworkStatusBits.copyOfRange(3, 7)
+                val ethernetConnectedBits = arrayOfNetworkStatusBits.copyOfRange(7, 8)
+                val serverConnectedWithBits = arrayOfNetworkStatusBits.copyOfRange(8, 11)
 
-                txtServerConnection.text = "Server connection = ${checkServerConnectedWith(serverConnectedWithBits)}"
-                txtEthernetConnection.text = "Ethernet = ${checkIfEthernetIsConnected(ethernetConnectedBits)}"
-                txtGSMStrength.text = "GSM Strength = ${checkGSMNetworkStrength(gsmNetworkStrengthBits)}"
-                txtWifiStrength.text = "Wifi Strength = ${checkWifiNetworkStrength(wifiNetworkStrengthBits)}"
-                Log.d("TAG", "onDataReceived: Server connected with ${checkServerConnectedWith(serverConnectedWithBits)}")
-                Log.d("TAG", "onDataReceived: Ethernet Status = ${checkIfEthernetIsConnected(ethernetConnectedBits)}")
-                Log.d("TAG", "onDataReceived: GSM Strength = ${checkGSMNetworkStrength(gsmNetworkStrengthBits)}")
-                Log.d("TAG", "onDataReceived: Wifi Strength = ${checkWifiNetworkStrength(wifiNetworkStrengthBits)}")
-
-
-                txtMCUFirmwareVersion.text = "MCU FIRMWARE VERSION = ${getMCUFirmwareVersion(buffer)}"
-                txtOCPPFirmwareVersion.text = "OCPP FIRMWARE VERSION = ${getOCPPFirmwareVersion(buffer)}"
-                txtRFIDFirmwareVersion.text = "RFID FIRMWARE VERSION = ${getRFIDFirmwareVersion(buffer)}"
-                txtLEDFirmwareVersion.text = "LED FIRMWARE VERSION = ${getLEDModuleFirmwareVersion(buffer)}"
-                txtPLC1ModuleFirmwareVersion.text = "PLC1 Module FIRMWARE VERSION = ${getPLC1ModuleFirmwareVersion(buffer)}"
-                txtPLC2ModuleFirmwareVersion.text = "PLC2 Module FIRMWARE VERSION = ${getPLC2ModuleFirmwareVersion(buffer)}"
+                txtServerConnection.text =
+                    "Server connection = ${checkServerConnectedWith(serverConnectedWithBits)}"
+                txtEthernetConnection.text =
+                    "Ethernet = ${checkIfEthernetIsConnected(ethernetConnectedBits)}"
+                txtGSMStrength.text =
+                    "GSM Strength = ${checkGSMNetworkStrength(gsmNetworkStrengthBits)}"
+                txtWifiStrength.text =
+                    "Wifi Strength = ${checkWifiNetworkStrength(wifiNetworkStrengthBits)}"
+                txtMCUFirmwareVersion.text =
+                    "MCU FIRMWARE VERSION = ${getMCUFirmwareVersion(buffer)}"
+                txtOCPPFirmwareVersion.text =
+                    "OCPP FIRMWARE VERSION = ${getOCPPFirmwareVersion(buffer)}"
+                txtRFIDFirmwareVersion.text =
+                    "RFID FIRMWARE VERSION = ${getRFIDFirmwareVersion(buffer)}"
+                txtLEDFirmwareVersion.text =
+                    "LED FIRMWARE VERSION = ${getLEDModuleFirmwareVersion(buffer)}"
+                txtPLC1ModuleFirmwareVersion.text =
+                    "PLC1 Module FIRMWARE VERSION = ${getPLC1ModuleFirmwareVersion(buffer)}"
+                txtPLC2ModuleFirmwareVersion.text =
+                    "PLC2 Module FIRMWARE VERSION = ${getPLC2ModuleFirmwareVersion(buffer)}"
                 txtChargerSerialID.text = "CHARGER SERIAL ID = ${getChargerSerialID(buffer)}"
-                txtEthernetMacAddress.text = "Ethernet MAC Address = ${getEthernetMacAddress(buffer)}"
-                txtBluetoohMacAddress.text = "Bluetooth MAC Address = ${getBluetoothMacAddress(buffer)}"
-                txtWifiStationModeMacAddress.text = "Wifi Station Mode MAC Address = ${getWifiStationModeMacAddress(buffer)}"
-                txtWifiAPModeMacAddress.text = "Wifi AP Mode MAC Address = ${getWifiAPModeMacAddress(buffer)}"
+                txtEthernetMacAddress.text =
+                    "Ethernet MAC Address = ${getEthernetMacAddress(buffer)}"
+                txtBluetoohMacAddress.text =
+                    "Bluetooth MAC Address = ${getBluetoothMacAddress(buffer)}"
+                txtWifiStationModeMacAddress.text =
+                    "Wifi Station Mode MAC Address = ${getWifiStationModeMacAddress(buffer)}"
+                txtWifiAPModeMacAddress.text =
+                    "Wifi AP Mode MAC Address = ${getWifiAPModeMacAddress(buffer)}"
                 txtRFIDNumber.text = "RFID NUMBER = ${getRFIDNumber(buffer)}"
+
+                //0-NoError
+                //1-Error
+                Log.d("TAG", "onDataReceived: PLC1 Fault = ${byteArrayToBinaryString(buffer.copyOfRange(13, 21)).reversed().substring(0, 9)}")
+
+                //0-NoError
+                //1-Error
+                Log.d("TAG", "onDataReceived: PLC2 Fault = ${byteArrayToBinaryString(buffer.copyOfRange(21, 29)).reversed().substring(0, 9)}")
+
+                Log.d("TAG", "onDataReceived: Rectifier1 Fault = ${buffer.copyOfRange(29, 33).toHex()}")
+                Log.d("TAG", "onDataReceived: Rectifier2 Fault = ${buffer.copyOfRange(33, 37).toHex()}")
+                Log.d("TAG", "onDataReceived: Rectifier3 Fault = ${buffer.copyOfRange(37, 41).toHex()}")
+                Log.d("TAG", "onDataReceived: Rectifier4 Fault = ${buffer.copyOfRange(41, 45).toHex()}")
+
+                //0-Working
+                //1-Failure
+                Log.d("TAG", "onDataReceived: Comm Error = ${byteArrayToBinaryString(buffer.copyOfRange(45, 49)).reversed().substring(0, 4)}")
+
+                //0-NotConnected
+                //1-Connected
+                Log.d("TAG", "onDataReceived: DPCS = ${byteArrayToBinaryString(buffer.copyOfRange(59, 61)).reversed().substring(0, 6)}")
             }
         }
-
-    }
-
-    private fun getNetworkModuleStatus(response: ByteArray): String {
-        val statusNumber = getActualIntValueFromHighAndLowBytes(response[3].getIntValueFromByte(), response[4].getIntValueFromByte())
-        return statusNumber.toString()
     }
 
     private fun getAmbientTemperature(response: ByteArray): String {
@@ -117,7 +135,7 @@ class ReadMiscInfoActivity : SerialPortBaseActivity() {
         return "${ModbusTypeConverter.byteArrayToFloat(floatBytes)} c"
     }
 
-    private fun getMCUFirmwareVersion(response: ByteArray):String {
+    private fun getMCUFirmwareVersion(response: ByteArray): String {
         val reg3MSB = response[9].getIntValueFromByte()
         val reg3LSB = response[10].getIntValueFromByte()
         val reg4MSB = response[11].getIntValueFromByte()
@@ -126,7 +144,7 @@ class ReadMiscInfoActivity : SerialPortBaseActivity() {
         return "$reg3MSB.$reg4LSB.$reg4MSB"
     }
 
-    private fun getOCPPFirmwareVersion(response: ByteArray):String {
+    private fun getOCPPFirmwareVersion(response: ByteArray): String {
         val reg3MSB = response[65].getIntValueFromByte()
         val reg3LSB = response[66].getIntValueFromByte()
         val reg4MSB = response[67].getIntValueFromByte()
@@ -135,7 +153,7 @@ class ReadMiscInfoActivity : SerialPortBaseActivity() {
         return "$reg3MSB.$reg4LSB.$reg4MSB"
     }
 
-    private fun getRFIDFirmwareVersion(response: ByteArray):String {
+    private fun getRFIDFirmwareVersion(response: ByteArray): String {
         val reg3MSB = response[75].getIntValueFromByte()
         val reg3LSB = response[76].getIntValueFromByte()
         val reg4MSB = response[77].getIntValueFromByte()
@@ -144,7 +162,7 @@ class ReadMiscInfoActivity : SerialPortBaseActivity() {
         return "$reg3MSB.$reg4LSB.$reg4MSB"
     }
 
-    private fun getLEDModuleFirmwareVersion(response: ByteArray):String {
+    private fun getLEDModuleFirmwareVersion(response: ByteArray): String {
         val reg3MSB = response[79].getIntValueFromByte()
         val reg3LSB = response[80].getIntValueFromByte()
         val reg4MSB = response[81].getIntValueFromByte()
@@ -153,7 +171,7 @@ class ReadMiscInfoActivity : SerialPortBaseActivity() {
         return "$reg3MSB.$reg4LSB.$reg4MSB"
     }
 
-    private fun getPLC1ModuleFirmwareVersion(response: ByteArray):String {
+    private fun getPLC1ModuleFirmwareVersion(response: ByteArray): String {
         val reg3MSB = response[83].getIntValueFromByte()
         val reg3LSB = response[84].getIntValueFromByte()
         val reg4MSB = response[85].getIntValueFromByte()
@@ -162,7 +180,7 @@ class ReadMiscInfoActivity : SerialPortBaseActivity() {
         return "$reg3MSB.$reg4LSB.$reg4MSB"
     }
 
-    private fun getPLC2ModuleFirmwareVersion(response: ByteArray):String {
+    private fun getPLC2ModuleFirmwareVersion(response: ByteArray): String {
         val reg3MSB = response[87].getIntValueFromByte()
         val reg3LSB = response[88].getIntValueFromByte()
         val reg4MSB = response[89].getIntValueFromByte()
@@ -177,59 +195,29 @@ class ReadMiscInfoActivity : SerialPortBaseActivity() {
     }
 
     private fun getEthernetMacAddress(response: ByteArray): String {
-        val macAddressArray = response.copyOfRange(129, 129+6)
+        val macAddressArray = response.copyOfRange(129, 129 + 6)
         return getSwappedMacAddress(macAddressArray)
     }
 
     private fun getBluetoothMacAddress(response: ByteArray): String {
-        val macAddressArray = response.copyOfRange(135, 135+6)
+        val macAddressArray = response.copyOfRange(135, 135 + 6)
         return getSwappedMacAddress(macAddressArray)
     }
 
     private fun getWifiStationModeMacAddress(response: ByteArray): String {
         //141-142 143-144 145-146
-        val macAddressArray = response.copyOfRange(141, 141+6)
+        val macAddressArray = response.copyOfRange(141, 141 + 6)
         return getSwappedMacAddress(macAddressArray)
     }
 
     private fun getWifiAPModeMacAddress(response: ByteArray): String {
         //147-148 149-150 151-152
-        val macAddressArray = response.copyOfRange(147, 147+6)
+        val macAddressArray = response.copyOfRange(147, 147 + 6)
         return getSwappedMacAddress(macAddressArray)
     }
 
-    private fun getPLC1Fault(response: ByteArray): String {
-        val reg5MSB = response[13].getIntValueFromByte()
-        val reg5LSB = response[14].getIntValueFromByte()
-
-        val reg6MSB = response[15].getIntValueFromByte()
-        val reg6LSB = response[16].getIntValueFromByte()
-
-        val reg7MSB = response[17].getIntValueFromByte()
-        val reg7LSB = response[18].getIntValueFromByte()
-
-        val reg8MSB = response[19].getIntValueFromByte()
-        val reg8LSB = response[20].getIntValueFromByte()
-        return "$reg5MSB-$reg5LSB . $reg6MSB-$reg6LSB . $reg7MSB-$reg7LSB . $reg8MSB-$reg8LSB"
-    }
-
-    private fun getPLC2Fault(response: ByteArray): String {
-        val reg5MSB = response[21].getIntValueFromByte()
-        val reg5LSB = response[22].getIntValueFromByte()
-
-        val reg6MSB = response[23].getIntValueFromByte()
-        val reg6LSB = response[24].getIntValueFromByte()
-
-        val reg7MSB = response[25].getIntValueFromByte()
-        val reg7LSB = response[26].getIntValueFromByte()
-
-        val reg8MSB = response[27].getIntValueFromByte()
-        val reg8LSB = response[28].getIntValueFromByte()
-        return "$reg5MSB-$reg5LSB . $reg6MSB-$reg6LSB . $reg7MSB-$reg7LSB . $reg8MSB-$reg8LSB"
-    }
-
     private fun getRFIDNumber(response: ByteArray): String {
-        val macAddressArray = response.copyOfRange(51, 51+8)
+        val macAddressArray = response.copyOfRange(51, 59)
         return getSimpleMacAddress(macAddressArray)
     }
 

@@ -13,6 +13,12 @@
         tools:text="EV MAC ADDRESS" />
 
     <TextView
+        android:id="@+id/tvChargingDuration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="Charging Duration" />
+
+    <TextView
         android:id="@+id/tvChargingStartTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -23,6 +29,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         tools:text="Charging End Time" />
+
+    <TextView
+        android:id="@+id/tvStartSoC"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="Start SoC" />
+
+    <TextView
+        android:id="@+id/tvEndSoC"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="End SoC" />
 
     <TextView
         android:id="@+id/tvSessionEndReason"

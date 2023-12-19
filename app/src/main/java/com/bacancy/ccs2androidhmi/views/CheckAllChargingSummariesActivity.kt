@@ -1,12 +1,10 @@
 package com.bacancy.ccs2androidhmi.views
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.SerialPortBaseActivity
 import com.bacancy.ccs2androidhmi.databinding.ActivityCheckAllChargingSummariesBinding
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel

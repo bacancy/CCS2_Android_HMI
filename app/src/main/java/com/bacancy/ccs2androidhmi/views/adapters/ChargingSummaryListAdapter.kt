@@ -43,6 +43,9 @@ class ChargingSummaryListAdapter(var onItemClick: (ChargingSummary) -> Unit): Li
                 tvChargingStartTime.text = "Charging Start Time = ${sampleModel.chargingStartTime}"
                 tvChargingEndTime.text = "Charging End Time = ${sampleModel.chargingEndTime}"
                 tvSessionEndReason.text = sampleModel.sessionEndReason
+                tvChargingDuration.text = "Charging Duration = ${sampleModel.totalChargingTime} mins"
+                tvStartSoC.text = "Start SoC = ${sampleModel.startSoc}%"
+                tvEndSoC.text = "End SoC = ${sampleModel.endSoc}%"
 
             }
         }

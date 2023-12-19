@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.bacancy.ccs2androidhmi.db.entity.ChargingSummary
 import com.bacancy.ccs2androidhmi.repository.MainRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 

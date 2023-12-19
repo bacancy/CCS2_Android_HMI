@@ -47,11 +47,15 @@ class ReadACChargerACMeterInfoActivity : SerialPortBaseActivity() {
                     observer = ModbusReadObserver()
                     observer.startObserving(
                         mOutputStream,
-                        mInputStream, AC_CHARGER_AC_METER_INFORMATION_RESPONSE_SIZE,
-                        ModbusRequestFrames.getACChargerACMeterInfoRequestFrame()
-                    ) { responseFrameArray ->
-                        onDataReceived(responseFrameArray)
-                    }
+                        mInputStream,
+                        AC_CHARGER_AC_METER_INFORMATION_RESPONSE_SIZE,
+                        ModbusRequestFrames.getACChargerACMeterInfoRequestFrame(),
+                        { responseFrameArray ->
+                            onDataReceived(responseFrameArray)
+                        },
+                        {
+                            //OnFailure
+                        })
                 } catch (e: IOException) {
                     e.printStackTrace()
                 }

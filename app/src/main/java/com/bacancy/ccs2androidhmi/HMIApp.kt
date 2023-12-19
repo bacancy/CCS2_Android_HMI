@@ -1,7 +1,6 @@
 package com.bacancy.ccs2androidhmi
 
 import android.app.Application
-import android.util.Log
 import android_serialport_api.SerialPort
 import android_serialport_api.SerialPortFinder
 import dagger.hilt.android.HiltAndroidApp

@@ -47,11 +47,15 @@ class ReadGun1DCMeterInfoActivity : SerialPortBaseActivity() {
                     observer = ModbusReadObserver()
                     observer.startObserving(
                         mOutputStream,
-                        mInputStream, GUN_DC_METER_INFORMATION_RESPONSE_SIZE,
-                        ModbusRequestFrames.getGunOneDCMeterInfoRequestFrame()
-                    ) { responseFrameArray ->
-                        onDataReceived(responseFrameArray)
-                    }
+                        mInputStream,
+                        GUN_DC_METER_INFORMATION_RESPONSE_SIZE,
+                        ModbusRequestFrames.getGunOneDCMeterInfoRequestFrame(),
+                        { responseFrameArray ->
+                            onDataReceived(responseFrameArray)
+                        },
+                        {
+                            //OnFailure
+                        })
                 } catch (e: IOException) {
                     e.printStackTrace()
                 }

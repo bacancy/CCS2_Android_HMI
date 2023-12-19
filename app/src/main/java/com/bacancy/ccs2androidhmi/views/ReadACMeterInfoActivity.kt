@@ -10,7 +10,6 @@ import com.bacancy.ccs2androidhmi.models.ACMeterModel
 import com.bacancy.ccs2androidhmi.util.ModBusUtils.parseInputRegistersResponse
 import com.bacancy.ccs2androidhmi.util.ModbusReadObserver
 import com.bacancy.ccs2androidhmi.util.ModbusRequestFrames
-import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.floatArrayToHexString
 import com.bacancy.ccs2androidhmi.util.ResponseSizes.AC_METER_INFORMATION_RESPONSE_SIZE
 import com.bacancy.ccs2androidhmi.views.adapters.ACMeterListAdapter
 import kotlinx.coroutines.Dispatchers
@@ -48,10 +47,11 @@ class ReadACMeterInfoActivity : SerialPortBaseActivity() {
                     observer.startObserving(
                         mOutputStream,
                         mInputStream, AC_METER_INFORMATION_RESPONSE_SIZE,
-                        ModbusRequestFrames.getACMeterInfoRequestFrame()
-                    ) { responseFrameArray ->
-                        onDataReceived(responseFrameArray)
-                    }
+                        ModbusRequestFrames.getACMeterInfoRequestFrame(), { responseFrameArray ->
+                            onDataReceived(responseFrameArray)
+                        }, {
+                            //OnFailure
+                        })
                 } catch (e: IOException) {
                     e.printStackTrace()
                 }
@@ -61,7 +61,6 @@ class ReadACMeterInfoActivity : SerialPortBaseActivity() {
 
     private fun onDataReceived(buffer: ByteArray) {
         val newResponse = parseInputRegistersResponse(buffer)
-        Log.d("TAG", "onDataReceived: ${floatArrayToHexString(newResponse)}")
         Log.d("TAG", "onDataReceived: ${newResponse.toList()}")
         lifecycleScope.launch(Dispatchers.Main) {
             if (newResponse.isNotEmpty()) {

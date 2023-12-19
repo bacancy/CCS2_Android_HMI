@@ -5,7 +5,7 @@ import java.nio.ByteOrder
 
 object ModbusTypeConverter {
 
-    fun Float.formatFloatToString(): String{
+    fun Float.formatFloatToString(): String {
         return String.format("%.2f", this)
     }
 
@@ -19,7 +19,11 @@ object ModbusTypeConverter {
 
     fun byteArrayToFloat(bytes: ByteArray): Float {
         val byteBuffer = ByteBuffer.wrap(bytes).order(ByteOrder.BIG_ENDIAN)
-        return byteBuffer.float
+        return if (byteBuffer.hasRemaining()) {
+            byteBuffer.float
+        } else {
+            0.0F
+        }
     }
 
     fun bytesToAsciiString(bytes: ByteArray): String {
@@ -33,7 +37,15 @@ object ModbusTypeConverter {
     fun decimalArrayToHexArray(decimalList: List<Int>): MutableList<String> {
         val hexList = mutableListOf<String>()
         decimalList.forEach {
-            hexList.add(decimalToHex(it))
+            if (it < 10) {
+                hexList.add("0" + decimalToHex(it))
+            } else {
+                if (decimalToHex(it).length == 1) {
+                    hexList.add("0" + decimalToHex(it))
+                } else {
+                    hexList.add(decimalToHex(it))
+                }
+            }
         }
         return hexList
     }

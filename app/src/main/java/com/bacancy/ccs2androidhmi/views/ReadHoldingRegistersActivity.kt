@@ -9,8 +9,8 @@ import android.widget.TextView
 import androidx.lifecycle.lifecycleScope
 import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.SerialPortBaseActivity
-import com.bacancy.ccs2androidhmi.util.ModbusReadObserver
 import com.bacancy.ccs2androidhmi.util.ModBusUtils
+import com.bacancy.ccs2androidhmi.util.ModbusReadObserver
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -72,11 +72,16 @@ class ReadHoldingRegistersActivity : SerialPortBaseActivity() {
 
                     observer = ModbusReadObserver()
                     observer.startObserving(
-                        mOutputStream, mInputStream, 256,
-                        ModBusUtils.createReadHoldingRegistersRequest(1, address, quantity)
-                    ) { responseFrameArray ->
-                        onDataReceived(responseFrameArray)
-                    }
+                        mOutputStream,
+                        mInputStream,
+                        256,
+                        ModBusUtils.createReadHoldingRegistersRequest(1, address, quantity),
+                        { responseFrameArray ->
+                            onDataReceived(responseFrameArray)
+                        },
+                        {
+                            //OnFailure
+                        })
                 } catch (e: IOException) {
                     e.printStackTrace()
                 }

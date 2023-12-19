@@ -12,6 +12,6 @@ interface AppDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSummary(chargingSummary: ChargingSummary): Long
 
-    @Query("SELECT * FROM lastChargingSummary")
+    @Query("SELECT * FROM lastChargingSummary ORDER BY summaryId DESC")
     suspend fun getAllChargingSummaries(): List<ChargingSummary>
 }

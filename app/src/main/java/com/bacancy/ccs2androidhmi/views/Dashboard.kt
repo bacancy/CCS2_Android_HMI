@@ -39,10 +39,12 @@ class Dashboard : SerialPortBaseActivity() {
                     observer = ModbusReadObserver()
                     observer.startObserving(
                         mOutputStream, mInputStream, 16,
-                        ModBusUtils.createReadHoldingRegistersRequest(1, address, quantity)
-                    ) { responseFrameArray ->
-                        onDataReceived(responseFrameArray)
-                    }
+                        ModBusUtils.createReadHoldingRegistersRequest(1, address, quantity),
+                        { responseFrameArray ->
+                            onDataReceived(responseFrameArray)
+                        }, {
+                            //OnFailure
+                        })
                     //delay(10000)
                     //observer.stopObserving()
                 } catch (e: IOException) {
@@ -59,14 +61,12 @@ class Dashboard : SerialPortBaseActivity() {
             when (decodeResponse) {
                 1 -> {
                     CHARGE_CONFIG = 1
-                    Log.d("TAG", "onDataReceived: SINGLE GUN")
                     binding.txtDataRead.text = "Charge Configuration = Single Gun"
                     binding.btnGun1.visibility = View.VISIBLE
                 }
 
                 2 -> {
                     CHARGE_CONFIG = 2
-                    Log.d("TAG", "onDataReceived: DUAL GUN")
                     binding.txtDataRead.text = "Charge Configuration = Dual Gun"
                     binding.btnGun1.visibility = View.VISIBLE
                 }
@@ -147,24 +147,30 @@ class Dashboard : SerialPortBaseActivity() {
 
     private fun authenticateGun(gunNumber: Int) {
         lifecycleScope.launch(Dispatchers.IO) {
-            writeToSingleHoldingRegisterNew(mOutputStream, mInputStream, 30, gunNumber) { responseFrame ->
-                val decodeResponse = ModBusUtils.convertModbusResponseFrameToString(responseFrame)
-                Log.d("TAG", "onDataReceived: $decodeResponse")
-                if (gunNumber == 1) {
-                    startActivity(
-                        Intent(this@Dashboard, Gun1InformationActivity::class.java).putExtra(
-                            "IS_GUN1",
-                            true
+            writeToSingleHoldingRegisterNew(
+                mOutputStream,
+                mInputStream,
+                30,
+                gunNumber
+            ) { responseFrame ->
+                    val decodeResponse =
+                        ModBusUtils.convertModbusResponseFrameToString(responseFrame)
+                    Log.d("TAG", "onDataReceived: $decodeResponse")
+                    if (gunNumber == 1) {
+                        startActivity(
+                            Intent(this@Dashboard, Gun1InformationActivity::class.java).putExtra(
+                                "IS_GUN1",
+                                true
+                            )
                         )
-                    )
-                } else {
-                    startActivity(
-                        Intent(this@Dashboard, Gun1InformationActivity::class.java).putExtra(
-                            "IS_GUN1",
-                            false
+                    } else {
+                        startActivity(
+                            Intent(this@Dashboard, Gun1InformationActivity::class.java).putExtra(
+                                "IS_GUN1",
+                                false
+                            )
                         )
-                    )
-                }
+                    }
             }
         }
     }

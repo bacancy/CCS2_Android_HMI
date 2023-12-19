@@ -50,78 +50,36 @@ object StateAndModesUtils {
     }
 
     fun checkServerConnectedWith(array: CharArray): String {
-
-        val arrayContainsOne = array.filter { it == '1' }
-
-        if (arrayContainsOne.isNotEmpty()) {
-            array.forEachIndexed { index, char ->
-                if (char == '1') {
-                    when (index) {
-                        0 -> return "Ethernet"
-                        1 -> return "GSM"
-                        2 -> return "Wifi"
-                    }
-                }
-            }
-        } else {
-            return "Not Found"
+        val firstOneIndex = array.indexOf('1')
+        return when {
+            firstOneIndex == 0 -> "Ethernet"
+            firstOneIndex == 1 -> "GSM"
+            firstOneIndex == 2 -> "Wifi"
+            array.contains('1') -> "Unknown"
+            else -> "Not Found"
         }
-
-        return "Unknown"
     }
 
     fun checkIfEthernetIsConnected(array: CharArray): String {
-        if(array.isNotEmpty()){
-            return if(array[0] == '1'){
-                "Connected"
-            }else{
-                "Not Connected"
-            }
+        return when {
+            array.isNotEmpty() && array[0] == '1' -> "Connected"
+            array.isEmpty() -> "Not Connected"
+            else -> "Not Connected"
         }
-        return "Unknown"
     }
 
     fun checkGSMNetworkStrength(array: CharArray): String {
-
-        val arrayContainsOne = array.filter { it == '1' }
-
-        if (arrayContainsOne.isNotEmpty()) {
-            array.forEachIndexed { index, char ->
-                if (char == '1') {
-                    when (index) {
-                        0 -> return "1"
-                        1 -> return "2"
-                        2 -> return "3"
-                        3 -> return "4"
-                    }
-                }
-            }
-        } else {
-            return "0"
+        return when (val firstOneIndex = array.indexOf('1')) {
+            in 0..3 -> (firstOneIndex + 1).toString()
+            else -> "0"
         }
-
-        return "-1"
     }
 
     fun checkWifiNetworkStrength(array: CharArray): String {
-
-        val arrayContainsOne = array.filter { it == '1' }
-
-        if (arrayContainsOne.isNotEmpty()) {
-            array.forEachIndexed { index, char ->
-                if (char == '1') {
-                    when (index) {
-                        0 -> return "1"
-                        1 -> return "2"
-                        2 -> return "3"
-                    }
-                }
-            }
-        } else {
-            return "0"
+        return when (val firstOneIndex = array.indexOf('1')) {
+            in 0..3 -> (firstOneIndex + 1).toString()
+            else -> "0"
         }
-
-        return "-1"
     }
 
 }

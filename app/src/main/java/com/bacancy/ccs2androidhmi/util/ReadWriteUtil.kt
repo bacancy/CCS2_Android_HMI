@@ -14,33 +14,25 @@ object ReadWriteUtil {
         regValue: Int,
         onAuthDataReceived: (ByteArray) -> Unit
     ) {
-        val requestFrame: ByteArray =
-            ModBusUtils.createWriteSingleRegisterRequest(1, startAddress, regValue)
-
         withContext(Dispatchers.IO) {
-            mOutputStream?.write(requestFrame)
-        }
+            val writeRequestFrame: ByteArray =
+                ModBusUtils.createWriteSingleRegisterRequest(startAddress, regValue)
+            mOutputStream?.write(writeRequestFrame)
 
-        val responseFrame = ByteArray(16)
-        val size: Int = withContext(Dispatchers.IO) {
-            mInputStream?.read(responseFrame) ?:  0
-        }
+            val writeResponseFrame = ByteArray(16)
+            val size: Int = mInputStream?.read(writeResponseFrame) ?: 0
 
-        if (size > 0) {
-            val requestFrame1: ByteArray =
-                ModBusUtils.createReadHoldingRegistersRequest(1, startAddress, 1)
+            if (size > 0) {
+                val readRequestFrame: ByteArray =
+                    ModBusUtils.createReadHoldingRegistersRequest(startAddress, 1)
+                mOutputStream?.write(readRequestFrame)
 
-            withContext(Dispatchers.IO) {
-                mOutputStream?.write(requestFrame1)
-            }
+                val readResponseFrame = ByteArray(64)
+                val size1: Int = mInputStream?.read(readResponseFrame) ?: 0
 
-            val responseFrame1 = ByteArray(64)
-            val size1: Int = withContext(Dispatchers.IO) {
-                mInputStream?.read(responseFrame1) ?: 0
-            }
-
-            if (size1 > 0) {
-                onAuthDataReceived(responseFrame1)
+                if (size1 > 0) {
+                    onAuthDataReceived(readResponseFrame)
+                }
             }
         }
     }

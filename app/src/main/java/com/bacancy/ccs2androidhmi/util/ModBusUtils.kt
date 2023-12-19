@@ -5,6 +5,8 @@ import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.toHex
 
 object ModBusUtils {
 
+    const val INPUT_REGISTERS_CORRECT_RESPONSE_BITS = "0104"
+    const val HOLDING_REGISTERS_CORRECT_RESPONSE_BITS = "0103"
 
     //Input Register
     const val READ_INPUT_REGISTERS_FUNCTION_CODE: Byte = 0x04
@@ -41,12 +43,7 @@ object ModBusUtils {
             (quantity shr 8).toByte(),
             quantity.toByte()
         )
-        Log.d(
-            "TAG",
-            "createReadInputRegistersRequest: HEX BEFORE CRC = ${byteArrayBeforeCRC.toHex()}"
-        )
         val newCRC = calculateCRC(byteArrayBeforeCRC)
-        Log.d("TAG", "createReadInputRegistersRequest: NEW CRC = ${newCRC.toHex()}")
         val finalByteArray = byteArrayOf(
             slaveAddress.toByte(),
             READ_INPUT_REGISTERS_FUNCTION_CODE,
@@ -92,23 +89,14 @@ object ModBusUtils {
         frame[4] = (quantity shr 8).toByte()
         frame[5] = quantity.toByte()
         frame[6] = byteCount.toByte()
-        Log.d(
-            "TAG",
-            "createWriteMultipleRegistersRequest: FRAME HEX BEFORE VALUES = ${frame.toHex()}"
-        )
         for (i in data.indices) {
             val value = data[i]
             val valueIndex = 7 + 2 * i
             frame[valueIndex] = (value.toInt() shr 8).toByte() // High byte of register value
             frame[valueIndex + 1] = value.toByte() // Low byte of register value
         }
-        Log.d(
-            "TAG",
-            "createWriteMultipleRegistersRequest: FRAME HEX AFTER VALUES = ${frame.toHex()}"
-        )
-        Log.d("TAG", "createWriteMultipleRegistersRequest: HEX BEFORE CRC = ${frame.toHex()}")
+
         val newCRC = calculateCRC(frame.dropLast(2).toByteArray())
-        Log.d("TAG", "createWriteMultipleRegistersRequest: NEW CRC = ${newCRC.toHex()}")
 
         frame[frame.size - 2] = newCRC[0]
         frame[frame.size - 1] = newCRC[1]
@@ -183,12 +171,7 @@ object ModBusUtils {
             (registerValue shr 8).toByte(),
             registerValue.toByte()
         )
-        Log.d(
-            "TAG",
-            "createWriteSingleRegisterRequest: HEX BEFORE CRC = ${byteArrayBeforeCRC.toHex()}"
-        )
         val newCRC = calculateCRC(byteArrayBeforeCRC)
-        Log.d("TAG", "createWriteSingleRegisterRequest: NEW CRC = ${newCRC.toHex()}")
 
         val byteArrayWithCRC = byteArrayOf(
             slaveAddress.toByte(),
@@ -202,7 +185,7 @@ object ModBusUtils {
         )
         Log.d(
             "TAG",
-            "createWriteSingleRegisterRequest: BYTE ARRAY OF REQUEST = ${byteArrayWithCRC.toHex()}"
+            "createWriteSingleRegisterRequest: FINAL HEX = ${byteArrayWithCRC.toHex()}"
         )
         return byteArrayWithCRC
     }
@@ -246,7 +229,6 @@ object ModBusUtils {
         )
 
         val newCRC = calculateCRC(byteArrayBeforeCRC)
-        Log.d("TAG", "createWriteSingleRegisterRequest: NEW CRC = ${newCRC.toHex()}")
 
         val byteArrayWithCRC = byteArrayOf(
             slaveAddress.toByte(),
@@ -260,7 +242,7 @@ object ModBusUtils {
         )
         Log.d(
             "TAG",
-            "createWriteSingleRegisterRequest: BYTE ARRAY OF REQUEST = ${byteArrayWithCRC.toHex()}"
+            "createWriteSingleRegisterRequest: FINAL HEX = ${byteArrayWithCRC.toHex()}"
         )
         return byteArrayWithCRC
     }
@@ -878,7 +860,7 @@ object ModBusUtils {
     fun parseInputRegistersResponse(response: ByteArray): FloatArray {
         Log.d("TAG", "parseInputRegistersResponse: RESPONSE SIZE = ${response.size}")
         Log.d("TAG", "parseInputRegistersResponse: RESPONSE HEX = ${response.toHex()}")
-        if(response.toHex().startsWith("0104")){
+        if(response.toHex().startsWith(INPUT_REGISTERS_CORRECT_RESPONSE_BITS)){
             val floatValues = FloatArray(response.size / 4)
 
             for (i in 3..response.size step 4) {

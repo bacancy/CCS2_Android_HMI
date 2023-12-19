@@ -18,18 +18,20 @@ import com.bacancy.ccs2androidhmi.util.LastChargingSummaryUtils.getEnergyConsump
 import com.bacancy.ccs2androidhmi.util.LastChargingSummaryUtils.getSessionEndReason
 import com.bacancy.ccs2androidhmi.util.LastChargingSummaryUtils.getStartSoc
 import com.bacancy.ccs2androidhmi.util.LastChargingSummaryUtils.getTotalChargingTime
-import com.bacancy.ccs2androidhmi.util.StateAndModesUtils
+import com.bacancy.ccs2androidhmi.util.LastChargingSummaryUtils.getTotalCost
+import com.bacancy.ccs2androidhmi.util.ModBusUtils.HOLDING_REGISTERS_CORRECT_RESPONSE_BITS
 import com.bacancy.ccs2androidhmi.util.ModbusReadObserver
 import com.bacancy.ccs2androidhmi.util.ModbusRequestFrames
+import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.getActualIntValueFromHighAndLowBytes
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.getIntValueFromByte
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.toHex
 import com.bacancy.ccs2androidhmi.util.ResponseSizes
 import com.bacancy.ccs2androidhmi.util.ResponseSizes.GUN_INFORMATION_RESPONSE_SIZE
+import com.bacancy.ccs2androidhmi.util.StateAndModesUtils
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.IOException
@@ -37,6 +39,7 @@ import java.io.IOException
 @AndroidEntryPoint
 class Gun1InformationActivity : SerialPortBaseActivity() {
 
+    private var isChargingStarted: Boolean = false
     private var isGun1: Boolean? = null
     private val appViewModel: AppViewModel by viewModels()
     private lateinit var observer: ModbusReadObserver
@@ -58,10 +61,8 @@ class Gun1InformationActivity : SerialPortBaseActivity() {
     private fun startReadingGun1Information() {
 
         val gunRequestFrame: ByteArray = if (isGun1 == true) {
-            Log.d("TAG", "startReadingGun1Information: Gun1")
             ModbusRequestFrames.getGun1InfoRequestFrame()
         } else {
-            Log.d("TAG", "startReadingGun1Information: Gun2")
             ModbusRequestFrames.getGun2InfoRequestFrame()
         }
 
@@ -72,10 +73,11 @@ class Gun1InformationActivity : SerialPortBaseActivity() {
                     observer.startObserving(
                         mOutputStream,
                         mInputStream, GUN_INFORMATION_RESPONSE_SIZE,
-                        gunRequestFrame
-                    ) { responseFrameArray ->
-                        onDataReceived(responseFrameArray)
-                    }
+                        gunRequestFrame, { responseFrameArray ->
+                            onDataReceived(responseFrameArray)
+                        }, {
+                            //OnFailure
+                        })
                 } catch (e: IOException) {
                     e.printStackTrace()
                 }
@@ -94,10 +96,8 @@ class Gun1InformationActivity : SerialPortBaseActivity() {
                 val connectorStatus =
                     getActualIntValueFromHighAndLowBytes(connectorStatusLSB, connectorStatusMSB)
                 if (connectorStatus == 0) {
-                    Log.d("TAG", "onDataReceived: Connector Status = Connector OFF")
                     txtConnectorStatus.text = "Connector Status = OFF"
                 } else {
-                    Log.d("TAG", "onDataReceived: Connector Status = Connector ON")
                     txtConnectorStatus.text = "Connector Status = ON"
                 }
 
@@ -127,7 +127,10 @@ class Gun1InformationActivity : SerialPortBaseActivity() {
                 val hour =
                     getActualIntValueFromHighAndLowBytes(durationInHoursLSB, durationInHoursMSB)
                 val minutes =
-                    getActualIntValueFromHighAndLowBytes(durationInMinutesLSB, durationInMinutesMSB)
+                    getActualIntValueFromHighAndLowBytes(
+                        durationInMinutesLSB,
+                        durationInMinutesMSB
+                    )
                 txtDurationInHoursMinutes.text = "Duration (hh:mm) = $hour:$minutes"
 
                 val chargingVoltageLSB = buffer[15].getIntValueFromByte()
@@ -166,14 +169,15 @@ class Gun1InformationActivity : SerialPortBaseActivity() {
                     )
                 } A"
 
-                /*val energyConsumption = ModbusTypeConverter.byteArrayToFloat(buffer.copyOfRange(23, 23+1))
-                txtEnergyConsumption.text = "Energy Consumption = $energyConsumption kw"*/
+                val energyConsumption =
+                    ModbusTypeConverter.byteArrayToFloat(buffer.copyOfRange(23, 27))
+                txtEnergyConsumption.text = "Energy Consumption = $energyConsumption kw"
 
-                /*val gunTemperatureDCPositive =
-                    ModbusTypeConverter.byteArrayToFloat(buffer.copyOfRange(25, 26))
+                val gunTemperatureDCPositive =
+                    ModbusTypeConverter.byteArrayToFloat(buffer.copyOfRange(27, 31))
                 val gunTemperatureDCNegative =
-                    ModbusTypeConverter.byteArrayToFloat(buffer.copyOfRange(27, 28))
-                val totalCost = ModbusTypeConverter.byteArrayToFloat(buffer.copyOfRange(29, 30))*/
+                    ModbusTypeConverter.byteArrayToFloat(buffer.copyOfRange(31, 35))
+                val totalCost = ModbusTypeConverter.byteArrayToFloat(buffer.copyOfRange(35, 39))
 
                 val chargingStateLSB = buffer[5].getIntValueFromByte()
                 val chargingStateMSB = buffer[6].getIntValueFromByte()
@@ -183,15 +187,26 @@ class Gun1InformationActivity : SerialPortBaseActivity() {
                 txtChargingState.text = "Charging State = ${gunChargingState.description}"
 
                 when (gunChargingState) {
-                    StateAndModesUtils.GunChargingState.COMPLETE -> getLastChargingSummary()
-                    StateAndModesUtils.GunChargingState.EMERGENCY_STOP -> getLastChargingSummary()
-                    else -> {}
+                    StateAndModesUtils.GunChargingState.CHARGING -> isChargingStarted = true
+                    StateAndModesUtils.GunChargingState.COMPLETE -> {
+                        if (isChargingStarted) {
+                            isChargingStarted = false
+                            getLastChargingSummary()
+                        }
+                    }
+
+                    StateAndModesUtils.GunChargingState.EMERGENCY_STOP -> {
+                        if (isChargingStarted) {
+                            isChargingStarted = false
+                            getLastChargingSummary()
+                        }
+                    }
+
+                    else -> isChargingStarted = false
                 }
 
             }
         }
-
-
     }
 
     private fun getLastChargingSummary() {
@@ -209,10 +224,11 @@ class Gun1InformationActivity : SerialPortBaseActivity() {
                     observer.startObserving(
                         mOutputStream,
                         mInputStream, ResponseSizes.LAST_CHARGING_SUMMARY_RESPONSE_SIZE,
-                        lastChargingSummaryRequestFrame
-                    ) { responseFrameArray ->
-                        onLastChargingSummaryDataReceived(responseFrameArray)
-                    }
+                        lastChargingSummaryRequestFrame, { responseFrameArray ->
+                            onLastChargingSummaryDataReceived(responseFrameArray)
+                        }, {
+                            //OnFailure
+                        })
                 } catch (e: IOException) {
                     e.printStackTrace()
                 }
@@ -224,27 +240,7 @@ class Gun1InformationActivity : SerialPortBaseActivity() {
         Log.d("TAG", "onLastChargingSummaryDataReceived: ${responseFrameArray.toHex()}")
         lifecycleScope.launch(Dispatchers.Main) {
 
-            if(responseFrameArray.toHex().startsWith("0103")){
-
-                Log.d("TAG", "onLastChargingSummaryDataReceived: EV MAC ADDRESS - ${getEVMacAddress(responseFrameArray)}")
-                Log.d(
-                    "TAG",
-                    "onLastChargingSummaryDataReceived: Total Charging Time - ${getTotalChargingTime(responseFrameArray)}"
-                )
-                Log.d(
-                    "TAG",
-                    "onLastChargingSummaryDataReceived: Charging Start Time - ${getChargingStartTime(responseFrameArray)}"
-                )
-                Log.d(
-                    "TAG",
-                    "onLastChargingSummaryDataReceived: Charging End Time - ${getChargingEndTime(responseFrameArray)}"
-                )
-
-                Log.d("TAG", "onLastChargingSummaryDataReceived: Start SOC = ${getStartSoc(responseFrameArray)}")
-                Log.d("TAG", "onLastChargingSummaryDataReceived: End SOC = ${getEndSoc(responseFrameArray)}")
-                Log.d("TAG", "onLastChargingSummaryDataReceived: ${getEnergyConsumption(responseFrameArray)}")
-                Log.d("TAG", "onLastChargingSummaryDataReceived: ${getSessionEndReason(responseFrameArray)}")
-
+            if (responseFrameArray.toHex().startsWith(HOLDING_REGISTERS_CORRECT_RESPONSE_BITS)) {
                 observer.stopObserving()
                 val chargingSummary = ChargingSummary(
                     evMacAddress = getEVMacAddress(responseFrameArray),
@@ -256,10 +252,10 @@ class Gun1InformationActivity : SerialPortBaseActivity() {
                     energyConsumption = getEnergyConsumption(responseFrameArray),
                     sessionEndReason = getSessionEndReason(responseFrameArray),
                     customSessionEndReason = "NA",
-                    totalCost = "0.00"
+                    totalCost = getTotalCost(responseFrameArray)
                 )
                 appViewModel.insertChargingSummary(chargingSummary)
-
+                startReadingGun1Information()
             }
         }
 
