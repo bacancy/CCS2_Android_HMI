@@ -179,5 +179,9 @@ class Dashboard : SerialPortBaseActivity() {
         startActivity(Intent(this, CheckAllChargingSummariesActivity::class.java))
     }
 
+    fun goToTestScreen(view: View) {
+        startActivity(Intent(this, TestActivity::class.java))
+    }
+
 
 }

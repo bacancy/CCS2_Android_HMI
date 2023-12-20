@@ -24,6 +24,15 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:backgroundTint="@color/green"
+            android:onClick="goToTestScreen"
+            android:text="Test Screen"
+            android:textColor="@color/white" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:backgroundTint="@color/green"
             android:onClick="goToReadInputRegisterScreen"
             android:text="Read Input Registers"
             android:textColor="@color/white"
@@ -151,6 +160,8 @@
             android:onClick="goToViewNewScreens"
             android:text="View New Screens"
             android:textColor="@color/white" />
+
+
     </LinearLayout>
 
 </androidx.core.widget.NestedScrollView>

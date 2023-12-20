@@ -1,6 +1,8 @@
 package com.bacancy.ccs2androidhmi.util
 
+import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.toHex
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import java.io.InputStream
 import java.io.OutputStream
@@ -35,5 +37,37 @@ object ReadWriteUtil {
                 }
             }
         }
+    }
+
+    suspend fun startReading(
+        mOutputStream: OutputStream?, mInputStream: InputStream?, responseSize: Int,
+        requestFrame: ByteArray, onAuthDataReceived: (ByteArray) -> Unit
+    ) {
+        // Simulate Modbus read operation
+        coroutineScope {
+            withContext(Dispatchers.IO) {
+
+                mOutputStream?.write(requestFrame)
+
+                val responseFrame = ByteArray(responseSize)
+                val size: Int? = mInputStream?.read(responseFrame)
+
+                if (size != null) {
+                    if (size > 0) {
+                        if (isValidResponse(responseFrame)) {
+                            onAuthDataReceived(responseFrame)
+                        } else {
+                            //Log.d("TAG", "readHoldingRegisters: Error = ${responseFrame.toHex()}")
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun isValidResponse(responseFrame: ByteArray): Boolean {
+        val hexResponse = responseFrame.toHex()
+        return hexResponse.startsWith(ModBusUtils.HOLDING_REGISTERS_CORRECT_RESPONSE_BITS) ||
+                hexResponse.startsWith(ModBusUtils.INPUT_REGISTERS_CORRECT_RESPONSE_BITS)
     }
 }
