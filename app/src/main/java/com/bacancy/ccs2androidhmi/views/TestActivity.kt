@@ -1,9 +1,12 @@
 package com.bacancy.ccs2androidhmi.views
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.lifecycle.lifecycleScope
+import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.SerialPortBaseActivity
 import com.bacancy.ccs2androidhmi.databinding.ActivityTestBinding
 import com.bacancy.ccs2androidhmi.util.ModBusUtils
@@ -18,7 +21,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-
 
 class TestActivity : SerialPortBaseActivity() {
 
@@ -81,12 +83,22 @@ class TestActivity : SerialPortBaseActivity() {
                                     serverConnectedWithBits
                                 )
                             }"
+                        updateServerStatus(
+                            StateAndModesUtils.checkServerConnectedWith(
+                                serverConnectedWithBits
+                            )
+                        )
                         binding.txtEthernetConnection.text =
                             "Ethernet = ${
                                 StateAndModesUtils.checkIfEthernetIsConnected(
                                     ethernetConnectedBits
                                 )
                             }"
+                        updateEthernetStatus(
+                            StateAndModesUtils.checkIfEthernetIsConnected(
+                                ethernetConnectedBits
+                            )
+                        )
                         binding.txtGSMStrength.text =
                             "GSM Strength = ${
                                 StateAndModesUtils.checkGSMNetworkStrength(
@@ -99,31 +111,44 @@ class TestActivity : SerialPortBaseActivity() {
                                     wifiNetworkStrengthBits
                                 )
                             }"
+                        adjustWifiLevel(
+                            StateAndModesUtils.checkWifiNetworkStrength(
+                                wifiNetworkStrengthBits
+                            ).toInt()
+                        )
                     }
 
-                    Log.d("RUN_TAG", "Server connection = ${
-                        StateAndModesUtils.checkServerConnectedWith(
-                            serverConnectedWithBits
-                        )
-                    }")
+                    Log.d(
+                        "RUN_TAG", "Server connection = ${
+                            StateAndModesUtils.checkServerConnectedWith(
+                                serverConnectedWithBits
+                            )
+                        }"
+                    )
 
-                    Log.d("RUN_TAG", "Ethernet = ${
-                        StateAndModesUtils.checkIfEthernetIsConnected(
-                            ethernetConnectedBits
-                        )
-                    }")
+                    Log.d(
+                        "RUN_TAG", "Ethernet = ${
+                            StateAndModesUtils.checkIfEthernetIsConnected(
+                                ethernetConnectedBits
+                            )
+                        }"
+                    )
 
-                    Log.d("RUN_TAG", "GSM Strength = ${
-                        StateAndModesUtils.checkGSMNetworkStrength(
-                            gsmNetworkStrengthBits
-                        )
-                    }")
+                    Log.d(
+                        "RUN_TAG", "GSM Strength = ${
+                            StateAndModesUtils.checkGSMNetworkStrength(
+                                gsmNetworkStrengthBits
+                            )
+                        }"
+                    )
 
-                    Log.d("RUN_TAG", "Wifi Strength = ${
-                        StateAndModesUtils.checkWifiNetworkStrength(
-                            wifiNetworkStrengthBits
-                        )
-                    }")
+                    Log.d(
+                        "RUN_TAG", "Wifi Strength = ${
+                            StateAndModesUtils.checkWifiNetworkStrength(
+                                wifiNetworkStrengthBits
+                            )
+                        }"
+                    )
 
                     lifecycleScope.launch {
                         //Step 3: Delay for 3 seconds
@@ -158,4 +183,35 @@ class TestActivity : SerialPortBaseActivity() {
         }
 
     }
+
+    private fun adjustWifiLevel(wifiLevel: Int) {
+        when (wifiLevel) {
+            1 -> binding.imgWifiLevel.setImageResource(R.drawable.ic_wifi_level_1)
+            2 -> binding.imgWifiLevel.setImageResource(R.drawable.ic_wifi_level_2)
+            3 -> binding.imgWifiLevel.setImageResource(R.drawable.ic_wifi_level_3)
+            else -> binding.imgWifiLevel.setImageResource(R.drawable.ic_wifi_level_0)
+        }
+    }
+
+    private fun updateEthernetStatus(status: String) {
+        when (status) {
+            "Not Connected" -> binding.imgEthernetStatus.setImageResource(R.drawable.ic_ethernet_disconnected)
+            "Connected" -> binding.imgEthernetStatus.setImageResource(R.drawable.ic_ethernet_connected)
+            else -> binding.imgEthernetStatus.setImageResource(R.drawable.ic_ethernet_disconnected)
+        }
+    }
+
+    private fun updateServerStatus(serverStatus: String) {
+        when (serverStatus) {
+            "Ethernet" -> binding.imgServerStatus.setImageResource(R.drawable.ic_server_with_ethernet)
+            "GSM" -> binding.imgServerStatus.setImageResource(R.drawable.ic_server_with_gsm)
+            "Wifi" -> binding.imgServerStatus.setImageResource(R.drawable.ic_server_with_wifi)
+            else -> binding.imgServerStatus.setImageResource(R.drawable.ic_server_with_nothing)
+        }
+    }
+
+    fun goToNewTestScreen(view: View) {
+        startActivity(Intent(this, NewTestActivity::class.java))
+    }
+
 }

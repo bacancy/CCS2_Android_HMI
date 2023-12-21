@@ -9,6 +9,33 @@
     android:padding="10dp"
     tools:context=".views.TestActivity">
 
+   <LinearLayout
+       android:layout_width="match_parent"
+       android:gravity="center"
+       android:layout_height="wrap_content">
+
+       <ImageView
+           android:id="@+id/imgServerStatus"
+           android:layout_width="30dp"
+           android:layout_height="30dp"
+           android:src="@drawable/ic_server_in_white" />
+
+       <ImageView
+           android:id="@+id/imgEthernetStatus"
+           android:layout_width="30dp"
+           android:layout_height="30dp"
+           android:layout_marginStart="20dp"
+           android:src="@drawable/ic_ethernet_disconnected" />
+
+       <ImageView
+           android:id="@+id/imgWifiLevel"
+           android:layout_width="30dp"
+           android:layout_height="30dp"
+           android:layout_marginStart="20dp"
+           android:src="@drawable/ic_wifi_level_2" />
+
+   </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -103,5 +130,12 @@
             tools:text="520 V" />
 
     </LinearLayout>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:onClick="goToNewTestScreen"
+        android:text="NEW TEST SCREEN"
+        android:layout_marginTop="20dp"
+        android:layout_height="wrap_content"/>
 
 </LinearLayout>
