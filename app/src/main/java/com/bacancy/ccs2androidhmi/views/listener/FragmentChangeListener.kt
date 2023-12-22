@@ -1,4 +1,4 @@
-package com.bacancy.ccs2androidhmi.views.fragment
+package com.bacancy.ccs2androidhmi.views.listener
 
 import androidx.fragment.app.Fragment
 

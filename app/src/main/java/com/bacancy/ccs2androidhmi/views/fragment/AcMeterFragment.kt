@@ -6,8 +6,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentAcMeterBinding
@@ -17,12 +15,12 @@ import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.formatFloatToString
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.toHex
 import com.bacancy.ccs2androidhmi.util.ReadWriteUtil
 import com.bacancy.ccs2androidhmi.util.ResponseSizes
+import com.bacancy.ccs2androidhmi.views.listener.FragmentChangeListener
+import com.bacancy.ccs2androidhmi.views.listener.MiscDataListener
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.io.InputStream
-import java.io.OutputStream
 
-class AcMeterFragment() : BaseFragment() {
+class AcMeterFragment() : BaseFragment(), MiscDataListener {
 
     private lateinit var dcMeterFragment: DcMeterFragment
     private lateinit var binding: FragmentAcMeterBinding
@@ -84,12 +82,19 @@ class AcMeterFragment() : BaseFragment() {
     override fun onPause() {
         super.onPause()
         Log.i("AC_TAG", "onPause: CALLED")
-        mOutputStream?.flush()
-        //mInputStream?.close()
     }
 
     override fun onResume() {
         super.onResume()
         Log.i("AC_TAG", "onResume: CALLED")
+    }
+
+    override fun onMiscDataReceived() {
+        Log.d("TAG", "IS FRAG VISIBLE - AC: $isVisible")
+        lifecycleScope.launch {
+            if (isVisible) {
+                readAcMeterData()
+            }
+        }
     }
 }

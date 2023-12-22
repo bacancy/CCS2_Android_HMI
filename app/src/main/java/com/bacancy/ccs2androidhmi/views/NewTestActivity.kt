@@ -21,9 +21,11 @@ import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.toHex
 import com.bacancy.ccs2androidhmi.util.ReadWriteUtil
 import com.bacancy.ccs2androidhmi.util.ResponseSizes
 import com.bacancy.ccs2androidhmi.util.StateAndModesUtils
+import com.bacancy.ccs2androidhmi.views.fragment.ACMeterInfoFragment
 import com.bacancy.ccs2androidhmi.views.fragment.AcMeterFragment
 import com.bacancy.ccs2androidhmi.views.fragment.DcMeterFragment
-import com.bacancy.ccs2androidhmi.views.fragment.FragmentChangeListener
+import com.bacancy.ccs2androidhmi.views.listener.FragmentChangeListener
+import com.bacancy.ccs2androidhmi.views.listener.MiscDataListener
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -34,23 +36,25 @@ import java.util.Locale
 
 
 class NewTestActivity : SerialPortBaseActivityNew(), FragmentChangeListener,
-    OnBackPressedDispatcherOwner {
+    OnBackPressedDispatcherOwner, MiscDataListener {
 
-    private lateinit var acMeterFragment: AcMeterFragment
+    private lateinit var acMeterFragment: ACMeterInfoFragment
     private lateinit var binding: ActivityNewTestBinding
     val handler = Handler(Looper.getMainLooper())
+    private var miscDataListener: MiscDataListener? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityNewTestBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        miscDataListener = this
         startReadingMiscInformation()
-        acMeterFragment = AcMeterFragment()
+        acMeterFragment = ACMeterInfoFragment()
         addNewFragment(acMeterFragment)
-
         binding.incToolbar.imgBack.setOnClickListener {
             Toast.makeText(this, "HELLO", Toast.LENGTH_SHORT).show()
-            if (supportFragmentManager.backStackEntryCount > 0) {
+            if (supportFragmentManager.backStackEntryCount > 1) {
                 supportFragmentManager.popBackStack()
             } else {
                 finish()
@@ -58,7 +62,9 @@ class NewTestActivity : SerialPortBaseActivityNew(), FragmentChangeListener,
         }
 
         handleBackStackChanges()
-        //handler.post(runnable)
+
+        //For starting clock timer
+        handler.post(runnable)
     }
 
     private val runnable = object : Runnable {
@@ -80,12 +86,14 @@ class NewTestActivity : SerialPortBaseActivityNew(), FragmentChangeListener,
     private fun startReadingMiscInformation() {
         lifecycleScope.launch {
             while (true) {
+                Log.i("FRITAG", "startReadingMiscInformation: CALLED")
+
                 withContext(Dispatchers.IO) {
                     //Step 1: Request for misc data
                     readMiscData()
                 }
                 //Step 6: Now start Step 1 again with a delay of 3 seconds
-                delay(3000)
+                delay(2000)
             }
         }
     }
@@ -93,6 +101,8 @@ class NewTestActivity : SerialPortBaseActivityNew(), FragmentChangeListener,
     @SuppressLint("SetTextI18n")
     suspend fun readMiscData() {
         lifecycleScope.launch(Dispatchers.IO) {
+            val startTIme = System.currentTimeMillis()
+            Log.i("FRITAG", "readMiscData: Started - $startTIme")
             ReadWriteUtil.startReading(
                 mOutputStream,
                 mInputStream,
@@ -101,11 +111,16 @@ class NewTestActivity : SerialPortBaseActivityNew(), FragmentChangeListener,
             ) {
                 //Step 2: Read response of misc data
                 if (it.toHex().startsWith(ModBusUtils.HOLDING_REGISTERS_CORRECT_RESPONSE_BITS)) {
+                    val endTime = System.currentTimeMillis()
 
+                    // Calculate the time difference
+                    val elapsedTime = endTime - startTIme
+                    Log.i("FRITAG", "readMiscData: Response Got - $elapsedTime ms")
                     lifecycleScope.launch {
                         Log.d("TAG", "MISC DATA RESPONSE: ${it.toHex()}")
                         val networkStatusBits =
-                            ModbusTypeConverter.byteArrayToBinaryString(it.copyOfRange(3, 5)).reversed()
+                            ModbusTypeConverter.byteArrayToBinaryString(it.copyOfRange(3, 5))
+                                .reversed()
                                 .substring(0, 11)
                         val arrayOfNetworkStatusBits = networkStatusBits.toCharArray()
                         val wifiNetworkStrengthBits = arrayOfNetworkStatusBits.copyOfRange(0, 3)
@@ -123,6 +138,11 @@ class NewTestActivity : SerialPortBaseActivityNew(), FragmentChangeListener,
                                     ethernetConnectedBits
                                 )
                             )
+                            adjustGSMLevel(
+                                StateAndModesUtils.checkGSMNetworkStrength(
+                                    gsmNetworkStrengthBits
+                                ).toInt()
+                            )
                             adjustWifiLevel(
                                 StateAndModesUtils.checkWifiNetworkStrength(
                                     wifiNetworkStrengthBits
@@ -131,9 +151,10 @@ class NewTestActivity : SerialPortBaseActivityNew(), FragmentChangeListener,
                         }
                         Log.d("TAG", "miscDataRecd: CALLED IN NEW TEST ACTIVITY")
                         //Step 3: Delay for 3 seconds
-                        delay(3000)
+                        delay(30)
                         //Step 4: Request for ac meter data
-                        acMeterFragment.startReadingMeterData()
+                        miscDataListener?.onMiscDataReceived()
+                        //acMeterFragment.startReadingMeterData()
                     }
                 }
             }
@@ -151,9 +172,11 @@ class NewTestActivity : SerialPortBaseActivityNew(), FragmentChangeListener,
 
     @Deprecated("Deprecated in Java", replaceWith = ReplaceWith(""))
     override fun onBackPressed() {
-        if (supportFragmentManager.backStackEntryCount > 0) {
+        Log.d("TAG", "onBackPressed Count: ${supportFragmentManager.backStackEntryCount}")
+        if (supportFragmentManager.backStackEntryCount > 1) {
             supportFragmentManager.popBackStack()
         } else {
+            finish()
             super.onBackPressed()
         }
     }
@@ -192,6 +215,16 @@ class NewTestActivity : SerialPortBaseActivityNew(), FragmentChangeListener,
         }
     }
 
+    private fun adjustGSMLevel(level: Int) {
+        when (level) {
+            1 -> binding.incToolbar.imgGSMLevel.setImageResource(R.drawable.ic_gsm_level_1)
+            2 -> binding.incToolbar.imgGSMLevel.setImageResource(R.drawable.ic_gsm_level_2)
+            3 -> binding.incToolbar.imgGSMLevel.setImageResource(R.drawable.ic_gsm_level_3)
+            4 -> binding.incToolbar.imgGSMLevel.setImageResource(R.drawable.ic_gsm_level_4)
+            else -> binding.incToolbar.imgGSMLevel.setImageResource(R.drawable.ic_gsm_level_0)
+        }
+    }
+
     override fun onPause() {
         super.onPause()
         mApplication!!.closeSerialPort()
@@ -201,6 +234,17 @@ class NewTestActivity : SerialPortBaseActivityNew(), FragmentChangeListener,
     override fun replaceFragment(fragment: Fragment?) {
         if (fragment != null) {
             addNewFragment(fragment)
+        }
+    }
+
+    override fun onMiscDataReceived() {
+        Log.d("TAG", "onMiscDataReceived: CALLED IN NEW TEST ACTIVITY")
+        val fragment = supportFragmentManager.findFragmentById(R.id.fragmentContainer)
+        //Just add new fragments in which you want to start respective screen readings after misc data received
+        if (fragment is ACMeterInfoFragment) {
+            fragment.onMiscDataReceived()
+        } else if (fragment is DcMeterFragment) {
+            fragment.onMiscDataReceived()
         }
     }
 

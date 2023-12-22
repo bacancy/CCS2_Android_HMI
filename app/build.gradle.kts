@@ -54,6 +54,8 @@ dependencies {
     val roomVersion = "2.6.1"
     val daggerHiltVersion = "2.48.1"
     val hiltCompilerVersion = "1.1.0"
+    val sdpVersion = "1.0.6"
+    val sspVersion = "1.0.6"
 
     //Room Database
     implementation("androidx.room:room-runtime:$roomVersion")
@@ -70,6 +72,8 @@ dependencies {
 
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
-    implementation("net.wimpi:jamod:1.2")
+    //SDP and SSP for responsive design
+    implementation("com.intuit.sdp:sdp-android:$sdpVersion")
+    implementation("com.intuit.ssp:ssp-android:$sspVersion")
 
 }

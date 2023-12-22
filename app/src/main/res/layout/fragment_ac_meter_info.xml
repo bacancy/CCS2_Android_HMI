@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:padding="@dimen/_20sdp"
+    tools:context=".views.fragment.ACMeterInfoFragment">
+
+    <include
+        android:id="@+id/incHeader"
+        layout="@layout/common_header" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_20sdp">
+
+        <include
+            android:id="@+id/incVoltageV1N"
+            layout="@layout/common_label_and_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <View
+            android:layout_width="@dimen/_20sdp"
+            android:layout_height="match_parent" />
+
+        <include
+            android:id="@+id/incCurrentI1"
+            layout="@layout/common_label_and_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_10sdp">
+
+        <include
+            android:id="@+id/incVoltageV2N"
+            layout="@layout/common_label_and_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <View
+            android:layout_width="@dimen/_20sdp"
+            android:layout_height="match_parent" />
+
+        <include
+            android:id="@+id/incCurrentI2"
+            layout="@layout/common_label_and_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_10sdp">
+
+        <include
+            android:id="@+id/incVoltageV3N"
+            layout="@layout/common_label_and_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <View
+            android:layout_width="@dimen/_20sdp"
+            android:layout_height="match_parent" />
+
+        <include
+            android:id="@+id/incCurrentI3"
+            layout="@layout/common_label_and_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_10sdp">
+
+        <include
+            android:id="@+id/incAvgVoltageLN"
+            layout="@layout/common_label_and_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <View
+            android:layout_width="@dimen/_20sdp"
+            android:layout_height="match_parent" />
+
+        <include
+            android:id="@+id/incAvgCurrent"
+            layout="@layout/common_label_and_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_10sdp">
+
+        <include
+            android:id="@+id/incFrequency"
+            layout="@layout/common_label_and_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <View
+            android:layout_width="@dimen/_20sdp"
+            android:layout_height="match_parent" />
+
+        <include
+            android:id="@+id/incActivePower"
+            layout="@layout/common_label_and_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_10sdp">
+
+        <include
+            layout="@layout/common_label_and_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:visibility="invisible" />
+
+        <View
+            android:layout_width="@dimen/_20sdp"
+            android:layout_height="match_parent" />
+
+        <include
+            android:id="@+id/incTotalPower"
+            layout="@layout/common_label_and_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -7,23 +7,20 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentDcMeterBinding
-import com.bacancy.ccs2androidhmi.util.ModbusReadObserver
 import com.bacancy.ccs2androidhmi.util.ModbusRequestFrames
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.toHex
 import com.bacancy.ccs2androidhmi.util.ReadWriteUtil
 import com.bacancy.ccs2androidhmi.util.ResponseSizes
+import com.bacancy.ccs2androidhmi.views.listener.MiscDataListener
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.IOException
-import java.io.InputStream
-import java.io.OutputStream
 
-class DcMeterFragment() : BaseFragment() {
+class DcMeterFragment() : BaseFragment(), MiscDataListener {
 
     private lateinit var binding: FragmentDcMeterBinding
 
@@ -83,5 +80,21 @@ class DcMeterFragment() : BaseFragment() {
         super.onResume()
         Log.i("DC_TAG", "onResume: CALLED")
 
+    }
+
+    override fun onMiscDataReceived() {
+        Log.d("TAG", "onMiscDataReceived in DcMeterFragment: CALLED")
+        lifecycleScope.launch {
+            Log.d("TAG", "IS FRAG VISIBLE - DC: $isVisible")
+            if(isVisible){
+                startReadingGun1Information()
+            }
+        }
+    }
+
+    fun getTopFragment(): Fragment? {
+        return requireActivity().supportFragmentManager.findFragmentById(
+            requireActivity().supportFragmentManager.getBackStackEntryAt(requireActivity().supportFragmentManager.backStackEntryCount - 1).id
+        )
     }
 }
