@@ -49,7 +49,8 @@ class NewTestActivity : SerialPortBaseActivityNew(), FragmentChangeListener,
         binding = ActivityNewTestBinding.inflate(layoutInflater)
         setContentView(binding.root)
         miscDataListener = this
-        startReadingMiscInformation()
+        startReadingMiscInformation(true)
+        //testMethod()
         acMeterFragment = ACMeterInfoFragment()
         addNewFragment(acMeterFragment)
         binding.incToolbar.imgBack.setOnClickListener {
@@ -64,7 +65,8 @@ class NewTestActivity : SerialPortBaseActivityNew(), FragmentChangeListener,
         handleBackStackChanges()
 
         //For starting clock timer
-        handler.post(runnable)
+        //handler.post(runnable)
+        //handler.post(registersRunnable)
     }
 
     private val runnable = object : Runnable {
@@ -72,6 +74,17 @@ class NewTestActivity : SerialPortBaseActivityNew(), FragmentChangeListener,
             startTimer()
             // Post the handler again to run in 1 second
             handler.postDelayed(this, 1000) // Delay of 1 second
+        }
+    }
+
+    private val registersRunnable = object : Runnable {
+        override fun run() {
+            Log.d("FRITAG", "run: CALLED")
+            // Post the handler again to run in 3 second
+            handler.postDelayed(this, 5000) // Delay of 3 second
+            lifecycleScope.launch {
+                readMiscData()
+            }
         }
     }
 
@@ -83,24 +96,26 @@ class NewTestActivity : SerialPortBaseActivityNew(), FragmentChangeListener,
         binding.incToolbar.tvDateTime.text = formattedDate.uppercase()
     }
 
-    private fun startReadingMiscInformation() {
+    fun startReadingMiscInformation(isChildResponseReceived: Boolean = false) {
         lifecycleScope.launch {
             while (true) {
                 Log.i("FRITAG", "startReadingMiscInformation: CALLED")
 
-                withContext(Dispatchers.IO) {
-                    //Step 1: Request for misc data
-                    readMiscData()
+                if(isChildResponseReceived){
+                    withContext(Dispatchers.IO) {
+                        //Step 1: Request for misc data
+                        readMiscData()
+                    }
+                    //Step 6: Now start Step 1 again with a delay of 3 seconds
+                    delay(3000)
                 }
-                //Step 6: Now start Step 1 again with a delay of 3 seconds
-                delay(2000)
             }
         }
     }
 
     @SuppressLint("SetTextI18n")
     suspend fun readMiscData() {
-        lifecycleScope.launch(Dispatchers.IO) {
+        withContext(Dispatchers.IO) {
             val startTIme = System.currentTimeMillis()
             Log.i("FRITAG", "readMiscData: Started - $startTIme")
             ReadWriteUtil.startReading(
@@ -111,6 +126,9 @@ class NewTestActivity : SerialPortBaseActivityNew(), FragmentChangeListener,
             ) {
                 //Step 2: Read response of misc data
                 if (it.toHex().startsWith(ModBusUtils.HOLDING_REGISTERS_CORRECT_RESPONSE_BITS)) {
+                    //Step 3: Delay for 3 seconds
+                    //delay(100)
+                    miscDataListener?.onMiscDataReceived()
                     val endTime = System.currentTimeMillis()
 
                     // Calculate the time difference
@@ -150,15 +168,14 @@ class NewTestActivity : SerialPortBaseActivityNew(), FragmentChangeListener,
                             )
                         }
                         Log.d("TAG", "miscDataRecd: CALLED IN NEW TEST ACTIVITY")
-                        //Step 3: Delay for 3 seconds
-                        delay(30)
+
                         //Step 4: Request for ac meter data
-                        miscDataListener?.onMiscDataReceived()
+
                         //acMeterFragment.startReadingMeterData()
                     }
                 }
             }
-        }
+       }
 
     }
 
