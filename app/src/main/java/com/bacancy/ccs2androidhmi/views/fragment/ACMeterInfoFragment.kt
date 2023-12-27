@@ -19,6 +19,7 @@ import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.formatFloatToString
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.toHex
 import com.bacancy.ccs2androidhmi.util.ReadWriteUtil
 import com.bacancy.ccs2androidhmi.util.ResponseSizes
+import com.bacancy.ccs2androidhmi.util.setValue
 import com.bacancy.ccs2androidhmi.views.NewTestActivity
 import com.bacancy.ccs2androidhmi.views.listener.FragmentChangeListener
 import com.bacancy.ccs2androidhmi.views.listener.MiscDataListener
@@ -45,51 +46,52 @@ class ACMeterInfoFragment : BaseFragment(), MiscDataListener {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentAcMeterInfoBinding.inflate(layoutInflater)
-
-        setScreenHeaderTitle()
+        setScreenHeaderViews()
         setupViews()
-
         return binding.root
     }
 
-    private fun setupViews() {
+    override fun setupViews() {
 
-        binding.incVoltageV1N.tvLabel.text = getString(R.string.lbl_voltage_v1n)
-        binding.incVoltageV1N.tvValueUnit.text = getString(R.string.lbl_v)
+        binding.apply {
 
-        binding.incVoltageV2N.tvLabel.text = getString(R.string.lbl_voltage_v2n)
-        binding.incVoltageV2N.tvValueUnit.text = getString(R.string.lbl_v)
+            incVoltageV1N.tvLabel.text = getString(R.string.lbl_voltage_v1n)
+            incVoltageV1N.tvValueUnit.text = getString(R.string.lbl_v)
 
-        binding.incVoltageV3N.tvLabel.text = getString(R.string.lbl_voltage_v3n)
-        binding.incVoltageV3N.tvValueUnit.text = getString(R.string.lbl_v)
+            incVoltageV2N.tvLabel.text = getString(R.string.lbl_voltage_v2n)
+            incVoltageV2N.tvValueUnit.text = getString(R.string.lbl_v)
 
-        binding.incAvgVoltageLN.tvLabel.text = getString(R.string.lbl_avg_voltage_ln)
-        binding.incAvgVoltageLN.tvValueUnit.text = getString(R.string.lbl_v)
+            incVoltageV3N.tvLabel.text = getString(R.string.lbl_voltage_v3n)
+            incVoltageV3N.tvValueUnit.text = getString(R.string.lbl_v)
 
-        binding.incCurrentI1.tvLabel.text = getString(R.string.lbl_current_i1)
-        binding.incCurrentI1.tvValueUnit.text = getString(R.string.lbl_a)
+            incAvgVoltageLN.tvLabel.text = getString(R.string.lbl_avg_voltage_ln)
+            incAvgVoltageLN.tvValueUnit.text = getString(R.string.lbl_v)
 
-        binding.incCurrentI2.tvLabel.text = getString(R.string.lbl_current_i2)
-        binding.incCurrentI2.tvValueUnit.text = getString(R.string.lbl_a)
+            incCurrentI1.tvLabel.text = getString(R.string.lbl_current_i1)
+            incCurrentI1.tvValueUnit.text = getString(R.string.lbl_a)
 
-        binding.incCurrentI3.tvLabel.text = getString(R.string.lbl_current_i3)
-        binding.incCurrentI3.tvValueUnit.text = getString(R.string.lbl_a)
+            incCurrentI2.tvLabel.text = getString(R.string.lbl_current_i2)
+            incCurrentI2.tvValueUnit.text = getString(R.string.lbl_a)
 
-        binding.incAvgCurrent.tvLabel.text = getString(R.string.lbl_avg_current)
-        binding.incAvgCurrent.tvValueUnit.text = getString(R.string.lbl_a)
+            incCurrentI3.tvLabel.text = getString(R.string.lbl_current_i3)
+            incCurrentI3.tvValueUnit.text = getString(R.string.lbl_a)
 
-        binding.incFrequency.tvLabel.text = getString(R.string.lbl_frequency_hz)
-        binding.incFrequency.tvValueUnit.text = getString(R.string.lbl_hz)
+            incAvgCurrent.tvLabel.text = getString(R.string.lbl_avg_current)
+            incAvgCurrent.tvValueUnit.text = getString(R.string.lbl_a)
 
-        binding.incActivePower.tvLabel.text = getString(R.string.lbl_active_power)
-        binding.incActivePower.tvValueUnit.text = getString(R.string.lbl_kw)
+            incFrequency.tvLabel.text = getString(R.string.lbl_frequency_hz)
+            incFrequency.tvValueUnit.text = getString(R.string.lbl_hz)
 
-        binding.incTotalPower.tvLabel.text = getString(R.string.lbl_total_power)
-        binding.incTotalPower.tvValueUnit.text = getString(R.string.lbl_kwh)
+            incActivePower.tvLabel.text = getString(R.string.lbl_active_power)
+            incActivePower.tvValueUnit.text = getString(R.string.lbl_kw)
+
+            incTotalPower.tvLabel.text = getString(R.string.lbl_total_power)
+            incTotalPower.tvValueUnit.text = getString(R.string.lbl_kwh)
+        }
 
     }
 
-    private fun setScreenHeaderTitle() {
+    override fun setScreenHeaderViews() {
         binding.incHeader.tvHeader.text = getString(R.string.lbl_ac_meter_information)
     }
 
@@ -139,9 +141,5 @@ class ACMeterInfoFragment : BaseFragment(), MiscDataListener {
 
         }
 
-    }
-
-    fun TextView.setValue(value: Float){
-        this.text = value.formatFloatToString()
     }
 }

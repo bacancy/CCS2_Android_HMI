@@ -1,13 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:gravity="center_horizontal"
     android:orientation="vertical"
     android:padding="@dimen/_20sdp"
-    tools:context=".views.fragment.GunsDCOutputInfoFragment">
+    tools:context=".views.fragment.GunsMoreInformationFragment">
+
+    <ImageView
+        android:id="@+id/ivGunStateInfo"
+        android:layout_width="@dimen/_15sdp"
+        android:layout_height="@dimen/_15sdp"
+        android:layout_gravity="end"
+        android:src="@drawable/ic_info" />
 
     <include
         android:id="@+id/incHeader"
@@ -19,7 +26,7 @@
         android:layout_marginTop="@dimen/_20sdp">
 
         <include
-            android:id="@+id/incVoltage"
+            android:id="@+id/incInitialSoc"
             layout="@layout/common_label_and_value"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -30,7 +37,7 @@
             android:layout_height="match_parent" />
 
         <include
-            android:id="@+id/incMaxVoltage"
+            android:id="@+id/incChargingCurrent"
             layout="@layout/common_label_and_value"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -44,7 +51,7 @@
         android:layout_marginTop="@dimen/_10sdp">
 
         <include
-            android:id="@+id/incCurrent"
+            android:id="@+id/incDemandVoltage"
             layout="@layout/common_label_and_value"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -55,7 +62,7 @@
             android:layout_height="match_parent" />
 
         <include
-            android:id="@+id/incMinVoltage"
+            android:id="@+id/incChargingSoc"
             layout="@layout/common_label_and_value"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -69,7 +76,7 @@
         android:layout_marginTop="@dimen/_10sdp">
 
         <include
-            android:id="@+id/incPower"
+            android:id="@+id/incDemandCurrent"
             layout="@layout/common_label_and_value"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -80,7 +87,7 @@
             android:layout_height="match_parent" />
 
         <include
-            android:id="@+id/incMaxCurrent"
+            android:id="@+id/incDuration"
             layout="@layout/common_label_and_value"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -94,7 +101,7 @@
         android:layout_marginTop="@dimen/_10sdp">
 
         <include
-            android:id="@+id/incImportEnergy"
+            android:id="@+id/incChargingVoltage"
             layout="@layout/common_label_and_value"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -105,7 +112,7 @@
             android:layout_height="match_parent" />
 
         <include
-            android:id="@+id/incMinCurrent"
+            android:id="@+id/incEnergyConsumption"
             layout="@layout/common_label_and_value"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -116,25 +123,52 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_10sdp">
+        android:layout_marginTop="@dimen/_20sdp"
+        android:orientation="horizontal">
 
-        <include
-            android:id="@+id/incExportEnergy"
-            layout="@layout/common_label_and_value"
+        <Button
+            android:id="@+id/btnACMeterInfo"
+            style="@style/CommonButtonTheme"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:text="@string/lbl_ac_meter_information" />
 
-        <View
-            android:layout_width="@dimen/_20sdp"
-            android:layout_height="match_parent" />
-
-        <include
-            layout="@layout/common_label_and_value"
+        <Button
+            android:id="@+id/btnDCMeterInfo"
+            style="@style/CommonButtonTheme"
             android:layout_width="0dp"
-            android:visibility="invisible"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_weight="1"
+            android:text="@string/lbl_dc_meter_information" />
+
+        <Button
+            android:id="@+id/btnChargingSummary"
+            style="@style/CommonButtonTheme"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_weight="1"
+            android:text="@string/lbl_charging_summary" />
+
+        <Button
+            android:id="@+id/btnFaultIndication"
+            style="@style/CommonButtonTheme"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_weight="1"
+            android:text="@string/lbl_fault_indication" />
+
+        <Button
+            android:id="@+id/btnChargingHistory"
+            style="@style/CommonButtonTheme"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_weight="1"
+            android:text="@string/lbl_charging_history" />
 
     </LinearLayout>
 

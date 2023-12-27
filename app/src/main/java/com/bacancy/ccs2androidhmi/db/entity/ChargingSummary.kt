@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey
 data class ChargingSummary(
     @PrimaryKey(autoGenerate = true)
     var summaryId: Int? = null,
+    var gunNumber: Int,
     var evMacAddress: String,
     var chargingStartTime: String,
     var chargingEndTime: String,

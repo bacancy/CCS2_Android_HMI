@@ -243,6 +243,7 @@ class Gun1InformationActivity : SerialPortBaseActivity() {
             if (responseFrameArray.toHex().startsWith(HOLDING_REGISTERS_CORRECT_RESPONSE_BITS)) {
                 observer.stopObserving()
                 val chargingSummary = ChargingSummary(
+                    gunNumber = if(isGun1 == true) 1 else 2,
                     evMacAddress = getEVMacAddress(responseFrameArray),
                     chargingStartTime = getChargingStartTime(responseFrameArray),
                     chargingEndTime = getChargingEndTime(responseFrameArray),

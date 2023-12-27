@@ -14,4 +14,7 @@ interface AppDao {
 
     @Query("SELECT * FROM lastChargingSummary ORDER BY summaryId DESC")
     suspend fun getAllChargingSummaries(): List<ChargingSummary>
+
+    @Query("SELECT * FROM lastChargingSummary WHERE gunNumber = :gunNumber ORDER BY summaryId DESC")
+    suspend fun getGunsChargingHistory(gunNumber: Int): List<ChargingSummary>
 }

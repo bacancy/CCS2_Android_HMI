@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.OnBackPressedDispatcherOwner
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -22,10 +21,12 @@ import com.bacancy.ccs2androidhmi.util.ReadWriteUtil
 import com.bacancy.ccs2androidhmi.util.ResponseSizes
 import com.bacancy.ccs2androidhmi.util.StateAndModesUtils
 import com.bacancy.ccs2androidhmi.views.fragment.ACMeterInfoFragment
-import com.bacancy.ccs2androidhmi.views.fragment.AcMeterFragment
 import com.bacancy.ccs2androidhmi.views.fragment.DcMeterFragment
+import com.bacancy.ccs2androidhmi.views.fragment.GunsDCOutputInfoFragment
+import com.bacancy.ccs2androidhmi.views.fragment.GunsMoreInformationFragment
 import com.bacancy.ccs2androidhmi.views.listener.FragmentChangeListener
 import com.bacancy.ccs2androidhmi.views.listener.MiscDataListener
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -34,11 +35,13 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-
+@AndroidEntryPoint
 class NewTestActivity : SerialPortBaseActivityNew(), FragmentChangeListener,
     OnBackPressedDispatcherOwner, MiscDataListener {
 
     private lateinit var acMeterFragment: ACMeterInfoFragment
+    private lateinit var gunsDCOutputInfoFragment: GunsDCOutputInfoFragment
+    private lateinit var gunsMoreInformationFragment: GunsMoreInformationFragment
     private lateinit var binding: ActivityNewTestBinding
     val handler = Handler(Looper.getMainLooper())
     private var miscDataListener: MiscDataListener? = null
@@ -49,12 +52,13 @@ class NewTestActivity : SerialPortBaseActivityNew(), FragmentChangeListener,
         binding = ActivityNewTestBinding.inflate(layoutInflater)
         setContentView(binding.root)
         miscDataListener = this
-        startReadingMiscInformation(true)
+        //startReadingMiscInformation(true)
         //testMethod()
         acMeterFragment = ACMeterInfoFragment()
-        addNewFragment(acMeterFragment)
+        gunsDCOutputInfoFragment = GunsDCOutputInfoFragment()
+        gunsMoreInformationFragment = GunsMoreInformationFragment()
+        addNewFragment(gunsMoreInformationFragment)
         binding.incToolbar.imgBack.setOnClickListener {
-            Toast.makeText(this, "HELLO", Toast.LENGTH_SHORT).show()
             if (supportFragmentManager.backStackEntryCount > 1) {
                 supportFragmentManager.popBackStack()
             } else {
@@ -65,7 +69,7 @@ class NewTestActivity : SerialPortBaseActivityNew(), FragmentChangeListener,
         handleBackStackChanges()
 
         //For starting clock timer
-        //handler.post(runnable)
+        handler.post(runnable)
         //handler.post(registersRunnable)
     }
 
@@ -74,17 +78,6 @@ class NewTestActivity : SerialPortBaseActivityNew(), FragmentChangeListener,
             startTimer()
             // Post the handler again to run in 1 second
             handler.postDelayed(this, 1000) // Delay of 1 second
-        }
-    }
-
-    private val registersRunnable = object : Runnable {
-        override fun run() {
-            Log.d("FRITAG", "run: CALLED")
-            // Post the handler again to run in 3 second
-            handler.postDelayed(this, 5000) // Delay of 3 second
-            lifecycleScope.launch {
-                readMiscData()
-            }
         }
     }
 

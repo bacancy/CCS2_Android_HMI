@@ -28,6 +28,7 @@
     <string name="lbl_dc_meter_1">DC Meter 1</string>
     <string name="lbl_dc_meter_2">DC Meter 2</string>
     <string name="lbl_ev_mac_address">EV Mac Address</string>
+    <string name="lbl_sample_ev_mac_address">AB-CD-EF-GH-IJ-KL-MN-OP</string>
     <string name="lbl_charging_duration">Charging Duration</string>
     <string name="lbl_charging_start_date_time"><![CDATA[Charging Start Date & Time]]></string>
     <string name="lbl_charging_end_date_time"><![CDATA[Charging End Date & Time]]></string>
@@ -84,4 +85,8 @@
     <string name="lbl_frequency_hz">Frequency (Hz)</string>
     <string name="lbl_active_power">Active Power</string>
     <string name="lbl_total_power">Total Power</string>
+    <string name="lbl_gun_1">GUN - 1</string>
+    <string name="lbl_gun_2">GUN - 2</string>
+    <string name="lbl_percentage">%</string>
+    <string name="lbl_min">Min</string>
 </resources>

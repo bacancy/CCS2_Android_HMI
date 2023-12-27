@@ -12,6 +12,13 @@ import com.bacancy.ccs2androidhmi.databinding.FragmentGunsHomeScreenBinding
 class CommunicationFailureFragment : BaseFragment() {
 
     private lateinit var binding: FragmentGunsHomeScreenBinding
+    override fun setScreenHeaderViews() {
+        TODO("Not yet implemented")
+    }
+
+    override fun setupViews() {
+        TODO("Not yet implemented")
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

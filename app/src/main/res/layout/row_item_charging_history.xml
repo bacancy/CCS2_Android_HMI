@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/lnrTableHeader"
+        android:layout_width="match_parent"
+        android:visibility="gone"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/HistoryTableHeaderTheme"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/lbl_ev_mac_address" />
+
+        <TextView
+            style="@style/HistoryTableHeaderTheme"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/lbl_charging_duration" />
+
+        <TextView
+            style="@style/HistoryTableHeaderTheme"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/lbl_charging_start_date_time" />
+
+        <TextView
+            style="@style/HistoryTableHeaderTheme"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/lbl_charging_end_date_time" />
+
+        <TextView
+            style="@style/HistoryTableHeaderTheme"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/lbl_start_soc" />
+
+        <TextView
+            style="@style/HistoryTableHeaderTheme"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/lbl_end_soc" />
+
+        <TextView
+            style="@style/HistoryTableHeaderTheme"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/lbl_energy_consumption" />
+
+        <TextView
+            style="@style/HistoryTableHeaderTheme"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/lbl_session_end_reason" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/lnrTableColumns"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tvEvMacAddress"
+            style="@style/HistoryTableColumnsTheme"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/lbl_sample_ev_mac_address" />
+
+        <TextView
+            android:id="@+id/tvChargingDuration"
+            style="@style/HistoryTableColumnsTheme"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/lbl_sample_ev_mac_address" />
+
+        <TextView
+            android:id="@+id/tvChargingStartTime"
+            style="@style/HistoryTableColumnsTheme"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/lbl_sample_ev_mac_address" />
+
+        <TextView
+            android:id="@+id/tvChargingEndTime"
+            style="@style/HistoryTableColumnsTheme"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/lbl_sample_ev_mac_address" />
+
+        <TextView
+            android:id="@+id/tvStartSoC"
+            style="@style/HistoryTableColumnsTheme"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/lbl_sample_ev_mac_address" />
+
+        <TextView
+            android:id="@+id/tvEndSoC"
+            style="@style/HistoryTableColumnsTheme"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/lbl_sample_ev_mac_address" />
+
+        <TextView
+            android:id="@+id/tvEnergyConsumption"
+            style="@style/HistoryTableColumnsTheme"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/lbl_sample_ev_mac_address" />
+
+        <TextView
+            android:id="@+id/tvSessionEndReason"
+            style="@style/HistoryTableColumnsTheme"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/lbl_sample_ev_mac_address" />
+
+    </LinearLayout>
+
+</LinearLayout>

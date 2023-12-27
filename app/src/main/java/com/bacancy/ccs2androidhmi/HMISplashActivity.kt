@@ -15,7 +15,7 @@ class HMISplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_hmisplash)
-        handler.postDelayed(runnable, 300)
+        handler.postDelayed(runnable, 3000)
     }
 
     private val runnable = Runnable {

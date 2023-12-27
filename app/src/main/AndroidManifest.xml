@@ -71,7 +71,8 @@
             android:required="false" />
 
         <activity
-            android:name=".views.AsyncTestActivity"
+            android:name=".HMISplashActivity"
+            android:screenOrientation="landscape"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

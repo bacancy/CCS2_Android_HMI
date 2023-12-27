@@ -25,6 +25,13 @@ class AcMeterFragment() : BaseFragment(), MiscDataListener {
     private lateinit var dcMeterFragment: DcMeterFragment
     private lateinit var binding: FragmentAcMeterBinding
     private var fragmentChangeListener: FragmentChangeListener? = null
+    override fun setScreenHeaderViews() {
+        TODO("Not yet implemented")
+    }
+
+    override fun setupViews() {
+        TODO("Not yet implemented")
+    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)

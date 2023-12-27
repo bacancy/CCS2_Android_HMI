@@ -23,6 +23,13 @@ import java.io.IOException
 class DcMeterFragment() : BaseFragment(), MiscDataListener {
 
     private lateinit var binding: FragmentDcMeterBinding
+    override fun setScreenHeaderViews() {
+        TODO("Not yet implemented")
+    }
+
+    override fun setupViews() {
+        TODO("Not yet implemented")
+    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)

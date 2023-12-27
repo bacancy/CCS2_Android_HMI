@@ -8,7 +8,7 @@ import com.bacancy.ccs2androidhmi.HMIApp
 import java.io.InputStream
 import java.io.OutputStream
 
-open class BaseFragment: Fragment() {
+abstract class BaseFragment: Fragment() {
 
     protected var mApplication: HMIApp? = null
     protected var mSerialPort: SerialPort? = null
@@ -25,6 +25,11 @@ open class BaseFragment: Fragment() {
         } catch (e: Exception) {
             Log.d("TAG", "onCreate: Exception = ${e.toString()}")
         }
+
     }
+
+    abstract fun setScreenHeaderViews()
+
+    abstract fun setupViews()
 
 }

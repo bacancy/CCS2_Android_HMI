@@ -14,4 +14,8 @@ class MainRepository @Inject constructor(private val appDatabase: AppDatabase) {
         return appDatabase.appDao().getAllChargingSummaries()
     }
 
+    suspend fun getGunsChargingHistory(gunNumber: Int): List<ChargingSummary> {
+        return appDatabase.appDao().getGunsChargingHistory(gunNumber)
+    }
+
 }
