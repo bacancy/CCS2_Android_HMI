@@ -13,9 +13,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CCS2AndroidHMI"
         tools:targetApi="31">
-       <!-- <activity
-            android:name=".views.AsyncTestActivity"
-            android:exported="false" />-->
+        <activity
+            android:name=".views.HMIDashboardActivity"
+            android:exported="false" />
         <activity
             android:name=".views.NewTestActivity"
             android:exported="false"
@@ -71,9 +71,9 @@
             android:required="false" />
 
         <activity
-            android:name=".HMISplashActivity"
-            android:screenOrientation="landscape"
-            android:exported="true">
+            android:name=".views.HMISplashActivity"
+            android:exported="true"
+            android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

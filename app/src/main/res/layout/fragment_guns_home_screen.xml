@@ -1,14 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    android:padding="@dimen/_20sdp"
+    android:paddingHorizontal="@dimen/_40sdp"
+    android:paddingTop="@dimen/_40sdp"
     tools:context=".views.fragment.GunsHomeScreenFragment">
 
 
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:src="@drawable/img_guns" />
+
+    <Button
+        android:id="@+id/btnClickHereForMore"
+        style="@style/CommonButtonTheme"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="@dimen/_10sdp"
+        android:layout_marginVertical="@dimen/_20sdp"
+        android:text="@string/lbl_click_here_for_more" />
 
 </LinearLayout>

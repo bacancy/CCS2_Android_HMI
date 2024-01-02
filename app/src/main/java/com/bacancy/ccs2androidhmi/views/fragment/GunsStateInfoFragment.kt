@@ -8,6 +8,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentGunsStateInfoBinding
 import com.bacancy.ccs2androidhmi.models.GunStatesInfo
+import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
+import com.bacancy.ccs2androidhmi.views.NewTestActivity
 import com.bacancy.ccs2androidhmi.views.adapters.GunStatesInfoListAdapter
 
 class GunsStateInfoFragment : BaseFragment() {
@@ -24,7 +26,14 @@ class GunsStateInfoFragment : BaseFragment() {
         setScreenHeaderViews()
         setupViews()
         getGunStates()
+        handleClicks()
         return binding.root
+    }
+
+    private fun handleClicks() {
+        binding.btnClose.setOnClickListener {
+            (requireActivity() as HMIDashboardActivity).goBack()
+        }
     }
 
     private fun getGunStates(): MutableList<GunStatesInfo> {

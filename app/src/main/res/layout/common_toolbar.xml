@@ -1,70 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/black"
     android:gravity="center_vertical"
-    android:paddingHorizontal="20dp"
-    android:paddingVertical="20dp">
+    android:paddingHorizontal="@dimen/_10sdp"
+    android:paddingVertical="@dimen/_10sdp">
 
     <ImageView
         android:id="@+id/imgBack"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
-        android:src="@drawable/ic_back_arrow" />
+        android:layout_width="@dimen/_15sdp"
+        android:layout_height="@dimen/_15sdp"
+        android:contentDescription="@string/cd_back"
+        android:src="@drawable/ic_back_arrow"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="25dp"
-        android:layout_marginStart="20dp"
-        android:text="Bacancy"
-        android:src="@drawable/ic_bacancy_logo"
-        android:gravity="center" />
-
-    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="10dp"
-        android:gravity="center">
+        android:gravity="center"
+        android:src="@drawable/ic_bacancy_logo"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/lnrNetworkStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/_5sdp"
+        android:gravity="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/tvDateTime"
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/imgServerStatus"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="@dimen/_13sdp"
+            android:layout_height="@dimen/_13sdp"
             android:src="@drawable/ic_server_in_white" />
 
         <ImageView
             android:id="@+id/imgEthernetStatus"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_marginStart="10dp"
+            android:layout_width="@dimen/_13sdp"
+            android:layout_height="@dimen/_13sdp"
+            android:layout_marginStart="@dimen/_5sdp"
             android:src="@drawable/ic_ethernet_disconnected" />
 
         <ImageView
             android:id="@+id/imgGSMLevel"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_marginStart="10dp"
+            android:layout_width="@dimen/_13sdp"
+            android:layout_height="@dimen/_13sdp"
+            android:layout_marginStart="@dimen/_5sdp"
             android:src="@drawable/ic_gsm_level_0" />
 
         <ImageView
             android:id="@+id/imgWifiLevel"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_marginStart="10dp"
+            android:layout_width="@dimen/_13sdp"
+            android:layout_height="@dimen/_13sdp"
+            android:layout_marginStart="@dimen/_5sdp"
             android:src="@drawable/ic_wifi_level_0" />
 
     </LinearLayout>
 
     <TextView
         android:id="@+id/tvDateTime"
-        android:layout_marginStart="20dp"
         android:layout_width="wrap_content"
-        android:text="21/12/2023 Thu 16:56:23"
+        android:layout_height="wrap_content"
         android:textColor="@color/white"
-        android:textSize="15sp"
-        android:layout_height="wrap_content"/>
+        android:textSize="@dimen/_7ssp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="21/12/2023 Thu 16:56:23" />
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

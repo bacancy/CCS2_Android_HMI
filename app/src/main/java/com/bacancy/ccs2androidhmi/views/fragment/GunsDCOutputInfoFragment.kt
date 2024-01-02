@@ -20,6 +20,7 @@ import com.bacancy.ccs2androidhmi.util.ReadWriteUtil
 import com.bacancy.ccs2androidhmi.util.ResponseSizes
 import com.bacancy.ccs2androidhmi.util.setValue
 import com.bacancy.ccs2androidhmi.util.visible
+import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
 import com.bacancy.ccs2androidhmi.views.NewTestActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -39,6 +40,7 @@ class GunsDCOutputInfoFragment : BaseFragment() {
         binding = FragmentDcMeterBinding.inflate(layoutInflater)
         setScreenHeaderViews()
         setupViews()
+        (requireActivity() as HMIDashboardActivity).showHideBackIcon(true)
         return binding.root
     }
 
@@ -78,43 +80,6 @@ class GunsDCOutputInfoFragment : BaseFragment() {
 
             incExportEnergy.tvLabel.text = getString(R.string.lbl_export_energy)
             incExportEnergy.tvValueUnit.text = getString(R.string.lbl_kwh)
-        }
-    }
-
-    private suspend fun readGunsDCOutputInfo() {
-
-        val gunsDcOutputInfoRequestFrame: ByteArray = if (isGun1) {
-            ModbusRequestFrames.getGunOneDCMeterInfoRequestFrame()
-        } else {
-            ModbusRequestFrames.getGunTwoDCMeterInfoRequestFrame()
-        }
-
-        withContext(Dispatchers.IO) {
-            ReadWriteUtil.startReading(
-                mOutputStream,
-                mInputStream,
-                ResponseSizes.GUN_DC_METER_INFORMATION_RESPONSE_SIZE,
-                gunsDcOutputInfoRequestFrame
-            ) {
-                if (it.toHex().startsWith(ModBusUtils.INPUT_REGISTERS_CORRECT_RESPONSE_BITS)) {
-                    Log.d("DC_METER_FRAG", "DC METER DATA RESPONSE: ${it.toHex()}")
-                    val newResponse = ModBusUtils.parseInputRegistersResponse(it)
-                    Log.d("DC_METER_FRAG", "DC METER: ${newResponse.toList()}")
-                    lifecycleScope.launch(Dispatchers.Main) {
-                        binding.apply {
-                            incVoltage.tvValue.setValue(0.0F)
-                            incMaxVoltage.tvValue.setValue(0.0F)
-                            incMinVoltage.tvValue.setValue(0.0F)
-                            incCurrent.tvValue.setValue(0.0F)
-                            incMaxCurrent.tvValue.setValue(0.0F)
-                            incMinCurrent.tvValue.setValue(0.0F)
-                            incPower.tvValue.setValue(0.0F)
-                            incImportEnergy.tvValue.setValue(0.0F)
-                            incExportEnergy.tvValue.setValue(0.0F)
-                        }
-                    }
-                }
-            }
         }
     }
 

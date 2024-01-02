@@ -89,4 +89,5 @@
     <string name="lbl_gun_2">GUN - 2</string>
     <string name="lbl_percentage">%</string>
     <string name="lbl_min">Min</string>
+    <string name="cd_back">Back</string>
 </resources>

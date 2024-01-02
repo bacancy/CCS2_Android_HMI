@@ -1,12 +1,11 @@
-package com.bacancy.ccs2androidhmi
+package com.bacancy.ccs2androidhmi.views
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import com.bacancy.ccs2androidhmi.views.Dashboard
-import com.bacancy.ccs2androidhmi.views.NewTestActivity
+import com.bacancy.ccs2androidhmi.R
 
 class HMISplashActivity : AppCompatActivity() {
 
@@ -19,7 +18,7 @@ class HMISplashActivity : AppCompatActivity() {
     }
 
     private val runnable = Runnable {
-        startActivity(Intent(this@HMISplashActivity, NewTestActivity::class.java))
+        startActivity(Intent(this@HMISplashActivity, HMIDashboardActivity::class.java))
         finish()
     }
 

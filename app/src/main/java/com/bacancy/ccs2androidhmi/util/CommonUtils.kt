@@ -6,6 +6,8 @@ import java.util.Locale
 
 object CommonUtils {
 
+    const val CLOCK_DATE_AND_TIME_FORMAT = "dd/MM/yyyy EEE HH:mm:ss"
+
     private fun swapAdjacentElements(array: MutableList<Int>): MutableList<Int> {
         for (i in 0 until array.size - 1 step 2) {
             // Swap adjacent elements

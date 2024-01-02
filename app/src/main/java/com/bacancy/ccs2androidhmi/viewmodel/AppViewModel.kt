@@ -5,6 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bacancy.ccs2androidhmi.db.entity.ChargingSummary
+import com.bacancy.ccs2androidhmi.db.entity.TbAcMeterInfo
+import com.bacancy.ccs2androidhmi.db.entity.TbMiscInfo
 import com.bacancy.ccs2androidhmi.repository.MainRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -16,6 +18,9 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
     private val _chargingSummariesList = MutableLiveData<List<ChargingSummary>>()
     val chargingSummariesList : LiveData<List<ChargingSummary>> = _chargingSummariesList
 
+    val latestAcMeterInfo : LiveData<TbAcMeterInfo> = mainRepository.getLatestAcMeterInfo()
+    val latestMiscInfo : LiveData<TbMiscInfo> = mainRepository.getLatestMiscInfo()
+
     fun insertChargingSummary(chargingSummary: ChargingSummary) {
         viewModelScope.launch {
             mainRepository.insertChargingSummary(chargingSummary)
@@ -25,6 +30,18 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
     fun getAllChargingSummaries() {
         viewModelScope.launch {
             _chargingSummariesList.value = mainRepository.getAllChargingSummaries()
+        }
+    }
+
+    fun insertAcMeterInfo(acMeterInfo: TbAcMeterInfo){
+        viewModelScope.launch {
+            mainRepository.insertAcMeterInfo(acMeterInfo)
+        }
+    }
+
+    fun insertMiscInfo(tbMiscInfo: TbMiscInfo){
+        viewModelScope.launch {
+            mainRepository.insertMiscInfo(tbMiscInfo)
         }
     }
 

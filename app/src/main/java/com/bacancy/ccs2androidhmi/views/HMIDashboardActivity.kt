@@ -10,41 +10,50 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.SerialPortBaseActivityNew
-import com.bacancy.ccs2androidhmi.databinding.ActivityNewTestBinding
-import com.bacancy.ccs2androidhmi.util.CommonUtils.CLOCK_DATE_AND_TIME_FORMAT
-import com.bacancy.ccs2androidhmi.views.fragment.ACMeterInfoFragment
-import com.bacancy.ccs2androidhmi.views.fragment.GunsDCOutputInfoFragment
+import com.bacancy.ccs2androidhmi.databinding.ActivityHmiDashboardBinding
+import com.bacancy.ccs2androidhmi.util.CommonUtils
+import com.bacancy.ccs2androidhmi.util.invisible
+import com.bacancy.ccs2androidhmi.util.visible
+import com.bacancy.ccs2androidhmi.views.fragment.GunsHomeScreenFragment
 import com.bacancy.ccs2androidhmi.views.fragment.GunsMoreInformationFragment
 import com.bacancy.ccs2androidhmi.views.listener.FragmentChangeListener
-import dagger.hilt.android.AndroidEntryPoint
+import com.google.gson.Gson
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-@AndroidEntryPoint
-class NewTestActivity : SerialPortBaseActivityNew(), FragmentChangeListener,
+class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener,
     OnBackPressedDispatcherOwner {
 
-    private lateinit var gunsMoreInformationFragment: GunsMoreInformationFragment
-    private lateinit var binding: ActivityNewTestBinding
+    private lateinit var gunsHomeScreenFragment: GunsHomeScreenFragment
+    private lateinit var binding: ActivityHmiDashboardBinding
     val handler = Handler(Looper.getMainLooper())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityNewTestBinding.inflate(layoutInflater)
+        binding = ActivityHmiDashboardBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
         startReading()
-        gunsMoreInformationFragment = GunsMoreInformationFragment()
-        addNewFragment(gunsMoreInformationFragment)
-        binding.incToolbar.imgBack.setOnClickListener {
-            goBack()
-        }
+
+        gunsHomeScreenFragment = GunsHomeScreenFragment()
+        addNewFragment(gunsHomeScreenFragment)
+
+        handleClicks()
 
         handleBackStackChanges()
 
         startClockTimer()
 
         observeLatestMiscInfo()
+
+        showHideBackIcon()
+    }
+
+    private fun handleClicks() {
+        binding.incToolbar.imgBack.setOnClickListener {
+            goBack()
+        }
     }
 
     //For starting clock timer
@@ -52,8 +61,17 @@ class NewTestActivity : SerialPortBaseActivityNew(), FragmentChangeListener,
         handler.post(runnable)
     }
 
+    fun showHideBackIcon(showBackIcon: Boolean = true) {
+        if (showBackIcon) {
+            binding.incToolbar.imgBack.visible()
+        } else {
+            binding.incToolbar.imgBack.invisible()
+        }
+    }
+
     private fun observeLatestMiscInfo() {
         appViewModel.latestMiscInfo.observe(this) { latestMiscInfo ->
+            Log.d("TAG", "observeLatestMiscInfo: ${Gson().toJson(latestMiscInfo)}")
             updateServerStatus(latestMiscInfo.serverConnectedWith)
             updateEthernetStatus(latestMiscInfo.ethernetStatus)
             adjustGSMLevel(latestMiscInfo.gsmLevel)
@@ -78,7 +96,7 @@ class NewTestActivity : SerialPortBaseActivityNew(), FragmentChangeListener,
 
     private fun updateTimerUI() {
         val currentTime = Calendar.getInstance().time
-        val dateFormat = SimpleDateFormat(CLOCK_DATE_AND_TIME_FORMAT, Locale.ENGLISH)
+        val dateFormat = SimpleDateFormat(CommonUtils.CLOCK_DATE_AND_TIME_FORMAT, Locale.ENGLISH)
         val formattedDate = dateFormat.format(currentTime)
         binding.incToolbar.tvDateTime.text = formattedDate.uppercase()
     }
@@ -157,5 +175,4 @@ class NewTestActivity : SerialPortBaseActivityNew(), FragmentChangeListener,
             addNewFragment(fragment)
         }
     }
-
 }

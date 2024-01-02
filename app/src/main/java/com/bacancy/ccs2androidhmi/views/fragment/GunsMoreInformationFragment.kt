@@ -2,15 +2,14 @@ package com.bacancy.ccs2androidhmi.views.fragment
 
 import android.content.Context
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
-import com.bacancy.ccs2androidhmi.databinding.FragmentGunsHomeScreenBinding
 import com.bacancy.ccs2androidhmi.databinding.FragmentGunsMoreInfoScreenBinding
 import com.bacancy.ccs2androidhmi.util.gone
+import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
 import com.bacancy.ccs2androidhmi.views.listener.FragmentChangeListener
 
 class GunsMoreInformationFragment : BaseFragment() {
@@ -38,6 +37,7 @@ class GunsMoreInformationFragment : BaseFragment() {
         setScreenHeaderViews()
         setupViews()
         handleClicks()
+        (requireActivity() as HMIDashboardActivity).showHideBackIcon(true)
         return binding.root
     }
 
