@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/light_teal"
+    android:orientation="horizontal"
+    android:padding="@dimen/_5sdp">
+
+    <TextView
+        android:id="@+id/tvLabel1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_10ssp"
+        tools:text="@string/lbl_device_information" />
+
+    <TextView
+        android:id="@+id/tvLabel2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_10ssp"
+        tools:text="@string/lbl_status" />
+
+</LinearLayout>

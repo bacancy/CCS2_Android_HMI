@@ -44,9 +44,9 @@
         <activity
             android:name=".views.ReadGun2DCMeterInfoActivity"
             android:exported="false" />
-        <activity
+        <!--<activity
             android:name=".views.ReadMiscInfoActivity"
-            android:exported="false" />
+            android:exported="false" />-->
         <activity
             android:name=".views.ReadACMeterInfoActivity"
             android:exported="false" />

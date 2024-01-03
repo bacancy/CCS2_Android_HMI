@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingHorizontal="@dimen/_30sdp"
+    android:paddingVertical="@dimen/_20sdp">
+
+    <include
+        android:id="@+id/incHeader"
+        layout="@layout/common_header" />
+
+    <include
+        android:id="@+id/incTableHeader"
+        layout="@layout/common_table_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_20sdp" />
+
+    <include
+        android:id="@+id/incRFIDModule"
+        layout="@layout/common_table_row"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <include
+        android:id="@+id/incLEDModule"
+        layout="@layout/common_table_row"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <include
+        android:id="@+id/incACMeter"
+        layout="@layout/common_table_row"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <include
+        android:id="@+id/incDCMeter1"
+        layout="@layout/common_table_row"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <include
+        android:id="@+id/incDCMeter2"
+        layout="@layout/common_table_row"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

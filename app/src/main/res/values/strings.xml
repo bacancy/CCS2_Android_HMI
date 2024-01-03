@@ -21,6 +21,7 @@
     <string name="lbl_fault_type_information">Fault Type Information</string>
     <string name="lbl_plc_communication_error">PLC Communication Error</string>
     <string name="lbl_rectifier_communication_error">Rectifier Communication Error</string>
+    <string name="lbl_ocpp_communication_error">OCPP Communication Error</string>
     <string name="lbl_modbus_master_communication_error">Modbus Master Communication Error</string>
     <string name="lbl_rfid_module">RFID Module</string>
     <string name="lbl_led_module">LED Module</string>
@@ -90,4 +91,10 @@
     <string name="lbl_percentage">%</string>
     <string name="lbl_min">Min</string>
     <string name="cd_back">Back</string>
+    <string name="lbl_rectifier_1">Rectifier 1:</string>
+    <string name="lbl_rectifier_2">Rectifier 2:</string>
+    <string name="lbl_rectifier_3">Rectifier 3:</string>
+    <string name="lbl_rectifier_4">Rectifier 4:</string>
+    <string name="lbl_device_information">Device Information</string>
+
 </resources>

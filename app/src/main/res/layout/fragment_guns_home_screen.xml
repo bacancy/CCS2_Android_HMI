@@ -6,24 +6,183 @@
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    android:paddingHorizontal="@dimen/_40sdp"
-    android:paddingTop="@dimen/_40sdp"
+    android:padding="@dimen/_20sdp"
     tools:context=".views.fragment.GunsHomeScreenFragment">
 
-
     <ImageView
+        android:id="@+id/ivScreenInfo"
+        android:layout_width="@dimen/_15sdp"
+        android:layout_height="@dimen/_15sdp"
+        android:layout_gravity="end"
+        android:src="@drawable/ic_info" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/ivChargingInProcess"
+            android:layout_width="@dimen/_8sdp"
+            android:layout_height="@dimen/_8sdp"
+            android:src="@drawable/ic_charging_in_process"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvChargingInProcess"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:text="@string/lbl_charging_in_process"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_7ssp"
+            app:layout_constraintBottom_toBottomOf="@id/ivChargingInProcess"
+            app:layout_constraintStart_toEndOf="@id/ivChargingInProcess"
+            app:layout_constraintTop_toTopOf="@id/ivChargingInProcess" />
+
+        <ImageView
+            android:id="@+id/ivGunPlugged"
+            android:layout_width="@dimen/_8sdp"
+            android:layout_height="@dimen/_8sdp"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:src="@drawable/ic_gun_plugged"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ivChargingInProcess" />
+
+        <TextView
+            android:id="@+id/tvGunPlugged"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:text="@string/lbl_gun_plugged"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_7ssp"
+            app:layout_constraintBottom_toBottomOf="@id/ivGunPlugged"
+            app:layout_constraintStart_toEndOf="@id/ivGunPlugged"
+            app:layout_constraintTop_toTopOf="@id/ivGunPlugged" />
+
+        <ImageView
+            android:id="@+id/ivGunFault"
+            android:layout_width="@dimen/_8sdp"
+            android:layout_height="@dimen/_8sdp"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:src="@drawable/ic_gun_fault"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ivGunPlugged" />
+
+        <TextView
+            android:id="@+id/tvGunFault"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:text="@string/lbl_fault"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_7ssp"
+            app:layout_constraintBottom_toBottomOf="@id/ivGunFault"
+            app:layout_constraintStart_toEndOf="@id/ivGunFault"
+            app:layout_constraintTop_toTopOf="@id/ivGunFault" />
+
+        <ImageView
+            android:id="@+id/ivGunUnplugged"
+            android:layout_width="@dimen/_8sdp"
+            android:layout_height="@dimen/_8sdp"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:src="@drawable/ic_gun_unplugged"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ivGunFault" />
+
+        <TextView
+            android:id="@+id/tvGunUnplugged"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:text="@string/lbl_gun_unplugged"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_7ssp"
+            app:layout_constraintBottom_toBottomOf="@id/ivGunUnplugged"
+            app:layout_constraintStart_toEndOf="@id/ivGunUnplugged"
+            app:layout_constraintTop_toTopOf="@id/ivGunUnplugged" />
+
+        <ImageView
+            android:id="@+id/ivChargingCompleted"
+            android:layout_width="@dimen/_8sdp"
+            android:layout_height="@dimen/_8sdp"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:src="@drawable/ic_charging_completed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ivGunUnplugged" />
+
+        <TextView
+            android:id="@+id/tvChargingCompleted"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:text="@string/lbl_charging_completed"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_7ssp"
+            app:layout_constraintBottom_toBottomOf="@id/ivChargingCompleted"
+            app:layout_constraintStart_toEndOf="@id/ivChargingCompleted"
+            app:layout_constraintTop_toTopOf="@id/ivChargingCompleted" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:src="@drawable/img_guns" />
+        android:layout_marginTop="@dimen/_20sdp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/ivGun1Half"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:scaleType="fitEnd"
+                android:src="@drawable/img_gun1_unplugged" />
+
+            <ImageView
+                android:id="@+id/ivGun2Half"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:scaleType="fitStart"
+                android:src="@drawable/img_gun2_charging" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnClickHereForMore1"
+            style="@style/CommonButtonTheme"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|top"
+            android:layout_marginStart="@dimen/_60sdp"
+            android:paddingHorizontal="@dimen/_10sdp"
+            android:text="@string/lbl_click_here_for_more" />
+
+        <Button
+            android:id="@+id/btnClickHereForMore2"
+            style="@style/CommonButtonTheme"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|top"
+            android:layout_marginEnd="@dimen/_60sdp"
+            android:paddingHorizontal="@dimen/_10sdp"
+            android:text="@string/lbl_click_here_for_more" />
+    </FrameLayout>
 
     <Button
-        android:id="@+id/btnClickHereForMore"
+        android:id="@+id/btnFirmwareVersion"
         style="@style/CommonButtonTheme"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_10sdp"
         android:paddingHorizontal="@dimen/_10sdp"
-        android:layout_marginVertical="@dimen/_20sdp"
-        android:text="@string/lbl_click_here_for_more" />
+        android:text="@string/lbl_firmware_version_information"
+        android:visibility="gone" />
 
 </LinearLayout>

@@ -83,6 +83,7 @@ class ReadMiscInfoActivity : SerialPortBaseActivity() {
                     "GSM Strength = ${checkGSMNetworkStrength(gsmNetworkStrengthBits)}"
                 txtWifiStrength.text =
                     "Wifi Strength = ${checkWifiNetworkStrength(wifiNetworkStrengthBits)}"
+
                 txtMCUFirmwareVersion.text =
                     "MCU FIRMWARE VERSION = ${getMCUFirmwareVersion(buffer)}"
                 txtOCPPFirmwareVersion.text =
@@ -95,6 +96,7 @@ class ReadMiscInfoActivity : SerialPortBaseActivity() {
                     "PLC1 Module FIRMWARE VERSION = ${getPLC1ModuleFirmwareVersion(buffer)}"
                 txtPLC2ModuleFirmwareVersion.text =
                     "PLC2 Module FIRMWARE VERSION = ${getPLC2ModuleFirmwareVersion(buffer)}"
+
                 txtChargerSerialID.text = "CHARGER SERIAL ID = ${getChargerSerialID(buffer)}"
                 txtEthernetMacAddress.text =
                     "Ethernet MAC Address = ${getEthernetMacAddress(buffer)}"
@@ -108,11 +110,11 @@ class ReadMiscInfoActivity : SerialPortBaseActivity() {
 
                 //0-NoError
                 //1-Error
-                Log.d("TAG", "onDataReceived: PLC1 Fault = ${byteArrayToBinaryString(buffer.copyOfRange(13, 21)).reversed().substring(0, 9)}")
+                Log.d("TAG", "onDataReceived: PLC1 Fault = ${byteArrayToBinaryString(buffer.copyOfRange(13, 21)).reversed().substring(0, 1)}")
 
                 //0-NoError
                 //1-Error
-                Log.d("TAG", "onDataReceived: PLC2 Fault = ${byteArrayToBinaryString(buffer.copyOfRange(21, 29)).reversed().substring(0, 9)}")
+                Log.d("TAG", "onDataReceived: PLC2 Fault = ${byteArrayToBinaryString(buffer.copyOfRange(21, 29)).reversed().substring(0, 1)}")
 
                 Log.d("TAG", "onDataReceived: Rectifier1 Fault = ${buffer.copyOfRange(29, 33).toHex()}")
                 Log.d("TAG", "onDataReceived: Rectifier2 Fault = ${buffer.copyOfRange(33, 37).toHex()}")

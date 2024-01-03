@@ -15,6 +15,7 @@
         layout="@layout/common_header" />
 
     <TextView
+        android:id="@+id/tvPLCFaults"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_15sdp"
@@ -26,6 +27,7 @@
         android:textSize="@dimen/_10ssp" />
 
     <TextView
+        android:id="@+id/tvRectifierFaults"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_10sdp"
@@ -37,6 +39,7 @@
         android:textSize="@dimen/_10ssp" />
 
     <TextView
+        android:id="@+id/tvCommunicationError"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_10sdp"
@@ -48,6 +51,7 @@
         android:textSize="@dimen/_10ssp" />
 
     <TextView
+        android:id="@+id/tvMiscError"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_10sdp"

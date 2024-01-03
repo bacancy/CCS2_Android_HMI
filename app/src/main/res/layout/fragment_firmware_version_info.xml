@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:paddingHorizontal="@dimen/_40sdp"
+    android:paddingVertical="@dimen/_20sdp">
+
+    <include
+        android:id="@+id/incHeader"
+        layout="@layout/common_header" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_20sdp"
+        android:gravity="center_horizontal">
+
+        <LinearLayout
+            android:id="@+id/lnrDeviceType"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_gradient_white_and_black"
+                android:gravity="center"
+                android:padding="@dimen/_10sdp"
+                android:text="@string/lbl_device_type"
+                android:textAllCaps="true"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_10ssp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/black"
+                android:gravity="center"
+                android:paddingVertical="@dimen/_5sdp"
+                android:text="@string/lbl_mcu"
+                android:textAllCaps="true"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_8ssp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/light_trans_sky_blue"
+                android:gravity="center"
+                android:paddingVertical="@dimen/_5sdp"
+                android:text="@string/lbl_ocpp"
+                android:textAllCaps="true"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_8ssp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/black"
+                android:gravity="center"
+                android:paddingVertical="@dimen/_5sdp"
+                android:text="@string/lbl_rfid"
+                android:textAllCaps="true"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_8ssp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/light_trans_sky_blue"
+                android:gravity="center"
+                android:paddingVertical="@dimen/_5sdp"
+                android:text="@string/lbl_led"
+                android:textAllCaps="true"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_8ssp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/black"
+                android:gravity="center"
+                android:paddingVertical="@dimen/_5sdp"
+                android:text="@string/lbl_plc_1"
+                android:textAllCaps="true"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_8ssp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/light_trans_sky_blue"
+                android:gravity="center"
+                android:paddingVertical="@dimen/_5sdp"
+                android:text="@string/lbl_plc_2"
+                android:textAllCaps="true"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_8ssp" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="@dimen/_20sdp"
+            android:layout_height="match_parent" />
+
+        <LinearLayout
+            android:id="@+id/lnrVersions"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_gradient_white_and_black"
+                android:gravity="center"
+                android:padding="@dimen/_10sdp"
+                android:text="@string/lbl_version"
+                android:textAllCaps="true"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_10ssp" />
+
+            <TextView
+                android:id="@+id/tvMCUVersion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/black"
+                android:gravity="center"
+                android:paddingVertical="@dimen/_5sdp"
+                android:textAllCaps="true"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_8ssp"
+                tools:text="0.0.0" />
+
+            <TextView
+                android:id="@+id/tvOCPPVersion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/light_trans_sky_blue"
+                android:gravity="center"
+                android:paddingVertical="@dimen/_5sdp"
+                android:textAllCaps="true"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_8ssp"
+                tools:text="0.0.0" />
+
+            <TextView
+                android:id="@+id/tvRFIDVersion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/black"
+                android:gravity="center"
+                android:paddingVertical="@dimen/_5sdp"
+                android:textAllCaps="true"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_8ssp"
+                tools:text="0.0.0" />
+
+            <TextView
+                android:id="@+id/tvLEDVersion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/light_trans_sky_blue"
+                android:gravity="center"
+                android:paddingVertical="@dimen/_5sdp"
+                android:textAllCaps="true"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_8ssp"
+                tools:text="0.0.0" />
+
+            <TextView
+                android:id="@+id/tvPLC1Version"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/black"
+                android:gravity="center"
+                android:paddingVertical="@dimen/_5sdp"
+                android:textAllCaps="true"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_8ssp"
+                tools:text="0.0.0" />
+
+            <TextView
+                android:id="@+id/tvPLC2Version"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/light_trans_sky_blue"
+                android:gravity="center"
+                android:paddingVertical="@dimen/_5sdp"
+                android:textAllCaps="true"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_8ssp"
+                tools:text="0.0.0" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

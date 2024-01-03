@@ -2,18 +2,25 @@ package com.bacancy.ccs2androidhmi.views.fragment
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentGunsMoreInfoScreenBinding
 import com.bacancy.ccs2androidhmi.util.gone
+import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
 import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
 import com.bacancy.ccs2androidhmi.views.listener.FragmentChangeListener
+import com.google.gson.Gson
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class GunsMoreInformationFragment : BaseFragment() {
 
+    private var selectedGunNumber: Int = 1
     private lateinit var binding: FragmentGunsMoreInfoScreenBinding
     private lateinit var acMeterInfoFragment: ACMeterInfoFragment
     private lateinit var gunsDCOutputInfoFragment: GunsDCOutputInfoFragment
@@ -21,6 +28,7 @@ class GunsMoreInformationFragment : BaseFragment() {
     private lateinit var gunsChargingHistoryFragment: GunsChargingHistoryFragment
     private lateinit var faultInfoFragment: FaultInfoFragment
     private var fragmentChangeListener: FragmentChangeListener? = null
+    private val appViewModel: AppViewModel by viewModels()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -38,7 +46,14 @@ class GunsMoreInformationFragment : BaseFragment() {
         setupViews()
         handleClicks()
         (requireActivity() as HMIDashboardActivity).showHideBackIcon(true)
+        observeGunsChargingInfo()
         return binding.root
+    }
+
+    private fun observeGunsChargingInfo() {
+        appViewModel.getUpdatedGunsChargingInfo(selectedGunNumber).observe(requireActivity()) {
+            Log.d("GunsMoreInfo", "observeGunsChargingInfo: Gun $selectedGunNumber = ${Gson().toJson(it)}")
+        }
     }
 
     private fun handleClicks() {
@@ -77,8 +92,17 @@ class GunsMoreInformationFragment : BaseFragment() {
     }
 
     override fun setScreenHeaderViews() {
+        selectedGunNumber = arguments?.getInt("SELECTED_GUN")!!
         binding.apply {
-            incHeader.tvHeader.text = getString(R.string.lbl_gun_1)
+            when (selectedGunNumber) {
+                1 -> {
+                    incHeader.tvHeader.text = getString(R.string.lbl_gun_1)
+                }
+
+                2 -> {
+                    incHeader.tvHeader.text = getString(R.string.lbl_gun_2)
+                }
+            }
         }
     }
 

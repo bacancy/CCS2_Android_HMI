@@ -58,7 +58,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
     //For starting clock timer
     private fun startClockTimer() {
-        handler.post(runnable)
+        //handler.post(runnable)
     }
 
     fun showHideBackIcon(showBackIcon: Boolean = true) {
@@ -71,11 +71,13 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
     private fun observeLatestMiscInfo() {
         appViewModel.latestMiscInfo.observe(this) { latestMiscInfo ->
-            Log.d("TAG", "observeLatestMiscInfo: ${Gson().toJson(latestMiscInfo)}")
-            updateServerStatus(latestMiscInfo.serverConnectedWith)
-            updateEthernetStatus(latestMiscInfo.ethernetStatus)
-            adjustGSMLevel(latestMiscInfo.gsmLevel)
-            adjustWifiLevel(latestMiscInfo.wifiLevel)
+            if(latestMiscInfo!=null){
+                Log.d("TAG", "observeLatestMiscInfo: ${Gson().toJson(latestMiscInfo)}")
+                updateServerStatus(latestMiscInfo.serverConnectedWith)
+                updateEthernetStatus(latestMiscInfo.ethernetStatus)
+                adjustGSMLevel(latestMiscInfo.gsmLevel)
+                adjustWifiLevel(latestMiscInfo.wifiLevel)
+            }
         }
     }
 

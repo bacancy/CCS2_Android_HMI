@@ -48,23 +48,25 @@ class ACMeterInfoFragment : BaseFragment() {
 
     private fun getLatestAcMeterInfo() {
         appViewModel.latestAcMeterInfo.observe(requireActivity()) { latestAcMeterInfo ->
-            Log.d("TAG", "getLatestAcMeterInfo: ${Gson().toJson(latestAcMeterInfo)}")
-            lifecycleScope.launch(Dispatchers.Main) {
+            if(latestAcMeterInfo!=null){
+                Log.d("TAG", "getLatestAcMeterInfo: ${Gson().toJson(latestAcMeterInfo)}")
+                lifecycleScope.launch(Dispatchers.Main) {
 
-                latestAcMeterInfo.apply {
-                    binding.incVoltageV1N.tvValue.setValue(voltageV1N)
-                    binding.incVoltageV2N.tvValue.setValue(voltageV2N)
-                    binding.incVoltageV3N.tvValue.setValue(voltageV3N)
-                    binding.incAvgVoltageLN.tvValue.setValue(averageVoltageLN)
-                    binding.incCurrentI1.tvValue.setValue(currentL1)
-                    binding.incCurrentI2.tvValue.setValue(currentL2)
-                    binding.incCurrentI3.tvValue.setValue(currentL3)
-                    binding.incAvgCurrent.tvValue.setValue(averageCurrent)
-                    binding.incFrequency.tvValue.setValue(frequency)
-                    binding.incActivePower.tvValue.setValue(activePower)
-                    binding.incTotalPower.tvValue.setValue(totalPower)
+                    latestAcMeterInfo.apply {
+                        binding.incVoltageV1N.tvValue.setValue(voltageV1N)
+                        binding.incVoltageV2N.tvValue.setValue(voltageV2N)
+                        binding.incVoltageV3N.tvValue.setValue(voltageV3N)
+                        binding.incAvgVoltageLN.tvValue.setValue(averageVoltageLN)
+                        binding.incCurrentI1.tvValue.setValue(currentL1)
+                        binding.incCurrentI2.tvValue.setValue(currentL2)
+                        binding.incCurrentI3.tvValue.setValue(currentL3)
+                        binding.incAvgCurrent.tvValue.setValue(averageCurrent)
+                        binding.incFrequency.tvValue.setValue(frequency)
+                        binding.incActivePower.tvValue.setValue(activePower)
+                        binding.incTotalPower.tvValue.setValue(totalPower)
+                    }
+
                 }
-
             }
         }
     }

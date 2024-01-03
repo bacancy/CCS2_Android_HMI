@@ -2,7 +2,6 @@ package com.bacancy.ccs2androidhmi.base
 
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android_serialport_api.SerialPort
 import androidx.activity.viewModels
 import androidx.core.view.WindowCompat
@@ -12,10 +11,38 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
 import com.bacancy.ccs2androidhmi.HMIApp
 import com.bacancy.ccs2androidhmi.db.entity.TbAcMeterInfo
+import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
+import com.bacancy.ccs2androidhmi.db.entity.TbGunsDcMeterInfo
+import com.bacancy.ccs2androidhmi.db.entity.TbGunsLastChargingSummary
 import com.bacancy.ccs2androidhmi.db.entity.TbMiscInfo
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getChargingCurrent
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getChargingDuration
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getChargingEnergyConsumption
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getChargingSoc
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getChargingVoltage
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getDemandCurrent
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getDemandVoltage
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getGunChargingState
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getInitialSoc
+import com.bacancy.ccs2androidhmi.util.LastChargingSummaryUtils
+import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getCommunicationErrorCodes
+import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getDevicePhysicalConnectionStatus
+import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getLEDModuleFirmwareVersion
+import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getMCUFirmwareVersion
+import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getOCPPFirmwareVersion
+import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getPLC1Fault
+import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getPLC1ModuleFirmwareVersion
+import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getPLC2Fault
+import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getPLC2ModuleFirmwareVersion
+import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getRFIDFirmwareVersion
+import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getRectifier1Code
+import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getRectifier2Code
+import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getRectifier3Code
+import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getRectifier4Code
 import com.bacancy.ccs2androidhmi.util.ModBusUtils
 import com.bacancy.ccs2androidhmi.util.ModbusRequestFrames
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter
+import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.getIntValueFromByte
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.toHex
 import com.bacancy.ccs2androidhmi.util.ReadWriteUtil
 import com.bacancy.ccs2androidhmi.util.ResponseSizes
@@ -31,7 +58,7 @@ import java.io.OutputStream
 abstract class SerialPortBaseActivityNew : FragmentActivity() {
 
     protected var mApplication: HMIApp? = null
-    protected var mSerialPort: SerialPort? = null
+    private var mSerialPort: SerialPort? = null
     protected var mOutputStream: OutputStream? = null
     var mInputStream: InputStream? = null
     private val mCommonDelay = 1000L
@@ -55,7 +82,8 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
         val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
         windowInsetsController.let {
             it.hide(WindowInsetsCompat.Type.systemBars())
-            it.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            it.systemBarsBehavior =
+                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         }
     }
 
@@ -109,7 +137,21 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                                 gsmNetworkStrengthBits
                             ).toInt(), wifiLevel = StateAndModesUtils.checkWifiNetworkStrength(
                                 wifiNetworkStrengthBits
-                            ).toInt()
+                            ).toInt(),
+                            mcuFirmwareVersion = getMCUFirmwareVersion(it),
+                            ocppFirmwareVersion = getOCPPFirmwareVersion(it),
+                            rfidFirmwareVersion = getRFIDFirmwareVersion(it),
+                            ledFirmwareVersion = getLEDModuleFirmwareVersion(it),
+                            plc1FirmwareVersion = getPLC1ModuleFirmwareVersion(it),
+                            plc2FirmwareVersion = getPLC2ModuleFirmwareVersion(it),
+                            plc1Fault = getPLC1Fault(it),
+                            plc2Fault = getPLC2Fault(it),
+                            rectifier1Fault = getRectifier1Code(it),
+                            rectifier2Fault = getRectifier2Code(it),
+                            rectifier3Fault = getRectifier3Code(it),
+                            rectifier4Fault = getRectifier4Code(it),
+                            communicationError = getCommunicationErrorCodes(it),
+                            devicePhysicalConnectionStatus = getDevicePhysicalConnectionStatus(it)
                         )
                     )
 
@@ -179,8 +221,66 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
         ) {
             if (it.toHex().startsWith(ModBusUtils.HOLDING_REGISTERS_CORRECT_RESPONSE_BITS)) {
                 Log.d(TAG, "readGun1Info: Response = ${it.toHex()}")
+
+                appViewModel.insertGunsChargingInfo(
+                    TbGunsChargingInfo(
+                        gunId = 1,
+                        gunChargingState = getGunChargingState(it).description,
+                        initialSoc = getInitialSoc(it),
+                        chargingSoc = getChargingSoc(it),
+                        demandVoltage = getDemandVoltage(it),
+                        demandCurrent = getDemandCurrent(it),
+                        chargingVoltage = getChargingVoltage(it),
+                        chargingCurrent = getChargingCurrent(it),
+                        duration = getChargingDuration(it),
+                        energyConsumption = getChargingEnergyConsumption(it)
+                    )
+                )
+
+
             } else {
                 Log.e(TAG, "readGun1Info: Error Response - ${it.toHex()}")
+            }
+            lifecycleScope.launch {
+                delay(mCommonDelay)
+                readGun1DCMeterInfo()
+            }
+        }
+    }
+
+    private suspend fun readGun1DCMeterInfo() {
+        Log.d(
+            TAG,
+            "readGun1DCMeterInfo: Request Sent - ${
+                ModbusRequestFrames.getGunOneDCMeterInfoRequestFrame().toHex()
+            }"
+        )
+        ReadWriteUtil.writeRequestAndReadResponse(
+            mOutputStream,
+            mInputStream,
+            ResponseSizes.GUN_DC_METER_INFORMATION_RESPONSE_SIZE,
+            ModbusRequestFrames.getGunOneDCMeterInfoRequestFrame()
+        ) {
+            if (it.toHex().startsWith(ModBusUtils.HOLDING_REGISTERS_CORRECT_RESPONSE_BITS)) {
+                Log.d(TAG, "readGun1DCMeterInfo: Response = ${it.toHex()}")
+                val newResponse = ModBusUtils.parseInputRegistersResponse(it)
+                appViewModel.insertGunsDCMeterInfo(
+                    TbGunsDcMeterInfo(
+                        gunId = 1,
+                        voltage = newResponse[0],
+                        current = newResponse[1],
+                        power = newResponse[2],
+                        importEnergy = newResponse[3],
+                        exportEnergy = newResponse[4],
+                        maxVoltage = newResponse[5],
+                        minVoltage = newResponse[6],
+                        maxCurrent = newResponse[7],
+                        minCurrent = newResponse[8]
+                    )
+                )
+
+            } else {
+                Log.e(TAG, "readGun1DCMeterInfo: Error Response - ${it.toHex()}")
             }
             lifecycleScope.launch {
                 delay(mCommonDelay)
@@ -204,8 +304,138 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
         ) {
             if (it.toHex().startsWith(ModBusUtils.HOLDING_REGISTERS_CORRECT_RESPONSE_BITS)) {
                 Log.d(TAG, "readGun1LastChargingSummaryInfo: Response = ${it.toHex()}")
+                appViewModel.insertGunsLastChargingSummary(
+                    TbGunsLastChargingSummary(
+                        gunId = 1,
+                        evMacAddress = LastChargingSummaryUtils.getEVMacAddress(it),
+                        chargingDuration = LastChargingSummaryUtils.getTotalChargingTime(it),
+                        chargingStartDateTime = LastChargingSummaryUtils.getChargingStartTime(it),
+                        chargingEndDateTime = LastChargingSummaryUtils.getChargingEndTime(it),
+                        startSoc = LastChargingSummaryUtils.getStartSoc(it),
+                        endSoc = LastChargingSummaryUtils.getEndSoc(it),
+                        energyConsumption = LastChargingSummaryUtils.getEnergyConsumption(it),
+                        sessionEndReason = LastChargingSummaryUtils.getSessionEndReason(it)
+                    )
+                )
             } else {
                 Log.e(TAG, "readGun1LastChargingSummaryInfo: Error Response - ${it.toHex()}")
+            }
+            lifecycleScope.launch {
+                delay(mCommonDelay)
+                readGun2Info()
+            }
+        }
+    }
+
+    private suspend fun readGun2Info() {
+        Log.d(
+            TAG,
+            "readGun2Info: Request Sent - ${ModbusRequestFrames.getGun2InfoRequestFrame().toHex()}"
+        )
+        ReadWriteUtil.writeRequestAndReadResponse(
+            mOutputStream,
+            mInputStream,
+            ResponseSizes.GUN_INFORMATION_RESPONSE_SIZE,
+            ModbusRequestFrames.getGun2InfoRequestFrame()
+        ) {
+            if (it.toHex().startsWith(ModBusUtils.HOLDING_REGISTERS_CORRECT_RESPONSE_BITS)) {
+                Log.d(TAG, "readGun2Info: Response = ${it.toHex()}")
+
+                appViewModel.insertGunsChargingInfo(
+                    TbGunsChargingInfo(
+                        gunId = 2,
+                        gunChargingState = getGunChargingState(it).description,
+                        initialSoc = getInitialSoc(it),
+                        chargingSoc = getChargingSoc(it),
+                        demandVoltage = getDemandVoltage(it),
+                        demandCurrent = getDemandCurrent(it),
+                        chargingVoltage = getChargingVoltage(it),
+                        chargingCurrent = getChargingCurrent(it),
+                        duration = getChargingDuration(it),
+                        energyConsumption = getChargingEnergyConsumption(it)
+                    )
+                )
+            } else {
+                Log.e(TAG, "readGun2Info: Error Response - ${it.toHex()}")
+            }
+            lifecycleScope.launch {
+                delay(mCommonDelay)
+                readGun2DCMeterInfo()
+            }
+        }
+    }
+
+    private suspend fun readGun2DCMeterInfo() {
+        Log.d(
+            TAG,
+            "readGun2DCMeterInfo: Request Sent - ${
+                ModbusRequestFrames.getGunTwoDCMeterInfoRequestFrame().toHex()
+            }"
+        )
+        ReadWriteUtil.writeRequestAndReadResponse(
+            mOutputStream,
+            mInputStream,
+            ResponseSizes.GUN_DC_METER_INFORMATION_RESPONSE_SIZE,
+            ModbusRequestFrames.getGunTwoDCMeterInfoRequestFrame()
+        ) {
+            if (it.toHex().startsWith(ModBusUtils.HOLDING_REGISTERS_CORRECT_RESPONSE_BITS)) {
+                Log.d(TAG, "readGun2DCMeterInfo: Response = ${it.toHex()}")
+                val newResponse = ModBusUtils.parseInputRegistersResponse(it)
+                appViewModel.insertGunsDCMeterInfo(
+                    TbGunsDcMeterInfo(
+                        gunId = 2,
+                        voltage = newResponse[0],
+                        current = newResponse[1],
+                        power = newResponse[2],
+                        importEnergy = newResponse[3],
+                        exportEnergy = newResponse[4],
+                        maxVoltage = newResponse[5],
+                        minVoltage = newResponse[6],
+                        maxCurrent = newResponse[7],
+                        minCurrent = newResponse[8]
+                    )
+                )
+            } else {
+                Log.e(TAG, "readGun2DCMeterInfo: Error Response - ${it.toHex()}")
+            }
+            lifecycleScope.launch {
+                delay(mCommonDelay)
+                readGun2LastChargingSummaryInfo()
+            }
+        }
+    }
+
+    private suspend fun readGun2LastChargingSummaryInfo() {
+        Log.d(
+            TAG,
+            "readGun2LastChargingSummaryInfo: Request Sent - ${
+                ModbusRequestFrames.getGun2LastChargingSummaryRequestFrame().toHex()
+            }"
+        )
+        ReadWriteUtil.writeRequestAndReadResponse(
+            mOutputStream,
+            mInputStream,
+            ResponseSizes.LAST_CHARGING_SUMMARY_RESPONSE_SIZE,
+            ModbusRequestFrames.getGun2LastChargingSummaryRequestFrame()
+        ) {
+            if (it.toHex().startsWith(ModBusUtils.HOLDING_REGISTERS_CORRECT_RESPONSE_BITS)) {
+                Log.d(TAG, "readGun2LastChargingSummaryInfo: Response = ${it.toHex()}")
+
+                appViewModel.insertGunsLastChargingSummary(
+                    TbGunsLastChargingSummary(
+                        gunId = 2,
+                        evMacAddress = LastChargingSummaryUtils.getEVMacAddress(it),
+                        chargingDuration = LastChargingSummaryUtils.getTotalChargingTime(it),
+                        chargingStartDateTime = LastChargingSummaryUtils.getChargingStartTime(it),
+                        chargingEndDateTime = LastChargingSummaryUtils.getChargingEndTime(it),
+                        startSoc = LastChargingSummaryUtils.getStartSoc(it),
+                        endSoc = LastChargingSummaryUtils.getEndSoc(it),
+                        energyConsumption = LastChargingSummaryUtils.getEnergyConsumption(it),
+                        sessionEndReason = LastChargingSummaryUtils.getSessionEndReason(it)
+                    )
+                )
+            } else {
+                Log.e(TAG, "readGun2LastChargingSummaryInfo: Error Response - ${it.toHex()}")
             }
             lifecycleScope.launch {
                 delay(mCommonDelay)

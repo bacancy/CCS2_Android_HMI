@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="@dimen/_20sdp">
+
+    <include
+        android:id="@+id/incHeader"
+        layout="@layout/common_header" />
+
+    <TextView
+        android:id="@+id/tvErrorCode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_20sdp"
+        android:ellipsize="end"
+        android:lines="1"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_10ssp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/incHeader"
+        android:text="@string/lbl_error_code" />
+
+    <TextView
+        android:id="@+id/tvRectifier1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/_15sdp"
+        android:ellipsize="end"
+        android:lines="1"
+        android:text="@string/lbl_rectifier_1"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_10ssp"
+        app:layout_constraintBottom_toBottomOf="@id/tvRectifier1Value"
+        app:layout_constraintEnd_toStartOf="@id/tvRectifier1Value"
+        app:layout_constraintTop_toTopOf="@id/tvRectifier1Value" />
+
+    <TextView
+        android:id="@+id/tvRectifier1Value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:background="@drawable/bg_rectangle_for_values"
+        android:gravity="center"
+        android:lines="1"
+        android:paddingHorizontal="@dimen/_30sdp"
+        android:paddingVertical="@dimen/_5sdp"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_7ssp"
+        app:layout_constraintStart_toStartOf="@id/tvErrorCode"
+        app:layout_constraintTop_toBottomOf="@id/tvErrorCode"
+        tools:text="0 0 0 0 0 0 0 0" />
+
+    <TextView
+        android:id="@+id/tvRectifier2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/_15sdp"
+        android:ellipsize="end"
+        android:lines="1"
+        android:text="@string/lbl_rectifier_2"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_10ssp"
+        app:layout_constraintBottom_toBottomOf="@id/tvRectifier2Value"
+        app:layout_constraintEnd_toStartOf="@id/tvRectifier2Value"
+        app:layout_constraintTop_toTopOf="@id/tvRectifier2Value" />
+
+    <TextView
+        android:id="@+id/tvRectifier2Value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:background="@drawable/bg_rectangle_for_values"
+        android:gravity="center"
+        android:lines="1"
+        android:paddingHorizontal="@dimen/_30sdp"
+        android:paddingVertical="@dimen/_5sdp"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_7ssp"
+        app:layout_constraintEnd_toEndOf="@id/tvRectifier1Value"
+        app:layout_constraintStart_toStartOf="@id/tvRectifier1Value"
+        app:layout_constraintTop_toBottomOf="@id/tvRectifier1Value"
+        tools:text="0 0 0 0 0 0 0 0" />
+
+    <TextView
+        android:id="@+id/tvRectifier3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/_15sdp"
+        android:ellipsize="end"
+        android:lines="1"
+        android:text="@string/lbl_rectifier_3"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_10ssp"
+        app:layout_constraintBottom_toBottomOf="@id/tvRectifier3Value"
+        app:layout_constraintEnd_toStartOf="@id/tvRectifier3Value"
+        app:layout_constraintTop_toTopOf="@id/tvRectifier3Value" />
+
+    <TextView
+        android:id="@+id/tvRectifier3Value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:background="@drawable/bg_rectangle_for_values"
+        android:gravity="center"
+        android:lines="1"
+        android:paddingHorizontal="@dimen/_30sdp"
+        android:paddingVertical="@dimen/_5sdp"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_7ssp"
+        app:layout_constraintEnd_toEndOf="@id/tvRectifier2Value"
+        app:layout_constraintStart_toStartOf="@id/tvRectifier2Value"
+        app:layout_constraintTop_toBottomOf="@id/tvRectifier2Value"
+        tools:text="0 0 0 0 0 0 0 0" />
+
+    <TextView
+        android:id="@+id/tvRectifier4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/_15sdp"
+        android:ellipsize="end"
+        android:lines="1"
+        android:text="@string/lbl_rectifier_4"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_10ssp"
+        app:layout_constraintBottom_toBottomOf="@id/tvRectifier4Value"
+        app:layout_constraintEnd_toStartOf="@id/tvRectifier4Value"
+        app:layout_constraintTop_toTopOf="@id/tvRectifier4Value" />
+
+    <TextView
+        android:id="@+id/tvRectifier4Value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:background="@drawable/bg_rectangle_for_values"
+        android:gravity="center"
+        android:lines="1"
+        android:paddingHorizontal="@dimen/_30sdp"
+        android:paddingVertical="@dimen/_5sdp"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_7ssp"
+        app:layout_constraintEnd_toEndOf="@id/tvRectifier3Value"
+        app:layout_constraintStart_toStartOf="@id/tvRectifier3Value"
+        app:layout_constraintTop_toBottomOf="@id/tvRectifier3Value"
+        tools:text="0 0 0 0 0 0 0 0" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
