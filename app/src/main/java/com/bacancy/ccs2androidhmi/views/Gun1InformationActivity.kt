@@ -9,7 +9,7 @@ import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.bacancy.ccs2androidhmi.base.SerialPortBaseActivity
 import com.bacancy.ccs2androidhmi.databinding.ActivityGun1InformationBinding
-import com.bacancy.ccs2androidhmi.db.entity.ChargingSummary
+import com.bacancy.ccs2androidhmi.db.entity.TbChargingHistory
 import com.bacancy.ccs2androidhmi.util.LastChargingSummaryUtils.getChargingEndTime
 import com.bacancy.ccs2androidhmi.util.LastChargingSummaryUtils.getChargingStartTime
 import com.bacancy.ccs2androidhmi.util.LastChargingSummaryUtils.getEVMacAddress
@@ -242,7 +242,7 @@ class Gun1InformationActivity : SerialPortBaseActivity() {
 
             if (responseFrameArray.toHex().startsWith(HOLDING_REGISTERS_CORRECT_RESPONSE_BITS)) {
                 observer.stopObserving()
-                val chargingSummary = ChargingSummary(
+                val chargingSummary = TbChargingHistory(
                     gunNumber = if(isGun1 == true) 1 else 2,
                     evMacAddress = getEVMacAddress(responseFrameArray),
                     chargingStartTime = getChargingStartTime(responseFrameArray),

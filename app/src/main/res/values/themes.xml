@@ -39,4 +39,7 @@
         <item name="android:textSize">@dimen/_4ssp</item>
         <item name="android:lines">2</item>
     </style>
+    <style name="CustomAlertDialog" parent="Theme.AppCompat.DayNight.Dialog.Alert">
+        <item name="android:windowBackground">@drawable/bg_black_round_rect_with_white_border</item>
+    </style>
 </resources>

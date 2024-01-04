@@ -3,7 +3,6 @@ package com.bacancy.ccs2androidhmi.views.fragment
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +10,9 @@ import androidx.fragment.app.viewModels
 import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentGunsHomeScreenBinding
+import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showAlertDialog
+import com.bacancy.ccs2androidhmi.util.DialogUtils.showCustomDialog
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
 import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
 import com.bacancy.ccs2androidhmi.views.listener.FragmentChangeListener
@@ -46,23 +47,28 @@ class GunsHomeScreenFragment : BaseFragment() {
         handleClicks()
         (requireActivity() as HMIDashboardActivity).showHideBackIcon(false)
         observeGunsChargingInfo()
-        updateGunsUI()
         return binding.root
     }
 
-    private fun updateGunsUI() {
+    private fun updateGun1UI(tbGunsChargingInfo: TbGunsChargingInfo) {
 
-        val gunStateList = listOf("Unplugged", "Plugged", "Charging", "Completed", "Fault")
+        val gunStateList = listOf(
+            "Unplugged",
+            "Plugged In & Waiting for Authentication",
+            "Charging",
+            "Complete",
+            "Fault"
+        )
 
         val gun1State = gunStateList[3]
         val gun2State = gunStateList[0]
 
-        when (gun1State) {
+        when (tbGunsChargingInfo.gunChargingState) {
             "Unplugged" -> {
                 binding.ivGun1Half.setImageResource(R.drawable.img_gun1_unplugged)
             }
 
-            "Plugged" -> {
+            "Plugged In & Waiting for Authentication" -> {
                 binding.ivGun1Half.setImageResource(R.drawable.img_gun1_plugged)
             }
 
@@ -70,34 +76,12 @@ class GunsHomeScreenFragment : BaseFragment() {
                 binding.ivGun1Half.setImageResource(R.drawable.img_gun1_charging)
             }
 
-            "Completed" -> {
+            "Complete" -> {
                 binding.ivGun1Half.setImageResource(R.drawable.img_gun1_charging_completed)
             }
 
-            "Fault" -> {
+            "PLC Fault", "Rectifier Fault", "Temperature Fault", "SPD Fault", "Smoke Fault", "Tamper Fault" -> {
                 binding.ivGun1Half.setImageResource(R.drawable.img_gun1_fault)
-            }
-        }
-
-        when (gun2State) {
-            "Unplugged" -> {
-                binding.ivGun2Half.setImageResource(R.drawable.img_gun2_unplugged)
-            }
-
-            "Plugged" -> {
-                binding.ivGun2Half.setImageResource(R.drawable.img_gun2_plugged)
-            }
-
-            "Charging" -> {
-                binding.ivGun2Half.setImageResource(R.drawable.img_gun2_charging)
-            }
-
-            "Completed" -> {
-                binding.ivGun2Half.setImageResource(R.drawable.img_gun2_charging_completed)
-            }
-
-            "Fault" -> {
-                binding.ivGun2Half.setImageResource(R.drawable.img_gun2_fault)
             }
         }
     }
@@ -105,13 +89,43 @@ class GunsHomeScreenFragment : BaseFragment() {
     private fun observeGunsChargingInfo() {
 
         appViewModel.getUpdatedGunsChargingInfo(1).observe(requireActivity()) {
-            Log.d("GunsHomeScreen", "observeGunsChargingInfo: Gun 1 = ${Gson().toJson(it)}")
+            it?.let {
+                Log.d("GunsHomeScreen", "observeGunsChargingInfo: Gun 1 = ${Gson().toJson(it)}")
+                updateGun1UI(it)
+            }
         }
 
         appViewModel.getUpdatedGunsChargingInfo(2).observe(requireActivity()) {
-            Log.d("GunsHomeScreen", "observeGunsChargingInfo: Gun 2 = ${Gson().toJson(it)}")
+            it?.let {
+                Log.d("GunsHomeScreen", "observeGunsChargingInfo: Gun 2 = ${Gson().toJson(it)}")
+                updateGun2UI(it)
+            }
         }
 
+    }
+
+    private fun updateGun2UI(tbGunsChargingInfo: TbGunsChargingInfo) {
+        when (tbGunsChargingInfo.gunChargingState) {
+            "Unplugged" -> {
+                binding.ivGun2Half.setImageResource(R.drawable.img_gun2_unplugged)
+            }
+
+            "Plugged In & Waiting for Authentication" -> {
+                binding.ivGun2Half.setImageResource(R.drawable.img_gun2_plugged)
+            }
+
+            "Charging" -> {
+                binding.ivGun2Half.setImageResource(R.drawable.img_gun2_charging)
+            }
+
+            "Complete" -> {
+                binding.ivGun2Half.setImageResource(R.drawable.img_gun2_charging_completed)
+            }
+
+            "PLC Fault", "Rectifier Fault", "Temperature Fault", "SPD Fault", "Smoke Fault", "Tamper Fault" -> {
+                binding.ivGun2Half.setImageResource(R.drawable.img_gun2_fault)
+            }
+        }
     }
 
     private fun handleClicks() {
@@ -128,20 +142,7 @@ class GunsHomeScreenFragment : BaseFragment() {
         }
 
         binding.ivScreenInfo.setOnClickListener {
-            val title = "Info"
-            val message = "To start the authentication process or view detailed parameter information, tap a specific gun icon."
-
-            val okButton = Pair("Close") {
-                // Ok button click action
-                // Add your code here
-            }
-
-            val cancelButton = Pair("Cancel") {
-                // Cancel button click action
-                // Add your code here
-            }
-
-            requireContext().showAlertDialog(title, message, okButton)
+            showCustomDialog(getString(R.string.msg_dialog_home_screen)){}
         }
     }
 

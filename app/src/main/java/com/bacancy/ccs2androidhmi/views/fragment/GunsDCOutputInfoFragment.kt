@@ -1,36 +1,24 @@
 package com.bacancy.ccs2androidhmi.views.fragment
 
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import androidx.lifecycle.lifecycleScope
+import androidx.fragment.app.viewModels
 import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentDcMeterBinding
-import com.bacancy.ccs2androidhmi.databinding.FragmentGunsHomeScreenBinding
-import com.bacancy.ccs2androidhmi.util.ModBusUtils
-import com.bacancy.ccs2androidhmi.util.ModbusRequestFrames
-import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.formatFloatToString
-import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.toHex
-import com.bacancy.ccs2androidhmi.util.ReadWriteUtil
-import com.bacancy.ccs2androidhmi.util.ResponseSizes
-import com.bacancy.ccs2androidhmi.util.setValue
+import com.bacancy.ccs2androidhmi.db.entity.TbGunsDcMeterInfo
 import com.bacancy.ccs2androidhmi.util.visible
+import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
 import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
-import com.bacancy.ccs2androidhmi.views.NewTestActivity
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.util.concurrent.TimeUnit
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class GunsDCOutputInfoFragment : BaseFragment() {
 
-    private val isGun1: Boolean = false
+    private var selectedGunNumber: Int = 1
+    private val appViewModel: AppViewModel by viewModels()
     private lateinit var binding: FragmentDcMeterBinding
 
     override fun onCreateView(
@@ -38,10 +26,36 @@ class GunsDCOutputInfoFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentDcMeterBinding.inflate(layoutInflater)
+        selectedGunNumber = arguments?.getInt("SELECTED_GUN")!!
         setScreenHeaderViews()
         setupViews()
         (requireActivity() as HMIDashboardActivity).showHideBackIcon(true)
+        observeGunsDCOutputInfo()
         return binding.root
+    }
+
+    private fun observeGunsDCOutputInfo() {
+        appViewModel.getUpdatedGunsDCMeterInfo(selectedGunNumber).observe(requireActivity()){
+            it?.let {
+                updateDCOutputUI(it)
+            }
+        }
+    }
+
+    private fun updateDCOutputUI(tbGunsChargingInfo: TbGunsDcMeterInfo) {
+        binding.apply {
+            tbGunsChargingInfo.apply {
+                incVoltage.tvValue.text = voltage.toString()
+                incCurrent.tvValue.text = current.toString()
+                incPower.tvValue.text = power.toString()
+                incImportEnergy.tvValue.text = importEnergy.toString()
+                incExportEnergy.tvValue.text = exportEnergy.toString()
+                incMaxVoltage.tvValue.text = maxVoltage.toString()
+                incMinVoltage.tvValue.text = minVoltage.toString()
+                incMaxCurrent.tvValue.text = maxCurrent.toString()
+                incMinCurrent.tvValue.text = minCurrent.toString()
+            }
+        }
     }
 
     override fun setScreenHeaderViews() {

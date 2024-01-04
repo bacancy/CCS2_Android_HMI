@@ -26,7 +26,7 @@ class CheckAllChargingSummariesActivity : SerialPortBaseActivity() {
         setContentView(binding.root)
         supportActionBar?.title = "Charging Summary"
         setupList()
-        appViewModel.getAllChargingSummaries()
+        appViewModel.getChargingHistoryByGunNumber(1)
         getAllChargingSummaries()
     }
 

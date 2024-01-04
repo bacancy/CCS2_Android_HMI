@@ -96,5 +96,6 @@
     <string name="lbl_rectifier_3">Rectifier 3:</string>
     <string name="lbl_rectifier_4">Rectifier 4:</string>
     <string name="lbl_device_information">Device Information</string>
+    <string name="msg_dialog_home_screen">To start the authentication process or view detailed parameter information, tap a specific gun icon.</string>
 
 </resources>

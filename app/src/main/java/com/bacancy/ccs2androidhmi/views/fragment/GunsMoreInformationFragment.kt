@@ -10,6 +10,7 @@ import androidx.fragment.app.viewModels
 import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentGunsMoreInfoScreenBinding
+import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
 import com.bacancy.ccs2androidhmi.util.gone
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
 import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
@@ -52,7 +53,28 @@ class GunsMoreInformationFragment : BaseFragment() {
 
     private fun observeGunsChargingInfo() {
         appViewModel.getUpdatedGunsChargingInfo(selectedGunNumber).observe(requireActivity()) {
-            Log.d("GunsMoreInfo", "observeGunsChargingInfo: Gun $selectedGunNumber = ${Gson().toJson(it)}")
+            it?.let {
+                Log.d(
+                    "GunsMoreInfo",
+                    "observeGunsChargingInfo: Gun $selectedGunNumber = ${Gson().toJson(it)}"
+                )
+                updateGunsChargingUI(it)
+            }
+        }
+    }
+
+    private fun updateGunsChargingUI(tbGunsChargingInfo: TbGunsChargingInfo) {
+        binding.apply {
+            tbGunsChargingInfo.apply {
+                incInitialSoc.tvValue.text = initialSoc.toString()
+                incDemandVoltage.tvValue.text = demandVoltage.toString()
+                incDemandCurrent.tvValue.text = demandCurrent.toString()
+                incChargingVoltage.tvValue.text = chargingVoltage.toString()
+                incChargingCurrent.tvValue.text = chargingCurrent.toString()
+                incChargingSoc.tvValue.text = chargingSoc.toString()
+                incDuration.tvValue.text = duration
+                incEnergyConsumption.tvValue.text = energyConsumption.toString()
+            }
         }
     }
 
@@ -66,16 +88,19 @@ class GunsMoreInformationFragment : BaseFragment() {
 
             btnDCMeterInfo.setOnClickListener {
                 gunsDCOutputInfoFragment = GunsDCOutputInfoFragment()
+                gunsDCOutputInfoFragment.arguments = getBundleToPass()
                 fragmentChangeListener?.replaceFragment(gunsDCOutputInfoFragment)
             }
 
             btnChargingSummary.setOnClickListener {
                 gunsLastChargingSummaryFragment = GunsLastChargingSummaryFragment()
+                gunsLastChargingSummaryFragment.arguments = getBundleToPass()
                 fragmentChangeListener?.replaceFragment(gunsLastChargingSummaryFragment)
             }
 
             btnChargingHistory.setOnClickListener {
                 gunsChargingHistoryFragment = GunsChargingHistoryFragment()
+                gunsChargingHistoryFragment.arguments = getBundleToPass()
                 fragmentChangeListener?.replaceFragment(gunsChargingHistoryFragment)
             }
 
@@ -89,6 +114,12 @@ class GunsMoreInformationFragment : BaseFragment() {
             }
 
         }
+    }
+
+    private fun getBundleToPass(): Bundle {
+        val bundle = Bundle()
+        bundle.putInt("SELECTED_GUN", selectedGunNumber)
+        return bundle
     }
 
     override fun setScreenHeaderViews() {

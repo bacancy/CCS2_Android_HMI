@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.bacancy.ccs2androidhmi.db.entity.ChargingSummary
+import com.bacancy.ccs2androidhmi.db.entity.TbChargingHistory
 import com.bacancy.ccs2androidhmi.db.entity.TbAcMeterInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsDcMeterInfo
@@ -18,8 +18,8 @@ import javax.inject.Inject
 @HiltViewModel
 class AppViewModel @Inject constructor(private val mainRepository: MainRepository) : ViewModel() {
 
-    private val _chargingSummariesList = MutableLiveData<List<ChargingSummary>>()
-    val chargingSummariesList: LiveData<List<ChargingSummary>> = _chargingSummariesList
+    private val _chargingSummariesList = MutableLiveData<List<TbChargingHistory>>()
+    val chargingSummariesList: LiveData<List<TbChargingHistory>> = _chargingSummariesList
 
     val latestAcMeterInfo: LiveData<TbAcMeterInfo> = mainRepository.getLatestAcMeterInfo()
     val latestMiscInfo: LiveData<TbMiscInfo> = mainRepository.getLatestMiscInfo()
@@ -32,15 +32,15 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
     fun getGunsLastChargingSummary(gunNumber: Int): LiveData<TbGunsLastChargingSummary> =
         mainRepository.getGunsLastChargingSummary(gunNumber)
 
-    fun insertChargingSummary(chargingSummary: ChargingSummary) {
+    fun insertChargingSummary(chargingSummary: TbChargingHistory) {
         viewModelScope.launch {
             mainRepository.insertChargingSummary(chargingSummary)
         }
     }
 
-    fun getAllChargingSummaries() {
+    fun getChargingHistoryByGunNumber(gunNumber: Int) {
         viewModelScope.launch {
-            _chargingSummariesList.value = mainRepository.getAllChargingSummaries()
+            _chargingSummariesList.value = mainRepository.getGunsChargingHistory(gunNumber)
         }
     }
 

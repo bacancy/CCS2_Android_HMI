@@ -1,5 +1,6 @@
 package com.bacancy.ccs2androidhmi.util
 
+import android.util.Log
 import com.bacancy.ccs2androidhmi.models.RequestModel
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.toHex
 import kotlinx.coroutines.Dispatchers
@@ -58,8 +59,11 @@ object ReadWriteUtil {
 
                 if (size > 0 && isValidResponse(responseFrame)) {
                     onDataReceived(responseFrame)
+                } else {
+                    Log.e("TAG", "writeRequestAndReadResponse: Error Frame - ${responseFrame.toHex()}")
                 }
             } catch (e: Exception) {
+                Log.e("TAG", "writeRequestAndReadResponse: In Catch - ${e.printStackTrace()}")
                 e.printStackTrace()
             }
         }

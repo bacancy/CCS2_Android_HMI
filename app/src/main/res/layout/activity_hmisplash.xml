@@ -11,6 +11,6 @@
         android:layout_height="match_parent"
         android:adjustViewBounds="true"
         android:scaleType="fitXY"
-        android:src="@drawable/bg_splash_screen" />
+        android:src="@drawable/bg_splash_new" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

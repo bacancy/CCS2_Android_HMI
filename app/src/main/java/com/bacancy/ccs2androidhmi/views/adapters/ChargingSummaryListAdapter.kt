@@ -6,9 +6,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bacancy.ccs2androidhmi.databinding.RowItemChargingSummaryBinding
-import com.bacancy.ccs2androidhmi.db.entity.ChargingSummary
+import com.bacancy.ccs2androidhmi.db.entity.TbChargingHistory
 
-class ChargingSummaryListAdapter(var onItemClick: (ChargingSummary) -> Unit): ListAdapter<ChargingSummary, ChargingSummaryListAdapter.SampleViewHolder>(
+class ChargingSummaryListAdapter(var onItemClick: (TbChargingHistory) -> Unit): ListAdapter<TbChargingHistory, ChargingSummaryListAdapter.SampleViewHolder>(
     DiffCallback()
 ) {
 
@@ -36,7 +36,7 @@ class ChargingSummaryListAdapter(var onItemClick: (ChargingSummary) -> Unit): Li
             }
         }
 
-        fun bind(sampleModel: ChargingSummary){
+        fun bind(sampleModel: TbChargingHistory){
             binding.apply {
 
                 tvEvMacAddress.text = "EV Mac Address = ${sampleModel.evMacAddress}"
@@ -54,12 +54,12 @@ class ChargingSummaryListAdapter(var onItemClick: (ChargingSummary) -> Unit): Li
 
 
 
-    class DiffCallback : DiffUtil.ItemCallback<ChargingSummary>(){
-        override fun areItemsTheSame(oldItem: ChargingSummary, newItem: ChargingSummary): Boolean {
+    class DiffCallback : DiffUtil.ItemCallback<TbChargingHistory>(){
+        override fun areItemsTheSame(oldItem: TbChargingHistory, newItem: TbChargingHistory): Boolean {
             return oldItem.summaryId == newItem.summaryId
         }
 
-        override fun areContentsTheSame(oldItem: ChargingSummary, newItem: ChargingSummary): Boolean {
+        override fun areContentsTheSame(oldItem: TbChargingHistory, newItem: TbChargingHistory): Boolean {
             return oldItem == newItem
         }
 

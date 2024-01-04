@@ -11,6 +11,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
 import com.bacancy.ccs2androidhmi.HMIApp
 import com.bacancy.ccs2androidhmi.db.entity.TbAcMeterInfo
+import com.bacancy.ccs2androidhmi.db.entity.TbChargingHistory
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsDcMeterInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsLastChargingSummary
@@ -42,13 +43,13 @@ import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getRectifier4Code
 import com.bacancy.ccs2androidhmi.util.ModBusUtils
 import com.bacancy.ccs2androidhmi.util.ModbusRequestFrames
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter
-import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.getIntValueFromByte
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.toHex
 import com.bacancy.ccs2androidhmi.util.ReadWriteUtil
 import com.bacancy.ccs2androidhmi.util.ResponseSizes
 import com.bacancy.ccs2androidhmi.util.StateAndModesUtils
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.InputStream
@@ -57,6 +58,8 @@ import java.io.OutputStream
 @AndroidEntryPoint
 abstract class SerialPortBaseActivityNew : FragmentActivity() {
 
+    private var isGun1ChargingStarted: Boolean = false
+    private var isGun2ChargingStarted: Boolean = false
     protected var mApplication: HMIApp? = null
     private var mSerialPort: SerialPort? = null
     protected var mOutputStream: OutputStream? = null
@@ -237,9 +240,92 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                     )
                 )
 
+                when (getGunChargingState(it).description) {
+                    "Plugged In & Waiting for Authentication" -> {
+                        isGun1ChargingStarted = false
+                        authenticateGun(1)
+                    }
+
+                    "Charging" -> {
+                        isGun1ChargingStarted = true
+                        lifecycleScope.launch {
+                            delay(mCommonDelay)
+                            readGun1LastChargingSummaryInfo()
+                        }
+                    }
+
+                    "Complete", "Emergency Stop" -> {
+                        if (isGun1ChargingStarted) {
+                            isGun1ChargingStarted = false
+                            lifecycleScope.launch {
+                                delay(mCommonDelay)
+                                readGun1LastChargingSummaryInfo(true)
+                            }
+                        }
+                    }
+
+                    else -> {
+                        isGun1ChargingStarted = false
+                        lifecycleScope.launch {
+                            delay(mCommonDelay)
+                            readGun1LastChargingSummaryInfo()
+                        }
+                    }
+                }
 
             } else {
                 Log.e(TAG, "readGun1Info: Error Response - ${it.toHex()}")
+            }
+
+        }
+    }
+
+    private suspend fun readGun1LastChargingSummaryInfo(shouldSaveLastChargingSummary: Boolean = false) {
+        Log.d(
+            TAG,
+            "readGun1LastChargingSummaryInfo: Request Sent - ${
+                ModbusRequestFrames.getGun1LastChargingSummaryRequestFrame().toHex()
+            }"
+        )
+        ReadWriteUtil.writeRequestAndReadResponse(
+            mOutputStream,
+            mInputStream,
+            ResponseSizes.LAST_CHARGING_SUMMARY_RESPONSE_SIZE,
+            ModbusRequestFrames.getGun1LastChargingSummaryRequestFrame()
+        ) {
+            if (it.toHex().startsWith(ModBusUtils.HOLDING_REGISTERS_CORRECT_RESPONSE_BITS)) {
+                Log.d(TAG, "readGun1LastChargingSummaryInfo: Response = ${it.toHex()}")
+                if (shouldSaveLastChargingSummary) {
+                    appViewModel.insertGunsLastChargingSummary(
+                        TbGunsLastChargingSummary(
+                            gunId = 1,
+                            evMacAddress = LastChargingSummaryUtils.getEVMacAddress(it),
+                            chargingDuration = LastChargingSummaryUtils.getTotalChargingTime(it),
+                            chargingStartDateTime = LastChargingSummaryUtils.getChargingStartTime(it),
+                            chargingEndDateTime = LastChargingSummaryUtils.getChargingEndTime(it),
+                            startSoc = LastChargingSummaryUtils.getStartSoc(it),
+                            endSoc = LastChargingSummaryUtils.getEndSoc(it),
+                            energyConsumption = LastChargingSummaryUtils.getEnergyConsumption(it),
+                            sessionEndReason = LastChargingSummaryUtils.getSessionEndReason(it)
+                        )
+                    )
+                    val chargingSummary = TbChargingHistory(
+                        gunNumber = 1,
+                        evMacAddress = LastChargingSummaryUtils.getEVMacAddress(it),
+                        chargingStartTime = LastChargingSummaryUtils.getChargingStartTime(it),
+                        chargingEndTime = LastChargingSummaryUtils.getChargingEndTime(it),
+                        totalChargingTime = LastChargingSummaryUtils.getTotalChargingTime(it),
+                        startSoc = LastChargingSummaryUtils.getStartSoc(it),
+                        endSoc = LastChargingSummaryUtils.getEndSoc(it),
+                        energyConsumption = LastChargingSummaryUtils.getEnergyConsumption(it),
+                        sessionEndReason = LastChargingSummaryUtils.getSessionEndReason(it),
+                        customSessionEndReason = "NA",
+                        totalCost = LastChargingSummaryUtils.getTotalCost(it)
+                    )
+                    appViewModel.insertChargingSummary(chargingSummary)
+                }
+            } else {
+                Log.e(TAG, "readGun1LastChargingSummaryInfo: Error Response - ${it.toHex()}")
             }
             lifecycleScope.launch {
                 delay(mCommonDelay)
@@ -264,61 +350,25 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
             if (it.toHex().startsWith(ModBusUtils.HOLDING_REGISTERS_CORRECT_RESPONSE_BITS)) {
                 Log.d(TAG, "readGun1DCMeterInfo: Response = ${it.toHex()}")
                 val newResponse = ModBusUtils.parseInputRegistersResponse(it)
-                appViewModel.insertGunsDCMeterInfo(
-                    TbGunsDcMeterInfo(
-                        gunId = 1,
-                        voltage = newResponse[0],
-                        current = newResponse[1],
-                        power = newResponse[2],
-                        importEnergy = newResponse[3],
-                        exportEnergy = newResponse[4],
-                        maxVoltage = newResponse[5],
-                        minVoltage = newResponse[6],
-                        maxCurrent = newResponse[7],
-                        minCurrent = newResponse[8]
+                if (newResponse.isNotEmpty()) {
+                    appViewModel.insertGunsDCMeterInfo(
+                        TbGunsDcMeterInfo(
+                            gunId = 1,
+                            voltage = newResponse[0],
+                            current = newResponse[1],
+                            power = newResponse[2],
+                            importEnergy = newResponse[3],
+                            exportEnergy = newResponse[4],
+                            maxVoltage = newResponse[5],
+                            minVoltage = newResponse[6],
+                            maxCurrent = newResponse[7],
+                            minCurrent = newResponse[8]
+                        )
                     )
-                )
+                }
 
             } else {
                 Log.e(TAG, "readGun1DCMeterInfo: Error Response - ${it.toHex()}")
-            }
-            lifecycleScope.launch {
-                delay(mCommonDelay)
-                readGun1LastChargingSummaryInfo()
-            }
-        }
-    }
-
-    private suspend fun readGun1LastChargingSummaryInfo() {
-        Log.d(
-            TAG,
-            "readGun1LastChargingSummaryInfo: Request Sent - ${
-                ModbusRequestFrames.getGun1LastChargingSummaryRequestFrame().toHex()
-            }"
-        )
-        ReadWriteUtil.writeRequestAndReadResponse(
-            mOutputStream,
-            mInputStream,
-            ResponseSizes.LAST_CHARGING_SUMMARY_RESPONSE_SIZE,
-            ModbusRequestFrames.getGun1LastChargingSummaryRequestFrame()
-        ) {
-            if (it.toHex().startsWith(ModBusUtils.HOLDING_REGISTERS_CORRECT_RESPONSE_BITS)) {
-                Log.d(TAG, "readGun1LastChargingSummaryInfo: Response = ${it.toHex()}")
-                appViewModel.insertGunsLastChargingSummary(
-                    TbGunsLastChargingSummary(
-                        gunId = 1,
-                        evMacAddress = LastChargingSummaryUtils.getEVMacAddress(it),
-                        chargingDuration = LastChargingSummaryUtils.getTotalChargingTime(it),
-                        chargingStartDateTime = LastChargingSummaryUtils.getChargingStartTime(it),
-                        chargingEndDateTime = LastChargingSummaryUtils.getChargingEndTime(it),
-                        startSoc = LastChargingSummaryUtils.getStartSoc(it),
-                        endSoc = LastChargingSummaryUtils.getEndSoc(it),
-                        energyConsumption = LastChargingSummaryUtils.getEnergyConsumption(it),
-                        sessionEndReason = LastChargingSummaryUtils.getSessionEndReason(it)
-                    )
-                )
-            } else {
-                Log.e(TAG, "readGun1LastChargingSummaryInfo: Error Response - ${it.toHex()}")
             }
             lifecycleScope.launch {
                 delay(mCommonDelay)
@@ -355,8 +405,91 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                         energyConsumption = getChargingEnergyConsumption(it)
                     )
                 )
+
+                when (getGunChargingState(it).description) {
+                    "Plugged In & Waiting for Authentication" -> {
+                        isGun2ChargingStarted = false
+                        authenticateGun(2)
+                    }
+
+                    "Charging" -> {
+                        isGun2ChargingStarted = true
+                        lifecycleScope.launch {
+                            delay(mCommonDelay)
+                            readGun2LastChargingSummaryInfo()
+                        }
+                    }
+
+                    "Complete", "Emergency Stop" -> {
+                        if (isGun2ChargingStarted) {
+                            isGun2ChargingStarted = false
+                            lifecycleScope.launch {
+                                delay(mCommonDelay)
+                                readGun2LastChargingSummaryInfo(true)
+                            }
+                        }
+                    }
+
+                    else -> {
+                        isGun2ChargingStarted = false
+                        lifecycleScope.launch {
+                            delay(mCommonDelay)
+                            readGun2LastChargingSummaryInfo()
+                        }
+                    }
+                }
             } else {
                 Log.e(TAG, "readGun2Info: Error Response - ${it.toHex()}")
+            }
+        }
+    }
+
+    private suspend fun readGun2LastChargingSummaryInfo(shouldSaveLastChargingSummary: Boolean = false) {
+        Log.d(
+            TAG,
+            "readGun2LastChargingSummaryInfo: Request Sent - ${
+                ModbusRequestFrames.getGun2LastChargingSummaryRequestFrame().toHex()
+            }"
+        )
+        ReadWriteUtil.writeRequestAndReadResponse(
+            mOutputStream,
+            mInputStream,
+            ResponseSizes.LAST_CHARGING_SUMMARY_RESPONSE_SIZE,
+            ModbusRequestFrames.getGun2LastChargingSummaryRequestFrame()
+        ) {
+            if (it.toHex().startsWith(ModBusUtils.HOLDING_REGISTERS_CORRECT_RESPONSE_BITS)) {
+                Log.d(TAG, "readGun2LastChargingSummaryInfo: Response = ${it.toHex()}")
+                if (shouldSaveLastChargingSummary) {
+                    appViewModel.insertGunsLastChargingSummary(
+                        TbGunsLastChargingSummary(
+                            gunId = 2,
+                            evMacAddress = LastChargingSummaryUtils.getEVMacAddress(it),
+                            chargingDuration = LastChargingSummaryUtils.getTotalChargingTime(it),
+                            chargingStartDateTime = LastChargingSummaryUtils.getChargingStartTime(it),
+                            chargingEndDateTime = LastChargingSummaryUtils.getChargingEndTime(it),
+                            startSoc = LastChargingSummaryUtils.getStartSoc(it),
+                            endSoc = LastChargingSummaryUtils.getEndSoc(it),
+                            energyConsumption = LastChargingSummaryUtils.getEnergyConsumption(it),
+                            sessionEndReason = LastChargingSummaryUtils.getSessionEndReason(it)
+                        )
+                    )
+                    val chargingSummary = TbChargingHistory(
+                        gunNumber = 2,
+                        evMacAddress = LastChargingSummaryUtils.getEVMacAddress(it),
+                        chargingStartTime = LastChargingSummaryUtils.getChargingStartTime(it),
+                        chargingEndTime = LastChargingSummaryUtils.getChargingEndTime(it),
+                        totalChargingTime = LastChargingSummaryUtils.getTotalChargingTime(it),
+                        startSoc = LastChargingSummaryUtils.getStartSoc(it),
+                        endSoc = LastChargingSummaryUtils.getEndSoc(it),
+                        energyConsumption = LastChargingSummaryUtils.getEnergyConsumption(it),
+                        sessionEndReason = LastChargingSummaryUtils.getSessionEndReason(it),
+                        customSessionEndReason = "NA",
+                        totalCost = LastChargingSummaryUtils.getTotalCost(it)
+                    )
+                    appViewModel.insertChargingSummary(chargingSummary)
+                }
+            } else {
+                Log.e(TAG, "readGun2LastChargingSummaryInfo: Error Response - ${it.toHex()}")
             }
             lifecycleScope.launch {
                 delay(mCommonDelay)
@@ -381,65 +514,51 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
             if (it.toHex().startsWith(ModBusUtils.HOLDING_REGISTERS_CORRECT_RESPONSE_BITS)) {
                 Log.d(TAG, "readGun2DCMeterInfo: Response = ${it.toHex()}")
                 val newResponse = ModBusUtils.parseInputRegistersResponse(it)
-                appViewModel.insertGunsDCMeterInfo(
-                    TbGunsDcMeterInfo(
-                        gunId = 2,
-                        voltage = newResponse[0],
-                        current = newResponse[1],
-                        power = newResponse[2],
-                        importEnergy = newResponse[3],
-                        exportEnergy = newResponse[4],
-                        maxVoltage = newResponse[5],
-                        minVoltage = newResponse[6],
-                        maxCurrent = newResponse[7],
-                        minCurrent = newResponse[8]
+                if (newResponse.isNotEmpty()) {
+                    appViewModel.insertGunsDCMeterInfo(
+                        TbGunsDcMeterInfo(
+                            gunId = 2,
+                            voltage = newResponse[0],
+                            current = newResponse[1],
+                            power = newResponse[2],
+                            importEnergy = newResponse[3],
+                            exportEnergy = newResponse[4],
+                            maxVoltage = newResponse[5],
+                            minVoltage = newResponse[6],
+                            maxCurrent = newResponse[7],
+                            minCurrent = newResponse[8]
+                        )
                     )
-                )
+                }
             } else {
                 Log.e(TAG, "readGun2DCMeterInfo: Error Response - ${it.toHex()}")
             }
             lifecycleScope.launch {
                 delay(mCommonDelay)
-                readGun2LastChargingSummaryInfo()
+                startReading()
             }
         }
     }
 
-    private suspend fun readGun2LastChargingSummaryInfo() {
-        Log.d(
-            TAG,
-            "readGun2LastChargingSummaryInfo: Request Sent - ${
-                ModbusRequestFrames.getGun2LastChargingSummaryRequestFrame().toHex()
-            }"
-        )
-        ReadWriteUtil.writeRequestAndReadResponse(
-            mOutputStream,
-            mInputStream,
-            ResponseSizes.LAST_CHARGING_SUMMARY_RESPONSE_SIZE,
-            ModbusRequestFrames.getGun2LastChargingSummaryRequestFrame()
-        ) {
-            if (it.toHex().startsWith(ModBusUtils.HOLDING_REGISTERS_CORRECT_RESPONSE_BITS)) {
-                Log.d(TAG, "readGun2LastChargingSummaryInfo: Response = ${it.toHex()}")
-
-                appViewModel.insertGunsLastChargingSummary(
-                    TbGunsLastChargingSummary(
-                        gunId = 2,
-                        evMacAddress = LastChargingSummaryUtils.getEVMacAddress(it),
-                        chargingDuration = LastChargingSummaryUtils.getTotalChargingTime(it),
-                        chargingStartDateTime = LastChargingSummaryUtils.getChargingStartTime(it),
-                        chargingEndDateTime = LastChargingSummaryUtils.getChargingEndTime(it),
-                        startSoc = LastChargingSummaryUtils.getStartSoc(it),
-                        endSoc = LastChargingSummaryUtils.getEndSoc(it),
-                        energyConsumption = LastChargingSummaryUtils.getEnergyConsumption(it),
-                        sessionEndReason = LastChargingSummaryUtils.getSessionEndReason(it)
-                    )
-                )
-            } else {
-                Log.e(TAG, "readGun2LastChargingSummaryInfo: Error Response - ${it.toHex()}")
-            }
-            lifecycleScope.launch {
-                delay(mCommonDelay)
-                startReading()
+    private fun authenticateGun(gunNumber: Int) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            ReadWriteUtil.writeToSingleHoldingRegisterNew(
+                mOutputStream,
+                mInputStream,
+                30,
+                gunNumber
+            ) { responseFrame ->
+                val decodeResponse =
+                    ModBusUtils.convertModbusResponseFrameToString(responseFrame)
+                Log.d("TAG", "onDataReceived: $decodeResponse")
+                lifecycleScope.launch {
+                    delay(mCommonDelay)
+                    if (gunNumber == 1) {
+                        readGun1LastChargingSummaryInfo()
+                    } else {
+                        readGun2LastChargingSummaryInfo()
+                    }
+                }
             }
         }
     }

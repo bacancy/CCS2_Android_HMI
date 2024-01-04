@@ -35,7 +35,17 @@ object CommonUtils {
 
     fun getDateAndTimeFromHexArray(hexArray: MutableList<String>): String {
         val year = hexArray[2] + hexArray[3]
-        return "${hexArray[0].hexStringToDecimal()}/${hexArray[1].hexStringToDecimal()}/${year.hexStringToDecimal()} ${hexArray[4].hexStringToDecimal()}:${hexArray[5].hexStringToDecimal()}:${hexArray[6].hexStringToDecimal()}"
-    }
+        val formattedDate = "%02d/%02d/%04d".format(
+            hexArray[0].hexStringToDecimal(),
+            hexArray[1].hexStringToDecimal(),
+            year.hexStringToDecimal()
+        )
+        val formattedTime = "%02d:%02d:%02d".format(
+            hexArray[4].hexStringToDecimal(),
+            hexArray[5].hexStringToDecimal(),
+            hexArray[6].hexStringToDecimal()
+        )
 
+        return "$formattedDate $formattedTime"
+    }
 }

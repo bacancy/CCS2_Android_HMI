@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         tools:text="@string/lbl_energy_consumption"
         android:textColor="@color/white"
-        android:textSize="@dimen/_8ssp" />
+        android:textSize="@dimen/_9ssp" />
 
     <View
         android:layout_width="@dimen/_10sdp"
@@ -40,7 +40,7 @@
             android:lines="1"
             android:text="0.00"
             android:textColor="@color/white"
-            android:textSize="@dimen/_7ssp" />
+            android:textSize="@dimen/_8ssp" />
 
         <TextView
             android:id="@+id/tvValueUnit"

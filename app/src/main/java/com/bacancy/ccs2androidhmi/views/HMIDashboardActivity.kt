@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.view.WindowManager
 import androidx.activity.OnBackPressedDispatcherOwner
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -30,6 +31,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
     val handler = Handler(Looper.getMainLooper())
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         super.onCreate(savedInstanceState)
         binding = ActivityHmiDashboardBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -58,7 +60,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
     //For starting clock timer
     private fun startClockTimer() {
-        //handler.post(runnable)
+        handler.post(runnable)
     }
 
     fun showHideBackIcon(showBackIcon: Boolean = true) {

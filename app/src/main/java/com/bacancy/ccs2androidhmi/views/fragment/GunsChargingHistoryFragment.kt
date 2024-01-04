@@ -2,20 +2,16 @@ package com.bacancy.ccs2androidhmi.views.fragment
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.viewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentGunsChargingHistoryBinding
-import com.bacancy.ccs2androidhmi.databinding.FragmentGunsHomeScreenBinding
-import com.bacancy.ccs2androidhmi.db.entity.ChargingSummary
-import com.bacancy.ccs2androidhmi.util.LastChargingSummaryUtils
+import com.bacancy.ccs2androidhmi.db.entity.TbChargingHistory
 import com.bacancy.ccs2androidhmi.util.visible
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
 import com.bacancy.ccs2androidhmi.views.adapters.ChargingHistoryListAdapter
@@ -26,6 +22,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class GunsChargingHistoryFragment : BaseFragment() {
 
+    private var selectedGunNumber: Int = 1
     private lateinit var chargingHistoryAdapter: ChargingHistoryListAdapter
     private lateinit var binding: FragmentGunsChargingHistoryBinding
     private val appViewModel: AppViewModel by viewModels()
@@ -35,15 +32,16 @@ class GunsChargingHistoryFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentGunsChargingHistoryBinding.inflate(layoutInflater)
+        selectedGunNumber = arguments?.getInt("SELECTED_GUN")!!
         setScreenHeaderViews()
         setupViews()
         return binding.root
     }
 
-    private fun getSampleHistory(): MutableList<ChargingSummary> {
-        val historyList = mutableListOf<ChargingSummary>()
+    private fun getSampleHistory(): MutableList<TbChargingHistory> {
+        val historyList = mutableListOf<TbChargingHistory>()
         for (i in 1..5) {
-            val chargingSummary = ChargingSummary(
+            val chargingSummary = TbChargingHistory(
                 summaryId = i,
                 gunNumber = 1,
                 evMacAddress = "00-00-00-01-87-OF-66-30",
@@ -64,7 +62,11 @@ class GunsChargingHistoryFragment : BaseFragment() {
 
     override fun setScreenHeaderViews() {
         binding.apply {
-            incHeader.tvHeader.text = getString(R.string.lbl_gun_1)
+            if (selectedGunNumber == 1) {
+                incHeader.tvHeader.text = getString(R.string.lbl_gun_1)
+            } else {
+                incHeader.tvHeader.text = getString(R.string.lbl_gun_2)
+            }
             incHeader.tvSubHeader.text = getString(R.string.lbl_charging_history)
             incHeader.tvSubHeader.visible()
         }
@@ -78,15 +80,16 @@ class GunsChargingHistoryFragment : BaseFragment() {
                 adapter = chargingHistoryAdapter
             }
         }
-        chargingHistoryAdapter.submitList(getSampleHistory())
-        //getAllChargingHistory()
+        //chargingHistoryAdapter.submitList(getSampleHistory())
+        appViewModel.getChargingHistoryByGunNumber(selectedGunNumber)
+        getAllChargingHistory()
     }
 
     private fun getAllChargingHistory() {
 
         lifecycleScope.launch {
 
-            appViewModel.chargingSummariesList.observe(requireActivity()){
+            appViewModel.chargingSummariesList.observe(requireActivity()) {
                 Log.d("TAG", "getAllChargingSummaries: ${Gson().toJson(it)}")
                 chargingHistoryAdapter.submitList(it)
 

@@ -5,7 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.bacancy.ccs2androidhmi.db.entity.ChargingSummary
+import com.bacancy.ccs2androidhmi.db.entity.TbChargingHistory
 import com.bacancy.ccs2androidhmi.db.entity.TbAcMeterInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsDcMeterInfo
@@ -16,13 +16,13 @@ import com.bacancy.ccs2androidhmi.db.entity.TbMiscInfo
 interface AppDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertSummary(chargingSummary: ChargingSummary): Long
+    suspend fun insertSummary(chargingSummary: TbChargingHistory): Long
 
-    @Query("SELECT * FROM lastChargingSummary ORDER BY summaryId DESC")
-    suspend fun getAllChargingSummaries(): List<ChargingSummary>
+    @Query("SELECT * FROM tbChargingHistory ORDER BY summaryId DESC")
+    suspend fun getAllChargingSummaries(): List<TbChargingHistory>
 
-    @Query("SELECT * FROM lastChargingSummary WHERE gunNumber = :gunNumber ORDER BY summaryId DESC")
-    suspend fun getGunsChargingHistory(gunNumber: Int): List<ChargingSummary>
+    @Query("SELECT * FROM tbChargingHistory WHERE gunNumber = :gunNumber ORDER BY summaryId DESC")
+    suspend fun getGunsChargingHistory(gunNumber: Int): List<TbChargingHistory>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAcMeterInfo(tbAcMeterInfo: TbAcMeterInfo): Long

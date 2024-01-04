@@ -1,17 +1,16 @@
 package com.bacancy.ccs2androidhmi.views.adapters
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bacancy.ccs2androidhmi.databinding.RowItemChargingHistoryBinding
-import com.bacancy.ccs2androidhmi.db.entity.ChargingSummary
+import com.bacancy.ccs2androidhmi.db.entity.TbChargingHistory
 import com.bacancy.ccs2androidhmi.util.visible
 
-class ChargingHistoryListAdapter(var onItemClick: (ChargingSummary) -> Unit) :
-    ListAdapter<ChargingSummary, ChargingHistoryListAdapter.SampleViewHolder>(
+class ChargingHistoryListAdapter(var onItemClick: (TbChargingHistory) -> Unit) :
+    ListAdapter<TbChargingHistory, ChargingHistoryListAdapter.SampleViewHolder>(
         DiffCallback()
     ) {
 
@@ -45,7 +44,7 @@ class ChargingHistoryListAdapter(var onItemClick: (ChargingSummary) -> Unit) :
             }
         }
 
-        fun bind(sampleModel: ChargingSummary, position: Int) {
+        fun bind(sampleModel: TbChargingHistory, position: Int) {
             binding.apply {
                 if(position==0){
                     lnrTableHeader.visible()
@@ -62,14 +61,14 @@ class ChargingHistoryListAdapter(var onItemClick: (ChargingSummary) -> Unit) :
         }
     }
 
-    class DiffCallback : DiffUtil.ItemCallback<ChargingSummary>() {
-        override fun areItemsTheSame(oldItem: ChargingSummary, newItem: ChargingSummary): Boolean {
+    class DiffCallback : DiffUtil.ItemCallback<TbChargingHistory>() {
+        override fun areItemsTheSame(oldItem: TbChargingHistory, newItem: TbChargingHistory): Boolean {
             return oldItem.summaryId == newItem.summaryId
         }
 
         override fun areContentsTheSame(
-            oldItem: ChargingSummary,
-            newItem: ChargingSummary
+            oldItem: TbChargingHistory,
+            newItem: TbChargingHistory
         ): Boolean {
             return oldItem == newItem
         }
