@@ -54,7 +54,6 @@ object ModBusUtils {
             newCRC[0],
             newCRC[1]
         )
-        Log.d("TAG", "createReadInputRegistersRequest: FINAL HEX = ${finalByteArray.toHex()}")
         return finalByteArray
     }
 
@@ -138,10 +137,6 @@ object ModBusUtils {
             quantity.toByte(),
             newCRC[0],
             newCRC[1]
-        )
-        Log.d(
-            "TAG",
-            "createReadHoldingRegistersRequest: FINAL BYTE ARRAY TO HEX = ${finalByteArray.toHex()}"
         )
         return finalByteArray
     }
@@ -858,8 +853,6 @@ object ModBusUtils {
     }
 
     fun parseInputRegistersResponse(response: ByteArray): FloatArray {
-        Log.d("TAG", "parseInputRegistersResponse: RESPONSE SIZE = ${response.size}")
-        Log.d("TAG", "parseInputRegistersResponse: RESPONSE HEX = ${response.toHex()}")
         if(response.toHex().startsWith(INPUT_REGISTERS_CORRECT_RESPONSE_BITS)){
             val floatValues = FloatArray(response.size / 4)
 

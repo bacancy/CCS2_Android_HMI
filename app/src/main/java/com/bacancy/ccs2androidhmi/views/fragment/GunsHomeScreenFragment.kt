@@ -10,6 +10,7 @@ import androidx.fragment.app.viewModels
 import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentGunsHomeScreenBinding
+import com.bacancy.ccs2androidhmi.databinding.FragmentGunsHomeScreenOldBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showAlertDialog
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showCustomDialog
@@ -22,7 +23,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class GunsHomeScreenFragment : BaseFragment() {
 
-    private lateinit var binding: FragmentGunsHomeScreenBinding
+    private lateinit var binding: FragmentGunsHomeScreenOldBinding
     private var fragmentChangeListener: FragmentChangeListener? = null
     private val appViewModel: AppViewModel by viewModels()
 
@@ -43,7 +44,7 @@ class GunsHomeScreenFragment : BaseFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentGunsHomeScreenBinding.inflate(layoutInflater)
+        binding = FragmentGunsHomeScreenOldBinding.inflate(layoutInflater)
         handleClicks()
         (requireActivity() as HMIDashboardActivity).showHideBackIcon(false)
         observeGunsChargingInfo()
@@ -66,22 +67,31 @@ class GunsHomeScreenFragment : BaseFragment() {
         when (tbGunsChargingInfo.gunChargingState) {
             "Unplugged" -> {
                 binding.ivGun1Half.setImageResource(R.drawable.img_gun1_unplugged)
+                binding.tvGun1Label.text = "GUN - 1 (Unplugged)"
             }
 
             "Plugged In & Waiting for Authentication" -> {
                 binding.ivGun1Half.setImageResource(R.drawable.img_gun1_plugged)
+                binding.tvGun1Label.text = "GUN - 1 (Plugged)"
             }
 
             "Charging" -> {
                 binding.ivGun1Half.setImageResource(R.drawable.img_gun1_charging)
+                binding.tvGun1Label.text = "GUN - 1 (Charging in process)"
             }
 
             "Complete" -> {
                 binding.ivGun1Half.setImageResource(R.drawable.img_gun1_charging_completed)
+                binding.tvGun1Label.text = "GUN - 1 (Charging Completed)"
             }
 
             "PLC Fault", "Rectifier Fault", "Temperature Fault", "SPD Fault", "Smoke Fault", "Tamper Fault" -> {
                 binding.ivGun1Half.setImageResource(R.drawable.img_gun1_fault)
+                binding.tvGun1Label.text = "GUN - 1 (Fault)"
+            }
+
+            else -> {
+                binding.tvGun1Label.text = "GUN - 1 (${tbGunsChargingInfo.gunChargingState})"
             }
         }
     }
@@ -90,14 +100,12 @@ class GunsHomeScreenFragment : BaseFragment() {
 
         appViewModel.getUpdatedGunsChargingInfo(1).observe(requireActivity()) {
             it?.let {
-                Log.d("GunsHomeScreen", "observeGunsChargingInfo: Gun 1 = ${Gson().toJson(it)}")
                 updateGun1UI(it)
             }
         }
 
         appViewModel.getUpdatedGunsChargingInfo(2).observe(requireActivity()) {
             it?.let {
-                Log.d("GunsHomeScreen", "observeGunsChargingInfo: Gun 2 = ${Gson().toJson(it)}")
                 updateGun2UI(it)
             }
         }
@@ -108,32 +116,40 @@ class GunsHomeScreenFragment : BaseFragment() {
         when (tbGunsChargingInfo.gunChargingState) {
             "Unplugged" -> {
                 binding.ivGun2Half.setImageResource(R.drawable.img_gun2_unplugged)
+                binding.tvGun2Label.text = "GUN - 2 (Unplugged)"
             }
 
             "Plugged In & Waiting for Authentication" -> {
                 binding.ivGun2Half.setImageResource(R.drawable.img_gun2_plugged)
+                binding.tvGun2Label.text = "GUN - 2 (Plugged)"
             }
 
             "Charging" -> {
                 binding.ivGun2Half.setImageResource(R.drawable.img_gun2_charging)
+                binding.tvGun2Label.text = "GUN - 2 (Charging in process)"
             }
 
             "Complete" -> {
                 binding.ivGun2Half.setImageResource(R.drawable.img_gun2_charging_completed)
+                binding.tvGun2Label.text = "GUN - 2 (Charging Completed)"
             }
 
             "PLC Fault", "Rectifier Fault", "Temperature Fault", "SPD Fault", "Smoke Fault", "Tamper Fault" -> {
                 binding.ivGun2Half.setImageResource(R.drawable.img_gun2_fault)
+                binding.tvGun2Label.text = "GUN - 2 (Fault)"
+            }
+            else -> {
+                binding.tvGun2Label.text = "GUN - 2 (${tbGunsChargingInfo.gunChargingState})"
             }
         }
     }
 
     private fun handleClicks() {
-        binding.btnClickHereForMore1.setOnClickListener {
+        binding.ivGun1Half.setOnClickListener {
             openGunsMoreInfoFragment(1)
         }
 
-        binding.btnClickHereForMore2.setOnClickListener {
+        binding.ivGun2Half.setOnClickListener {
             openGunsMoreInfoFragment(2)
         }
 

@@ -1,10 +1,14 @@
 package com.bacancy.ccs2androidhmi.util
 
+import android.os.Handler
 import android.util.Log
 import com.bacancy.ccs2androidhmi.models.RequestModel
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.toHex
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.BufferedInputStream
 import java.io.InputStream
@@ -49,17 +53,18 @@ object ReadWriteUtil {
         withContext(Dispatchers.IO) {
             try {
                 val bufferedInputStream = BufferedInputStream(mInputStream)
+
                 mOutputStream?.write(requestFrame)
 
                 val responseFrame = ByteArray(responseSize)
                 delay(500) //waiting for 500ms between write and read
                 bufferedInputStream.mark(0)
                 val size = bufferedInputStream.read(responseFrame)
-                //bufferedInputStream.reset()
 
                 if (size > 0 && isValidResponse(responseFrame)) {
                     onDataReceived(responseFrame)
                 } else {
+                    bufferedInputStream.reset()
                     Log.e("TAG", "writeRequestAndReadResponse: Error Frame - ${responseFrame.toHex()}")
                 }
             } catch (e: Exception) {

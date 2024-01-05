@@ -54,10 +54,6 @@ class GunsMoreInformationFragment : BaseFragment() {
     private fun observeGunsChargingInfo() {
         appViewModel.getUpdatedGunsChargingInfo(selectedGunNumber).observe(requireActivity()) {
             it?.let {
-                Log.d(
-                    "GunsMoreInfo",
-                    "observeGunsChargingInfo: Gun $selectedGunNumber = ${Gson().toJson(it)}"
-                )
                 updateGunsChargingUI(it)
             }
         }

@@ -192,7 +192,7 @@ class Dashboard : SerialPortBaseActivity() {
     }
 
     fun goToTestScreen(view: View) {
-        startActivity(Intent(this,NewTestActivity::class.java))
+        //startActivity(Intent(this,NewTestActivity::class.java))
     }
 
 

@@ -9,7 +9,6 @@ import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentGunsStateInfoBinding
 import com.bacancy.ccs2androidhmi.models.GunStatesInfo
 import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
-import com.bacancy.ccs2androidhmi.views.NewTestActivity
 import com.bacancy.ccs2androidhmi.views.adapters.GunStatesInfoListAdapter
 
 class GunsStateInfoFragment : BaseFragment() {

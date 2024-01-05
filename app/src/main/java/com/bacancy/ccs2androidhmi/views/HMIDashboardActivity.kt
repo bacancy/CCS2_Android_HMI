@@ -9,6 +9,7 @@ import androidx.activity.OnBackPressedDispatcherOwner
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
+import androidx.lifecycle.lifecycleScope
 import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.SerialPortBaseActivityNew
 import com.bacancy.ccs2androidhmi.databinding.ActivityHmiDashboardBinding
@@ -19,6 +20,11 @@ import com.bacancy.ccs2androidhmi.views.fragment.GunsHomeScreenFragment
 import com.bacancy.ccs2androidhmi.views.fragment.GunsMoreInformationFragment
 import com.bacancy.ccs2androidhmi.views.listener.FragmentChangeListener
 import com.google.gson.Gson
+import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.withTimeoutOrNull
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -36,7 +42,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         binding = ActivityHmiDashboardBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        startReading()
+        //startReading()
 
         gunsHomeScreenFragment = GunsHomeScreenFragment()
         addNewFragment(gunsHomeScreenFragment)
@@ -50,6 +56,29 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         observeLatestMiscInfo()
 
         showHideBackIcon()
+
+        //checkTimeout()
+    }
+
+    private fun checkTimeout() {
+        Log.e("FRITAG", "checkTimeout: Called")
+        lifecycleScope.launch {
+            withTimeout(3000) {
+                try {
+                    val res = methodWith5SecondsDelay()
+                    Log.e("FRITAG", "checkTimeout: RES = $res")
+                } catch (e: TimeoutCancellationException) {
+                    Log.e("FRITAG", "Timeout occurred")
+                } finally {
+                    Log.e("FRITAG", "checkTimeout: Ended")
+                }
+            }
+        }
+    }
+
+    private suspend fun methodWith5SecondsDelay(): String {
+        delay(5000)
+        return "Delayed Message"
     }
 
     private fun handleClicks() {
@@ -73,8 +102,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
     private fun observeLatestMiscInfo() {
         appViewModel.latestMiscInfo.observe(this) { latestMiscInfo ->
-            if(latestMiscInfo!=null){
-                Log.d("TAG", "observeLatestMiscInfo: ${Gson().toJson(latestMiscInfo)}")
+            if (latestMiscInfo != null) {
                 updateServerStatus(latestMiscInfo.serverConnectedWith)
                 updateEthernetStatus(latestMiscInfo.ethernetStatus)
                 adjustGSMLevel(latestMiscInfo.gsmLevel)
@@ -109,7 +137,6 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         supportFragmentManager.addOnBackStackChangedListener {
             // Perform actions based on the current state of the back stack
             // For example, update the UI or perform specific logic
-            Log.d("TAG", "handleBackStackChanges: CALLED")
         }
     }
 

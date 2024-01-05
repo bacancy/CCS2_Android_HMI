@@ -90,7 +90,6 @@ class GunsChargingHistoryFragment : BaseFragment() {
         lifecycleScope.launch {
 
             appViewModel.chargingSummariesList.observe(requireActivity()) {
-                Log.d("TAG", "getAllChargingSummaries: ${Gson().toJson(it)}")
                 chargingHistoryAdapter.submitList(it)
 
             }

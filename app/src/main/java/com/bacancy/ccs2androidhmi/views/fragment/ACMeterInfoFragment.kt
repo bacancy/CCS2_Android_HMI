@@ -49,7 +49,6 @@ class ACMeterInfoFragment : BaseFragment() {
     private fun getLatestAcMeterInfo() {
         appViewModel.latestAcMeterInfo.observe(requireActivity()) { latestAcMeterInfo ->
             if(latestAcMeterInfo!=null){
-                Log.d("TAG", "getLatestAcMeterInfo: ${Gson().toJson(latestAcMeterInfo)}")
                 lifecycleScope.launch(Dispatchers.Main) {
 
                     latestAcMeterInfo.apply {
