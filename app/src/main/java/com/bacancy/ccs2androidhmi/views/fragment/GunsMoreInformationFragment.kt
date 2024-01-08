@@ -11,12 +11,14 @@ import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentGunsMoreInfoScreenBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
+import com.bacancy.ccs2androidhmi.util.PrefHelper
 import com.bacancy.ccs2androidhmi.util.gone
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
 import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
 import com.bacancy.ccs2androidhmi.views.listener.FragmentChangeListener
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class GunsMoreInformationFragment : BaseFragment() {
@@ -30,6 +32,10 @@ class GunsMoreInformationFragment : BaseFragment() {
     private lateinit var faultInfoFragment: FaultInfoFragment
     private var fragmentChangeListener: FragmentChangeListener? = null
     private val appViewModel: AppViewModel by viewModels()
+
+
+    @Inject
+    lateinit var prefHelper: PrefHelper
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -120,6 +126,11 @@ class GunsMoreInformationFragment : BaseFragment() {
 
     override fun setScreenHeaderViews() {
         selectedGunNumber = arguments?.getInt("SELECTED_GUN")!!
+        prefHelper.setSelectedGunNumber("SELECTED_GUN", selectedGunNumber)
+        Log.d(
+            "WONTAG",
+            "Gun Selected Now = $selectedGunNumber"
+        )
         binding.apply {
             when (selectedGunNumber) {
                 1 -> {

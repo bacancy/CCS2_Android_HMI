@@ -23,7 +23,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class GunsHomeScreenFragment : BaseFragment() {
 
-    private lateinit var binding: FragmentGunsHomeScreenOldBinding
+    private lateinit var binding: FragmentGunsHomeScreenBinding
     private var fragmentChangeListener: FragmentChangeListener? = null
     private val appViewModel: AppViewModel by viewModels()
 
@@ -44,7 +44,7 @@ class GunsHomeScreenFragment : BaseFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentGunsHomeScreenOldBinding.inflate(layoutInflater)
+        binding = FragmentGunsHomeScreenBinding.inflate(layoutInflater)
         handleClicks()
         (requireActivity() as HMIDashboardActivity).showHideBackIcon(false)
         observeGunsChargingInfo()
@@ -91,7 +91,7 @@ class GunsHomeScreenFragment : BaseFragment() {
             }
 
             else -> {
-                binding.tvGun1Label.text = "GUN - 1 (${tbGunsChargingInfo.gunChargingState})"
+                binding.tvGun1Label.text = "GUN - 1 \n (${tbGunsChargingInfo.gunChargingState})"
             }
         }
     }
@@ -139,7 +139,7 @@ class GunsHomeScreenFragment : BaseFragment() {
                 binding.tvGun2Label.text = "GUN - 2 (Fault)"
             }
             else -> {
-                binding.tvGun2Label.text = "GUN - 2 (${tbGunsChargingInfo.gunChargingState})"
+                binding.tvGun2Label.text = "GUN - 2 \n (${tbGunsChargingInfo.gunChargingState})"
             }
         }
     }

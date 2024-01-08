@@ -44,6 +44,7 @@ import com.bacancy.ccs2androidhmi.util.ModBusUtils
 import com.bacancy.ccs2androidhmi.util.ModbusRequestFrames
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.toHex
+import com.bacancy.ccs2androidhmi.util.PrefHelper
 import com.bacancy.ccs2androidhmi.util.ReadWriteUtil
 import com.bacancy.ccs2androidhmi.util.ResponseSizes
 import com.bacancy.ccs2androidhmi.util.StateAndModesUtils
@@ -59,11 +60,14 @@ import kotlinx.coroutines.withTimeout
 import kotlinx.coroutines.withTimeoutOrNull
 import java.io.InputStream
 import java.io.OutputStream
+import javax.inject.Inject
 
 @OptIn(DelicateCoroutinesApi::class)
 @AndroidEntryPoint
 abstract class SerialPortBaseActivityNew : FragmentActivity() {
 
+    private var isGun1Authenticated: Boolean = false
+    private var isGun2Authenticated: Boolean = false
     private var isMiscInfoRecd: Boolean = false
     private var isGun1ChargingStarted: Boolean = false
     private var isGun2ChargingStarted: Boolean = false
@@ -74,6 +78,9 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
     private val mCommonDelay = 1000L
 
     val appViewModel: AppViewModel by viewModels()
+
+    @Inject
+    lateinit var prefHelper: PrefHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         makeFullScreen()
@@ -146,7 +153,9 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
             try {
                 Log.i(
                     TAG,
-                    "readMiscInfo: Request Sent - ${ModbusRequestFrames.getMiscInfoRequestFrame().toHex()}"
+                    "readMiscInfo: Request Sent - ${
+                        ModbusRequestFrames.getMiscInfoRequestFrame().toHex()
+                    }"
                 )
                 ReadWriteUtil.writeRequestAndReadResponse(
                     mOutputStream,
@@ -294,7 +303,12 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                             .startsWith(ModBusUtils.HOLDING_REGISTERS_CORRECT_RESPONSE_BITS)
                     ) {
                         Log.d(TAG, "readGun1Info: Response = ${it.toHex()}")
-
+                        val selectedGunNumber =
+                            prefHelper.getSelectedGunNumber("SELECTED_GUN", 0)
+                        Log.d(
+                            "WONTAG",
+                            "Selected Gun Answer = $selectedGunNumber"
+                        )
                         appViewModel.insertGunsChargingInfo(
                             TbGunsChargingInfo(
                                 gunId = 1,
@@ -313,7 +327,19 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                         when (getGunChargingState(it).description) {
                             "Plugged In & Waiting for Authentication" -> {
                                 isGun1ChargingStarted = false
-                                authenticateGun(1)
+
+                                if (selectedGunNumber == 1 && !isGun1Authenticated) {
+                                    Log.d(
+                                        "WONTAG",
+                                        "Calling authenticGun as Gun1 Info Screen is opened"
+                                    )
+                                    authenticateGun(selectedGunNumber)
+                                }else{
+                                    lifecycleScope.launch {
+                                        delay(mCommonDelay)
+                                        readGun1LastChargingSummaryInfo()
+                                    }
+                                }
                             }
 
                             "Charging" -> {
@@ -327,6 +353,8 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                             "Complete", "Emergency Stop" -> {
                                 if (isGun1ChargingStarted) {
                                     isGun1ChargingStarted = false
+                                    isGun1Authenticated = false
+                                    prefHelper.setSelectedGunNumber("SELECTED_GUN", 0)
                                     lifecycleScope.launch {
                                         delay(mCommonDelay)
                                         readGun1LastChargingSummaryInfo(true)
@@ -336,6 +364,8 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
 
                             else -> {
                                 isGun1ChargingStarted = false
+                                isGun1Authenticated = false
+                                prefHelper.setSelectedGunNumber("SELECTED_GUN", 0)
                                 lifecycleScope.launch {
                                     delay(mCommonDelay)
                                     readGun1LastChargingSummaryInfo()
@@ -502,6 +532,12 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                             .startsWith(ModBusUtils.HOLDING_REGISTERS_CORRECT_RESPONSE_BITS)
                     ) {
                         Log.d(TAG, "readGun2Info: Response = ${it.toHex()}")
+                        val selectedGunNumber =
+                            prefHelper.getSelectedGunNumber("SELECTED_GUN", 0)
+                        Log.d(
+                            "WONTAG",
+                            "Selected Gun Answer = $selectedGunNumber"
+                        )
 
                         appViewModel.insertGunsChargingInfo(
                             TbGunsChargingInfo(
@@ -521,7 +557,19 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                         when (getGunChargingState(it).description) {
                             "Plugged In & Waiting for Authentication" -> {
                                 isGun2ChargingStarted = false
-                                authenticateGun(2)
+
+                                if (selectedGunNumber == 2 && !isGun2Authenticated) {
+                                    Log.d(
+                                        "WONTAG",
+                                        "Calling authenticGun as Gun2 Info Screen is opened"
+                                    )
+                                    authenticateGun(2)
+                                }else{
+                                    lifecycleScope.launch {
+                                        delay(mCommonDelay)
+                                        readGun2LastChargingSummaryInfo()
+                                    }
+                                }
                             }
 
                             "Charging" -> {
@@ -535,6 +583,8 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                             "Complete", "Emergency Stop" -> {
                                 if (isGun2ChargingStarted) {
                                     isGun2ChargingStarted = false
+                                    isGun2Authenticated = false
+                                    prefHelper.setSelectedGunNumber("SELECTED_GUN", 0)
                                     lifecycleScope.launch {
                                         delay(mCommonDelay)
                                         readGun2LastChargingSummaryInfo(true)
@@ -544,6 +594,8 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
 
                             else -> {
                                 isGun2ChargingStarted = false
+                                isGun2Authenticated = false
+                                prefHelper.setSelectedGunNumber("SELECTED_GUN", 0)
                                 lifecycleScope.launch {
                                     delay(mCommonDelay)
                                     readGun2LastChargingSummaryInfo()
@@ -700,11 +752,14 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                 val decodeResponse =
                     ModBusUtils.convertModbusResponseFrameToString(responseFrame)
                 Log.d("TAG", "onDataReceived: $decodeResponse")
+
                 lifecycleScope.launch {
                     delay(mCommonDelay)
                     if (gunNumber == 1) {
+                        isGun1Authenticated = true
                         readGun1LastChargingSummaryInfo()
                     } else {
+                        isGun2Authenticated = true
                         readGun2LastChargingSummaryInfo()
                     }
                 }
