@@ -49,9 +49,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|start"
-        android:layout_marginStart="@dimen/_45sdp"
+        android:layout_marginStart="@dimen/_55sdp"
         android:gravity="center"
-        android:text="GUN - 1 \n(...)"
+        android:text="GUN - 1"
         android:textColor="@color/white"
         android:textSize="@dimen/_8ssp"
         app:layout_constraintBottom_toBottomOf="@id/ivGun1Half"
@@ -62,27 +62,27 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|start"
-        android:layout_marginEnd="@dimen/_45sdp"
+        android:layout_marginEnd="@dimen/_55sdp"
         android:gravity="center"
-        android:text="GUN - 2 \n(...)"
+        android:text="GUN - 2"
         android:textColor="@color/white"
         android:textSize="@dimen/_8ssp"
         app:layout_constraintBottom_toBottomOf="@id/ivGun2Half"
         app:layout_constraintEnd_toEndOf="@id/ivGun2Half" />
 
-    <TextView
+    <Button
         android:id="@+id/btnFirmwareVersion"
+        style="@style/CommonButtonTheme"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_5sdp"
         android:paddingHorizontal="@dimen/_10sdp"
         android:text="@string/lbl_firmware_version_information"
         android:textColor="@color/white"
         android:textStyle="bold"
-        android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvGun2Label" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ivGun1Half"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

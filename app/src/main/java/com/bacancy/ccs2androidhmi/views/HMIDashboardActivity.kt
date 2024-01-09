@@ -85,6 +85,9 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         binding.incToolbar.imgBack.setOnClickListener {
             goBack()
         }
+        binding.incToolbar.ivLogo.setOnClickListener {
+            startReading()
+        }
     }
 
     //For starting clock timer

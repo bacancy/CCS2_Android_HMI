@@ -68,6 +68,17 @@ class GunsMoreInformationFragment : BaseFragment() {
     private fun updateGunsChargingUI(tbGunsChargingInfo: TbGunsChargingInfo) {
         binding.apply {
             tbGunsChargingInfo.apply {
+
+                when (selectedGunNumber) {
+                    1 -> {
+                        incHeader.tvHeader.text = getString(R.string.lbl_gun_1) + " ($gunChargingState)"
+                    }
+
+                    2 -> {
+                        incHeader.tvHeader.text = getString(R.string.lbl_gun_2) + " ($gunChargingState)"
+                    }
+                }
+
                 incInitialSoc.tvValue.text = initialSoc.toString()
                 incDemandVoltage.tvValue.text = demandVoltage.toString()
                 incDemandCurrent.tvValue.text = demandCurrent.toString()

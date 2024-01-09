@@ -53,7 +53,7 @@ object ReadWriteUtil {
             try {
                 val bufferedInputStream = BufferedInputStream(mInputStream)
                 val bufferedOutputStream = BufferedOutputStream(mOutputStream)
-                withTimeoutOrNull(500) {
+                withTimeoutOrNull(1000) {
                     try {
                         withContext(Dispatchers.IO) {
                             Log.w(
@@ -79,51 +79,54 @@ object ReadWriteUtil {
                 val responseFrame = ByteArray(responseSize)
 
                 delay(500) //waiting for 500ms between write and read
+
                 bufferedInputStream.mark(0)
-
-                withTimeoutOrNull(500) {
-                    try {
-                        withContext(Dispatchers.IO) {
-                            Log.w(
-                                "MONTAG",
-                                "writeRequestAndReadResponse: Calling read from Normal State"
-                            )
-                            val size = bufferedInputStream.read(responseFrame)
-                            Log.i("MONTAG", "writeRequestAndReadResponse: RESPONSE FRAME = ${responseFrame.toHex()}")
-                            if (size > 0 && isValidResponse(responseFrame)) {
-                                onDataReceived(responseFrame)
-                            } else {
-                                bufferedInputStream.reset()
-                                Log.e(
-                                    "TAG",
-                                    "writeRequestAndReadResponse: Error Frame - ${responseFrame.toHex()}"
-                                )
-                            }
-                        }
-                    } catch (e: TimeoutCancellationException) {
-                        e.printStackTrace()
-                        withContext(Dispatchers.IO) {
-                            Log.w(
-                                "MONTAG",
-                                "writeRequestAndReadResponse: Calling read from Timeout State"
-                            )
-                            val size = bufferedInputStream.read(responseFrame)
-
-                            if (size > 0 && isValidResponse(responseFrame)) {
-                                onDataReceived(responseFrame)
-                            } else {
-                                bufferedInputStream.reset()
-                                Log.e(
-                                    "TAG",
-                                    "writeRequestAndReadResponse: Error Frame - ${responseFrame.toHex()}"
-                                )
-                            }
-                        }
-                    }
+                val size = bufferedInputStream.read(responseFrame)
+                Log.i(
+                    "MONTAG",
+                    "writeRequestAndReadResponse: RESPONSE FRAME = ${responseFrame.toHex()}"
+                )
+                if (size > 0 && isValidResponse(responseFrame)) {
+                    onDataReceived(responseFrame)
+                } else {
+                    bufferedInputStream.reset()
+                    Log.e(
+                        "TAG",
+                        "writeRequestAndReadResponse: Error Frame - ${responseFrame.toHex()}"
+                    )
                 }
 
             } catch (e: Exception) {
                 Log.e("TAG", "writeRequestAndReadResponse: In Catch - ${e.printStackTrace()}")
+                e.printStackTrace()
+            }
+        }
+    }
+
+    suspend fun readAndWriteRegisters(
+        mOutputStream: OutputStream?, mInputStream: InputStream?, responseSize: Int,
+        requestFrame: ByteArray, onDataReceived: (ByteArray) -> Unit
+    ) {
+        withContext(Dispatchers.IO) {
+            try {
+                val bufferedInputStream = BufferedInputStream(mInputStream)
+                val bufferedOutputStream = BufferedOutputStream(mOutputStream)
+
+                bufferedOutputStream.write(requestFrame)
+                bufferedOutputStream.flush()
+
+                val responseFrame = ByteArray(responseSize)
+
+                delay(500) //waiting for 500ms between write and read
+
+                bufferedInputStream.mark(0)
+                val size = bufferedInputStream.read(responseFrame)
+
+                if (size > 0 && isValidResponse(responseFrame)) {
+                    onDataReceived(responseFrame)
+                }
+
+            } catch (e: Exception) {
                 e.printStackTrace()
             }
         }

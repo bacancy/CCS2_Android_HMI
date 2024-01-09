@@ -57,10 +57,10 @@ import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
-import kotlinx.coroutines.withTimeoutOrNull
 import java.io.InputStream
 import java.io.OutputStream
 import javax.inject.Inject
+
 
 @OptIn(DelicateCoroutinesApi::class)
 @AndroidEntryPoint
@@ -116,33 +116,9 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
         super.onDestroy()
     }
 
-    private fun startReading() {
+    fun startReading() {
         GlobalScope.launch {
             readMiscInfo()
-            //handleTimeout(::readMiscInfo)
-            /*try {
-                withTimeout(5000) {
-                    Log.d(TAG, "startReading: Called within Timeout limit")
-                    readMiscInfo()
-                }
-            } catch (e: TimeoutCancellationException) {
-                Log.e("TAG", "Timeout occurred while waiting for response")
-                // Handle the timeout here, e.g., retry the operation or display an error message
-                readMiscInfo()
-            }*/
-        }
-    }
-
-    private suspend fun handleTimeout(kSuspendFunction0: suspend () -> Unit) {
-        try {
-            withTimeout(1000) {
-                Log.d(TAG, "startReading: Called within Timeout limit")
-                kSuspendFunction0()
-            }
-        } catch (e: TimeoutCancellationException) {
-            Log.e("TAG", "Timeout occurred while waiting for response")
-            // Handle the timeout here, e.g., retry the operation or display an error message
-            kSuspendFunction0()
         }
     }
 
@@ -170,52 +146,7 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                         Log.d(TAG, "readMiscInfo: Response = ${it.toHex()}")
 
                         lifecycleScope.launch {
-                            val networkStatusBits =
-                                ModbusTypeConverter.byteArrayToBinaryString(it.copyOfRange(3, 5))
-                                    .reversed()
-                                    .substring(0, 11)
-                            val arrayOfNetworkStatusBits = networkStatusBits.toCharArray()
-                            val wifiNetworkStrengthBits = arrayOfNetworkStatusBits.copyOfRange(0, 3)
-                            val gsmNetworkStrengthBits = arrayOfNetworkStatusBits.copyOfRange(3, 7)
-                            val ethernetConnectedBits = arrayOfNetworkStatusBits.copyOfRange(7, 8)
-                            val serverConnectedWithBits =
-                                arrayOfNetworkStatusBits.copyOfRange(8, 11)
-
-                            //Insert into DB
-                            appViewModel.insertMiscInfo(
-                                TbMiscInfo(
-                                    1,
-                                    serverConnectedWith = StateAndModesUtils.checkServerConnectedWith(
-                                        serverConnectedWithBits
-                                    ),
-                                    ethernetStatus = StateAndModesUtils.checkIfEthernetIsConnected(
-                                        ethernetConnectedBits
-                                    ),
-                                    gsmLevel = StateAndModesUtils.checkGSMNetworkStrength(
-                                        gsmNetworkStrengthBits
-                                    ).toInt(),
-                                    wifiLevel = StateAndModesUtils.checkWifiNetworkStrength(
-                                        wifiNetworkStrengthBits
-                                    ).toInt(),
-                                    mcuFirmwareVersion = getMCUFirmwareVersion(it),
-                                    ocppFirmwareVersion = getOCPPFirmwareVersion(it),
-                                    rfidFirmwareVersion = getRFIDFirmwareVersion(it),
-                                    ledFirmwareVersion = getLEDModuleFirmwareVersion(it),
-                                    plc1FirmwareVersion = getPLC1ModuleFirmwareVersion(it),
-                                    plc2FirmwareVersion = getPLC2ModuleFirmwareVersion(it),
-                                    plc1Fault = getPLC1Fault(it),
-                                    plc2Fault = getPLC2Fault(it),
-                                    rectifier1Fault = getRectifier1Code(it),
-                                    rectifier2Fault = getRectifier2Code(it),
-                                    rectifier3Fault = getRectifier3Code(it),
-                                    rectifier4Fault = getRectifier4Code(it),
-                                    communicationError = getCommunicationErrorCodes(it),
-                                    devicePhysicalConnectionStatus = getDevicePhysicalConnectionStatus(
-                                        it
-                                    )
-                                )
-                            )
-
+                            insertMiscInfoInDB(it)
                         }
                     } else {
                         Log.e(TAG, "readMiscInfo: Error Response - ${it.toHex()}")
@@ -228,12 +159,57 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
             } catch (te: TimeoutCancellationException) {
                 Log.e(TAG, "readMiscInfo: Timeout Occurred", te.cause)
                 startReading()
-            } finally {
-                /*Log.i(TAG, "readMiscInfo: FINALLY")
-                startReading()*/
             }
         }
 
+    }
+
+    private fun insertMiscInfoInDB(it: ByteArray) {
+        val networkStatusBits =
+            ModbusTypeConverter.byteArrayToBinaryString(it.copyOfRange(3, 5))
+                .reversed()
+                .substring(0, 11)
+        val arrayOfNetworkStatusBits = networkStatusBits.toCharArray()
+        val wifiNetworkStrengthBits = arrayOfNetworkStatusBits.copyOfRange(0, 3)
+        val gsmNetworkStrengthBits = arrayOfNetworkStatusBits.copyOfRange(3, 7)
+        val ethernetConnectedBits = arrayOfNetworkStatusBits.copyOfRange(7, 8)
+        val serverConnectedWithBits =
+            arrayOfNetworkStatusBits.copyOfRange(8, 11)
+
+        //Insert into DB
+        appViewModel.insertMiscInfo(
+            TbMiscInfo(
+                1,
+                serverConnectedWith = StateAndModesUtils.checkServerConnectedWith(
+                    serverConnectedWithBits
+                ),
+                ethernetStatus = StateAndModesUtils.checkIfEthernetIsConnected(
+                    ethernetConnectedBits
+                ),
+                gsmLevel = StateAndModesUtils.checkGSMNetworkStrength(
+                    gsmNetworkStrengthBits
+                ).toInt(),
+                wifiLevel = StateAndModesUtils.checkWifiNetworkStrength(
+                    wifiNetworkStrengthBits
+                ).toInt(),
+                mcuFirmwareVersion = getMCUFirmwareVersion(it),
+                ocppFirmwareVersion = getOCPPFirmwareVersion(it),
+                rfidFirmwareVersion = getRFIDFirmwareVersion(it),
+                ledFirmwareVersion = getLEDModuleFirmwareVersion(it),
+                plc1FirmwareVersion = getPLC1ModuleFirmwareVersion(it),
+                plc2FirmwareVersion = getPLC2ModuleFirmwareVersion(it),
+                plc1Fault = getPLC1Fault(it),
+                plc2Fault = getPLC2Fault(it),
+                rectifier1Fault = getRectifier1Code(it),
+                rectifier2Fault = getRectifier2Code(it),
+                rectifier3Fault = getRectifier3Code(it),
+                rectifier4Fault = getRectifier4Code(it),
+                communicationError = getCommunicationErrorCodes(it),
+                devicePhysicalConnectionStatus = getDevicePhysicalConnectionStatus(
+                    it
+                )
+            )
+        )
     }
 
     private suspend fun readAcMeterInfo() {
@@ -253,22 +229,7 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                 ) {
                     if (it.toHex().startsWith(ModBusUtils.INPUT_REGISTERS_CORRECT_RESPONSE_BITS)) {
                         Log.d(TAG, "readAcMeterInfo: Response = ${it.toHex()}")
-                        val newResponse = ModBusUtils.parseInputRegistersResponse(it)
-                        val tbAcMeterInfo = TbAcMeterInfo(
-                            1,
-                            voltageV1N = newResponse[0],
-                            voltageV2N = newResponse[1],
-                            voltageV3N = newResponse[2],
-                            averageVoltageLN = newResponse[3],
-                            currentL1 = newResponse[4],
-                            currentL2 = newResponse[5],
-                            currentL3 = newResponse[6],
-                            averageCurrent = newResponse[7],
-                            frequency = newResponse[10],
-                            activePower = newResponse[11],
-                            totalPower = newResponse[9]
-                        )
-                        appViewModel.insertAcMeterInfo(tbAcMeterInfo)
+                        insertACMeterInfoInDB(it)
                     } else {
                         Log.e(TAG, "readAcMeterInfo: Error Response - ${it.toHex()}")
                     }
@@ -284,6 +245,27 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
         }
 
 
+    }
+
+    private fun insertACMeterInfoInDB(it: ByteArray) {
+        val newResponse = ModBusUtils.parseInputRegistersResponse(it)
+        if (newResponse.isNotEmpty()) {
+            val tbAcMeterInfo = TbAcMeterInfo(
+                1,
+                voltageV1N = newResponse[0],
+                voltageV2N = newResponse[1],
+                voltageV3N = newResponse[2],
+                averageVoltageLN = newResponse[3],
+                currentL1 = newResponse[4],
+                currentL2 = newResponse[5],
+                currentL3 = newResponse[6],
+                averageCurrent = newResponse[7],
+                frequency = newResponse[10],
+                activePower = newResponse[11],
+                totalPower = newResponse[9]
+            )
+            appViewModel.insertAcMeterInfo(tbAcMeterInfo)
+        }
     }
 
     private suspend fun readGun1Info() {
@@ -303,45 +285,9 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                             .startsWith(ModBusUtils.HOLDING_REGISTERS_CORRECT_RESPONSE_BITS)
                     ) {
                         Log.d(TAG, "readGun1Info: Response = ${it.toHex()}")
-                        val selectedGunNumber =
-                            prefHelper.getSelectedGunNumber("SELECTED_GUN", 0)
-                        Log.d(
-                            "WONTAG",
-                            "Selected Gun Answer = $selectedGunNumber"
-                        )
-                        appViewModel.insertGunsChargingInfo(
-                            TbGunsChargingInfo(
-                                gunId = 1,
-                                gunChargingState = getGunChargingState(it).description,
-                                initialSoc = getInitialSoc(it),
-                                chargingSoc = getChargingSoc(it),
-                                demandVoltage = getDemandVoltage(it),
-                                demandCurrent = getDemandCurrent(it),
-                                chargingVoltage = getChargingVoltage(it),
-                                chargingCurrent = getChargingCurrent(it),
-                                duration = getChargingDuration(it),
-                                energyConsumption = getChargingEnergyConsumption(it)
-                            )
-                        )
+                        insertGun1InfoInDB(it)
 
                         when (getGunChargingState(it).description) {
-                            "Plugged In & Waiting for Authentication" -> {
-                                isGun1ChargingStarted = false
-
-                                if (selectedGunNumber == 1 && !isGun1Authenticated) {
-                                    Log.d(
-                                        "WONTAG",
-                                        "Calling authenticGun as Gun1 Info Screen is opened"
-                                    )
-                                    authenticateGun(selectedGunNumber)
-                                }else{
-                                    lifecycleScope.launch {
-                                        delay(mCommonDelay)
-                                        readGun1LastChargingSummaryInfo()
-                                    }
-                                }
-                            }
-
                             "Charging" -> {
                                 isGun1ChargingStarted = true
                                 lifecycleScope.launch {
@@ -354,10 +300,14 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                                 if (isGun1ChargingStarted) {
                                     isGun1ChargingStarted = false
                                     isGun1Authenticated = false
-                                    prefHelper.setSelectedGunNumber("SELECTED_GUN", 0)
                                     lifecycleScope.launch {
                                         delay(mCommonDelay)
                                         readGun1LastChargingSummaryInfo(true)
+                                    }
+                                } else {
+                                    lifecycleScope.launch {
+                                        delay(mCommonDelay)
+                                        readGun1LastChargingSummaryInfo()
                                     }
                                 }
                             }
@@ -365,7 +315,6 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                             else -> {
                                 isGun1ChargingStarted = false
                                 isGun1Authenticated = false
-                                prefHelper.setSelectedGunNumber("SELECTED_GUN", 0)
                                 lifecycleScope.launch {
                                     delay(mCommonDelay)
                                     readGun1LastChargingSummaryInfo()
@@ -375,6 +324,12 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
 
                     } else {
                         Log.e(TAG, "readGun1Info: Error Response - ${it.toHex()}")
+                        isGun1ChargingStarted = false
+                        isGun1Authenticated = false
+                        lifecycleScope.launch {
+                            delay(mCommonDelay)
+                            readGun1LastChargingSummaryInfo()
+                        }
                     }
 
                 }
@@ -384,6 +339,23 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
             }
         }
 
+    }
+
+    private fun insertGun1InfoInDB(it: ByteArray) {
+        appViewModel.insertGunsChargingInfo(
+            TbGunsChargingInfo(
+                gunId = 1,
+                gunChargingState = getGunChargingState(it).description,
+                initialSoc = getInitialSoc(it),
+                chargingSoc = getChargingSoc(it),
+                demandVoltage = getDemandVoltage(it),
+                demandCurrent = getDemandCurrent(it),
+                chargingVoltage = getChargingVoltage(it),
+                chargingCurrent = getChargingCurrent(it),
+                duration = getChargingDuration(it),
+                energyConsumption = getChargingEnergyConsumption(it)
+            )
+        )
     }
 
     private suspend fun readGun1LastChargingSummaryInfo(shouldSaveLastChargingSummary: Boolean = false) {
@@ -406,43 +378,8 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                     ) {
                         Log.d(TAG, "readGun1LastChargingSummaryInfo: Response = ${it.toHex()}")
                         if (shouldSaveLastChargingSummary) {
-                            appViewModel.insertGunsLastChargingSummary(
-                                TbGunsLastChargingSummary(
-                                    gunId = 1,
-                                    evMacAddress = LastChargingSummaryUtils.getEVMacAddress(it),
-                                    chargingDuration = LastChargingSummaryUtils.getTotalChargingTime(
-                                        it
-                                    ),
-                                    chargingStartDateTime = LastChargingSummaryUtils.getChargingStartTime(
-                                        it
-                                    ),
-                                    chargingEndDateTime = LastChargingSummaryUtils.getChargingEndTime(
-                                        it
-                                    ),
-                                    startSoc = LastChargingSummaryUtils.getStartSoc(it),
-                                    endSoc = LastChargingSummaryUtils.getEndSoc(it),
-                                    energyConsumption = LastChargingSummaryUtils.getEnergyConsumption(
-                                        it
-                                    ),
-                                    sessionEndReason = LastChargingSummaryUtils.getSessionEndReason(
-                                        it
-                                    )
-                                )
-                            )
-                            val chargingSummary = TbChargingHistory(
-                                gunNumber = 1,
-                                evMacAddress = LastChargingSummaryUtils.getEVMacAddress(it),
-                                chargingStartTime = LastChargingSummaryUtils.getChargingStartTime(it),
-                                chargingEndTime = LastChargingSummaryUtils.getChargingEndTime(it),
-                                totalChargingTime = LastChargingSummaryUtils.getTotalChargingTime(it),
-                                startSoc = LastChargingSummaryUtils.getStartSoc(it),
-                                endSoc = LastChargingSummaryUtils.getEndSoc(it),
-                                energyConsumption = LastChargingSummaryUtils.getEnergyConsumption(it),
-                                sessionEndReason = LastChargingSummaryUtils.getSessionEndReason(it),
-                                customSessionEndReason = "NA",
-                                totalCost = LastChargingSummaryUtils.getTotalCost(it)
-                            )
-                            appViewModel.insertChargingSummary(chargingSummary)
+                            insertGun1LastChargingSummaryInDB(it)
+                            insertGun1ChargingHistoryInDB(it)
                         }
                     } else {
                         Log.e(
@@ -463,6 +400,49 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
 
     }
 
+    private fun insertGun1ChargingHistoryInDB(it: ByteArray) {
+        val chargingSummary = TbChargingHistory(
+            gunNumber = 1,
+            evMacAddress = LastChargingSummaryUtils.getEVMacAddress(it),
+            chargingStartTime = LastChargingSummaryUtils.getChargingStartTime(it),
+            chargingEndTime = LastChargingSummaryUtils.getChargingEndTime(it),
+            totalChargingTime = LastChargingSummaryUtils.getTotalChargingTime(it),
+            startSoc = LastChargingSummaryUtils.getStartSoc(it),
+            endSoc = LastChargingSummaryUtils.getEndSoc(it),
+            energyConsumption = LastChargingSummaryUtils.getEnergyConsumption(it),
+            sessionEndReason = LastChargingSummaryUtils.getSessionEndReason(it),
+            customSessionEndReason = "NA",
+            totalCost = LastChargingSummaryUtils.getTotalCost(it)
+        )
+        appViewModel.insertChargingSummary(chargingSummary)
+    }
+
+    private fun insertGun1LastChargingSummaryInDB(it: ByteArray) {
+        appViewModel.insertGunsLastChargingSummary(
+            TbGunsLastChargingSummary(
+                gunId = 1,
+                evMacAddress = LastChargingSummaryUtils.getEVMacAddress(it),
+                chargingDuration = LastChargingSummaryUtils.getTotalChargingTime(
+                    it
+                ),
+                chargingStartDateTime = LastChargingSummaryUtils.getChargingStartTime(
+                    it
+                ),
+                chargingEndDateTime = LastChargingSummaryUtils.getChargingEndTime(
+                    it
+                ),
+                startSoc = LastChargingSummaryUtils.getStartSoc(it),
+                endSoc = LastChargingSummaryUtils.getEndSoc(it),
+                energyConsumption = LastChargingSummaryUtils.getEnergyConsumption(
+                    it
+                ),
+                sessionEndReason = LastChargingSummaryUtils.getSessionEndReason(
+                    it
+                )
+            )
+        )
+    }
+
     private suspend fun readGun1DCMeterInfo() {
         Log.i(
             TAG,
@@ -481,23 +461,7 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                 ) {
                     if (it.toHex().startsWith(ModBusUtils.INPUT_REGISTERS_CORRECT_RESPONSE_BITS)) {
                         Log.d(TAG, "readGun1DCMeterInfo: Response = ${it.toHex()}")
-                        val newResponse = ModBusUtils.parseInputRegistersResponse(it)
-                        if (newResponse.isNotEmpty()) {
-                            appViewModel.insertGunsDCMeterInfo(
-                                TbGunsDcMeterInfo(
-                                    gunId = 1,
-                                    voltage = newResponse[0],
-                                    current = newResponse[1],
-                                    power = newResponse[2],
-                                    importEnergy = newResponse[3],
-                                    exportEnergy = newResponse[4],
-                                    maxVoltage = newResponse[5],
-                                    minVoltage = newResponse[6],
-                                    maxCurrent = newResponse[7],
-                                    minCurrent = newResponse[8]
-                                )
-                            )
-                        }
+                        insertGun1DCMeterInfoInDB(it)
 
                     } else {
                         Log.e(TAG, "readGun1DCMeterInfo: Error Response - ${it.toHex()}")
@@ -513,6 +477,26 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
             }
         }
 
+    }
+
+    private fun insertGun1DCMeterInfoInDB(it: ByteArray) {
+        val newResponse = ModBusUtils.parseInputRegistersResponse(it)
+        if (newResponse.isNotEmpty()) {
+            appViewModel.insertGunsDCMeterInfo(
+                TbGunsDcMeterInfo(
+                    gunId = 1,
+                    voltage = newResponse[0],
+                    current = newResponse[1],
+                    power = newResponse[2],
+                    importEnergy = newResponse[3],
+                    exportEnergy = newResponse[4],
+                    maxVoltage = newResponse[5],
+                    minVoltage = newResponse[6],
+                    maxCurrent = newResponse[7],
+                    minCurrent = newResponse[8]
+                )
+            )
+        }
     }
 
     private suspend fun readGun2Info() {
@@ -532,46 +516,10 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                             .startsWith(ModBusUtils.HOLDING_REGISTERS_CORRECT_RESPONSE_BITS)
                     ) {
                         Log.d(TAG, "readGun2Info: Response = ${it.toHex()}")
-                        val selectedGunNumber =
-                            prefHelper.getSelectedGunNumber("SELECTED_GUN", 0)
-                        Log.d(
-                            "WONTAG",
-                            "Selected Gun Answer = $selectedGunNumber"
-                        )
 
-                        appViewModel.insertGunsChargingInfo(
-                            TbGunsChargingInfo(
-                                gunId = 2,
-                                gunChargingState = getGunChargingState(it).description,
-                                initialSoc = getInitialSoc(it),
-                                chargingSoc = getChargingSoc(it),
-                                demandVoltage = getDemandVoltage(it),
-                                demandCurrent = getDemandCurrent(it),
-                                chargingVoltage = getChargingVoltage(it),
-                                chargingCurrent = getChargingCurrent(it),
-                                duration = getChargingDuration(it),
-                                energyConsumption = getChargingEnergyConsumption(it)
-                            )
-                        )
+                        insertGun2InfoInDB(it)
 
                         when (getGunChargingState(it).description) {
-                            "Plugged In & Waiting for Authentication" -> {
-                                isGun2ChargingStarted = false
-
-                                if (selectedGunNumber == 2 && !isGun2Authenticated) {
-                                    Log.d(
-                                        "WONTAG",
-                                        "Calling authenticGun as Gun2 Info Screen is opened"
-                                    )
-                                    authenticateGun(2)
-                                }else{
-                                    lifecycleScope.launch {
-                                        delay(mCommonDelay)
-                                        readGun2LastChargingSummaryInfo()
-                                    }
-                                }
-                            }
-
                             "Charging" -> {
                                 isGun2ChargingStarted = true
                                 lifecycleScope.launch {
@@ -584,10 +532,15 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                                 if (isGun2ChargingStarted) {
                                     isGun2ChargingStarted = false
                                     isGun2Authenticated = false
-                                    prefHelper.setSelectedGunNumber("SELECTED_GUN", 0)
+
                                     lifecycleScope.launch {
                                         delay(mCommonDelay)
                                         readGun2LastChargingSummaryInfo(true)
+                                    }
+                                } else {
+                                    lifecycleScope.launch {
+                                        delay(mCommonDelay)
+                                        readGun2LastChargingSummaryInfo()
                                     }
                                 }
                             }
@@ -595,7 +548,6 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                             else -> {
                                 isGun2ChargingStarted = false
                                 isGun2Authenticated = false
-                                prefHelper.setSelectedGunNumber("SELECTED_GUN", 0)
                                 lifecycleScope.launch {
                                     delay(mCommonDelay)
                                     readGun2LastChargingSummaryInfo()
@@ -604,6 +556,12 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                         }
                     } else {
                         Log.e(TAG, "readGun2Info: Error Response - ${it.toHex()}")
+                        isGun2ChargingStarted = false
+                        isGun2Authenticated = false
+                        lifecycleScope.launch {
+                            delay(mCommonDelay)
+                            readGun2LastChargingSummaryInfo()
+                        }
                     }
                 }
             } catch (te: TimeoutCancellationException) {
@@ -612,6 +570,23 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
             }
         }
 
+    }
+
+    private fun insertGun2InfoInDB(it: ByteArray) {
+        appViewModel.insertGunsChargingInfo(
+            TbGunsChargingInfo(
+                gunId = 2,
+                gunChargingState = getGunChargingState(it).description,
+                initialSoc = getInitialSoc(it),
+                chargingSoc = getChargingSoc(it),
+                demandVoltage = getDemandVoltage(it),
+                demandCurrent = getDemandCurrent(it),
+                chargingVoltage = getChargingVoltage(it),
+                chargingCurrent = getChargingCurrent(it),
+                duration = getChargingDuration(it),
+                energyConsumption = getChargingEnergyConsumption(it)
+            )
+        )
     }
 
     private suspend fun readGun2LastChargingSummaryInfo(shouldSaveLastChargingSummary: Boolean = false) {
@@ -634,43 +609,8 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                     ) {
                         Log.d(TAG, "readGun2LastChargingSummaryInfo: Response = ${it.toHex()}")
                         if (shouldSaveLastChargingSummary) {
-                            appViewModel.insertGunsLastChargingSummary(
-                                TbGunsLastChargingSummary(
-                                    gunId = 2,
-                                    evMacAddress = LastChargingSummaryUtils.getEVMacAddress(it),
-                                    chargingDuration = LastChargingSummaryUtils.getTotalChargingTime(
-                                        it
-                                    ),
-                                    chargingStartDateTime = LastChargingSummaryUtils.getChargingStartTime(
-                                        it
-                                    ),
-                                    chargingEndDateTime = LastChargingSummaryUtils.getChargingEndTime(
-                                        it
-                                    ),
-                                    startSoc = LastChargingSummaryUtils.getStartSoc(it),
-                                    endSoc = LastChargingSummaryUtils.getEndSoc(it),
-                                    energyConsumption = LastChargingSummaryUtils.getEnergyConsumption(
-                                        it
-                                    ),
-                                    sessionEndReason = LastChargingSummaryUtils.getSessionEndReason(
-                                        it
-                                    )
-                                )
-                            )
-                            val chargingSummary = TbChargingHistory(
-                                gunNumber = 2,
-                                evMacAddress = LastChargingSummaryUtils.getEVMacAddress(it),
-                                chargingStartTime = LastChargingSummaryUtils.getChargingStartTime(it),
-                                chargingEndTime = LastChargingSummaryUtils.getChargingEndTime(it),
-                                totalChargingTime = LastChargingSummaryUtils.getTotalChargingTime(it),
-                                startSoc = LastChargingSummaryUtils.getStartSoc(it),
-                                endSoc = LastChargingSummaryUtils.getEndSoc(it),
-                                energyConsumption = LastChargingSummaryUtils.getEnergyConsumption(it),
-                                sessionEndReason = LastChargingSummaryUtils.getSessionEndReason(it),
-                                customSessionEndReason = "NA",
-                                totalCost = LastChargingSummaryUtils.getTotalCost(it)
-                            )
-                            appViewModel.insertChargingSummary(chargingSummary)
+                            insertGun2LastChargingSummaryInDB(it)
+                            insertGun2ChargingHistoryInDB(it)
                         }
                     } else {
                         Log.e(
@@ -691,6 +631,50 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
 
     }
 
+
+    private fun insertGun2ChargingHistoryInDB(it: ByteArray) {
+        val chargingSummary = TbChargingHistory(
+            gunNumber = 2,
+            evMacAddress = LastChargingSummaryUtils.getEVMacAddress(it),
+            chargingStartTime = LastChargingSummaryUtils.getChargingStartTime(it),
+            chargingEndTime = LastChargingSummaryUtils.getChargingEndTime(it),
+            totalChargingTime = LastChargingSummaryUtils.getTotalChargingTime(it),
+            startSoc = LastChargingSummaryUtils.getStartSoc(it),
+            endSoc = LastChargingSummaryUtils.getEndSoc(it),
+            energyConsumption = LastChargingSummaryUtils.getEnergyConsumption(it),
+            sessionEndReason = LastChargingSummaryUtils.getSessionEndReason(it),
+            customSessionEndReason = "NA",
+            totalCost = LastChargingSummaryUtils.getTotalCost(it)
+        )
+        appViewModel.insertChargingSummary(chargingSummary)
+    }
+
+    private fun insertGun2LastChargingSummaryInDB(it: ByteArray) {
+        appViewModel.insertGunsLastChargingSummary(
+            TbGunsLastChargingSummary(
+                gunId = 2,
+                evMacAddress = LastChargingSummaryUtils.getEVMacAddress(it),
+                chargingDuration = LastChargingSummaryUtils.getTotalChargingTime(
+                    it
+                ),
+                chargingStartDateTime = LastChargingSummaryUtils.getChargingStartTime(
+                    it
+                ),
+                chargingEndDateTime = LastChargingSummaryUtils.getChargingEndTime(
+                    it
+                ),
+                startSoc = LastChargingSummaryUtils.getStartSoc(it),
+                endSoc = LastChargingSummaryUtils.getEndSoc(it),
+                energyConsumption = LastChargingSummaryUtils.getEnergyConsumption(
+                    it
+                ),
+                sessionEndReason = LastChargingSummaryUtils.getSessionEndReason(
+                    it
+                )
+            )
+        )
+    }
+
     private suspend fun readGun2DCMeterInfo() {
         Log.i(
             TAG,
@@ -708,29 +692,34 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                 ) {
                     if (it.toHex().startsWith(ModBusUtils.INPUT_REGISTERS_CORRECT_RESPONSE_BITS)) {
                         Log.d(TAG, "readGun2DCMeterInfo: Response = ${it.toHex()}")
-                        val newResponse = ModBusUtils.parseInputRegistersResponse(it)
-                        if (newResponse.isNotEmpty()) {
-                            appViewModel.insertGunsDCMeterInfo(
-                                TbGunsDcMeterInfo(
-                                    gunId = 2,
-                                    voltage = newResponse[0],
-                                    current = newResponse[1],
-                                    power = newResponse[2],
-                                    importEnergy = newResponse[3],
-                                    exportEnergy = newResponse[4],
-                                    maxVoltage = newResponse[5],
-                                    minVoltage = newResponse[6],
-                                    maxCurrent = newResponse[7],
-                                    minCurrent = newResponse[8]
-                                )
-                            )
-                        }
+                        insertGun2DCMeterInfoInDB(it)
                     } else {
                         Log.e(TAG, "readGun2DCMeterInfo: Error Response - ${it.toHex()}")
                     }
                     lifecycleScope.launch {
                         delay(mCommonDelay)
-                        startReading()
+                        Log.i(
+                            TAG,
+                            "readGun2DCMeterInfo: SELECTED GUN NUMBER = ${
+                                prefHelper.getSelectedGunNumber(
+                                    "SELECTED_GUN",
+                                    0
+                                )
+                            }"
+                        )
+                        val selectedGunNumber =
+                            prefHelper.getSelectedGunNumber("SELECTED_GUN", 0)
+                        if (selectedGunNumber != 0) {
+                            if (!isGun1ChargingStarted) {
+                                authenticateGun(1)
+                            } else if (!isGun2ChargingStarted) {
+                                authenticateGun(2)
+                            } else {
+                                startReading()
+                            }
+                        } else {
+                            startReading()
+                        }
                     }
                 }
             } catch (te: TimeoutCancellationException) {
@@ -741,7 +730,28 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
 
     }
 
+    private fun insertGun2DCMeterInfoInDB(it: ByteArray) {
+        val newResponse = ModBusUtils.parseInputRegistersResponse(it)
+        if (newResponse.isNotEmpty()) {
+            appViewModel.insertGunsDCMeterInfo(
+                TbGunsDcMeterInfo(
+                    gunId = 2,
+                    voltage = newResponse[0],
+                    current = newResponse[1],
+                    power = newResponse[2],
+                    importEnergy = newResponse[3],
+                    exportEnergy = newResponse[4],
+                    maxVoltage = newResponse[5],
+                    minVoltage = newResponse[6],
+                    maxCurrent = newResponse[7],
+                    minCurrent = newResponse[8]
+                )
+            )
+        }
+    }
+
     private fun authenticateGun(gunNumber: Int) {
+        Log.i(TAG, "Gun $gunNumber AuthGun Request Started")
         lifecycleScope.launch(Dispatchers.IO) {
             ReadWriteUtil.writeToSingleHoldingRegisterNew(
                 mOutputStream,
@@ -751,17 +761,18 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
             ) { responseFrame ->
                 val decodeResponse =
                     ModBusUtils.convertModbusResponseFrameToString(responseFrame)
-                Log.d("TAG", "onDataReceived: $decodeResponse")
+                Log.d(TAG, "GUN $gunNumber AuthGun Response: $decodeResponse")
 
                 lifecycleScope.launch {
                     delay(mCommonDelay)
-                    if (gunNumber == 1) {
+                    /*if (gunNumber == 1) {
                         isGun1Authenticated = true
                         readGun1LastChargingSummaryInfo()
                     } else {
                         isGun2Authenticated = true
                         readGun2LastChargingSummaryInfo()
-                    }
+                    }*/
+                    startReading()
                 }
             }
         }

@@ -39,6 +39,7 @@
             android:paddingHorizontal="@dimen/_20sdp"
             android:lines="1"
             android:text="0.00"
+            android:textStyle="bold"
             android:textColor="@color/white"
             android:textSize="@dimen/_8ssp" />
 

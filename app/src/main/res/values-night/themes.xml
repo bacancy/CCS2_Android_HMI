@@ -29,7 +29,7 @@
         <item name="android:gravity">center</item>
         <item name="android:padding">@dimen/_10sdp</item>
         <item name="android:textColor">@color/yellow</item>
-        <item name="android:textSize">@dimen/_5ssp</item>
+        <item name="android:textSize">@dimen/_7ssp</item>
         <item name="android:lines">2</item>
     </style>
     <style name="HistoryTableColumnsTheme">
@@ -37,7 +37,7 @@
         <item name="android:gravity">center</item>
         <item name="android:padding">@dimen/_10sdp</item>
         <item name="android:textColor">@color/white</item>
-        <item name="android:textSize">@dimen/_5ssp</item>
+        <item name="android:textSize">@dimen/_6ssp</item>
         <item name="android:lines">2</item>
     </style>
     <style name="CustomAlertDialog" parent="Theme.AppCompat.DayNight.Dialog.Alert">

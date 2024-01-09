@@ -3,12 +3,10 @@
     <font
         android:fontStyle="normal"
         android:fontWeight="400"
-        android:font="@font/libre_baskerville_regular" />
-
-
+        android:font="@font/nunito_regular" />
     <font
         android:fontStyle="italic"
         android:fontWeight="400"
-        android:font="@font/libre_baskerville_italic" />
+        android:font="@font/nunito_semibold" />
 
 </font-family>

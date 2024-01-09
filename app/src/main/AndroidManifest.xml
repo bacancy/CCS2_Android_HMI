@@ -2,8 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.SERIAL_PORT" />
-
     <application
         android:name=".HMIApp"
         android:allowBackup="true"
@@ -18,10 +16,6 @@
         <activity
             android:name=".views.HMIDashboardActivity"
             android:exported="false" />
-        <activity
-            android:name=".views.NewTestActivity"
-            android:exported="false"
-            android:screenOrientation="landscape" />
         <activity
             android:name=".views.Dashboard"
             android:exported="false" />
