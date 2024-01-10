@@ -12,6 +12,7 @@ import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentGunsChargingHistoryBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbChargingHistory
+import com.bacancy.ccs2androidhmi.util.gone
 import com.bacancy.ccs2androidhmi.util.visible
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
 import com.bacancy.ccs2androidhmi.views.adapters.ChargingHistoryListAdapter
@@ -90,7 +91,14 @@ class GunsChargingHistoryFragment : BaseFragment() {
         lifecycleScope.launch {
 
             appViewModel.chargingSummariesList.observe(requireActivity()) {
-                chargingHistoryAdapter.submitList(it)
+                if (it.isNotEmpty()) {
+                    binding.rvChargingHistory.visible()
+                    binding.tvNoDataFound.gone()
+                    chargingHistoryAdapter.submitList(it)
+                } else {
+                    binding.rvChargingHistory.gone()
+                    binding.tvNoDataFound.visible()
+                }
 
             }
 

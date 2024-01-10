@@ -13,11 +13,89 @@
         android:id="@+id/incHeader"
         layout="@layout/common_header" />
 
+    <LinearLayout
+        android:id="@+id/lnrTableHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:orientation="horizontal"
+        android:visibility="visible">
+
+        <TextView
+            style="@style/HistoryTableHeaderTheme"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/lbl_ev_mac_address" />
+
+        <TextView
+            style="@style/HistoryTableHeaderTheme"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.60"
+            android:text="@string/lbl_charging_duration" />
+
+        <TextView
+            style="@style/HistoryTableHeaderTheme"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/lbl_charging_start_date_time" />
+
+        <TextView
+            style="@style/HistoryTableHeaderTheme"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/lbl_charging_end_date_time" />
+
+        <TextView
+            style="@style/HistoryTableHeaderTheme"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.60"
+            android:text="@string/lbl_start_soc" />
+
+        <TextView
+            style="@style/HistoryTableHeaderTheme"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.50"
+            android:text="@string/lbl_end_soc" />
+
+        <TextView
+            style="@style/HistoryTableHeaderTheme"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/lbl_energy_consumption" />
+
+        <TextView
+            style="@style/HistoryTableHeaderTheme"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/lbl_session_end_reason" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvNoDataFound"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_black_rect_with_white_border"
+        android:gravity="center_horizontal"
+        android:padding="@dimen/_10sdp"
+        android:text="@string/lbl_no_charging_history"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_10ssp"
+        android:visibility="gone" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvChargingHistory"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:listitem="@layout/row_item_charging_history"
-        android:layout_marginTop="@dimen/_10sdp" />
+        android:visibility="gone"
+        tools:listitem="@layout/row_item_charging_history" />
 
 </LinearLayout>

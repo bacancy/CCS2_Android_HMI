@@ -158,13 +158,13 @@ class Dashboard : SerialPortBaseActivity() {
     }
 
     private fun authenticateGun(gunNumber: Int) {
-        lifecycleScope.launch(Dispatchers.IO) {
+        /*lifecycleScope.launch(Dispatchers.IO) {
             writeToSingleHoldingRegisterNew(
                 mOutputStream,
                 mInputStream,
                 30,
                 gunNumber
-            ) { responseFrame ->
+            , { responseFrame ->
                     val decodeResponse =
                         ModBusUtils.convertModbusResponseFrameToString(responseFrame)
                     Log.d("TAG", "onDataReceived: $decodeResponse")
@@ -183,8 +183,8 @@ class Dashboard : SerialPortBaseActivity() {
                             )
                         )
                     }
-            }
-        }
+            },{})
+        }*/
     }
 
     fun goToAllChargingSummary(view: View) {

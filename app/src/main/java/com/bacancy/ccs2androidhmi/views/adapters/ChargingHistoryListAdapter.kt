@@ -46,9 +46,6 @@ class ChargingHistoryListAdapter(var onItemClick: (TbChargingHistory) -> Unit) :
 
         fun bind(sampleModel: TbChargingHistory, position: Int) {
             binding.apply {
-                if(position==0){
-                    lnrTableHeader.visible()
-                }
                 tvEvMacAddress.text = sampleModel.evMacAddress
                 tvChargingDuration.text = sampleModel.totalChargingTime + " min"
                 tvChargingStartTime.text = sampleModel.chargingStartTime
