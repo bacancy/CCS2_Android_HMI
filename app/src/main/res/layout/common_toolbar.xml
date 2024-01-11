@@ -12,20 +12,21 @@
         android:id="@+id/imgBack"
         android:layout_width="@dimen/_18sdp"
         android:layout_height="@dimen/_18sdp"
+        android:clickable="true"
         android:contentDescription="@string/cd_back"
+        android:focusable="true"
         android:src="@drawable/ic_back_arrow"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:clickable="true"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:focusable="true" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/ivLogo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/_120sdp"
+        android:layout_height="@dimen/_25sdp"
+        android:adjustViewBounds="true"
         android:gravity="center"
-        android:src="@drawable/ic_bacancy_logo"
+        android:src="@drawable/img_servotech_logo"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
