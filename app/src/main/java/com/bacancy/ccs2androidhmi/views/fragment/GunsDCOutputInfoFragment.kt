@@ -9,10 +9,13 @@ import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentDcMeterBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsDcMeterInfo
+import com.bacancy.ccs2androidhmi.util.CommonUtils
+import com.bacancy.ccs2androidhmi.util.PrefHelper
 import com.bacancy.ccs2androidhmi.util.visible
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
 import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class GunsDCOutputInfoFragment : BaseFragment() {
@@ -20,6 +23,9 @@ class GunsDCOutputInfoFragment : BaseFragment() {
     private var selectedGunNumber: Int = 1
     private val appViewModel: AppViewModel by viewModels()
     private lateinit var binding: FragmentDcMeterBinding
+
+    @Inject
+    lateinit var prefHelper: PrefHelper
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,7 +41,7 @@ class GunsDCOutputInfoFragment : BaseFragment() {
     }
 
     private fun observeGunsDCOutputInfo() {
-        appViewModel.getUpdatedGunsDCMeterInfo(selectedGunNumber).observe(requireActivity()){
+        appViewModel.getUpdatedGunsDCMeterInfo(selectedGunNumber).observe(requireActivity()) {
             it?.let {
                 updateDCOutputUI(it)
             }
@@ -60,9 +66,31 @@ class GunsDCOutputInfoFragment : BaseFragment() {
 
     override fun setScreenHeaderViews() {
         binding.apply {
-            incHeader.tvHeader.text = getString(R.string.lbl_gun_1)
+            if (selectedGunNumber == 1) {
+                incHeader.tvHeader.text = getString(R.string.lbl_gun_1)
+            } else {
+                incHeader.tvHeader.text = getString(R.string.lbl_gun_2)
+            }
             incHeader.tvSubHeader.text = getString(R.string.lbl_dc_output_information)
             incHeader.tvSubHeader.visible()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (selectedGunNumber == 1) {
+            prefHelper.setScreenVisible(CommonUtils.GUN_1_DC_METER_FRAG, true)
+        } else {
+            prefHelper.setScreenVisible(CommonUtils.GUN_2_DC_METER_FRAG, true)
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        if (selectedGunNumber == 1) {
+            prefHelper.setScreenVisible(CommonUtils.GUN_1_DC_METER_FRAG, false)
+        } else {
+            prefHelper.setScreenVisible(CommonUtils.GUN_2_DC_METER_FRAG, false)
         }
     }
 

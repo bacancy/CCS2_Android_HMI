@@ -1,7 +1,7 @@
 package com.bacancy.ccs2androidhmi.views.fragment
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,13 +9,15 @@ import androidx.fragment.app.viewModels
 import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentGunsChargingSummaryBinding
-import com.bacancy.ccs2androidhmi.databinding.FragmentGunsHomeScreenBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsLastChargingSummary
-import com.bacancy.ccs2androidhmi.util.gone
+import com.bacancy.ccs2androidhmi.util.CommonUtils
+import com.bacancy.ccs2androidhmi.util.PrefHelper
 import com.bacancy.ccs2androidhmi.util.invisible
 import com.bacancy.ccs2androidhmi.util.visible
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class GunsLastChargingSummaryFragment : BaseFragment() {
@@ -23,6 +25,9 @@ class GunsLastChargingSummaryFragment : BaseFragment() {
     private var selectedGunNumber: Int = 1
     private lateinit var binding: FragmentGunsChargingSummaryBinding
     private val appViewModel: AppViewModel by viewModels()
+
+    @Inject
+    lateinit var prefHelper: PrefHelper
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -68,6 +73,24 @@ class GunsLastChargingSummaryFragment : BaseFragment() {
             }
             incHeader.tvSubHeader.text = getString(R.string.lbl_charging_summary)
             incHeader.tvSubHeader.visible()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (selectedGunNumber == 1) {
+            prefHelper.setScreenVisible(CommonUtils.GUN_1_LAST_CHARGING_SUMMARY_FRAG, true)
+        } else {
+            prefHelper.setScreenVisible(CommonUtils.GUN_2_LAST_CHARGING_SUMMARY_FRAG, true)
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        if (selectedGunNumber == 1) {
+            prefHelper.setScreenVisible(CommonUtils.GUN_1_LAST_CHARGING_SUMMARY_FRAG, false)
+        } else {
+            prefHelper.setScreenVisible(CommonUtils.GUN_2_LAST_CHARGING_SUMMARY_FRAG, false)
         }
     }
 

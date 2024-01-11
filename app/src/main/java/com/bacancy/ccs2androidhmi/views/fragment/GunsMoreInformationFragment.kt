@@ -12,11 +12,10 @@ import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentGunsMoreInfoScreenBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
 import com.bacancy.ccs2androidhmi.util.PrefHelper
-import com.bacancy.ccs2androidhmi.util.gone
+import com.bacancy.ccs2androidhmi.util.invisible
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
 import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
 import com.bacancy.ccs2androidhmi.views.listener.FragmentChangeListener
-import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -177,10 +176,13 @@ class GunsMoreInformationFragment : BaseFragment() {
 
             incDuration.tvLabel.text = getString(R.string.lbl_duration_hh_mm)
             incDuration.tvValue.text = "00:00"
-            incDuration.tvValueUnit.gone()
+            incDuration.tvValueUnit.invisible()
 
             incEnergyConsumption.tvLabel.text = getString(R.string.lbl_energy_consumption)
             incEnergyConsumption.tvValueUnit.text = getString(R.string.lbl_kw)
         }
+    }
+
+    companion object {
     }
 }

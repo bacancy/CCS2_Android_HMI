@@ -2,7 +2,6 @@ package com.bacancy.ccs2androidhmi.views.fragment
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,14 +10,16 @@ import androidx.lifecycle.lifecycleScope
 import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentAcMeterInfoBinding
+import com.bacancy.ccs2androidhmi.util.CommonUtils.AC_METER_FRAG
+import com.bacancy.ccs2androidhmi.util.PrefHelper
 import com.bacancy.ccs2androidhmi.util.setValue
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
 import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
 import com.bacancy.ccs2androidhmi.views.listener.FragmentChangeListener
-import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ACMeterInfoFragment : BaseFragment() {
@@ -26,6 +27,9 @@ class ACMeterInfoFragment : BaseFragment() {
     private lateinit var binding: FragmentAcMeterInfoBinding
     private var fragmentChangeListener: FragmentChangeListener? = null
     private val appViewModel: AppViewModel by viewModels()
+
+    @Inject
+    lateinit var prefHelper: PrefHelper
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -46,9 +50,19 @@ class ACMeterInfoFragment : BaseFragment() {
         return binding.root
     }
 
+    override fun onResume() {
+        super.onResume()
+        prefHelper.setScreenVisible(AC_METER_FRAG, true)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        prefHelper.setScreenVisible(AC_METER_FRAG, false)
+    }
+
     private fun getLatestAcMeterInfo() {
         appViewModel.latestAcMeterInfo.observe(requireActivity()) { latestAcMeterInfo ->
-            if(latestAcMeterInfo!=null){
+            if (latestAcMeterInfo != null) {
                 lifecycleScope.launch(Dispatchers.Main) {
 
                     latestAcMeterInfo.apply {
@@ -112,6 +126,9 @@ class ACMeterInfoFragment : BaseFragment() {
 
     override fun setScreenHeaderViews() {
         binding.incHeader.tvHeader.text = getString(R.string.lbl_ac_meter_information)
+    }
+
+    companion object {
     }
 
 }

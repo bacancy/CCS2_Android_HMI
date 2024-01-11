@@ -73,7 +73,11 @@ object GunsChargingInfoUtils {
                 durationInMinutesLSB,
                 durationInMinutesMSB
             )
-        return "$hour:$minutes"
+        // Use String.format to add leading zeros
+        val formattedHour = String.format("%02d", hour)
+        val formattedMinutes = String.format("%02d", minutes)
+
+        return "$formattedHour:$formattedMinutes"
     }
 
     fun getChargingEnergyConsumption(response: ByteArray): Float {

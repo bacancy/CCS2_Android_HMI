@@ -98,5 +98,6 @@
     <string name="lbl_device_information">Device Information</string>
     <string name="msg_dialog_home_screen">To start the authentication process or view detailed parameter information, tap a specific gun icon.</string>
     <string name="lbl_no_charging_history">No Charging History</string>
+    <string name="lbl_emergency_stop">Emergency Stop</string>
 
 </resources>

@@ -8,6 +8,13 @@ object CommonUtils {
 
     const val CLOCK_DATE_AND_TIME_FORMAT = "dd/MM/yyyy EEE HH:mm:ss"
 
+    //Screen Constants
+    const val AC_METER_FRAG = "AC_METER_FRAGMENT"
+    const val GUN_1_DC_METER_FRAG = "GUN_1_DC_METER_FRAG"
+    const val GUN_2_DC_METER_FRAG = "GUN_2_DC_METER_FRAG"
+    const val GUN_1_LAST_CHARGING_SUMMARY_FRAG = "GUN_1_LAST_CHARGING_SUMMARY_FRAG"
+    const val GUN_2_LAST_CHARGING_SUMMARY_FRAG = "GUN_2_LAST_CHARGING_SUMMARY_FRAG"
+
     private fun swapAdjacentElements(array: MutableList<Int>): MutableList<Int> {
         for (i in 0 until array.size - 1 step 2) {
             // Swap adjacent elements

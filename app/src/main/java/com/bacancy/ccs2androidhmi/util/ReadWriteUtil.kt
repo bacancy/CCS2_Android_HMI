@@ -35,6 +35,14 @@ object ReadWriteUtil {
                     withContext(Dispatchers.IO) {
                         bufferedOutputStream.write(writeRequestFrame)
                         bufferedOutputStream.flush()
+                        Log.w(
+                            "TAG",
+                            "writeToSingleHoldingRegisterNew: BufferedInputStream available bytes - ${bufferedInputStream.available()}"
+                        )
+                        delay(500)
+                        val responseFrame = ByteArray(7)
+                        bufferedInputStream.mark(0)
+                        bufferedInputStream.read(responseFrame)
                         onAuthDataReceived(null)
                     }
                 } catch (e: TimeoutCancellationException) {
@@ -43,7 +51,13 @@ object ReadWriteUtil {
                         "writeToSingleHoldingRegisterNew: TimeOutException = ${e.printStackTrace()}",
 
                         )
-                    onAuthDataReceived(null)
+                    withContext(Dispatchers.IO) {
+                        delay(500)
+                        val responseFrame = ByteArray(7)
+                        bufferedInputStream.mark(0)
+                        bufferedInputStream.read(responseFrame)
+                        onAuthDataReceived(null)
+                    }
                 }
             }
         }
@@ -86,15 +100,15 @@ object ReadWriteUtil {
 
                 Log.w(
                     "MONTAG",
-                    "writeRequestAndReadResponse 3: Init bytearray using responseSize"
-                )
-                val responseFrame = ByteArray(responseSize)
-
-                Log.w(
-                    "MONTAG",
                     "writeRequestAndReadResponse 4: Delaying for 500ms"
                 )
                 delay(DELAY_BETWEEN_READ_AND_WRITE) //waiting for 500ms between write and read
+
+                Log.w(
+                    "MONTAG",
+                    "writeRequestAndReadResponse 3: Init bytearray using responseSize"
+                )
+                val responseFrame = ByteArray(responseSize)
 
                 Log.w(
                     "MONTAG",

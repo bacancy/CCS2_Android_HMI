@@ -22,4 +22,14 @@ class PrefHelper(context: Context) {
         return sharedPreferences.getInt(key, defaultValue)
     }
 
+    fun setScreenVisible(key: String, value: Boolean) {
+        val editor: SharedPreferences.Editor = sharedPreferences.edit()
+        editor.putBoolean(key, value)
+        editor.apply()
+    }
+
+    fun getScreenVisible(key: String, defaultValue: Boolean): Boolean {
+        return sharedPreferences.getBoolean(key, defaultValue)
+    }
+
 }

@@ -16,6 +16,11 @@ import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsDcMeterInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsLastChargingSummary
 import com.bacancy.ccs2androidhmi.db.entity.TbMiscInfo
+import com.bacancy.ccs2androidhmi.util.CommonUtils.AC_METER_FRAG
+import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_DC_METER_FRAG
+import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_LAST_CHARGING_SUMMARY_FRAG
+import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_DC_METER_FRAG
+import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_LAST_CHARGING_SUMMARY_FRAG
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getChargingCurrent
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getChargingDuration
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getChargingEnergyConsumption
@@ -85,6 +90,10 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         makeFullScreen()
         super.onCreate(savedInstanceState)
+
+    }
+
+    private fun setupSerialPort() {
         mApplication = application as HMIApp
         try {
             mSerialPort = mApplication!!.getSerialPort()
@@ -97,7 +106,7 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
 
     override fun onResume() {
         super.onResume()
-        Log.i(TAG, "onResume: startReading Called")
+        setupSerialPort()
         startReading()
     }
 
@@ -125,8 +134,6 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
     }
 
     private suspend fun readMiscInfo() {
-
-
         withTimeout(1000) {
             try {
                 Log.i(
@@ -153,21 +160,31 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                         } else {
                             Log.e(TAG, "readMiscInfo: Error Response - ${it.toHex()}")
                         }
-                        lifecycleScope.launch {
-                            delay(mCommonDelay)
-                            readAcMeterInfo()
-                        }
+                        openAcMeterInfo()
                     }, {
-                        Log.i(TAG, "onResume: startReading Called 2")
                         startReading()
                     })
             } catch (te: TimeoutCancellationException) {
                 Log.e(TAG, "readMiscInfo: Timeout Occurred", te.cause)
-                Log.i(TAG, "onResume: startReading Called 3")
                 startReading()
             }
         }
 
+    }
+
+    private fun openAcMeterInfo() {
+        lifecycleScope.launch {
+            delay(mCommonDelay)
+            if (prefHelper.getScreenVisible(
+                    AC_METER_FRAG,
+                    false
+                )
+            ) {
+                readAcMeterInfo()
+            } else {
+                readGun1Info()
+            }
+        }
     }
 
     private fun insertMiscInfoInDB(it: ByteArray) {
@@ -247,11 +264,10 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                             readGun1Info()
                         }
                     }, {
-                        Log.i(TAG, "onResume: startReading Called 4")
-                        startReading() })
+                        startReading()
+                    })
             } catch (te: TimeoutCancellationException) {
                 Log.e(TAG, "readMiscInfo: Timeout Occurred", te.cause)
-                Log.i(TAG, "onResume: startReading Called 5")
                 startReading()
             }
         }
@@ -298,39 +314,32 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                         ) {
                             Log.d(TAG, "readGun1Info: Response = ${it.toHex()}")
                             insertGun1InfoInDB(it)
-
+                            Log.d(
+                                TAG,
+                                "readGun1Info: Gun Current State: ${getGunChargingState(it).description}"
+                            )
                             when (getGunChargingState(it).description) {
                                 "Charging" -> {
                                     isGun1ChargingStarted = true
-                                    lifecycleScope.launch {
-                                        delay(mCommonDelay)
-                                        readGun1LastChargingSummaryInfo()
-                                    }
+                                    openGun1LastChargingSummary()
                                 }
 
                                 "Complete", "Emergency Stop" -> {
+                                    Log.d(TAG, "readGun1Info: In Complete Section")
                                     if (isGun1ChargingStarted) {
+                                        Log.d(TAG, "readGun1Info: Inside If")
                                         isGun1ChargingStarted = false
                                         isGun1Authenticated = false
-                                        lifecycleScope.launch {
-                                            delay(mCommonDelay)
-                                            readGun1LastChargingSummaryInfo(true)
-                                        }
+                                        openGun1LastChargingSummary(true)
                                     } else {
-                                        lifecycleScope.launch {
-                                            delay(mCommonDelay)
-                                            readGun1LastChargingSummaryInfo()
-                                        }
+                                        openGun1LastChargingSummary()
                                     }
                                 }
 
                                 else -> {
                                     isGun1ChargingStarted = false
                                     isGun1Authenticated = false
-                                    lifecycleScope.launch {
-                                        delay(mCommonDelay)
-                                        readGun1LastChargingSummaryInfo()
-                                    }
+                                    openGun1LastChargingSummary()
                                 }
                             }
 
@@ -338,22 +347,57 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                             Log.e(TAG, "readGun1Info: Error Response - ${it.toHex()}")
                             isGun1ChargingStarted = false
                             isGun1Authenticated = false
-                            lifecycleScope.launch {
-                                delay(mCommonDelay)
-                                readGun1LastChargingSummaryInfo()
-                            }
+                            openGun1LastChargingSummary()
                         }
 
                     }, {
-                        Log.i(TAG, "onResume: startReading Called 6")
-                        startReading() })
+                        startReading()
+                    })
             } catch (te: TimeoutCancellationException) {
                 Log.e(TAG, "readMiscInfo: Timeout Occurred", te.cause)
-                Log.i(TAG, "onResume: startReading Called 7")
                 startReading()
             }
         }
 
+    }
+
+    private fun openGun1LastChargingSummary(shouldSave: Boolean = false) {
+        lifecycleScope.launch {
+            delay(mCommonDelay)
+            if (shouldSave) {
+                readGun1LastChargingSummaryInfo(shouldSave)
+            } else {
+                if (prefHelper.getScreenVisible(
+                        GUN_1_LAST_CHARGING_SUMMARY_FRAG,
+                        false
+                    )
+                ) {
+                    readGun1LastChargingSummaryInfo()
+                } else {
+                    openGun1DCMeterInfo()
+                }
+            }
+
+        }
+    }
+
+    private fun openGun2LastChargingSummary(shouldSave: Boolean = false) {
+        lifecycleScope.launch {
+            delay(mCommonDelay)
+            if (shouldSave) {
+                readGun2LastChargingSummaryInfo(shouldSave)
+            } else {
+                if (prefHelper.getScreenVisible(
+                        GUN_2_LAST_CHARGING_SUMMARY_FRAG,
+                        false
+                    )
+                ) {
+                    readGun2LastChargingSummaryInfo()
+                } else {
+                    openGun2DCMeterInfo()
+                }
+            }
+        }
     }
 
     private fun insertGun1InfoInDB(it: ByteArray) {
@@ -375,7 +419,7 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
 
     private suspend fun readGun1LastChargingSummaryInfo(shouldSaveLastChargingSummary: Boolean = false) {
         Log.i(
-            TAG,
+            "SAVER",
             "readGun1LastChargingSummaryInfo: Request Sent - ${
                 ModbusRequestFrames.getGun1LastChargingSummaryRequestFrame().toHex()
             }"
@@ -390,8 +434,12 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                         if (it.toHex()
                                 .startsWith(ModBusUtils.HOLDING_REGISTERS_CORRECT_RESPONSE_BITS)
                         ) {
-                            Log.d(TAG, "readGun1LastChargingSummaryInfo: Response = ${it.toHex()}")
+                            Log.d(
+                                "SAVER",
+                                "readGun1LastChargingSummaryInfo: Response = ${it.toHex()}"
+                            )
                             if (shouldSaveLastChargingSummary) {
+                                Log.w("SAVER", "INSERT LCS IN DB")
                                 insertGun1LastChargingSummaryInDB(it)
                                 insertGun1ChargingHistoryInDB(it)
                             }
@@ -401,20 +449,52 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                                 "readGun1LastChargingSummaryInfo: Error Response - ${it.toHex()}"
                             )
                         }
-                        lifecycleScope.launch {
-                            delay(mCommonDelay)
-                            readGun1DCMeterInfo()
-                        }
+                        openGun1DCMeterInfo()
                     }, {
-                        Log.i(TAG, "onResume: startReading Called 8")
-                        startReading() })
+                        startReading()
+                    })
             } catch (te: TimeoutCancellationException) {
                 Log.e(TAG, "readMiscInfo: Timeout Occurred", te.cause)
-                Log.i(TAG, "onResume: startReading Called 9")
                 startReading()
             }
         }
 
+    }
+
+    private fun openGun1DCMeterInfo() {
+        lifecycleScope.launch {
+            delay(mCommonDelay)
+            if (prefHelper.getScreenVisible(
+                    GUN_1_DC_METER_FRAG,
+                    false
+                )
+            ) {
+                readGun1DCMeterInfo()
+            } else {
+                readGun2Info()
+            }
+        }
+    }
+
+    private fun openGun2DCMeterInfo() {
+        lifecycleScope.launch {
+            delay(mCommonDelay)
+            if (prefHelper.getScreenVisible(
+                    GUN_2_DC_METER_FRAG,
+                    false
+                )
+            ) {
+                readGun2DCMeterInfo()
+            } else {
+                val selectedGunNumber =
+                    prefHelper.getSelectedGunNumber("SELECTED_GUN", 0)
+                if (selectedGunNumber != 0) {
+                    authenticateGun(selectedGunNumber)
+                } else {
+                    startReading()
+                }
+            }
+        }
     }
 
     private fun insertGun1ChargingHistoryInDB(it: ByteArray) {
@@ -489,11 +569,10 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                             readGun2Info()
                         }
                     }, {
-                        Log.i(TAG, "onResume: startReading Called 10")
-                        startReading() })
+                        startReading()
+                    })
             } catch (te: TimeoutCancellationException) {
                 Log.e(TAG, "readMiscInfo: Timeout Occurred", te.cause)
-                Log.i(TAG, "onResume: startReading Called 11")
                 startReading()
             }
         }
@@ -502,6 +581,7 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
 
     private fun insertGun1DCMeterInfoInDB(it: ByteArray) {
         val newResponse = ModBusUtils.parseInputRegistersResponse(it)
+        Log.i(TAG, "insertGun1DCMeterInfoInDB: DC LIST = ${newResponse.toList()}")
         if (newResponse.isNotEmpty()) {
             appViewModel.insertGunsDCMeterInfo(
                 TbGunsDcMeterInfo(
@@ -542,10 +622,7 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                             when (getGunChargingState(it).description) {
                                 "Charging" -> {
                                     isGun2ChargingStarted = true
-                                    lifecycleScope.launch {
-                                        delay(mCommonDelay)
-                                        readGun2LastChargingSummaryInfo()
-                                    }
+                                    openGun2LastChargingSummary()
                                 }
 
                                 "Complete", "Emergency Stop" -> {
@@ -553,42 +630,29 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                                         isGun2ChargingStarted = false
                                         isGun2Authenticated = false
 
-                                        lifecycleScope.launch {
-                                            delay(mCommonDelay)
-                                            readGun2LastChargingSummaryInfo(true)
-                                        }
+                                        openGun2LastChargingSummary(true)
                                     } else {
-                                        lifecycleScope.launch {
-                                            delay(mCommonDelay)
-                                            readGun2LastChargingSummaryInfo()
-                                        }
+                                        openGun2LastChargingSummary()
                                     }
                                 }
 
                                 else -> {
                                     isGun2ChargingStarted = false
                                     isGun2Authenticated = false
-                                    lifecycleScope.launch {
-                                        delay(mCommonDelay)
-                                        readGun2LastChargingSummaryInfo()
-                                    }
+                                    openGun2LastChargingSummary()
                                 }
                             }
                         } else {
                             Log.e(TAG, "readGun2Info: Error Response - ${it.toHex()}")
                             isGun2ChargingStarted = false
                             isGun2Authenticated = false
-                            lifecycleScope.launch {
-                                delay(mCommonDelay)
-                                readGun2LastChargingSummaryInfo()
-                            }
+                            openGun2LastChargingSummary()
                         }
                     }, {
-                        Log.i(TAG, "onResume: startReading Called 12")
-                        startReading() })
+                        startReading()
+                    })
             } catch (te: TimeoutCancellationException) {
                 Log.e(TAG, "readMiscInfo: Timeout Occurred", te.cause)
-                Log.i(TAG, "onResume: startReading Called 13")
                 startReading()
             }
         }
@@ -640,16 +704,12 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                                 "readGun2LastChargingSummaryInfo: Error Response - ${it.toHex()}"
                             )
                         }
-                        lifecycleScope.launch {
-                            delay(mCommonDelay)
-                            readGun2DCMeterInfo()
-                        }
+                        openGun2DCMeterInfo()
                     }, {
-                        Log.i(TAG, "onResume: startReading Called 14")
-                        startReading() })
+                        startReading()
+                    })
             } catch (te: TimeoutCancellationException) {
                 Log.e(TAG, "readMiscInfo: Timeout Occurred", te.cause)
-                Log.i(TAG, "onResume: startReading Called 15")
                 startReading()
             }
         }
@@ -736,20 +796,16 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                             val selectedGunNumber =
                                 prefHelper.getSelectedGunNumber("SELECTED_GUN", 0)
                             if (selectedGunNumber != 0) {
-                                Log.i(TAG, "onResume: startReading Called 16")
-                                //startReading()
                                 authenticateGun(selectedGunNumber)
                             } else {
-                                Log.i(TAG, "onResume: startReading Called 17")
                                 startReading()
                             }
                         }
                     }, {
-                        Log.i(TAG, "onResume: startReading Called 18")
-                        startReading() })
+                        startReading()
+                    })
             } catch (te: TimeoutCancellationException) {
                 Log.e(TAG, "readMiscInfo: Timeout Occurred", te.cause)
-                Log.i(TAG, "onResume: startReading Called 19")
                 startReading()
             }
         }
@@ -786,7 +842,6 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                 gunNumber, {
                     Log.d(TAG, "authenticateGun: Response Got")
                     lifecycleScope.launch {
-                        Log.i(TAG, "onResume: startReading Called 20")
                         startReading()
                     }
 
