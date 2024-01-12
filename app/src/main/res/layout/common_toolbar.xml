@@ -38,6 +38,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/_5sdp"
         android:gravity="center"
+        app:layout_constraintStart_toEndOf="@id/ivLogo"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/tvDateTime"
         app:layout_constraintTop_toTopOf="parent">

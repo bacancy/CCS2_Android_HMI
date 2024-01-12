@@ -39,7 +39,7 @@ object ReadWriteUtil {
                             "TAG",
                             "writeToSingleHoldingRegisterNew: BufferedInputStream available bytes - ${bufferedInputStream.available()}"
                         )
-                        delay(500)
+                        delay(DELAY_BETWEEN_READ_AND_WRITE)
                         val responseFrame = ByteArray(7)
                         bufferedInputStream.mark(0)
                         bufferedInputStream.read(responseFrame)
@@ -52,7 +52,7 @@ object ReadWriteUtil {
 
                         )
                     withContext(Dispatchers.IO) {
-                        delay(500)
+                        delay(DELAY_BETWEEN_READ_AND_WRITE)
                         val responseFrame = ByteArray(7)
                         bufferedInputStream.mark(0)
                         bufferedInputStream.read(responseFrame)
@@ -69,88 +69,93 @@ object ReadWriteUtil {
     ) {
         withContext(Dispatchers.IO) {
             try {
-                val bufferedInputStream = BufferedInputStream(mInputStream)
-                val bufferedOutputStream = BufferedOutputStream(mOutputStream)
-                withTimeoutOrNull(1000) {
-                    try {
-                        withContext(Dispatchers.IO) {
-                            Log.w(
-                                "MONTAG",
-                                "writeRequestAndReadResponse 1: Calling write from Normal State"
-                            )
-                            bufferedOutputStream.write(requestFrame)
-                            Log.w(
-                                "MONTAG",
-                                "writeRequestAndReadResponse 2: Flush in outputstream"
-                            )
-                            bufferedOutputStream.flush()
-                        }
-                    } catch (e: TimeoutCancellationException) {
-                        e.printStackTrace()
-                        withContext(Dispatchers.IO) {
-                            Log.w(
-                                "MONTAG",
-                                "writeRequestAndReadResponse 11: Calling write from Timeout State"
-                            )
-                            bufferedOutputStream.write(requestFrame)
-                            bufferedOutputStream.flush()
+                Log.e("TAG", "writeRequestAndReadResponse: BOS = $mOutputStream")
+                Log.e("TAG", "writeRequestAndReadResponse: BIS = $mInputStream")
+                if(mInputStream != null && mOutputStream!= null){
+                    val bufferedInputStream = BufferedInputStream(mInputStream)
+                    val bufferedOutputStream = BufferedOutputStream(mOutputStream)
+                    withTimeoutOrNull(1000) {
+                        try {
+                            withContext(Dispatchers.IO) {
+                                if(bufferedOutputStream!=null) {
+                                    Log.w(
+                                        "MONTAG",
+                                        "writeRequestAndReadResponse 1: Calling write from Normal State"
+                                    )
+                                    bufferedOutputStream.write(requestFrame)
+                                    Log.w(
+                                        "MONTAG",
+                                        "writeRequestAndReadResponse 2: Flush in outputstream"
+                                    )
+                                    bufferedOutputStream.flush()
+                                }
+                            }
+                        } catch (e: TimeoutCancellationException) {
+                            e.printStackTrace()
+                            withContext(Dispatchers.IO) {
+                                Log.w(
+                                    "MONTAG",
+                                    "writeRequestAndReadResponse 11: Calling write from Timeout State"
+                                )
+                                bufferedOutputStream.write(requestFrame)
+                                bufferedOutputStream.flush()
+                            }
                         }
                     }
-                }
 
-                Log.w(
-                    "MONTAG",
-                    "writeRequestAndReadResponse 4: Delaying for 500ms"
-                )
-                delay(DELAY_BETWEEN_READ_AND_WRITE) //waiting for 500ms between write and read
-
-                Log.w(
-                    "MONTAG",
-                    "writeRequestAndReadResponse 3: Init bytearray using responseSize"
-                )
-                val responseFrame = ByteArray(responseSize)
-
-                Log.w(
-                    "MONTAG",
-                    "writeRequestAndReadResponse 5: mark input stream with 0"
-                )
-                bufferedInputStream.mark(0)
-
-                Log.w(
-                    "MONTAG",
-                    "writeRequestAndReadResponse 6: Read responseFrame from inputstream - ${bufferedInputStream.available()}"
-                )
-
-                var size = 0
-
-                if (bufferedInputStream.available() > 0) {
-                    size = bufferedInputStream.read(responseFrame)
-                } else {
-                    Log.e("TAG", "writeRequestAndReadResponse 12: READ STOPPED")
-                    onReadStopped()
-                    return@withContext
-                }
-
-                Log.w(
-                    "MONTAG",
-                    "writeRequestAndReadResponse 7: Checking the size and valid response"
-                )
-                if (size > 0 && isValidResponse(responseFrame) && isValidCRCInResponse(responseFrame)) {
                     Log.w(
                         "MONTAG",
-                        "writeRequestAndReadResponse 8: Sending the callback with correct response frame"
+                        "writeRequestAndReadResponse 4: Delaying for 500ms"
                     )
-                    onDataReceived(responseFrame)
-                } else {
-                    //writeRequestAndReadResponse(mOutputStream,mInputStream, responseSize, requestFrame, onDataReceived, onReadStopped)
-                    //onReadStopped()
-                    Log.e(
-                        "RWU",
-                        "writeRequestAndReadResponse 9: Error Frame (${responseFrame[2]}) - ${responseFrame.toHex()}"
-                    )
-                    onDataReceived(responseFrame)
-                }
+                    delay(DELAY_BETWEEN_READ_AND_WRITE) //waiting for 500ms between write and read
 
+                    Log.w(
+                        "MONTAG",
+                        "writeRequestAndReadResponse 3: Init bytearray using responseSize"
+                    )
+                    val responseFrame = ByteArray(responseSize)
+
+                    Log.w(
+                        "MONTAG",
+                        "writeRequestAndReadResponse 5: mark input stream with 0"
+                    )
+                    bufferedInputStream.mark(0)
+
+                    Log.w(
+                        "MONTAG",
+                        "writeRequestAndReadResponse 6: Read responseFrame from inputstream - ${bufferedInputStream.available()}"
+                    )
+
+                    var size = 0
+
+                    if (bufferedInputStream.available() > 0) {
+                        size = bufferedInputStream.read(responseFrame)
+                    } else {
+                        Log.e("TAG", "writeRequestAndReadResponse 12: READ STOPPED")
+                        onReadStopped()
+                        return@withContext
+                    }
+
+                    Log.w(
+                        "MONTAG",
+                        "writeRequestAndReadResponse 7: Checking the size and valid response"
+                    )
+                    if (size > 0 && isValidResponse(responseFrame) && isValidCRCInResponse(responseFrame)) {
+                        Log.w(
+                            "MONTAG",
+                            "writeRequestAndReadResponse 8: Sending the callback with correct response frame"
+                        )
+                        onDataReceived(responseFrame)
+                    } else {
+                        //writeRequestAndReadResponse(mOutputStream,mInputStream, responseSize, requestFrame, onDataReceived, onReadStopped)
+                        //onReadStopped()
+                        Log.e(
+                            "RWU",
+                            "writeRequestAndReadResponse 9: Error Frame (${responseFrame[2]}) - ${responseFrame.toHex()}"
+                        )
+                        onDataReceived(responseFrame)
+                    }
+                }
             } catch (e: Exception) {
                 Log.e("TAG", "writeRequestAndReadResponse 10: In Catch - ${e.printStackTrace()}")
                 e.printStackTrace()

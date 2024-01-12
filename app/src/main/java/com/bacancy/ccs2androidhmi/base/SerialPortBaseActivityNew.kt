@@ -71,7 +71,6 @@ import javax.inject.Inject
 @AndroidEntryPoint
 abstract class SerialPortBaseActivityNew : FragmentActivity() {
 
-    private var isMiscInfoRecd: Boolean = false
     private var isGun1PluggedIn: Boolean = false
     private var isGun2PluggedIn: Boolean = false
     protected var mApplication: HMIApp? = null
@@ -93,9 +92,13 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
     private fun setupSerialPort() {
         mApplication = application as HMIApp
         try {
-            mSerialPort = mApplication!!.getSerialPort()
-            mOutputStream = mSerialPort!!.outputStream
-            mInputStream = mSerialPort!!.inputStream
+            mApplication?.let {
+                mSerialPort = it.getSerialPort()
+            }
+            mSerialPort?.let {
+                mOutputStream = it.outputStream
+                mInputStream = it.inputStream
+            }
         } catch (e: Exception) {
             Log.d("TAG", "onCreate: Exception = ${e.toString()}")
         }
@@ -123,7 +126,7 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
         super.onDestroy()
     }
 
-    fun startReading() {
+    private fun startReading() {
         GlobalScope.launch {
             delay(mCommonDelay)
             readMiscInfo()
@@ -144,11 +147,10 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                     mInputStream,
                     ResponseSizes.MISC_INFORMATION_RESPONSE_SIZE,
                     ModbusRequestFrames.getMiscInfoRequestFrame(),
-                    {
+                    onDataReceived = {
                         if (it.toHex()
                                 .startsWith(ModBusUtils.HOLDING_REGISTERS_CORRECT_RESPONSE_BITS)
                         ) {
-                            isMiscInfoRecd = true
                             Log.d(TAG, "readMiscInfo: Response = ${it.toHex()}")
 
                             lifecycleScope.launch {
@@ -158,7 +160,7 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                             Log.e(TAG, "readMiscInfo: Error Response - ${it.toHex()}")
                         }
                         openAcMeterInfo()
-                    }, {
+                    }, onReadStopped = {
                         startReading()
                     })
             } catch (te: TimeoutCancellationException) {
@@ -247,7 +249,7 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                     mOutputStream,
                     mInputStream,
                     ResponseSizes.AC_METER_INFORMATION_RESPONSE_SIZE,
-                    ModbusRequestFrames.getACMeterInfoRequestFrame(), {
+                    ModbusRequestFrames.getACMeterInfoRequestFrame(), onDataReceived = {
                         if (it.toHex()
                                 .startsWith(ModBusUtils.INPUT_REGISTERS_CORRECT_RESPONSE_BITS)
                         ) {
@@ -260,7 +262,7 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                             delay(mCommonDelay)
                             readGun1Info()
                         }
-                    }, {
+                    },onReadStopped = {
                         startReading()
                     })
             } catch (te: TimeoutCancellationException) {
@@ -305,7 +307,7 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                     mOutputStream,
                     mInputStream,
                     ResponseSizes.GUN_INFORMATION_RESPONSE_SIZE,
-                    ModbusRequestFrames.getGun1InfoRequestFrame(), {
+                    ModbusRequestFrames.getGun1InfoRequestFrame(), onDataReceived = {
                         if (it.toHex()
                                 .startsWith(ModBusUtils.HOLDING_REGISTERS_CORRECT_RESPONSE_BITS)
                         ) {
@@ -356,7 +358,7 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                             openGun1LastChargingSummary()
                         }
 
-                    }, {
+                    }, onReadStopped = {
                         startReading()
                     })
             } catch (te: TimeoutCancellationException) {
@@ -436,7 +438,7 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                     mOutputStream,
                     mInputStream,
                     ResponseSizes.LAST_CHARGING_SUMMARY_RESPONSE_SIZE,
-                    ModbusRequestFrames.getGun1LastChargingSummaryRequestFrame(), {
+                    ModbusRequestFrames.getGun1LastChargingSummaryRequestFrame(), onDataReceived = {
                         if (it.toHex()
                                 .startsWith(ModBusUtils.HOLDING_REGISTERS_CORRECT_RESPONSE_BITS)
                         ) {
@@ -456,7 +458,7 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                             )
                         }
                         openGun1DCMeterInfo()
-                    }, {
+                    }, onReadStopped = {
                         startReading()
                     })
             } catch (te: TimeoutCancellationException) {
@@ -560,7 +562,7 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                     mOutputStream,
                     mInputStream,
                     ResponseSizes.GUN_DC_METER_INFORMATION_RESPONSE_SIZE,
-                    ModbusRequestFrames.getGunOneDCMeterInfoRequestFrame(), {
+                    ModbusRequestFrames.getGunOneDCMeterInfoRequestFrame(), onDataReceived = {
                         if (it.toHex()
                                 .startsWith(ModBusUtils.INPUT_REGISTERS_CORRECT_RESPONSE_BITS)
                         ) {
@@ -574,7 +576,7 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                             delay(mCommonDelay)
                             readGun2Info()
                         }
-                    }, {
+                    }, onReadStopped = {
                         startReading()
                     })
             } catch (te: TimeoutCancellationException) {
@@ -617,7 +619,7 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                     mOutputStream,
                     mInputStream,
                     ResponseSizes.GUN_INFORMATION_RESPONSE_SIZE,
-                    ModbusRequestFrames.getGun2InfoRequestFrame(), {
+                    ModbusRequestFrames.getGun2InfoRequestFrame(), onDataReceived = {
                         if (it.toHex()
                                 .startsWith(ModBusUtils.HOLDING_REGISTERS_CORRECT_RESPONSE_BITS)
                         ) {
@@ -664,7 +666,7 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                             isGun2PluggedIn = false
                             openGun2LastChargingSummary()
                         }
-                    }, {
+                    }, onReadStopped = {
                         startReading()
                     })
             } catch (te: TimeoutCancellationException) {
@@ -705,7 +707,7 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                     mOutputStream,
                     mInputStream,
                     ResponseSizes.LAST_CHARGING_SUMMARY_RESPONSE_SIZE,
-                    ModbusRequestFrames.getGun2LastChargingSummaryRequestFrame(), {
+                    ModbusRequestFrames.getGun2LastChargingSummaryRequestFrame(), onDataReceived = {
                         if (it.toHex()
                                 .startsWith(ModBusUtils.HOLDING_REGISTERS_CORRECT_RESPONSE_BITS)
                         ) {
@@ -721,7 +723,7 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                             )
                         }
                         openGun2DCMeterInfo()
-                    }, {
+                    }, onReadStopped = {
                         startReading()
                     })
             } catch (te: TimeoutCancellationException) {
@@ -789,7 +791,7 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                     mOutputStream,
                     mInputStream,
                     ResponseSizes.GUN_DC_METER_INFORMATION_RESPONSE_SIZE,
-                    ModbusRequestFrames.getGunTwoDCMeterInfoRequestFrame(), {
+                    ModbusRequestFrames.getGunTwoDCMeterInfoRequestFrame(),onDataReceived = {
                         if (it.toHex()
                                 .startsWith(ModBusUtils.INPUT_REGISTERS_CORRECT_RESPONSE_BITS)
                         ) {
@@ -817,7 +819,7 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                                 startReading()
                             }
                         }
-                    }, {
+                    }, onReadStopped = {
                         startReading()
                     })
             } catch (te: TimeoutCancellationException) {

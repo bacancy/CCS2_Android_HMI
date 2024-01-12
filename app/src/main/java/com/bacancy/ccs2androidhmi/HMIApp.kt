@@ -1,6 +1,7 @@
 package com.bacancy.ccs2androidhmi
 
 import android.app.Application
+import android.util.Log
 import android_serialport_api.SerialPort
 import android_serialport_api.SerialPortFinder
 import dagger.hilt.android.HiltAndroidApp
@@ -13,11 +14,16 @@ class HMIApp: Application() {
 
     private var mSerialPort: SerialPort? = null
 
-    fun getSerialPort(): SerialPort {
-        if(mSerialPort == null){
-            mSerialPort = SerialPort(File("/dev/ttyS8"), 115200, 0)
+    fun getSerialPort(): SerialPort? {
+        try {
+            if(mSerialPort == null){
+                mSerialPort = SerialPort(File("/dev/ttyS8"), 115200, 0)
+            }
+            return mSerialPort as SerialPort
+        }catch (e: Exception){
+            Log.d("TAG", "onCreate: Exception = ${e.toString()}")
         }
-        return mSerialPort as SerialPort
+        return null
     }
 
     fun closeSerialPort() {

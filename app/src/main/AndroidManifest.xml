@@ -18,15 +18,12 @@
 
         <activity
             android:name=".views.HMIDashboardActivity"
-            android:screenOrientation="landscape"
-            android:exported="false" />
-
-        <uses-library
-            android:name="org.apache.http.legacy"
-            android:required="false" />
+            android:exported="false"
+            android:screenOrientation="landscape" />
 
         <activity
             android:name=".views.HMISplashActivity"
+            android:enabled="true"
             android:exported="true"
             android:screenOrientation="landscape">
             <intent-filter>
