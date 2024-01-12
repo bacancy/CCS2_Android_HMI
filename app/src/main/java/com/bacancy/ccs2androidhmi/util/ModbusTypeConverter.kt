@@ -6,7 +6,7 @@ import java.nio.ByteOrder
 object ModbusTypeConverter {
 
     fun Float.formatFloatToString(): String {
-        return String.format("%.2f", this)
+        return String.format("%.3f", this)
     }
 
     fun Byte.getIntValueFromByte(): Int {

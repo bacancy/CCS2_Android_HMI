@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:name=".HMIApp"
@@ -15,50 +15,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CCS2AndroidHMI"
         tools:targetApi="31">
+
         <activity
             android:name=".views.HMIDashboardActivity"
-            android:exported="false" />
-        <activity
-            android:name=".views.Dashboard"
-            android:exported="false" />
-        <activity
-            android:name=".views.CheckAllChargingSummariesActivity"
-            android:exported="false" />
-        <activity
-            android:name=".views.LastChargingSummaryActivity"
-            android:exported="false" />
-        <activity
-            android:name=".views.Gun1InformationActivity"
-            android:exported="false" />
-        <activity
-            android:name=".views.NewScreensActivity"
-            android:exported="false" />
-        <activity
-            android:name=".views.ReadGun1DCMeterInfoActivity"
-            android:exported="false" />
-        <activity
-            android:name=".views.ReadGun2DCMeterInfoActivity"
-            android:exported="false" />
-        <!--<activity
-            android:name=".views.ReadMiscInfoActivity"
-            android:exported="false" />-->
-        <activity
-            android:name=".views.ReadACMeterInfoActivity"
-            android:exported="false" />
-        <activity
-            android:name=".views.ReadACChargerACMeterInfoActivity"
-            android:exported="false" />
-        <activity
-            android:name=".views.WriteMultipleHoldingRegistersActivity"
-            android:exported="false" />
-        <activity
-            android:name=".views.WriteSingleHoldingRegisterActivity"
-            android:exported="false" />
-        <activity
-            android:name=".views.ReadHoldingRegistersActivity"
-            android:exported="false" />
-        <activity
-            android:name=".views.ReadInputRegistersActivity"
+            android:screenOrientation="landscape"
             android:exported="false" />
 
         <uses-library
@@ -76,10 +36,13 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".receiver.BootReceiver" android:enabled="true" android:exported="false">
+        <receiver
+            android:name=".receiver.BootReceiver"
+            android:enabled="true"
+            android:exported="false">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>
 

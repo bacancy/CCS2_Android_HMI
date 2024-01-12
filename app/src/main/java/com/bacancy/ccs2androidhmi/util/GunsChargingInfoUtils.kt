@@ -1,6 +1,7 @@
 package com.bacancy.ccs2androidhmi.util
 
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.getIntValueFromByte
+import kotlin.math.roundToInt
 
 object GunsChargingInfoUtils {
 
@@ -81,7 +82,8 @@ object GunsChargingInfoUtils {
     }
 
     fun getChargingEnergyConsumption(response: ByteArray): Float {
-        return ModbusTypeConverter.byteArrayToFloat(response.copyOfRange(23, 27))
+        val floatValue = ModbusTypeConverter.byteArrayToFloat(response.copyOfRange(23, 27))
+        return (floatValue * 1000F).roundToInt() / 1000F //up to 3 points after decimal
     }
 
     fun getGunChargingState(response: ByteArray): StateAndModesUtils.GunChargingState {

@@ -43,24 +43,6 @@ object DialogUtils {
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
                 View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
                 View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-        // Flags for full-screen mode:
-        /*
-
-        alertDialog.window?.setFlags(
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
-
-        // Set full-sreen mode (immersive sticky):
-        alertDialog.window?.decorView?.systemUiVisibility = ui_flags;*/
-        // Set immersive sticky mode using WindowInsetsController
-        /*alertDialog.window?.let { window ->
-            window.setDecorFitsSystemWindows(false)  // Ensure full-screen content
-            val controller = window.insetsController
-            controller?.hide(WindowInsets.Type.systemBars())
-
-            // Maintain immersive mode when user interacts
-            controller?.systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-        }*/
 
         alertDialog.window?.let { window ->
             window.decorView.systemUiVisibility = uiFlags

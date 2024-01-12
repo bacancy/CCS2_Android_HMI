@@ -17,17 +17,15 @@ import com.bacancy.ccs2androidhmi.util.CommonUtils
 import com.bacancy.ccs2androidhmi.util.invisible
 import com.bacancy.ccs2androidhmi.util.visible
 import com.bacancy.ccs2androidhmi.views.fragment.GunsHomeScreenFragment
-import com.bacancy.ccs2androidhmi.views.fragment.GunsMoreInformationFragment
 import com.bacancy.ccs2androidhmi.views.listener.FragmentChangeListener
-import com.google.gson.Gson
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
-import kotlinx.coroutines.withTimeoutOrNull
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import kotlin.math.roundToInt
 
 class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener,
     OnBackPressedDispatcherOwner {
@@ -57,28 +55,6 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
         showHideBackIcon()
 
-        //checkTimeout()
-    }
-
-    private fun checkTimeout() {
-        Log.e("FRITAG", "checkTimeout: Called")
-        lifecycleScope.launch {
-            withTimeout(3000) {
-                try {
-                    val res = methodWith5SecondsDelay()
-                    Log.e("FRITAG", "checkTimeout: RES = $res")
-                } catch (e: TimeoutCancellationException) {
-                    Log.e("FRITAG", "Timeout occurred")
-                } finally {
-                    Log.e("FRITAG", "checkTimeout: Ended")
-                }
-            }
-        }
-    }
-
-    private suspend fun methodWith5SecondsDelay(): String {
-        delay(5000)
-        return "Delayed Message"
     }
 
     private fun handleClicks() {

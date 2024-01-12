@@ -71,15 +71,13 @@ import javax.inject.Inject
 @AndroidEntryPoint
 abstract class SerialPortBaseActivityNew : FragmentActivity() {
 
-    private var isGun1Authenticated: Boolean = false
-    private var isGun2Authenticated: Boolean = false
     private var isMiscInfoRecd: Boolean = false
-    private var isGun1ChargingStarted: Boolean = false
-    private var isGun2ChargingStarted: Boolean = false
+    private var isGun1PluggedIn: Boolean = false
+    private var isGun2PluggedIn: Boolean = false
     protected var mApplication: HMIApp? = null
     private var mSerialPort: SerialPort? = null
-    protected var mOutputStream: OutputStream? = null
-    var mInputStream: InputStream? = null
+    private var mOutputStream: OutputStream? = null
+    private var mInputStream: InputStream? = null
     private val mCommonDelay = 300L
 
     val appViewModel: AppViewModel by viewModels()
@@ -90,7 +88,6 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         makeFullScreen()
         super.onCreate(savedInstanceState)
-
     }
 
     private fun setupSerialPort() {
@@ -319,17 +316,28 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                                 "readGun1Info: Gun Current State: ${getGunChargingState(it).description}"
                             )
                             when (getGunChargingState(it).description) {
-                                "Charging" -> {
-                                    isGun1ChargingStarted = true
+                                "Plugged In & Waiting for Authentication" -> {
+                                    isGun1PluggedIn = true
                                     openGun1LastChargingSummary()
                                 }
 
-                                "Complete", "Emergency Stop" -> {
-                                    Log.d(TAG, "readGun1Info: In Complete Section")
-                                    if (isGun1ChargingStarted) {
-                                        Log.d(TAG, "readGun1Info: Inside If")
-                                        isGun1ChargingStarted = false
-                                        isGun1Authenticated = false
+                                "Complete",
+                                "Communication Error",
+                                "Authentication Timeout",
+                                "PLC Fault",
+                                "Rectifier Fault",
+                                "Authentication Denied",
+                                "Precharge Fail",
+                                "Isolation Fail",
+                                "Temperature Fault",
+                                "SPD Fault",
+                                "Smoke Fault",
+                                "Tamper Fault",
+                                "Mains Fail",
+                                "Emergency Stop",
+                                -> {
+                                    if (isGun1PluggedIn) {
+                                        isGun1PluggedIn = false
                                         openGun1LastChargingSummary(true)
                                     } else {
                                         openGun1LastChargingSummary()
@@ -337,16 +345,14 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                                 }
 
                                 else -> {
-                                    isGun1ChargingStarted = false
-                                    isGun1Authenticated = false
+                                    isGun1PluggedIn = false
                                     openGun1LastChargingSummary()
                                 }
                             }
 
                         } else {
                             Log.e(TAG, "readGun1Info: Error Response - ${it.toHex()}")
-                            isGun1ChargingStarted = false
-                            isGun1Authenticated = false
+                            isGun1PluggedIn = false
                             openGun1LastChargingSummary()
                         }
 
@@ -620,16 +626,28 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                             insertGun2InfoInDB(it)
 
                             when (getGunChargingState(it).description) {
-                                "Charging" -> {
-                                    isGun2ChargingStarted = true
+                                "Plugged In & Waiting for Authentication" -> {
+                                    isGun2PluggedIn = true
                                     openGun2LastChargingSummary()
                                 }
 
-                                "Complete", "Emergency Stop" -> {
-                                    if (isGun2ChargingStarted) {
-                                        isGun2ChargingStarted = false
-                                        isGun2Authenticated = false
-
+                                "Complete",
+                                "Communication Error",
+                                "Authentication Timeout",
+                                "PLC Fault",
+                                "Rectifier Fault",
+                                "Authentication Denied",
+                                "Precharge Fail",
+                                "Isolation Fail",
+                                "Temperature Fault",
+                                "SPD Fault",
+                                "Smoke Fault",
+                                "Tamper Fault",
+                                "Mains Fail",
+                                "Emergency Stop",
+                                -> {
+                                    if (isGun2PluggedIn) {
+                                        isGun2PluggedIn = false
                                         openGun2LastChargingSummary(true)
                                     } else {
                                         openGun2LastChargingSummary()
@@ -637,15 +655,13 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                                 }
 
                                 else -> {
-                                    isGun2ChargingStarted = false
-                                    isGun2Authenticated = false
+                                    isGun2PluggedIn = false
                                     openGun2LastChargingSummary()
                                 }
                             }
                         } else {
                             Log.e(TAG, "readGun2Info: Error Response - ${it.toHex()}")
-                            isGun2ChargingStarted = false
-                            isGun2Authenticated = false
+                            isGun2PluggedIn = false
                             openGun2LastChargingSummary()
                         }
                     }, {
