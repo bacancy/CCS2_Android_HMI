@@ -29,8 +29,6 @@ class DeviceConnectionStatusFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentMiscErrorsBinding.inflate(layoutInflater)
-        setScreenHeaderViews()
-        setupViews()
         observeDevicePhysicalConnectionStatus()
         return binding.root
     }
@@ -79,6 +77,8 @@ class DeviceConnectionStatusFragment : BaseFragment() {
             }
         }
     }
+
+    override fun handleClicks() {}
 
     data class ViewData(
         val viewBinding: CommonTableRowBinding,

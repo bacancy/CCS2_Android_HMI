@@ -2,7 +2,6 @@ package com.bacancy.ccs2androidhmi.views.fragment
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +10,19 @@ import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentGunsHomeScreenBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.CHARGING
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.COMPLETE
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.EMERGENCY_STOP
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.PLC_FAULT
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.PLUGGED_IN
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.PREPARING_FOR_CHARGING
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.RECTIFIER_FAULT
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.SELECTED_GUN
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.SMOKE_FAULT
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.SPD_FAULT
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.TAMPER_FAULT
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.TEMPERATURE_FAULT
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.UNPLUGGED
 import com.bacancy.ccs2androidhmi.util.PrefHelper
 import com.bacancy.ccs2androidhmi.util.invisible
 import com.bacancy.ccs2androidhmi.util.visible
@@ -48,7 +60,6 @@ class GunsHomeScreenFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentGunsHomeScreenBinding.inflate(layoutInflater)
-        handleClicks()
         (requireActivity() as HMIDashboardActivity).showHideBackIcon(false)
         observeGunsChargingInfo()
         return binding.root
@@ -72,48 +83,44 @@ class GunsHomeScreenFragment : BaseFragment() {
 
     private fun updateGun1UI(tbGunsChargingInfo: TbGunsChargingInfo) {
         if (isVisible) {
-            prefHelper.setSelectedGunNumber("SELECTED_GUN", 0)
+            prefHelper.setSelectedGunNumber(SELECTED_GUN, 0)
         }
-        val gunStateList = listOf(
-            "Unplugged",
-            "Plugged In & Waiting for Authentication",
-            "Charging",
-            "Complete",
-            "Fault"
-        )
 
-        val gun1State = gunStateList[3]
-        val gun2State = gunStateList[0]
-        binding.tvGun1Label.text = "GUN - 1 \n(${tbGunsChargingInfo.gunChargingState})"
+        binding.tvGun1Label.text = getString(R.string.gun_1_info, tbGunsChargingInfo.gunChargingState)
 
         when (tbGunsChargingInfo.gunChargingState) {
-            "Unplugged" -> {
+            UNPLUGGED -> {
                 binding.ivGun1Half.setImageResource(R.drawable.img_gun1_unplugged)
             }
 
-            "Plugged In & Waiting for Authentication" -> {
+            PLUGGED_IN -> {
                 binding.ivGun1Half.setImageResource(R.drawable.img_gun1_plugged)
-                binding.tvGun1Label.text = "GUN - 1 \n" + "(Plugged In)"
+                binding.tvGun1Label.text = getString(R.string.lbl_gun1_plugged_in)
             }
 
-            "Charging", "Preparing For Charging" -> {
+            CHARGING, PREPARING_FOR_CHARGING -> {
                 binding.ivGun1Half.setImageResource(R.drawable.img_gun1_charging_completed)
             }
 
-            "Complete" -> {
+            COMPLETE -> {
                 binding.ivGun1Half.setImageResource(R.drawable.img_gun1_charging)
             }
 
-            "PLC Fault", "Rectifier Fault", "Temperature Fault", "SPD Fault", "Smoke Fault", "Tamper Fault" -> {
+            PLC_FAULT,
+            RECTIFIER_FAULT,
+            TEMPERATURE_FAULT,
+            SPD_FAULT,
+            SMOKE_FAULT,
+            TAMPER_FAULT -> {
                 binding.ivGun1Half.setImageResource(R.drawable.img_gun1_fault)
             }
 
-            "Emergency Stop" -> {
+            EMERGENCY_STOP -> {
                 binding.tvEmergencyStop.visible()
             }
 
             else -> {
-                binding.tvGun1Label.text = "GUN - 1 \n(${tbGunsChargingInfo.gunChargingState})"
+                binding.tvGun1Label.text = getString(R.string.gun_1_info, tbGunsChargingInfo.gunChargingState)
                 binding.tvEmergencyStop.invisible()
             }
         }
@@ -121,43 +128,53 @@ class GunsHomeScreenFragment : BaseFragment() {
 
     private fun updateGun2UI(tbGunsChargingInfo: TbGunsChargingInfo) {
         if (isVisible) {
-            prefHelper.setSelectedGunNumber("SELECTED_GUN", 0)
+            prefHelper.setSelectedGunNumber(SELECTED_GUN, 0)
         }
-        binding.tvGun2Label.text = "GUN - 2 \n" + "(${tbGunsChargingInfo.gunChargingState})"
+
         binding.tvEmergencyStop.invisible()
+
+        binding.tvGun2Label.text = getString(R.string.gun_2_info, tbGunsChargingInfo.gunChargingState)
+
         when (tbGunsChargingInfo.gunChargingState) {
-            "Unplugged" -> {
+            UNPLUGGED -> {
                 binding.ivGun2Half.setImageResource(R.drawable.img_gun2_unplugged)
             }
 
-            "Plugged In & Waiting for Authentication" -> {
+            PLUGGED_IN -> {
                 binding.ivGun2Half.setImageResource(R.drawable.img_gun2_plugged)
-                binding.tvGun2Label.text = "GUN - 2 \n" + "(Plugged In)"
+                binding.tvGun2Label.text = getString(R.string.lbl_gun2_plugged_in)
             }
 
-            "Charging", "Preparing For Charging" -> {
+            CHARGING, PREPARING_FOR_CHARGING -> {
                 binding.ivGun2Half.setImageResource(R.drawable.img_gun2_charging_completed)
             }
 
-            "Complete" -> {
+            COMPLETE -> {
                 binding.ivGun2Half.setImageResource(R.drawable.img_gun2_charging)
             }
 
-            "PLC Fault", "Rectifier Fault", "Temperature Fault", "SPD Fault", "Smoke Fault", "Tamper Fault" -> {
+            PLC_FAULT,
+            RECTIFIER_FAULT,
+            TEMPERATURE_FAULT,
+            SPD_FAULT,
+            SMOKE_FAULT,
+            TAMPER_FAULT -> {
                 binding.ivGun2Half.setImageResource(R.drawable.img_gun2_fault)
             }
 
-            "Emergency Stop" -> {
+            EMERGENCY_STOP -> {
                 binding.tvEmergencyStop.visible()
             }
 
             else -> {
-                binding.tvGun2Label.text = "GUN - 2 \n(${tbGunsChargingInfo.gunChargingState})"
+                binding.tvGun2Label.text = getString(R.string.gun_2_info, tbGunsChargingInfo.gunChargingState)
+                binding.tvEmergencyStop.invisible()
             }
         }
+
     }
 
-    private fun handleClicks() {
+    override fun handleClicks() {
         binding.tvGun1Actor.setOnClickListener {
             openGunsMoreInfoFragment(1)
         }
@@ -174,12 +191,9 @@ class GunsHomeScreenFragment : BaseFragment() {
 
     private fun openGunsMoreInfoFragment(gunNumber: Int) {
         val bundle = Bundle()
-        bundle.putInt("SELECTED_GUN", gunNumber)
+        bundle.putInt(SELECTED_GUN, gunNumber)
         val fragment = GunsMoreInformationFragment()
         fragment.arguments = bundle
         fragmentChangeListener?.replaceFragment(fragment)
-    }
-
-    companion object {
     }
 }

@@ -69,96 +69,63 @@ object ReadWriteUtil {
     ) {
         withContext(Dispatchers.IO) {
             try {
-                Log.e("TAG", "writeRequestAndReadResponse: BOS = $mOutputStream")
-                Log.e("TAG", "writeRequestAndReadResponse: BIS = $mInputStream")
-                if(mInputStream != null && mOutputStream!= null){
+                if (mInputStream != null && mOutputStream != null) {
                     val bufferedInputStream = BufferedInputStream(mInputStream)
                     val bufferedOutputStream = BufferedOutputStream(mOutputStream)
+
+                    // Log: Writing request frame to output stream
+                    Log.d("WriteReadFunction", "Writing request frame to output stream: ${requestFrame.contentToString()}")
                     withTimeoutOrNull(1000) {
                         try {
                             withContext(Dispatchers.IO) {
-                                if(bufferedOutputStream!=null) {
-                                    Log.w(
-                                        "MONTAG",
-                                        "writeRequestAndReadResponse 1: Calling write from Normal State"
-                                    )
-                                    bufferedOutputStream.write(requestFrame)
-                                    Log.w(
-                                        "MONTAG",
-                                        "writeRequestAndReadResponse 2: Flush in outputstream"
-                                    )
-                                    bufferedOutputStream.flush()
-                                }
-                            }
-                        } catch (e: TimeoutCancellationException) {
-                            e.printStackTrace()
-                            withContext(Dispatchers.IO) {
-                                Log.w(
-                                    "MONTAG",
-                                    "writeRequestAndReadResponse 11: Calling write from Timeout State"
-                                )
                                 bufferedOutputStream.write(requestFrame)
                                 bufferedOutputStream.flush()
                             }
+                            // Log: Successfully wrote request frame to output stream
+                            Log.d("WriteReadFunction", "Successfully wrote request frame to output stream")
+                        } catch (e: TimeoutCancellationException) {
+                            e.printStackTrace()
+                            // Log: Timeout occurred while writing, retrying
+                            Log.e("WriteReadFunction", "Timeout occurred while writing, retrying...")
+                            withContext(Dispatchers.IO) {
+                                bufferedOutputStream.write(requestFrame)
+                                bufferedOutputStream.flush()
+                            }
+                            // Log: Successfully wrote request frame to output stream after timeout
+                            Log.d("WriteReadFunction", "Successfully wrote request frame to output stream after timeout")
                         }
                     }
 
-                    Log.w(
-                        "MONTAG",
-                        "writeRequestAndReadResponse 4: Delaying for 500ms"
-                    )
-                    delay(DELAY_BETWEEN_READ_AND_WRITE) //waiting for 500ms between write and read
+                    delay(DELAY_BETWEEN_READ_AND_WRITE) // waiting for 500ms between write and read
 
-                    Log.w(
-                        "MONTAG",
-                        "writeRequestAndReadResponse 3: Init bytearray using responseSize"
-                    )
                     val responseFrame = ByteArray(responseSize)
 
-                    Log.w(
-                        "MONTAG",
-                        "writeRequestAndReadResponse 5: mark input stream with 0"
-                    )
                     bufferedInputStream.mark(0)
-
-                    Log.w(
-                        "MONTAG",
-                        "writeRequestAndReadResponse 6: Read responseFrame from inputstream - ${bufferedInputStream.available()}"
-                    )
 
                     var size = 0
 
                     if (bufferedInputStream.available() > 0) {
                         size = bufferedInputStream.read(responseFrame)
                     } else {
-                        Log.e("TAG", "writeRequestAndReadResponse 12: READ STOPPED")
+                        // Log: No data available to read, stopping read operation
+                        Log.i("WriteReadFunction", "No data available to read, stopping read operation")
                         onReadStopped()
                         return@withContext
                     }
-
-                    Log.w(
-                        "MONTAG",
-                        "writeRequestAndReadResponse 7: Checking the size and valid response"
-                    )
                     if (size > 0 && isValidResponse(responseFrame) && isValidCRCInResponse(responseFrame)) {
-                        Log.w(
-                            "MONTAG",
-                            "writeRequestAndReadResponse 8: Sending the callback with correct response frame"
-                        )
+                        // Log: Valid response received, invoking onDataReceived
+                        Log.i("WriteReadFunction", "Valid response received, invoking onDataReceived")
                         onDataReceived(responseFrame)
                     } else {
-                        //writeRequestAndReadResponse(mOutputStream,mInputStream, responseSize, requestFrame, onDataReceived, onReadStopped)
-                        //onReadStopped()
-                        Log.e(
-                            "RWU",
-                            "writeRequestAndReadResponse 9: Error Frame (${responseFrame[2]}) - ${responseFrame.toHex()}"
-                        )
+                        // Log: Invalid response received, invoking onDataReceived for debugging
+                        Log.e("WriteReadFunction", "Invalid response received, invoking onDataReceived for debugging")
                         onDataReceived(responseFrame)
                     }
                 }
             } catch (e: Exception) {
-                Log.e("TAG", "writeRequestAndReadResponse 10: In Catch - ${e.printStackTrace()}")
                 e.printStackTrace()
+                // Log: Exception occurred, printing stack trace
+                Log.e("WriteReadFunction", "Exception occurred, printing stack trace: ${e.message}")
             }
         }
     }

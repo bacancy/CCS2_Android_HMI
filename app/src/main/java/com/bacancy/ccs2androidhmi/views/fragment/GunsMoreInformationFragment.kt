@@ -11,6 +11,7 @@ import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentGunsMoreInfoScreenBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.SELECTED_GUN
 import com.bacancy.ccs2androidhmi.util.PrefHelper
 import com.bacancy.ccs2androidhmi.util.invisible
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
@@ -48,9 +49,6 @@ class GunsMoreInformationFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentGunsMoreInfoScreenBinding.inflate(layoutInflater)
-        setScreenHeaderViews()
-        setupViews()
-        handleClicks()
         (requireActivity() as HMIDashboardActivity).showHideBackIcon(true)
         observeGunsChargingInfo()
         return binding.root
@@ -90,7 +88,7 @@ class GunsMoreInformationFragment : BaseFragment() {
         }
     }
 
-    private fun handleClicks() {
+    override fun handleClicks() {
         binding.apply {
 
             btnACMeterInfo.setOnClickListener {
@@ -130,13 +128,13 @@ class GunsMoreInformationFragment : BaseFragment() {
 
     private fun getBundleToPass(): Bundle {
         val bundle = Bundle()
-        bundle.putInt("SELECTED_GUN", selectedGunNumber)
+        bundle.putInt(SELECTED_GUN, selectedGunNumber)
         return bundle
     }
 
     override fun setScreenHeaderViews() {
-        selectedGunNumber = arguments?.getInt("SELECTED_GUN")!!
-        prefHelper.setSelectedGunNumber("SELECTED_GUN", selectedGunNumber)
+        selectedGunNumber = arguments?.getInt(SELECTED_GUN)!!
+        prefHelper.setSelectedGunNumber(SELECTED_GUN, selectedGunNumber)
         Log.d(
             "WONTAG",
             "Gun Selected Now = $selectedGunNumber"
@@ -175,14 +173,11 @@ class GunsMoreInformationFragment : BaseFragment() {
             incChargingSoc.tvValueUnit.text = getString(R.string.lbl_percentage)
 
             incDuration.tvLabel.text = getString(R.string.lbl_duration_hh_mm)
-            incDuration.tvValue.text = "00:00"
+            incDuration.tvValue.text = getString(R.string.hint_00_00)
             incDuration.tvValueUnit.invisible()
 
             incEnergyConsumption.tvLabel.text = getString(R.string.lbl_energy_consumption)
             incEnergyConsumption.tvValueUnit.text = getString(R.string.lbl_kw)
         }
-    }
-
-    companion object {
     }
 }

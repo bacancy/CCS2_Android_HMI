@@ -31,14 +31,11 @@ class FaultInfoFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentFaultInformationBinding.inflate(layoutInflater)
-        setScreenHeaderViews()
-        setupViews()
-        handleClicks()
         (requireActivity() as HMIDashboardActivity).showHideBackIcon(true)
         return binding.root
     }
 
-    private fun handleClicks() {
+    override fun handleClicks() {
         binding.apply {
 
             tvPLCFaults.setOnClickListener {

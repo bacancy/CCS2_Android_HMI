@@ -43,8 +43,6 @@ class ACMeterInfoFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentAcMeterInfoBinding.inflate(layoutInflater)
-        setScreenHeaderViews()
-        setupViews()
         getLatestAcMeterInfo()
         (requireActivity() as HMIDashboardActivity).showHideBackIcon(true)
         return binding.root
@@ -124,11 +122,10 @@ class ACMeterInfoFragment : BaseFragment() {
 
     }
 
+    override fun handleClicks() {}
+
     override fun setScreenHeaderViews() {
         binding.incHeader.tvHeader.text = getString(R.string.lbl_ac_meter_information)
-    }
-
-    companion object {
     }
 
 }

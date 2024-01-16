@@ -9,7 +9,6 @@ import androidx.activity.OnBackPressedDispatcherOwner
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
-import androidx.lifecycle.lifecycleScope
 import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.SerialPortBaseActivityNew
 import com.bacancy.ccs2androidhmi.databinding.ActivityHmiDashboardBinding
@@ -18,14 +17,9 @@ import com.bacancy.ccs2androidhmi.util.invisible
 import com.bacancy.ccs2androidhmi.util.visible
 import com.bacancy.ccs2androidhmi.views.fragment.GunsHomeScreenFragment
 import com.bacancy.ccs2androidhmi.views.listener.FragmentChangeListener
-import kotlinx.coroutines.TimeoutCancellationException
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withTimeout
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
-import kotlin.math.roundToInt
 
 class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener,
     OnBackPressedDispatcherOwner {
@@ -39,8 +33,6 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         super.onCreate(savedInstanceState)
         binding = ActivityHmiDashboardBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        //startReading()
 
         gunsHomeScreenFragment = GunsHomeScreenFragment()
         addNewFragment(gunsHomeScreenFragment)
@@ -90,8 +82,6 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
     fun goBack() {
         if (supportFragmentManager.backStackEntryCount > 1) {
             supportFragmentManager.popBackStack()
-        } else {
-            //finish()
         }
     }
 

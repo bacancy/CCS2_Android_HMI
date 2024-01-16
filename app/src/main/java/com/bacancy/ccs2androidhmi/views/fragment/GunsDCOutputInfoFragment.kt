@@ -5,16 +5,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentDcMeterBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsDcMeterInfo
 import com.bacancy.ccs2androidhmi.util.CommonUtils
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.SELECTED_GUN
 import com.bacancy.ccs2androidhmi.util.PrefHelper
+import com.bacancy.ccs2androidhmi.util.setValue
 import com.bacancy.ccs2androidhmi.util.visible
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
 import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -32,18 +37,16 @@ class GunsDCOutputInfoFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentDcMeterBinding.inflate(layoutInflater)
-        selectedGunNumber = arguments?.getInt("SELECTED_GUN")!!
-        setScreenHeaderViews()
-        setupViews()
+        selectedGunNumber = arguments?.getInt(SELECTED_GUN)!!
         (requireActivity() as HMIDashboardActivity).showHideBackIcon(true)
         observeGunsDCOutputInfo()
         return binding.root
     }
 
     private fun observeGunsDCOutputInfo() {
-        appViewModel.getUpdatedGunsDCMeterInfo(selectedGunNumber).observe(requireActivity()) {
-            it?.let {
-                updateDCOutputUI(it)
+        lifecycleScope.launch {
+            appViewModel.getUpdatedGunsDCMeterInfo(selectedGunNumber).collect {
+                it?.let { it1 -> updateDCOutputUI(it1) }
             }
         }
     }
@@ -51,15 +54,15 @@ class GunsDCOutputInfoFragment : BaseFragment() {
     private fun updateDCOutputUI(tbGunsChargingInfo: TbGunsDcMeterInfo) {
         binding.apply {
             tbGunsChargingInfo.apply {
-                incVoltage.tvValue.text = voltage.toString()
-                incCurrent.tvValue.text = current.toString()
-                incPower.tvValue.text = power.toString()
-                incImportEnergy.tvValue.text = importEnergy.toString()
-                incExportEnergy.tvValue.text = exportEnergy.toString()
-                incMaxVoltage.tvValue.text = maxVoltage.toString()
-                incMinVoltage.tvValue.text = minVoltage.toString()
-                incMaxCurrent.tvValue.text = maxCurrent.toString()
-                incMinCurrent.tvValue.text = minCurrent.toString()
+                incVoltage.tvValue.setValue(voltage)
+                incCurrent.tvValue.setValue(current)
+                incPower.tvValue.setValue(power)
+                incImportEnergy.tvValue.setValue(importEnergy)
+                incExportEnergy.tvValue.setValue(exportEnergy)
+                incMaxVoltage.tvValue.setValue(maxVoltage)
+                incMinVoltage.tvValue.setValue(minVoltage)
+                incMaxCurrent.tvValue.setValue(maxCurrent)
+                incMinCurrent.tvValue.setValue(minCurrent)
             }
         }
     }
@@ -124,6 +127,8 @@ class GunsDCOutputInfoFragment : BaseFragment() {
             incExportEnergy.tvValueUnit.text = getString(R.string.lbl_kwh)
         }
     }
+
+    override fun handleClicks() {}
 
 
 }

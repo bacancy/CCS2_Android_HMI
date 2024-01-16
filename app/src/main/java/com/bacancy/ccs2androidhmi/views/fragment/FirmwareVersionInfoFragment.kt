@@ -24,8 +24,6 @@ class FirmwareVersionInfoFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentFirmwareVersionInfoBinding.inflate(layoutInflater)
-        setScreenHeaderViews()
-        setupViews()
         observeFirmwareVersionInfo()
         (requireActivity() as HMIDashboardActivity).showHideBackIcon(true)
         return binding.root
@@ -35,8 +33,9 @@ class FirmwareVersionInfoFragment : BaseFragment() {
         binding.incHeader.tvHeader.text = getString(R.string.lbl_firmware_version_information)
     }
 
-    override fun setupViews() {
-    }
+    override fun setupViews() {}
+
+    override fun handleClicks() {}
 
     private fun observeFirmwareVersionInfo() {
         appViewModel.latestMiscInfo.observe(requireActivity()) { latestMiscInfo ->

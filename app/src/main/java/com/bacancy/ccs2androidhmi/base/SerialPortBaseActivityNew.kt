@@ -21,6 +21,22 @@ import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_DC_METER_FRAG
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_LAST_CHARGING_SUMMARY_FRAG
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_DC_METER_FRAG
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_LAST_CHARGING_SUMMARY_FRAG
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_DENIED
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_TIMEOUT
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.COMMUNICATION_ERROR
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.COMPLETE
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.EMERGENCY_STOP
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.ISOLATION_FAIL
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.MAINS_FAIL
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.PLC_FAULT
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.PLUGGED_IN
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.PRECHARGE_FAIL
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.RECTIFIER_FAULT
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.SELECTED_GUN
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.SMOKE_FAULT
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.SPD_FAULT
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.TAMPER_FAULT
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.TEMPERATURE_FAULT
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getChargingCurrent
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getChargingDuration
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getChargingEnergyConsumption
@@ -127,7 +143,7 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
     }
 
     private fun startReading() {
-        GlobalScope.launch {
+        lifecycleScope.launch {
             delay(mCommonDelay)
             readMiscInfo()
         }
@@ -318,25 +334,25 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                                 "readGun1Info: Gun Current State: ${getGunChargingState(it).description}"
                             )
                             when (getGunChargingState(it).description) {
-                                "Plugged In & Waiting for Authentication" -> {
+                                PLUGGED_IN -> {
                                     isGun1PluggedIn = true
                                     openGun1LastChargingSummary()
                                 }
 
-                                "Complete",
-                                "Communication Error",
-                                "Authentication Timeout",
-                                "PLC Fault",
-                                "Rectifier Fault",
-                                "Authentication Denied",
-                                "Precharge Fail",
-                                "Isolation Fail",
-                                "Temperature Fault",
-                                "SPD Fault",
-                                "Smoke Fault",
-                                "Tamper Fault",
-                                "Mains Fail",
-                                "Emergency Stop",
+                                COMPLETE,
+                                COMMUNICATION_ERROR,
+                                AUTHENTICATION_TIMEOUT,
+                                PLC_FAULT,
+                                RECTIFIER_FAULT,
+                                AUTHENTICATION_DENIED,
+                                PRECHARGE_FAIL,
+                                ISOLATION_FAIL,
+                                TEMPERATURE_FAULT,
+                                SPD_FAULT,
+                                SMOKE_FAULT,
+                                TAMPER_FAULT,
+                                MAINS_FAIL,
+                                EMERGENCY_STOP,
                                 -> {
                                     if (isGun1PluggedIn) {
                                         isGun1PluggedIn = false
@@ -495,7 +511,7 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                 readGun2DCMeterInfo()
             } else {
                 val selectedGunNumber =
-                    prefHelper.getSelectedGunNumber("SELECTED_GUN", 0)
+                    prefHelper.getSelectedGunNumber(SELECTED_GUN, 0)
                 if (selectedGunNumber != 0) {
                     authenticateGun(selectedGunNumber)
                 } else {
@@ -628,25 +644,25 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                             insertGun2InfoInDB(it)
 
                             when (getGunChargingState(it).description) {
-                                "Plugged In & Waiting for Authentication" -> {
+                                PLUGGED_IN -> {
                                     isGun2PluggedIn = true
                                     openGun2LastChargingSummary()
                                 }
 
-                                "Complete",
-                                "Communication Error",
-                                "Authentication Timeout",
-                                "PLC Fault",
-                                "Rectifier Fault",
-                                "Authentication Denied",
-                                "Precharge Fail",
-                                "Isolation Fail",
-                                "Temperature Fault",
-                                "SPD Fault",
-                                "Smoke Fault",
-                                "Tamper Fault",
-                                "Mains Fail",
-                                "Emergency Stop",
+                                COMPLETE,
+                                COMMUNICATION_ERROR,
+                                AUTHENTICATION_TIMEOUT,
+                                PLC_FAULT,
+                                RECTIFIER_FAULT,
+                                AUTHENTICATION_DENIED,
+                                PRECHARGE_FAIL,
+                                ISOLATION_FAIL,
+                                TEMPERATURE_FAULT,
+                                SPD_FAULT,
+                                SMOKE_FAULT,
+                                TAMPER_FAULT,
+                                MAINS_FAIL,
+                                EMERGENCY_STOP,
                                 -> {
                                     if (isGun2PluggedIn) {
                                         isGun2PluggedIn = false
@@ -806,13 +822,13 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                                 TAG,
                                 "readGun2DCMeterInfo: SELECTED GUN NUMBER = ${
                                     prefHelper.getSelectedGunNumber(
-                                        "SELECTED_GUN",
+                                        SELECTED_GUN,
                                         0
                                     )
                                 }"
                             )
                             val selectedGunNumber =
-                                prefHelper.getSelectedGunNumber("SELECTED_GUN", 0)
+                                prefHelper.getSelectedGunNumber(SELECTED_GUN, 0)
                             if (selectedGunNumber != 0) {
                                 authenticateGun(selectedGunNumber)
                             } else {

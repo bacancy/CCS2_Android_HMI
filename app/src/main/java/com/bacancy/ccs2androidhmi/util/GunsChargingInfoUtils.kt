@@ -5,6 +5,27 @@ import kotlin.math.roundToInt
 
 object GunsChargingInfoUtils {
 
+    const val SELECTED_GUN = "SELECTED_GUN"
+
+    const val UNPLUGGED ="Unplugged"
+    const val PLUGGED_IN = "Plugged In & Waiting for Authentication"
+    const val CHARGING = "Charging"
+    const val PREPARING_FOR_CHARGING = "Preparing For Charging"
+    const val COMPLETE = "Complete"
+    const val EMERGENCY_STOP = "Emergency Stop"
+    const val PLC_FAULT = "PLC Fault"
+    const val RECTIFIER_FAULT = "Rectifier Fault"
+    const val TEMPERATURE_FAULT = "Temperature Fault"
+    const val SPD_FAULT = "SPD Fault"
+    const val SMOKE_FAULT = "Smoke Fault"
+    const val TAMPER_FAULT = "Tamper Fault"
+    const val COMMUNICATION_ERROR = "Communication Error"
+    const val AUTHENTICATION_TIMEOUT = "Authentication Timeout"
+    const val AUTHENTICATION_DENIED = "Authentication Denied"
+    const val PRECHARGE_FAIL = "Precharge Fail"
+    const val ISOLATION_FAIL = "Isolation Fail"
+    const val MAINS_FAIL = "Mains Fail"
+
     fun getInitialSoc(response: ByteArray): Int {
         val initialSocLSB = response[7].getIntValueFromByte()
         val initialSocMSB = response[8].getIntValueFromByte()

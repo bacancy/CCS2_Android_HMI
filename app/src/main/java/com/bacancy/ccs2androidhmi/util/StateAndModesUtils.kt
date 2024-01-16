@@ -1,5 +1,7 @@
 package com.bacancy.ccs2androidhmi.util
 
+import com.bacancy.ccs2androidhmi.models.GunStatesInfo
+
 object StateAndModesUtils {
     enum class GunChargingState(val stateValue: Int, val description: String) {
         UNPLUGGED(0, "Unplugged"),
@@ -80,6 +82,46 @@ object StateAndModesUtils {
             in 0..3 -> (firstOneIndex + 1).toString()
             else -> "0"
         }
+    }
+
+    fun getGunStates(): MutableList<GunStatesInfo> {
+        return mutableListOf(
+            GunStatesInfo(1, "Unplugged", "Gun Not Connected", "White"),
+            GunStatesInfo(2, "Plugged In", "Gun Connected with EV", "Yellow"),
+            GunStatesInfo(
+                3,
+                "Authentication",
+                "Authentication using RFID/OCPP with in 55 Sec of start this state",
+                "White"
+            ),
+            GunStatesInfo(
+                4,
+                "Authentication Timeout",
+                "Authentication not done within the time interval",
+                "Red"
+            ),
+            GunStatesInfo(
+                5,
+                "Authentication Denied",
+                "Authentication rejected by the Server",
+                "Red"
+            ),
+            GunStatesInfo(
+                6,
+                "Authentication Success",
+                "Authentication Success Response from Server",
+                "Green"
+            ),
+            GunStatesInfo(7, "Isolation Fail", "Isolation Test Fail", "Red"),
+            GunStatesInfo(8, "Preparing For Charging", "Initializing for charging", "Blue"),
+            GunStatesInfo(9, "Precharge Fail", "Precharge Test Fail", "Red"),
+            GunStatesInfo(10, "Charging", "EV Charge in Progress", "Blue"),
+            GunStatesInfo(11, "Charging Complete", "EV charge Completed", "Green"),
+            GunStatesInfo(12, "PLC Fault", "Fault Occurred in PLC Module", "Red"),
+            GunStatesInfo(13, "Rectifier Fault", "Fault Occurred in Rectifier Module", "Red"),
+            GunStatesInfo(14, "Communication Error", "Communication Break with EV", "Red"),
+            GunStatesInfo(15, "Emergency Stop", "Emergency Stop Triggered by user", "Red")
+        )
     }
 
 }

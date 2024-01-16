@@ -29,8 +29,6 @@ class CommunicationFailureFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentCommunicationFailureBinding.inflate(layoutInflater)
-        setScreenHeaderViews()
-        setupViews()
         observeCommunicationFailure()
         return binding.root
     }
@@ -79,6 +77,8 @@ class CommunicationFailureFragment : BaseFragment() {
         }
     }
 
+    override fun handleClicks() {}
+
     data class ViewData(
         val viewBinding: CommonTableRowBinding,
         val title1: String,
@@ -108,51 +108,5 @@ class CommunicationFailureFragment : BaseFragment() {
             val resource = if (errorCode == 0) R.drawable.ic_green_dot else R.drawable.ic_red_dot
             errorView.ivStatus.setImageResource(resource)
         }
-        /*val commErrorCode = latestMiscInfo.communicationError
-        val plcCommError = commErrorCode[0].toString().toInt()
-        val rectifierCommError = commErrorCode[1].toString().toInt()
-        val ocppCommError = commErrorCode[2].toString().toInt()
-        val modbusMasterCommError = commErrorCode[3].toString().toInt()
-
-        Log.d("TAG", "updateCommErrorUI: PLC - $plcCommError")
-        Log.d("TAG", "updateCommErrorUI: RECT - $rectifierCommError")
-        Log.d("TAG", "updateCommErrorUI: OCPP - $ocppCommError")
-        Log.d("TAG", "updateCommErrorUI: MOD - $modbusMasterCommError")
-
-        when(plcCommError){
-            0 -> {
-                binding.incPLCCommError.ivStatus.setImageResource(R.drawable.ic_green_dot)
-            }
-            1 -> {
-                binding.incPLCCommError.ivStatus.setImageResource(R.drawable.ic_red_dot)
-            }
-        }
-
-        when(rectifierCommError){
-            0 -> {
-                binding.incRectifierCommError.ivStatus.setImageResource(R.drawable.ic_green_dot)
-            }
-            1 -> {
-                binding.incRectifierCommError.ivStatus.setImageResource(R.drawable.ic_red_dot)
-            }
-        }
-
-        when(ocppCommError){
-            0 -> {
-                binding.incOCPPCommError.ivStatus.setImageResource(R.drawable.ic_green_dot)
-            }
-            1 -> {
-                binding.incOCPPCommError.ivStatus.setImageResource(R.drawable.ic_red_dot)
-            }
-        }
-
-        when(modbusMasterCommError){
-            0 -> {
-                binding.incModbusMasterCommError.ivStatus.setImageResource(R.drawable.ic_green_dot)
-            }
-            1 -> {
-                binding.incModbusMasterCommError.ivStatus.setImageResource(R.drawable.ic_red_dot)
-            }
-        }*/
     }
 }

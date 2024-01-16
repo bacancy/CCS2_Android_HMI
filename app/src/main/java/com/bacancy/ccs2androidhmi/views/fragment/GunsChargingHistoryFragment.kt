@@ -12,6 +12,7 @@ import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentGunsChargingHistoryBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbChargingHistory
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.SELECTED_GUN
 import com.bacancy.ccs2androidhmi.util.gone
 import com.bacancy.ccs2androidhmi.util.visible
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
@@ -33,9 +34,7 @@ class GunsChargingHistoryFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentGunsChargingHistoryBinding.inflate(layoutInflater)
-        selectedGunNumber = arguments?.getInt("SELECTED_GUN")!!
-        setScreenHeaderViews()
-        setupViews()
+        selectedGunNumber = arguments?.getInt(SELECTED_GUN)!!
         return binding.root
     }
 
@@ -86,10 +85,10 @@ class GunsChargingHistoryFragment : BaseFragment() {
         getAllChargingHistory()
     }
 
+    override fun handleClicks() {}
+
     private fun getAllChargingHistory() {
-
         lifecycleScope.launch {
-
             appViewModel.chargingSummariesList.observe(requireActivity()) {
                 if (it.isNotEmpty()) {
                     binding.rvChargingHistory.visible()
@@ -99,10 +98,7 @@ class GunsChargingHistoryFragment : BaseFragment() {
                     binding.rvChargingHistory.gone()
                     binding.tvNoDataFound.visible()
                 }
-
             }
-
         }
-
     }
 }

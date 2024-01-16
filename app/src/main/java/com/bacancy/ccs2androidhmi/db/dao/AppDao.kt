@@ -11,6 +11,7 @@ import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsDcMeterInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsLastChargingSummary
 import com.bacancy.ccs2androidhmi.db.entity.TbMiscInfo
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface AppDao {
@@ -46,7 +47,7 @@ interface AppDao {
     suspend fun insertGunsDCMeterInfo(tbGunsDcMeterInfo: TbGunsDcMeterInfo): Long
 
     @Query("SELECT * FROM tbDcMeterInfo WHERE gunId = :gunNumber")
-    fun getGunsDCMeterInfo(gunNumber: Int): LiveData<TbGunsDcMeterInfo>
+    fun getGunsDCMeterInfo(gunNumber: Int): Flow<TbGunsDcMeterInfo?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertGunsLastChargingSummary(tbGunsLastChargingSummary: TbGunsLastChargingSummary): Long

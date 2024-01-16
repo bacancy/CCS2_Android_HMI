@@ -27,8 +27,6 @@ class PLCFaultsFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentPlcFaultsBinding.inflate(layoutInflater)
-        setScreenHeaderViews()
-        setupViews()
         observePLCFaults()
         return binding.root
     }
@@ -70,7 +68,7 @@ class PLCFaultsFragment : BaseFragment() {
         binding.incHeader.tvHeader.text = getString(R.string.lbl_plc_faults)
     }
 
-    override fun setupViews() {
+    override fun setupViews() {}
 
-    }
+    override fun handleClicks() {}
 }

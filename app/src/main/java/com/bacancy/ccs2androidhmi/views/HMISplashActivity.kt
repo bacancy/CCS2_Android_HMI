@@ -1,5 +1,6 @@
 package com.bacancy.ccs2androidhmi.views
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -7,6 +8,7 @@ import android.os.Handler
 import android.os.Looper
 import com.bacancy.ccs2androidhmi.R
 
+@SuppressLint("CustomSplashScreen")
 class HMISplashActivity : AppCompatActivity() {
 
     val handler = Handler(Looper.getMainLooper())

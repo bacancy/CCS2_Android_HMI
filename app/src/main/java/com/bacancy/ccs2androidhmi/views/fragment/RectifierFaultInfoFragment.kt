@@ -28,8 +28,6 @@ class RectifierFaultInfoFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentRectifierFaultsBinding.inflate(layoutInflater)
-        setScreenHeaderViews()
-        setupViews()
         observeRectifierFaults()
         return binding.root
     }
@@ -55,6 +53,7 @@ class RectifierFaultInfoFragment : BaseFragment() {
         binding.incHeader.tvHeader.text = getString(R.string.lbl_rectifier_fault_information)
     }
 
-    override fun setupViews() {
-    }
+    override fun setupViews() {}
+
+    override fun handleClicks() {}
 }

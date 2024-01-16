@@ -12,6 +12,7 @@ import com.bacancy.ccs2androidhmi.db.entity.TbGunsLastChargingSummary
 import com.bacancy.ccs2androidhmi.db.entity.TbMiscInfo
 import com.bacancy.ccs2androidhmi.repository.MainRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -26,7 +27,7 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
     fun getUpdatedGunsChargingInfo(gunNumber: Int): LiveData<TbGunsChargingInfo> =
         mainRepository.getGunsChargingInfoByGunNumber(gunNumber)
 
-    fun getUpdatedGunsDCMeterInfo(gunNumber: Int): LiveData<TbGunsDcMeterInfo> =
+    fun getUpdatedGunsDCMeterInfo(gunNumber: Int): Flow<TbGunsDcMeterInfo?> =
         mainRepository.getGunsDCMeterInfoByGunNumber(gunNumber)
 
     fun getGunsLastChargingSummary(gunNumber: Int): LiveData<TbGunsLastChargingSummary> =

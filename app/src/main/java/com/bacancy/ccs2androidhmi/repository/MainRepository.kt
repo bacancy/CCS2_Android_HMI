@@ -8,6 +8,7 @@ import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsDcMeterInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsLastChargingSummary
 import com.bacancy.ccs2androidhmi.db.entity.TbMiscInfo
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class MainRepository @Inject constructor(private val appDatabase: AppDatabase) {
@@ -51,7 +52,7 @@ class MainRepository @Inject constructor(private val appDatabase: AppDatabase) {
         appDatabase.appDao().insertGunsDCMeterInfo(tbGunsDcMeterInfo)
     }
 
-    fun getGunsDCMeterInfoByGunNumber(gunNumber: Int): LiveData<TbGunsDcMeterInfo>{
+    fun getGunsDCMeterInfoByGunNumber(gunNumber: Int): Flow<TbGunsDcMeterInfo?> {
         return appDatabase.appDao().getGunsDCMeterInfo(gunNumber)
     }
 

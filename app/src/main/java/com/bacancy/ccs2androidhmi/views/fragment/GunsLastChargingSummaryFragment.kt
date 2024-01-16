@@ -11,6 +11,7 @@ import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentGunsChargingSummaryBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsLastChargingSummary
 import com.bacancy.ccs2androidhmi.util.CommonUtils
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.SELECTED_GUN
 import com.bacancy.ccs2androidhmi.util.PrefHelper
 import com.bacancy.ccs2androidhmi.util.invisible
 import com.bacancy.ccs2androidhmi.util.visible
@@ -34,9 +35,7 @@ class GunsLastChargingSummaryFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentGunsChargingSummaryBinding.inflate(layoutInflater)
-        selectedGunNumber = arguments?.getInt("SELECTED_GUN")!!
-        setScreenHeaderViews()
-        setupViews()
+        selectedGunNumber = arguments?.getInt(SELECTED_GUN)!!
         observeGunsLastChargingSummary()
         return binding.root
     }
@@ -98,43 +97,43 @@ class GunsLastChargingSummaryFragment : BaseFragment() {
         binding.apply {
             incEVMacAddress.tvSummaryLabel.text = getString(R.string.lbl_ev_mac_address)
             incEVMacAddress.tvSummaryUnit.invisible()
-            incEVMacAddress.tvSummaryValue.text = "00-00-00-00-00-00-00-00"
+            incEVMacAddress.tvSummaryValue.text = getString(R.string.hint_mac_address)
             incEVMacAddress.root.setBackgroundColor(resources.getColor(R.color.light_trans_sky_blue))
 
             incChargingDuration.tvSummaryLabel.text = getString(R.string.lbl_charging_duration)
             incChargingDuration.tvSummaryUnit.visible()
             incChargingDuration.tvSummaryUnit.text = getString(R.string.lbl_min)
-            incChargingDuration.tvSummaryValue.text = "0"
+            incChargingDuration.tvSummaryValue.text = getString(R.string.hint_0)
             incChargingDuration.root.setBackgroundColor(resources.getColor(R.color.black))
 
             incChargingStartDateTime.tvSummaryLabel.text =
                 getString(R.string.lbl_charging_start_date_time)
             incChargingStartDateTime.tvSummaryUnit.invisible()
-            incChargingStartDateTime.tvSummaryValue.text = "00/01/1900 00:00:00"
+            incChargingStartDateTime.tvSummaryValue.text = getString(R.string.hint_date_time)
             incChargingStartDateTime.root.setBackgroundColor(resources.getColor(R.color.light_trans_sky_blue))
 
             incChargingEndDateTime.tvSummaryLabel.text =
                 getString(R.string.lbl_charging_end_date_time)
             incChargingEndDateTime.tvSummaryUnit.invisible()
-            incChargingEndDateTime.tvSummaryValue.text = "00/01/1900 00:00:00"
+            incChargingEndDateTime.tvSummaryValue.text = getString(R.string.hint_date_time)
             incChargingEndDateTime.root.setBackgroundColor(resources.getColor(R.color.black))
 
             incStartSOC.tvSummaryLabel.text = getString(R.string.lbl_start_soc)
             incStartSOC.tvSummaryUnit.visible()
             incStartSOC.tvSummaryUnit.text = getString(R.string.lbl_percentage)
-            incStartSOC.tvSummaryValue.text = "0"
+            incStartSOC.tvSummaryValue.text = getString(R.string.hint_0)
             incStartSOC.root.setBackgroundColor(resources.getColor(R.color.light_trans_sky_blue))
 
             incEndSOC.tvSummaryLabel.text = getString(R.string.lbl_end_soc)
             incEndSOC.tvSummaryUnit.visible()
             incEndSOC.tvSummaryUnit.text = getString(R.string.lbl_percentage)
-            incEndSOC.tvSummaryValue.text = "0"
+            incEndSOC.tvSummaryValue.text = getString(R.string.hint_0)
             incEndSOC.root.setBackgroundColor(resources.getColor(R.color.black))
 
             incEnergyConsumption.tvSummaryLabel.text = getString(R.string.lbl_energy_consumption)
             incEnergyConsumption.tvSummaryUnit.visible()
             incEnergyConsumption.tvSummaryUnit.text = getString(R.string.lbl_kwh)
-            incEnergyConsumption.tvSummaryValue.text = "0.00"
+            incEnergyConsumption.tvSummaryValue.text = getString(R.string.hint_float)
             incEnergyConsumption.root.setBackgroundColor(resources.getColor(R.color.light_trans_sky_blue))
 
             incSessionEndReason.tvSummaryLabel.text = getString(R.string.lbl_session_end_reason)
@@ -145,4 +144,6 @@ class GunsLastChargingSummaryFragment : BaseFragment() {
 
         }
     }
+
+    override fun handleClicks() {}
 }
