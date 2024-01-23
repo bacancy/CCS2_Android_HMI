@@ -14,6 +14,7 @@
         android:layout_width="@dimen/_15sdp"
         android:layout_height="@dimen/_15sdp"
         android:src="@drawable/ic_info"
+        android:contentDescription="@string/lbl_firmware_version_information"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -21,8 +22,9 @@
         android:id="@+id/ivGun1Half"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:scaleType="fitXY"
         android:layout_marginBottom="@dimen/_10sdp"
+        android:scaleType="fitXY"
+        android:contentDescription="@string/lbl_gun_1"
         android:src="@drawable/img_gun1_unplugged"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/ivGun2Half"
@@ -35,8 +37,9 @@
         android:id="@+id/ivGun2Half"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:scaleType="fitXY"
         android:layout_marginBottom="@dimen/_10sdp"
+        android:scaleType="fitXY"
+        android:contentDescription="@string/lbl_gun_2"
         android:src="@drawable/img_gun2_unplugged"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -44,13 +47,81 @@
         app:layout_constraintStart_toEndOf="@id/ivGun1Half"
         app:layout_constraintTop_toBottomOf="@id/ivScreenInfo" />
 
+    <LinearLayout
+        android:id="@+id/lnrGun1ChargingStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:paddingHorizontal="@dimen/_10sdp"
+        android:paddingVertical="@dimen/_5sdp"
+        android:background="@drawable/bg_button_gradient_with_white_border"
+        android:layout_marginBottom="@dimen/_60sdp"
+        android:layout_marginEnd="@dimen/_100sdp"
+        app:layout_constraintBottom_toTopOf="@id/tvGun1Label"
+        app:layout_constraintEnd_toEndOf="@id/ivGun1Half"
+        app:layout_constraintStart_toStartOf="@id/ivGun1Half"
+        app:layout_constraintTop_toTopOf="@id/ivGun1Half">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#00FFFFFF"
+            android:layout_gravity="center"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_6ssp"
+            tools:text="GUN - 1 Charging Status" />
+
+        <TextView
+            android:id="@+id/tvGun1ChargingSoc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#00FFFFFF"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_6ssp"
+            tools:text="Charging SoC(%) = 50%" />
+
+        <TextView
+            android:id="@+id/tvGun1EnergyConsumption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#00FFFFFF"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_6ssp"
+            tools:text="Energy Consumption = 50.0 kw" />
+
+        <TextView
+            android:id="@+id/tvGun1Duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#00FFFFFF"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_6ssp"
+            tools:text="Duration(hh:mm) = 00:05" />
+
+        <TextView
+            android:id="@+id/tvGun1TotalCost"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#00FFFFFF"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_6ssp"
+            tools:text="Total Cost(INR) = $128" />
+
+    </LinearLayout>
+
     <TextView
         android:id="@+id/tvGun1Actor"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_gravity="bottom|start"
-        android:layout_marginEnd="@dimen/_60sdp"
         android:layout_marginTop="@dimen/_60sdp"
+        android:layout_marginEnd="@dimen/_60sdp"
         android:background="#00FFFFFF"
         android:gravity="center"
         android:textColor="@color/white"
@@ -58,8 +129,71 @@
         app:layout_constraintBottom_toTopOf="@id/tvGun1Label"
         app:layout_constraintEnd_toEndOf="@id/ivGun1Half"
         app:layout_constraintStart_toStartOf="@id/ivGun1Half"
-        app:layout_constraintTop_toTopOf="@id/ivGun1Half"
-        tools:text="GUN - 1" />
+        app:layout_constraintTop_toTopOf="@id/ivGun1Half" />
+
+    <LinearLayout
+        android:id="@+id/lnrGun2ChargingStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:paddingHorizontal="@dimen/_10sdp"
+        android:paddingVertical="@dimen/_5sdp"
+        android:background="@drawable/bg_button_gradient_with_white_border"
+        android:layout_marginBottom="@dimen/_60sdp"
+        android:layout_marginStart="@dimen/_100sdp"
+        app:layout_constraintBottom_toTopOf="@id/tvGun2Label"
+        app:layout_constraintEnd_toEndOf="@id/ivGun2Half"
+        app:layout_constraintStart_toStartOf="@id/ivGun2Half"
+        app:layout_constraintTop_toTopOf="@id/ivGun2Half">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#00FFFFFF"
+            android:layout_gravity="center"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_6ssp"
+            tools:text="GUN - 2 Charging Status" />
+
+        <TextView
+            android:id="@+id/tvGun2ChargingSoc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#00FFFFFF"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_6ssp"
+            tools:text="Charging SoC(%) = 50%" />
+
+        <TextView
+            android:id="@+id/tvGun2EnergyConsumption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#00FFFFFF"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_6ssp"
+            tools:text="Energy Consumption = 50.0 kw" />
+
+        <TextView
+            android:id="@+id/tvGun2Duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#00FFFFFF"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_6ssp"
+            tools:text="Duration(hh:mm) = 00:05" />
+
+        <TextView
+            android:id="@+id/tvGun2TotalCost"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#00FFFFFF"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_6ssp"
+            tools:text="Total Cost(INR) = $128" />
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/tvGun2Actor"
@@ -75,8 +209,7 @@
         app:layout_constraintBottom_toTopOf="@id/tvGun2Label"
         app:layout_constraintEnd_toEndOf="@id/ivGun2Half"
         app:layout_constraintStart_toStartOf="@id/ivGun2Half"
-        app:layout_constraintTop_toTopOf="@id/ivGun2Half"
-        tools:text="GUN - 1" />
+        app:layout_constraintTop_toTopOf="@id/ivGun2Half" />
 
     <TextView
         android:id="@+id/tvGun1Label"
@@ -85,7 +218,7 @@
         android:layout_gravity="bottom|start"
         android:layout_marginStart="@dimen/_55sdp"
         android:gravity="center"
-        android:text="GUN - 1"
+        android:text="@string/lbl_gun_1"
         android:textColor="@color/white"
         android:textSize="@dimen/_8ssp"
         app:layout_constraintBottom_toBottomOf="@id/ivGun1Half"
@@ -98,7 +231,7 @@
         android:layout_gravity="bottom|start"
         android:layout_marginEnd="@dimen/_55sdp"
         android:gravity="center"
-        android:text="GUN - 2"
+        android:text="@string/lbl_gun_2"
         android:textColor="@color/white"
         android:textSize="@dimen/_8ssp"
         app:layout_constraintBottom_toBottomOf="@id/ivGun2Half"
@@ -116,8 +249,8 @@
         android:textStyle="bold"
         android:visibility="invisible"
         app:drawableStartCompat="@drawable/ic_emergency_stop"
+        app:drawableTint="@color/red"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:drawableTint="@color/red" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

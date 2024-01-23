@@ -108,5 +108,9 @@
     <string name="hint_date_time">00/01/1900 00:00:00</string>
     <string name="hint_float">0.00</string>
     <string name="hint_0">0</string>
+    <string name="lbl_gun_charging_soc">Charging SoC = %1$d%%</string>
+    <string name="lbl_gun_charging_duration">Duration = %1$s</string>
+    <string name="lbl_gun_energy_consumption">Energy Consumption = %1$.3f kw</string>
+    <string name="lbl_gun_total_cost">Total Cost = Rs. %1$.2f</string>
 
 </resources>

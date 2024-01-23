@@ -15,5 +15,6 @@ data class TbGunsChargingInfo(
     var chargingVoltage: Int,
     var chargingCurrent: Int,
     var duration: String,
-    var energyConsumption: Float
+    var energyConsumption: Float,
+    var totalCost: Float
 )

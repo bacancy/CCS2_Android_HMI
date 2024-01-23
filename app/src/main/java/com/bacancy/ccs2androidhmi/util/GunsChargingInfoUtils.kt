@@ -118,4 +118,8 @@ object GunsChargingInfoUtils {
         )
     }
 
+    fun getTotalCost(response: ByteArray): Float {
+        return ModbusTypeConverter.byteArrayToFloat(response.copyOfRange(35, 39))
+    }
+
 }

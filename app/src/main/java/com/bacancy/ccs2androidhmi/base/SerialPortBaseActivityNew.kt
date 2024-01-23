@@ -46,6 +46,7 @@ import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getDemandCurrent
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getDemandVoltage
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getGunChargingState
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getInitialSoc
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getTotalCost
 import com.bacancy.ccs2androidhmi.util.LastChargingSummaryUtils
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getCommunicationErrorCodes
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getDevicePhysicalConnectionStatus
@@ -436,7 +437,8 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                 chargingVoltage = getChargingVoltage(it),
                 chargingCurrent = getChargingCurrent(it),
                 duration = getChargingDuration(it),
-                energyConsumption = getChargingEnergyConsumption(it)
+                energyConsumption = getChargingEnergyConsumption(it),
+                totalCost = getTotalCost(it)
             )
         )
     }
@@ -705,7 +707,8 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                 chargingVoltage = getChargingVoltage(it),
                 chargingCurrent = getChargingCurrent(it),
                 duration = getChargingDuration(it),
-                energyConsumption = getChargingEnergyConsumption(it)
+                energyConsumption = getChargingEnergyConsumption(it),
+                totalCost = getTotalCost(it)
             )
         )
     }

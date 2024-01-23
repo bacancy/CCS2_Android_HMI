@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:paddingVertical="@dimen/_1sdp"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/tvSummaryLabel"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1.5"
+        android:ellipsize="end"
+        android:paddingHorizontal="@dimen/_10sdp"
+        android:gravity="center_vertical"
+        android:lines="1"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_8ssp"
+        tools:text="@string/lbl_charging_start_date_time" />
+
+    <TextView
+        android:id="@+id/tvSummaryValue"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.5"
+        android:lines="1"
+        android:paddingHorizontal="@dimen/_20sdp"
+        android:paddingVertical="@dimen/_5sdp"
+        tools:text="0.00"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_8ssp" />
+
+    <TextView
+        android:id="@+id/tvSummaryUnit"
+        android:layout_width="@dimen/_25sdp"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_rounded_rect"
+        android:gravity="center"
+        android:paddingVertical="@dimen/_5sdp"
+        tools:text="V"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_7ssp" />
+
+
+</LinearLayout>
