@@ -10,6 +10,7 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
 import com.bacancy.ccs2androidhmi.HMIApp
+import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.db.entity.TbAcMeterInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbChargingHistory
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
@@ -21,6 +22,7 @@ import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_DC_METER_FRAG
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_LAST_CHARGING_SUMMARY_FRAG
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_DC_METER_FRAG
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_LAST_CHARGING_SUMMARY_FRAG
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_DENIED
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_TIMEOUT
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.COMMUNICATION_ERROR
@@ -335,8 +337,15 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                                 "readGun1Info: Gun Current State: ${getGunChargingState(it).description}"
                             )
                             when (getGunChargingState(it).description) {
+                                GunsChargingInfoUtils.UNPLUGGED -> {
+                                    isGun1PluggedIn = false
+                                    Log.i(TAG, "readGun1Info: ## Step -1 - $isGun1PluggedIn")
+                                    openGun1LastChargingSummary()
+                                }
+
                                 PLUGGED_IN -> {
                                     isGun1PluggedIn = true
+                                    Log.i(TAG, "readGun1Info: ## Step 0 - $isGun1PluggedIn")
                                     openGun1LastChargingSummary()
                                 }
 
@@ -355,7 +364,9 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                                 MAINS_FAIL,
                                 EMERGENCY_STOP,
                                 -> {
+                                    Log.i(TAG, "readGun1Info: ## Step 1 - $isGun1PluggedIn")
                                     if (isGun1PluggedIn) {
+                                        Log.i(TAG, "readGun1Info: ## Step 2")
                                         isGun1PluggedIn = false
                                         openGun1LastChargingSummary(true)
                                     } else {
@@ -365,6 +376,7 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
 
                                 else -> {
                                     isGun1PluggedIn = false
+                                    Log.i(TAG, "readGun1Info: ## Step ELSE - $isGun1PluggedIn")
                                     openGun1LastChargingSummary()
                                 }
                             }
@@ -372,6 +384,7 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                         } else {
                             Log.e(TAG, "readGun1Info: Error Response - ${it.toHex()}")
                             isGun1PluggedIn = false
+                            Log.i(TAG, "readGun1Info: ## Step ERROR - $isGun1PluggedIn")
                             openGun1LastChargingSummary()
                         }
 
@@ -387,18 +400,23 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
     }
 
     private fun openGun1LastChargingSummary(shouldSave: Boolean = false) {
+        Log.i(TAG, "readGun1Info: ## Step 3")
         lifecycleScope.launch {
             delay(mCommonDelay)
             if (shouldSave) {
+                Log.i(TAG, "readGun1Info: ## Step 4")
                 readGun1LastChargingSummaryInfo(shouldSave)
             } else {
+                Log.i(TAG, "readGun1Info: ## Step 5")
                 if (prefHelper.getScreenVisible(
                         GUN_1_LAST_CHARGING_SUMMARY_FRAG,
                         false
                     )
                 ) {
+                    Log.i(TAG, "readGun1Info: ## Step 6")
                     readGun1LastChargingSummaryInfo()
                 } else {
+                    Log.i(TAG, "readGun1Info: ## Step 7")
                     openGun1DCMeterInfo()
                 }
             }
@@ -444,6 +462,7 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
     }
 
     private suspend fun readGun1LastChargingSummaryInfo(shouldSaveLastChargingSummary: Boolean = false) {
+        Log.i(TAG, "readGun1Info: ## Step 4.1")
         Log.i(
             "SAVER",
             "readGun1LastChargingSummaryInfo: Request Sent - ${
@@ -464,12 +483,15 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                                 "SAVER",
                                 "readGun1LastChargingSummaryInfo: Response = ${it.toHex()}"
                             )
+                            Log.i(TAG, "readGun1Info: ## Step 4.2")
                             if (shouldSaveLastChargingSummary) {
+                                Log.i(TAG, "readGun1Info: ## Step 4.3")
                                 Log.w("SAVER", "INSERT LCS IN DB")
                                 insertGun1LastChargingSummaryInDB(it)
                                 insertGun1ChargingHistoryInDB(it)
                             }
                         } else {
+                            Log.i(TAG, "readGun1Info: ## Step 4.4")
                             Log.e(
                                 TAG,
                                 "readGun1LastChargingSummaryInfo: Error Response - ${it.toHex()}"
@@ -646,6 +668,11 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                             insertGun2InfoInDB(it)
 
                             when (getGunChargingState(it).description) {
+                                GunsChargingInfoUtils.UNPLUGGED -> {
+                                    isGun2PluggedIn = false
+                                    openGun2LastChargingSummary()
+                                }
+
                                 PLUGGED_IN -> {
                                     isGun2PluggedIn = true
                                     openGun2LastChargingSummary()

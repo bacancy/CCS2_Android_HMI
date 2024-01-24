@@ -2,6 +2,7 @@ package com.bacancy.ccs2androidhmi.views.fragment
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,8 +14,6 @@ import com.bacancy.ccs2androidhmi.databinding.FragmentGunsHomeScreenBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsLastChargingSummary
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showChargingSummaryDialog
-import com.bacancy.ccs2androidhmi.util.DialogUtils.showCustomDialog
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_DENIED
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_TIMEOUT
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.CHARGING
@@ -49,6 +48,8 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class GunsHomeScreenFragment : BaseFragment() {
 
+    private var shouldShowGun1SummaryDialog: Boolean = false
+    private var shouldShowGun2SummaryDialog: Boolean = false
     private lateinit var binding: FragmentGunsHomeScreenBinding
     private var fragmentChangeListener: FragmentChangeListener? = null
     private val appViewModel: AppViewModel by viewModels()
@@ -105,21 +106,30 @@ class GunsHomeScreenFragment : BaseFragment() {
 
         when (tbGunsChargingInfo.gunChargingState) {
             UNPLUGGED -> {
+                shouldShowGun1SummaryDialog = false
                 binding.ivGun1Half.setImageResource(R.drawable.img_gun1_unplugged)
             }
 
             PLUGGED_IN -> {
+                shouldShowGun1SummaryDialog = false
                 binding.ivGun1Half.setImageResource(R.drawable.img_gun1_plugged)
                 binding.tvGun1Label.text = getString(R.string.lbl_gun1_plugged_in)
             }
 
-            CHARGING, PREPARING_FOR_CHARGING -> {
+            CHARGING -> {
+                shouldShowGun1SummaryDialog = false
+                binding.ivGun1Half.setImageResource(R.drawable.img_gun1_charging_completed)
+                showGunsChargingStatusUI(true, tbGunsChargingInfo)
+            }
+
+            PREPARING_FOR_CHARGING -> {
+                shouldShowGun1SummaryDialog = false
                 binding.ivGun1Half.setImageResource(R.drawable.img_gun1_charging_completed)
             }
 
             COMPLETE -> {
                 binding.ivGun1Half.setImageResource(R.drawable.img_gun1_charging)
-                showGunsChargingStatusUI(true, tbGunsChargingInfo)
+                hideGunsChargingStatusUI(true)
             }
 
             PLC_FAULT,
@@ -129,16 +139,19 @@ class GunsHomeScreenFragment : BaseFragment() {
             SMOKE_FAULT,
             TAMPER_FAULT -> {
                 binding.ivGun1Half.setImageResource(R.drawable.img_gun1_fault)
+                hideGunsChargingStatusUI(true)
             }
 
             EMERGENCY_STOP -> {
                 binding.tvEmergencyStop.visible()
+                hideGunsChargingStatusUI(true)
             }
 
             else -> {
                 binding.tvGun1Label.text =
                     getString(R.string.gun_1_info, tbGunsChargingInfo.gunChargingState)
                 binding.tvEmergencyStop.invisible()
+                hideGunsChargingStatusUI(true)
             }
         }
 
@@ -158,7 +171,10 @@ class GunsHomeScreenFragment : BaseFragment() {
             MAINS_FAIL,
             EMERGENCY_STOP,
             -> {
-                observeGunsLastChargingSummary(true)
+                if(!shouldShowGun1SummaryDialog){
+                    shouldShowGun1SummaryDialog = true
+                    observeGunsLastChargingSummary(true)
+                }
             }
         }
     }
@@ -175,21 +191,30 @@ class GunsHomeScreenFragment : BaseFragment() {
 
         when (tbGunsChargingInfo.gunChargingState) {
             UNPLUGGED -> {
+                shouldShowGun2SummaryDialog = false
                 binding.ivGun2Half.setImageResource(R.drawable.img_gun2_unplugged)
             }
 
             PLUGGED_IN -> {
+                shouldShowGun2SummaryDialog = false
                 binding.ivGun2Half.setImageResource(R.drawable.img_gun2_plugged)
                 binding.tvGun2Label.text = getString(R.string.lbl_gun2_plugged_in)
             }
 
-            CHARGING, PREPARING_FOR_CHARGING -> {
+            CHARGING -> {
+                shouldShowGun2SummaryDialog = false
+                binding.ivGun2Half.setImageResource(R.drawable.img_gun2_charging_completed)
+                showGunsChargingStatusUI(false, tbGunsChargingInfo)
+            }
+
+            PREPARING_FOR_CHARGING -> {
+                shouldShowGun2SummaryDialog = false
                 binding.ivGun2Half.setImageResource(R.drawable.img_gun2_charging_completed)
             }
 
             COMPLETE -> {
                 binding.ivGun2Half.setImageResource(R.drawable.img_gun2_charging)
-                showGunsChargingStatusUI(false, tbGunsChargingInfo)
+                hideGunsChargingStatusUI(false)
             }
 
             PLC_FAULT,
@@ -199,16 +224,19 @@ class GunsHomeScreenFragment : BaseFragment() {
             SMOKE_FAULT,
             TAMPER_FAULT -> {
                 binding.ivGun2Half.setImageResource(R.drawable.img_gun2_fault)
+                hideGunsChargingStatusUI(false)
             }
 
             EMERGENCY_STOP -> {
                 binding.tvEmergencyStop.visible()
+                hideGunsChargingStatusUI(false)
             }
 
             else -> {
                 binding.tvGun2Label.text =
                     getString(R.string.gun_2_info, tbGunsChargingInfo.gunChargingState)
                 binding.tvEmergencyStop.invisible()
+                hideGunsChargingStatusUI(false)
             }
         }
 
@@ -228,7 +256,10 @@ class GunsHomeScreenFragment : BaseFragment() {
             MAINS_FAIL,
             EMERGENCY_STOP,
             -> {
-                observeGunsLastChargingSummary(false)
+                if(!shouldShowGun2SummaryDialog) {
+                    shouldShowGun2SummaryDialog = true
+                    observeGunsLastChargingSummary(false)
+                }
             }
         }
 
@@ -279,7 +310,15 @@ class GunsHomeScreenFragment : BaseFragment() {
     private fun observeGunsLastChargingSummary(isGun1: Boolean) {
         appViewModel.getGunsLastChargingSummary(if (isGun1) 1 else 2).observe(requireActivity()) {
             it?.let {
-                showChargingSummaryDialog(isGun1, it) {}
+                if (isGun1) {
+                    if (shouldShowGun1SummaryDialog) {
+                        showChargingSummaryDialog(true, it) {}
+                    }
+                } else {
+                    if (shouldShowGun2SummaryDialog) {
+                        showChargingSummaryDialog(false, it) {}
+                    }
+                }
             }
         }
     }
@@ -295,8 +334,8 @@ class GunsHomeScreenFragment : BaseFragment() {
 
         binding.ivScreenInfo.setOnClickListener {
             //showCustomDialog(getString(R.string.msg_dialog_home_screen)) {}
-            //fragmentChangeListener?.replaceFragment(FirmwareVersionInfoFragment())
-            showDemoDialogs()
+            fragmentChangeListener?.replaceFragment(FirmwareVersionInfoFragment())
+            //showDemoDialogs()
         }
     }
 

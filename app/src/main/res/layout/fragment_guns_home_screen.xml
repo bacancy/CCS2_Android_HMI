@@ -71,7 +71,7 @@
             android:layout_gravity="center"
             android:textColor="@color/white"
             android:textSize="@dimen/_6ssp"
-            tools:text="GUN - 1 Charging Status" />
+            android:text="@string/lbl_gun_1_charging_status" />
 
         <TextView
             android:id="@+id/tvGun1ChargingSoc"
@@ -155,7 +155,7 @@
             android:layout_gravity="center"
             android:textColor="@color/white"
             android:textSize="@dimen/_6ssp"
-            tools:text="GUN - 2 Charging Status" />
+            android:text="@string/lbl_gun_2_charging_status" />
 
         <TextView
             android:id="@+id/tvGun2ChargingSoc"

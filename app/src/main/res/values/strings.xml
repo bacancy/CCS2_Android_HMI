@@ -112,5 +112,7 @@
     <string name="lbl_gun_charging_duration">Duration = %1$s</string>
     <string name="lbl_gun_energy_consumption">Energy Consumption = %1$.3f kw</string>
     <string name="lbl_gun_total_cost">Total Cost = Rs. %1$.2f</string>
+    <string name="lbl_gun_1_charging_status">GUN - 1 Charging Status</string>
+    <string name="lbl_gun_2_charging_status">GUN - 2 Charging Status</string>
 
 </resources>
