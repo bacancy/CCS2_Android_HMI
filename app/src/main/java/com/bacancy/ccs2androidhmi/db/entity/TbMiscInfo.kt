@@ -24,5 +24,7 @@ data class TbMiscInfo(
     var rectifier3Fault: String,
     var rectifier4Fault: String,
     var communicationError: String,
-    var devicePhysicalConnectionStatus: String
+    var devicePhysicalConnectionStatus: String,
+    var unitPrice: Float,
+    var emergencyButtonStatus: Int
 )

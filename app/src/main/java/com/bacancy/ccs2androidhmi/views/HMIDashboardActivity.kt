@@ -6,6 +6,7 @@ import android.os.Looper
 import android.util.Log
 import android.view.WindowManager
 import androidx.activity.OnBackPressedDispatcherOwner
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
@@ -13,6 +14,7 @@ import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.SerialPortBaseActivityNew
 import com.bacancy.ccs2androidhmi.databinding.ActivityHmiDashboardBinding
 import com.bacancy.ccs2androidhmi.util.CommonUtils
+import com.bacancy.ccs2androidhmi.util.gone
 import com.bacancy.ccs2androidhmi.util.invisible
 import com.bacancy.ccs2androidhmi.util.visible
 import com.bacancy.ccs2androidhmi.views.fragment.GunsHomeScreenFragment
@@ -66,6 +68,9 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         } else {
             binding.incToolbar.imgBack.invisible()
         }
+        if(binding.incToolbar.imgBack.isVisible){
+            binding.incToolbar.tvEmergencyStop.gone()
+        }
     }
 
     private fun observeLatestMiscInfo() {
@@ -75,7 +80,16 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
                 updateEthernetStatus(latestMiscInfo.ethernetStatus)
                 adjustGSMLevel(latestMiscInfo.gsmLevel)
                 adjustWifiLevel(latestMiscInfo.wifiLevel)
+                showOrHideEmergencyStop(latestMiscInfo.emergencyButtonStatus)
             }
+        }
+    }
+
+    fun showOrHideEmergencyStop(emergencyButtonStatus: Int) {
+        if (emergencyButtonStatus == 1) {
+            binding.incToolbar.tvEmergencyStop.visible()
+        } else {
+            binding.incToolbar.tvEmergencyStop.gone()
         }
     }
 

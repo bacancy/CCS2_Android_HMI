@@ -23,6 +23,19 @@ object MiscInfoUtils {
         return "$reg3MSB.$reg4LSB.$reg4MSB"
     }
 
+    fun getUnitPrice(response: ByteArray): Float {
+        return ModbusTypeConverter.byteArrayToFloat(response.copyOfRange(69, 73))
+    }
+
+    fun getEmergencyButtonStatus(response: ByteArray): Int {
+        val status = response.copyOfRange(49, 51).toHex()
+        return if (status.contains("1")) {
+            1
+        } else {
+            0
+        }
+    }
+
     fun getRFIDFirmwareVersion(response: ByteArray): String {
         val reg3MSB = response[75].getIntValueFromByte()
         val reg3LSB = response[76].getIntValueFromByte()

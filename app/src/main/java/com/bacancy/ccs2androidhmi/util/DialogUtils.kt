@@ -3,19 +3,16 @@ package com.bacancy.ccs2androidhmi.util
 import android.app.Dialog
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import android.view.View
 import android.view.Window
-import android.view.WindowInsets
-import android.view.WindowInsetsController
 import android.view.WindowManager
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.bacancy.ccs2androidhmi.R
-import com.bacancy.ccs2androidhmi.databinding.CommonChargingSummaryDialogItemBinding
 import com.bacancy.ccs2androidhmi.databinding.CustomDialogBinding
 import com.bacancy.ccs2androidhmi.databinding.DialogGunsChargingSummaryBinding
-import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsLastChargingSummary
 
 
@@ -102,13 +99,14 @@ object DialogUtils {
         dialog.show()
     }
 
-    fun Fragment.showChargingSummaryDialog(isGun1: Boolean, tbGunsLastChargingSummary: TbGunsLastChargingSummary, onCloseClicked: () -> Unit) {
+    fun Fragment.showChargingSummaryDialog(
+        isGun1: Boolean,
+        tbGunsLastChargingSummary: TbGunsLastChargingSummary,
+        onCloseClicked: () -> Unit
+    ) {
+        Log.i("JAN25", "showChargingSummaryDialog: CALLED - $isGun1")
         val dialog = Dialog(requireActivity(), R.style.CustomAlertDialog)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        dialog.window?.setLayout(
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.WRAP_CONTENT
-        )
         val binding = DialogGunsChargingSummaryBinding.inflate(layoutInflater)
         dialog.setContentView(binding.root)
 
@@ -159,7 +157,8 @@ object DialogUtils {
             incSessionEndReason.tvSummaryValue.text = ""
             incSessionEndReason.root.setBackgroundColor(resources.getColor(R.color.black))
 
-            tvGunsHeader.text = if(isGun1) "Gun - 1 Charging Summary" else "Gun - 2 Charging Summary"
+            tvGunsHeader.text =
+                if (isGun1) "Gun - 1 Charging Summary" else "Gun - 2 Charging Summary"
             tbGunsLastChargingSummary.apply {
                 incEVMacAddress.tvSummaryValue.text = evMacAddress
                 incChargingDuration.tvSummaryValue.text = chargingDuration
@@ -190,6 +189,10 @@ object DialogUtils {
             layoutParams.flags = layoutParams.flags or
                     WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
                     WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+            window.setLayout(
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.WRAP_CONTENT
+            )
             window.attributes = layoutParams
         }
 

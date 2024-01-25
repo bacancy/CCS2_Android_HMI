@@ -9,6 +9,7 @@ object GunsChargingInfoUtils {
 
     const val UNPLUGGED ="Unplugged"
     const val PLUGGED_IN = "Plugged In & Waiting for Authentication"
+    const val AUTHENTICATION_SUCCESS = "Authentication Success"
     const val CHARGING = "Charging"
     const val PREPARING_FOR_CHARGING = "Preparing For Charging"
     const val COMPLETE = "Complete"

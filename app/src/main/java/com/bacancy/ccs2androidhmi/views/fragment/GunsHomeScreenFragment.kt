@@ -35,7 +35,6 @@ import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.TEMPERATURE_FAULT
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.UNPLUGGED
 import com.bacancy.ccs2androidhmi.util.PrefHelper
 import com.bacancy.ccs2androidhmi.util.gone
-import com.bacancy.ccs2androidhmi.util.invisible
 import com.bacancy.ccs2androidhmi.util.visible
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
 import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
@@ -48,6 +47,8 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class GunsHomeScreenFragment : BaseFragment() {
 
+    private var isGun1ChargingStarted: Boolean = false
+    private var isGun2ChargingStarted: Boolean = false
     private var shouldShowGun1SummaryDialog: Boolean = false
     private var shouldShowGun2SummaryDialog: Boolean = false
     private lateinit var binding: FragmentGunsHomeScreenBinding
@@ -76,8 +77,18 @@ class GunsHomeScreenFragment : BaseFragment() {
     ): View {
         binding = FragmentGunsHomeScreenBinding.inflate(layoutInflater)
         (requireActivity() as HMIDashboardActivity).showHideBackIcon(false)
+        observeLatestMiscInfo()
         observeGunsChargingInfo()
         return binding.root
+    }
+
+    private fun observeLatestMiscInfo() {
+        appViewModel.latestMiscInfo.observe(requireActivity()) { latestMiscInfo ->
+            if (latestMiscInfo != null) {
+                Log.i("TAG", "LatestMiscInfo: Unit Price = Rs.${latestMiscInfo.unitPrice}/kwh")
+                binding.tvUnitPrice.text = getString(R.string.lbl_unit_price_per_kw, latestMiscInfo.unitPrice)
+            }
+        }
     }
 
     private fun observeGunsChargingInfo() {
@@ -101,8 +112,7 @@ class GunsHomeScreenFragment : BaseFragment() {
             prefHelper.setSelectedGunNumber(SELECTED_GUN, 0)
         }
 
-        binding.tvGun1Label.text =
-            getString(R.string.gun_1_info, tbGunsChargingInfo.gunChargingState)
+        binding.tvGun1State.text = "(${tbGunsChargingInfo.gunChargingState})"
 
         when (tbGunsChargingInfo.gunChargingState) {
             UNPLUGGED -> {
@@ -113,10 +123,11 @@ class GunsHomeScreenFragment : BaseFragment() {
             PLUGGED_IN -> {
                 shouldShowGun1SummaryDialog = false
                 binding.ivGun1Half.setImageResource(R.drawable.img_gun1_plugged)
-                binding.tvGun1Label.text = getString(R.string.lbl_gun1_plugged_in)
+                binding.tvGun1State.text = getString(R.string.lbl_plugged_in)
             }
 
             CHARGING -> {
+                isGun1ChargingStarted = true
                 shouldShowGun1SummaryDialog = false
                 binding.ivGun1Half.setImageResource(R.drawable.img_gun1_charging_completed)
                 showGunsChargingStatusUI(true, tbGunsChargingInfo)
@@ -143,14 +154,11 @@ class GunsHomeScreenFragment : BaseFragment() {
             }
 
             EMERGENCY_STOP -> {
-                binding.tvEmergencyStop.visible()
                 hideGunsChargingStatusUI(true)
             }
 
             else -> {
-                binding.tvGun1Label.text =
-                    getString(R.string.gun_1_info, tbGunsChargingInfo.gunChargingState)
-                binding.tvEmergencyStop.invisible()
+                binding.tvGun1State.text = "(${tbGunsChargingInfo.gunChargingState})"
                 hideGunsChargingStatusUI(true)
             }
         }
@@ -171,8 +179,11 @@ class GunsHomeScreenFragment : BaseFragment() {
             MAINS_FAIL,
             EMERGENCY_STOP,
             -> {
-                if(!shouldShowGun1SummaryDialog){
+                Log.d("TAG", "updateGun1UI##: $shouldShowGun1SummaryDialog && $isGun1ChargingStarted")
+                if (!shouldShowGun1SummaryDialog && isGun1ChargingStarted) {
+                    isGun1ChargingStarted = false
                     shouldShowGun1SummaryDialog = true
+                    Log.d("TAG", "updateGun1UI##: Show Gun1 Dialog")
                     observeGunsLastChargingSummary(true)
                 }
             }
@@ -184,10 +195,7 @@ class GunsHomeScreenFragment : BaseFragment() {
             prefHelper.setSelectedGunNumber(SELECTED_GUN, 0)
         }
 
-        binding.tvEmergencyStop.invisible()
-
-        binding.tvGun2Label.text =
-            getString(R.string.gun_2_info, tbGunsChargingInfo.gunChargingState)
+        binding.tvGun2State.text = "(${tbGunsChargingInfo.gunChargingState})"
 
         when (tbGunsChargingInfo.gunChargingState) {
             UNPLUGGED -> {
@@ -198,10 +206,11 @@ class GunsHomeScreenFragment : BaseFragment() {
             PLUGGED_IN -> {
                 shouldShowGun2SummaryDialog = false
                 binding.ivGun2Half.setImageResource(R.drawable.img_gun2_plugged)
-                binding.tvGun2Label.text = getString(R.string.lbl_gun2_plugged_in)
+                binding.tvGun2State.text = getString(R.string.lbl_plugged_in)
             }
 
             CHARGING -> {
+                isGun2ChargingStarted = true
                 shouldShowGun2SummaryDialog = false
                 binding.ivGun2Half.setImageResource(R.drawable.img_gun2_charging_completed)
                 showGunsChargingStatusUI(false, tbGunsChargingInfo)
@@ -228,14 +237,11 @@ class GunsHomeScreenFragment : BaseFragment() {
             }
 
             EMERGENCY_STOP -> {
-                binding.tvEmergencyStop.visible()
                 hideGunsChargingStatusUI(false)
             }
 
             else -> {
-                binding.tvGun2Label.text =
-                    getString(R.string.gun_2_info, tbGunsChargingInfo.gunChargingState)
-                binding.tvEmergencyStop.invisible()
+                binding.tvGun2State.text = "(${tbGunsChargingInfo.gunChargingState})"
                 hideGunsChargingStatusUI(false)
             }
         }
@@ -256,10 +262,12 @@ class GunsHomeScreenFragment : BaseFragment() {
             MAINS_FAIL,
             EMERGENCY_STOP,
             -> {
-                if(!shouldShowGun2SummaryDialog) {
+                if (!shouldShowGun2SummaryDialog && isGun2ChargingStarted) {
+                    isGun2ChargingStarted = false
                     shouldShowGun2SummaryDialog = true
                     observeGunsLastChargingSummary(false)
                 }
+
             }
         }
 
@@ -308,15 +316,21 @@ class GunsHomeScreenFragment : BaseFragment() {
     }
 
     private fun observeGunsLastChargingSummary(isGun1: Boolean) {
-        appViewModel.getGunsLastChargingSummary(if (isGun1) 1 else 2).observe(requireActivity()) {
-            it?.let {
-                if (isGun1) {
-                    if (shouldShowGun1SummaryDialog) {
-                        showChargingSummaryDialog(true, it) {}
-                    }
-                } else {
-                    if (shouldShowGun2SummaryDialog) {
-                        showChargingSummaryDialog(false, it) {}
+        lifecycleScope.launch {
+            delay(2000)
+            appViewModel.getGunsLastChargingSummary(if (isGun1) 1 else 2).observe(requireActivity()) {
+                Log.i("JAN25", "updateGun1UI##: Got Guns Last Charging Summary")
+                it?.let {
+                    if (isGun1) {
+                        if (shouldShowGun1SummaryDialog) {
+                            shouldShowGun1SummaryDialog = false
+                            showChargingSummaryDialog(true, it) {}
+                        }
+                    } else {
+                        if (shouldShowGun2SummaryDialog) {
+                            shouldShowGun2SummaryDialog = false
+                            showChargingSummaryDialog(false, it) {}
+                        }
                     }
                 }
             }
@@ -334,8 +348,9 @@ class GunsHomeScreenFragment : BaseFragment() {
 
         binding.ivScreenInfo.setOnClickListener {
             //showCustomDialog(getString(R.string.msg_dialog_home_screen)) {}
-            fragmentChangeListener?.replaceFragment(FirmwareVersionInfoFragment())
             //showDemoDialogs()
+            (requireActivity() as HMIDashboardActivity).showOrHideEmergencyStop(0)
+            fragmentChangeListener?.replaceFragment(FirmwareVersionInfoFragment())
         }
     }
 
@@ -365,12 +380,13 @@ class GunsHomeScreenFragment : BaseFragment() {
 
         lifecycleScope.launch {
             showChargingSummaryDialog(true, sampleTbGunsLastChargingSummary1) {}
-            delay(5000)
-            showChargingSummaryDialog(false, sampleTbGunsLastChargingSummary2) {}
+            //delay(5000)
+            //showChargingSummaryDialog(false, sampleTbGunsLastChargingSummary2) {}
         }
     }
 
     private fun openGunsMoreInfoFragment(gunNumber: Int) {
+        (requireActivity() as HMIDashboardActivity).showOrHideEmergencyStop(0)
         val bundle = Bundle()
         bundle.putInt(SELECTED_GUN, gunNumber)
         val fragment = GunsMoreInformationFragment()

@@ -99,19 +99,19 @@
     <string name="msg_dialog_home_screen">To start the authentication process or view detailed parameter information, tap a specific gun icon.</string>
     <string name="lbl_no_charging_history">No Charging History</string>
     <string name="lbl_emergency_stop">Emergency Stop</string>
-    <string name="gun_1_info">GUN - 1 \n(%1$s)</string>
-    <string name="gun_2_info">GUN - 2 \n(%1$s)</string>
-    <string name="lbl_gun1_plugged_in">GUN - 1 \nPlugged In</string>
-    <string name="lbl_gun2_plugged_in">GUN - 2 \nPlugged In</string>
+    <string name="gun_1_info">GUN - 1 \n<b>(%1$s)</b></string>
+    <string name="gun_2_info">GUN - 2 \n<b>(%1$s)</b></string>
+    <string name="lbl_plugged_in">(Plugged In)</string>
     <string name="hint_00_00">00:00</string>
-    <string name="hint_mac_address">00-00-00-00-00-00-00-00</string>
+    <string name="hint_mac_address">00–00–00-00-00-00-00-00</string>
     <string name="hint_date_time">00/01/1900 00:00:00</string>
     <string name="hint_float">0.00</string>
     <string name="hint_0">0</string>
     <string name="lbl_gun_charging_soc">Charging SoC = %1$d%%</string>
     <string name="lbl_gun_charging_duration">Duration = %1$s</string>
     <string name="lbl_gun_energy_consumption">Energy Consumption = %1$.3f kw</string>
-    <string name="lbl_gun_total_cost">Total Cost = Rs. %1$.2f</string>
+    <string name="lbl_gun_total_cost">Total Cost = ₹%1$.2f</string>
+    <string name="lbl_unit_price_per_kw">Unit Price = ₹%1$.2f / kWh</string>
     <string name="lbl_gun_1_charging_status">GUN - 1 Charging Status</string>
     <string name="lbl_gun_2_charging_status">GUN - 2 Charging Status</string>
 
