@@ -12,8 +12,9 @@ import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentGunsHomeScreenBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
-import com.bacancy.ccs2androidhmi.db.entity.TbGunsLastChargingSummary
+import com.bacancy.ccs2androidhmi.util.CommonUtils.INSIDE_LOCAL_START_STOP_SCREEN
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showChargingSummaryDialog
+import com.bacancy.ccs2androidhmi.util.DialogUtils.showPasswordPromptDialog
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_DENIED
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_TIMEOUT
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.CHARGING
@@ -35,6 +36,7 @@ import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.TEMPERATURE_FAULT
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.UNPLUGGED
 import com.bacancy.ccs2androidhmi.util.PrefHelper
 import com.bacancy.ccs2androidhmi.util.gone
+import com.bacancy.ccs2androidhmi.util.showToast
 import com.bacancy.ccs2androidhmi.util.visible
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
 import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
@@ -82,11 +84,17 @@ class GunsHomeScreenFragment : BaseFragment() {
         return binding.root
     }
 
+    override fun onResume() {
+        super.onResume()
+        prefHelper.setBoolean(INSIDE_LOCAL_START_STOP_SCREEN, false)
+    }
+
     private fun observeLatestMiscInfo() {
         appViewModel.latestMiscInfo.observe(requireActivity()) { latestMiscInfo ->
             if (latestMiscInfo != null) {
                 Log.i("TAG", "LatestMiscInfo: Unit Price = Rs.${latestMiscInfo.unitPrice}/kwh")
-                binding.tvUnitPrice.text = getString(R.string.lbl_unit_price_per_kw, latestMiscInfo.unitPrice)
+                binding.tvUnitPrice.text =
+                    getString(R.string.lbl_unit_price_per_kw, latestMiscInfo.unitPrice)
             }
         }
     }
@@ -179,7 +187,10 @@ class GunsHomeScreenFragment : BaseFragment() {
             MAINS_FAIL,
             EMERGENCY_STOP,
             -> {
-                Log.d("TAG", "updateGun1UI##: $shouldShowGun1SummaryDialog && $isGun1ChargingStarted")
+                Log.d(
+                    "TAG",
+                    "updateGun1UI##: $shouldShowGun1SummaryDialog && $isGun1ChargingStarted"
+                )
                 if (!shouldShowGun1SummaryDialog && isGun1ChargingStarted) {
                     isGun1ChargingStarted = false
                     shouldShowGun1SummaryDialog = true
@@ -318,22 +329,22 @@ class GunsHomeScreenFragment : BaseFragment() {
     private fun observeGunsLastChargingSummary(isGun1: Boolean) {
         lifecycleScope.launch {
             delay(2000)
-            appViewModel.getGunsLastChargingSummary(if (isGun1) 1 else 2).observe(requireActivity()) {
-                Log.i("JAN25", "updateGun1UI##: Got Guns Last Charging Summary")
-                it?.let {
-                    if (isGun1) {
-                        if (shouldShowGun1SummaryDialog) {
-                            shouldShowGun1SummaryDialog = false
-                            showChargingSummaryDialog(true, it) {}
-                        }
-                    } else {
-                        if (shouldShowGun2SummaryDialog) {
-                            shouldShowGun2SummaryDialog = false
-                            showChargingSummaryDialog(false, it) {}
+            appViewModel.getGunsLastChargingSummary(if (isGun1) 1 else 2)
+                .observe(requireActivity()) {
+                    it?.let {
+                        if (isGun1) {
+                            if (shouldShowGun1SummaryDialog) {
+                                shouldShowGun1SummaryDialog = false
+                                showChargingSummaryDialog(true, it) {}
+                            }
+                        } else {
+                            if (shouldShowGun2SummaryDialog) {
+                                shouldShowGun2SummaryDialog = false
+                                showChargingSummaryDialog(false, it) {}
+                            }
                         }
                     }
                 }
-            }
         }
     }
 
@@ -347,41 +358,16 @@ class GunsHomeScreenFragment : BaseFragment() {
         }
 
         binding.ivScreenInfo.setOnClickListener {
-            //showCustomDialog(getString(R.string.msg_dialog_home_screen)) {}
-            //showDemoDialogs()
             (requireActivity() as HMIDashboardActivity).showOrHideEmergencyStop(0)
             fragmentChangeListener?.replaceFragment(FirmwareVersionInfoFragment())
         }
-    }
 
-    private fun showDemoDialogs() {
-        val sampleTbGunsLastChargingSummary1 = TbGunsLastChargingSummary(
-            gunId = 1,
-            evMacAddress = "00:11:22:33:44:55",
-            chargingDuration = "2 hours",
-            chargingStartDateTime = "2024-01-23 10:00 AM",
-            chargingEndDateTime = "2024-01-23 12:00 PM",
-            startSoc = "30%",
-            endSoc = "80%",
-            energyConsumption = "50 kWh",
-            sessionEndReason = "Completed"
-        )
-        val sampleTbGunsLastChargingSummary2 = TbGunsLastChargingSummary(
-            gunId = 2,
-            evMacAddress = "00:11:22:33:44:55",
-            chargingDuration = "4 hours",
-            chargingStartDateTime = "2024-01-25 10:00 AM",
-            chargingEndDateTime = "2024-01-25 12:00 PM",
-            startSoc = "10%",
-            endSoc = "60%",
-            energyConsumption = "150 kWh",
-            sessionEndReason = "Remote Stop"
-        )
-
-        lifecycleScope.launch {
-            showChargingSummaryDialog(true, sampleTbGunsLastChargingSummary1) {}
-            //delay(5000)
-            //showChargingSummaryDialog(false, sampleTbGunsLastChargingSummary2) {}
+        binding.ivLocalStartStop.setOnClickListener {
+            showPasswordPromptDialog({
+                fragmentChangeListener?.replaceFragment(LocalStartStopFragment())
+            }, {
+                showToast(getString(R.string.msg_invalid_password))
+            })
         }
     }
 

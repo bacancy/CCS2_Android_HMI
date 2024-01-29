@@ -19,8 +19,12 @@ import com.bacancy.ccs2androidhmi.db.entity.TbMiscInfo
 import com.bacancy.ccs2androidhmi.util.CommonUtils.AC_METER_FRAG
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_DC_METER_FRAG
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_LAST_CHARGING_SUMMARY_FRAG
+import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_LOCAL_START
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_DC_METER_FRAG
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_LAST_CHARGING_SUMMARY_FRAG
+import com.bacancy.ccs2androidhmi.util.CommonUtils.INSIDE_LOCAL_START_STOP_SCREEN
+import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_GUN_1_CLICKED
+import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_GUN_2_CLICKED
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_DENIED
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_SUCCESS
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_TIMEOUT
@@ -208,9 +212,6 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
     }
 
     private fun insertMiscInfoInDB(it: ByteArray) {
-        val gunSelectionResponse = it.copyOfRange(63, 65).toHex()
-        Log.i(TAG, "insertMiscInfoInDB: gunSelectionResponse = $gunSelectionResponse")
-        Log.i(TAG, "insertMiscInfoInDB: EBS = ${it.copyOfRange(49, 51).toHex()}")//0-off, 1-on
         val networkStatusBits =
             ModbusTypeConverter.byteArrayToBinaryString(it.copyOfRange(3, 5))
                 .reversed()
@@ -286,7 +287,7 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                             delay(mCommonDelay)
                             readGun1Info()
                         }
-                    },onReadStopped = {
+                    }, onReadStopped = {
                         startReading()
                     })
             } catch (te: TimeoutCancellationException) {
@@ -525,12 +526,23 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
             ) {
                 readGun2DCMeterInfo()
             } else {
-                val selectedGunNumber =
-                    prefHelper.getSelectedGunNumber(SELECTED_GUN, 0)
-                if (selectedGunNumber != 0) {
-                    authenticateGun(selectedGunNumber)
+                if (prefHelper.getBoolean(
+                        INSIDE_LOCAL_START_STOP_SCREEN,
+                        false
+                    ) && (prefHelper.getBoolean(
+                        IS_GUN_1_CLICKED,
+                        false
+                    ) || prefHelper.getBoolean(IS_GUN_2_CLICKED, false))
+                ) {
+                    writeForLocalStartStop(determineLocalStartStop())
                 } else {
-                    startReading()
+                    val selectedGunNumber =
+                        prefHelper.getSelectedGunNumber(SELECTED_GUN, 0)
+                    if (selectedGunNumber != 0) {
+                        authenticateGun(selectedGunNumber)
+                    } else {
+                        startReading()
+                    }
                 }
             }
         }
@@ -830,7 +842,7 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                     mOutputStream,
                     mInputStream,
                     ResponseSizes.GUN_DC_METER_INFORMATION_RESPONSE_SIZE,
-                    ModbusRequestFrames.getGunTwoDCMeterInfoRequestFrame(),onDataReceived = {
+                    ModbusRequestFrames.getGunTwoDCMeterInfoRequestFrame(), onDataReceived = {
                         if (it.toHex()
                                 .startsWith(ModBusUtils.INPUT_REGISTERS_CORRECT_RESPONSE_BITS)
                         ) {
@@ -850,12 +862,23 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                                     )
                                 }"
                             )
-                            val selectedGunNumber =
-                                prefHelper.getSelectedGunNumber(SELECTED_GUN, 0)
-                            if (selectedGunNumber != 0) {
-                                authenticateGun(selectedGunNumber)
+                            if (prefHelper.getBoolean(
+                                    INSIDE_LOCAL_START_STOP_SCREEN,
+                                    false
+                                ) && (prefHelper.getBoolean(
+                                    IS_GUN_1_CLICKED,
+                                    false
+                                ) || prefHelper.getBoolean(IS_GUN_2_CLICKED, false))
+                            ) {
+                                writeForLocalStartStop(determineLocalStartStop())
                             } else {
-                                startReading()
+                                val selectedGunNumber =
+                                    prefHelper.getSelectedGunNumber(SELECTED_GUN, 0)
+                                if (selectedGunNumber != 0) {
+                                    authenticateGun(selectedGunNumber)
+                                } else {
+                                    startReading()
+                                }
                             }
                         }
                     }, onReadStopped = {
@@ -901,8 +924,49 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                     lifecycleScope.launch {
                         startReading()
                     }
-
                 }, {})
+        }
+    }
+
+    private fun writeForLocalStartStop(gunsStartStopData: Int = 1) {
+        //Guns Start/Stop cycle series = 10, 01, 11
+        //Gun1 = 01 - 1
+        //Gun2 = 10 - 2
+        //GunBothStart = 11 - 3
+        //GunBothStop = 00 - 0
+        Log.i(TAG, "writeForLocalStartStop Request Started")
+        lifecycleScope.launch(Dispatchers.IO) {
+            ReadWriteUtil.writeToSingleHoldingRegisterNew(
+                mOutputStream,
+                mInputStream,
+                48,
+                gunsStartStopData, {
+                    Log.d(TAG, "writeForLocalStartStop: Response Got")
+                    lifecycleScope.launch {
+                        startReading()
+                    }
+                }, {})
+        }
+    }
+
+    private fun determineLocalStartStop(): Int {
+        val gun1LocalStart = prefHelper.getBoolean(GUN_1_LOCAL_START, false)
+        val gun2LocalStart = prefHelper.getBoolean(GUN_1_LOCAL_START, false)
+
+        return when {
+            gun1LocalStart && !gun2LocalStart -> {
+                1
+            }
+
+            !gun1LocalStart && gun2LocalStart -> {
+                2
+            }
+
+            gun1LocalStart && gun2LocalStart -> {
+                3
+            }
+
+            else -> 0 // Default case or handle accordingly
         }
     }
 

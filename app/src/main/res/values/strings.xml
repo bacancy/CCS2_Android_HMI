@@ -114,5 +114,12 @@
     <string name="lbl_unit_price_per_kw">Unit Price = ₹%1$.2f / kWh</string>
     <string name="lbl_gun_1_charging_status">GUN - 1 Charging Status</string>
     <string name="lbl_gun_2_charging_status">GUN - 2 Charging Status</string>
+    <string name="lbl_local_start_or_stop_charging">Local Start/Stop Charging</string>
+    <string name="lbl_submit">Submit</string>
+    <string name="lbl_start_gun_1">Start Gun-1</string>
+    <string name="lbl_stop_gun_1">Stop Gun-1</string>
+    <string name="lbl_start_gun_2">Start Gun-2</string>
+    <string name="lbl_stop_gun_2">Stop Gun-2</string>
+    <string name="msg_invalid_password">Invalid Password</string>
 
 </resources>

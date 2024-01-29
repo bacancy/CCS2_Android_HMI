@@ -80,4 +80,14 @@ object ModbusTypeConverter {
             String.format("%8s", Integer.toBinaryString(byte.toInt() and 0xFF)).replace(' ', '0')
         }
     }
+
+    fun binaryToDecimal(binary: String): Int {
+        // Check if the input is a valid binary string
+        if (!binary.matches(Regex("[01]+"))) {
+            throw IllegalArgumentException("Invalid binary string: $binary")
+        }
+
+        // Convert binary to decimal
+        return Integer.parseInt(binary, 2)
+    }
 }

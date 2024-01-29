@@ -20,6 +20,16 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
+        android:id="@+id/ivLocalStartStop"
+        android:layout_width="@dimen/_22sdp"
+        android:layout_height="@dimen/_22sdp"
+        android:contentDescription="@string/lbl_firmware_version_information"
+        android:src="@drawable/ic_local_start_stop_white"
+        android:layout_marginEnd="@dimen/_10sdp"
+        app:layout_constraintEnd_toStartOf="@id/ivScreenInfo"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
         android:id="@+id/ivGun1Half"
         android:layout_width="0dp"
         android:layout_height="0dp"
