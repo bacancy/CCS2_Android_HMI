@@ -21,10 +21,10 @@
 
     <ImageView
         android:id="@+id/ivLocalStartStop"
-        android:layout_width="@dimen/_22sdp"
-        android:layout_height="@dimen/_22sdp"
+        android:layout_width="@dimen/_15sdp"
+        android:layout_height="@dimen/_15sdp"
         android:contentDescription="@string/lbl_firmware_version_information"
-        android:src="@drawable/ic_local_start_stop_white"
+        android:src="@drawable/ic_local_start_stop_hand_white"
         android:layout_marginEnd="@dimen/_10sdp"
         app:layout_constraintEnd_toStartOf="@id/ivScreenInfo"
         app:layout_constraintTop_toTopOf="parent" />

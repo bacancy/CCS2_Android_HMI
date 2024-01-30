@@ -22,6 +22,7 @@ import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_LAST_CHARGING_SUMMARY_F
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_LOCAL_START
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_DC_METER_FRAG
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_LAST_CHARGING_SUMMARY_FRAG
+import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_LOCAL_START
 import com.bacancy.ccs2androidhmi.util.CommonUtils.INSIDE_LOCAL_START_STOP_SCREEN
 import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_GUN_1_CLICKED
 import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_GUN_2_CLICKED
@@ -526,24 +527,28 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
             ) {
                 readGun2DCMeterInfo()
             } else {
-                if (prefHelper.getBoolean(
-                        INSIDE_LOCAL_START_STOP_SCREEN,
-                        false
-                    ) && (prefHelper.getBoolean(
-                        IS_GUN_1_CLICKED,
-                        false
-                    ) || prefHelper.getBoolean(IS_GUN_2_CLICKED, false))
-                ) {
-                    writeForLocalStartStop(determineLocalStartStop())
-                } else {
-                    val selectedGunNumber =
-                        prefHelper.getSelectedGunNumber(SELECTED_GUN, 0)
-                    if (selectedGunNumber != 0) {
-                        authenticateGun(selectedGunNumber)
-                    } else {
-                        startReading()
-                    }
-                }
+                chooseLocalStartStopOrAuthenticateMethod()
+            }
+        }
+    }
+
+    private fun chooseLocalStartStopOrAuthenticateMethod(){
+        if (prefHelper.getBoolean(
+                INSIDE_LOCAL_START_STOP_SCREEN,
+                false
+            ) && (prefHelper.getBoolean(
+                IS_GUN_1_CLICKED,
+                false
+            ) || prefHelper.getBoolean(IS_GUN_2_CLICKED, false))
+        ) {
+            writeForLocalStartStop(determineLocalStartStop())
+        } else {
+            val selectedGunNumber =
+                prefHelper.getSelectedGunNumber(SELECTED_GUN, 0)
+            if (selectedGunNumber != 0) {
+                authenticateGun(selectedGunNumber)
+            } else {
+                startReading()
             }
         }
     }
@@ -862,24 +867,7 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                                     )
                                 }"
                             )
-                            if (prefHelper.getBoolean(
-                                    INSIDE_LOCAL_START_STOP_SCREEN,
-                                    false
-                                ) && (prefHelper.getBoolean(
-                                    IS_GUN_1_CLICKED,
-                                    false
-                                ) || prefHelper.getBoolean(IS_GUN_2_CLICKED, false))
-                            ) {
-                                writeForLocalStartStop(determineLocalStartStop())
-                            } else {
-                                val selectedGunNumber =
-                                    prefHelper.getSelectedGunNumber(SELECTED_GUN, 0)
-                                if (selectedGunNumber != 0) {
-                                    authenticateGun(selectedGunNumber)
-                                } else {
-                                    startReading()
-                                }
-                            }
+                            chooseLocalStartStopOrAuthenticateMethod()
                         }
                     }, onReadStopped = {
                         startReading()
@@ -934,7 +922,7 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
         //Gun2 = 10 - 2
         //GunBothStart = 11 - 3
         //GunBothStop = 00 - 0
-        Log.i(TAG, "writeForLocalStartStop Request Started")
+        Log.i(TAG, "writeForLocalStartStop Request Started - $gunsStartStopData")
         lifecycleScope.launch(Dispatchers.IO) {
             ReadWriteUtil.writeToSingleHoldingRegisterNew(
                 mOutputStream,
@@ -951,7 +939,7 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
 
     private fun determineLocalStartStop(): Int {
         val gun1LocalStart = prefHelper.getBoolean(GUN_1_LOCAL_START, false)
-        val gun2LocalStart = prefHelper.getBoolean(GUN_1_LOCAL_START, false)
+        val gun2LocalStart = prefHelper.getBoolean(GUN_2_LOCAL_START, false)
 
         return when {
             gun1LocalStart && !gun2LocalStart -> {

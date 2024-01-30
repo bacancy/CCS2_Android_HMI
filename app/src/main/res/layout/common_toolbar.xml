@@ -30,11 +30,12 @@
         android:textColor="@color/red"
         android:textSize="@dimen/_10ssp"
         android:textStyle="bold"
+        android:layout_marginStart="@dimen/_5sdp"
         android:visibility="gone"
         app:drawableStartCompat="@drawable/ic_emergency_stop"
         app:drawableTint="@color/red"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/imgBack"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
