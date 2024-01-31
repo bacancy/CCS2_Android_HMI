@@ -958,6 +958,42 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
         }
     }
 
+    private fun writeForTestModeOnOff(isTestMode: Int = 0) {
+        //1- Test Mode ON
+        //0- Test Mode OFF
+        Log.i(TAG, "writeForTestModeOnOff Request Started - $isTestMode")
+        lifecycleScope.launch(Dispatchers.IO) {
+            ReadWriteUtil.writeToSingleHoldingRegisterNew(
+                mOutputStream,
+                mInputStream,
+                350,
+                isTestMode, {
+                    Log.d(TAG, "writeForTestModeOnOff: Response Got")
+                    lifecycleScope.launch {
+                        //startReading()
+                    }
+                }, {})
+        }
+    }
+
+    private fun writeForUpdateTestMode(testModeValue: Int = 0) {
+        //0 - By default
+        //? - Which value
+        Log.i(TAG, "writeForUpdateTestMode Request Started - $testModeValue")
+        lifecycleScope.launch(Dispatchers.IO) {
+            ReadWriteUtil.writeToSingleHoldingRegisterNew(
+                mOutputStream,
+                mInputStream,
+                351,
+                testModeValue, {
+                    Log.d(TAG, "writeForUpdateTestMode: Response Got")
+                    lifecycleScope.launch {
+                        //startReading()
+                    }
+                }, {})
+        }
+    }
+
     companion object {
         private const val TAG = "SerialPortBaseActivityN"
     }

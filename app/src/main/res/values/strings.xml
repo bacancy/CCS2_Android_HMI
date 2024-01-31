@@ -121,5 +121,8 @@
     <string name="lbl_start_gun_2">Start Gun-2</string>
     <string name="lbl_stop_gun_2">Stop Gun-2</string>
     <string name="msg_invalid_password">Invalid Password</string>
+    <string name="lbl_test_mode">Test Mode</string>
+    <string name="lbl_output_on">Output On</string>
+    <string name="lbl_output_off">Output Off</string>
 
 </resources>

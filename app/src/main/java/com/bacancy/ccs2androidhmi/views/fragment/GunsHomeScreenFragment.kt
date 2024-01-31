@@ -369,6 +369,10 @@ class GunsHomeScreenFragment : BaseFragment() {
                 showToast(getString(R.string.msg_invalid_password))
             })
         }
+
+        binding.ivTestMode.setOnClickListener {
+            fragmentChangeListener?.replaceFragment(TestModeHomeFragment())
+        }
     }
 
     private fun openGunsMoreInfoFragment(gunNumber: Int) {

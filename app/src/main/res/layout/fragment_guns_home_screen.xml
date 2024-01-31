@@ -30,6 +30,16 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
+        android:id="@+id/ivTestMode"
+        android:layout_width="@dimen/_16sdp"
+        android:layout_height="@dimen/_16sdp"
+        android:contentDescription="@string/lbl_firmware_version_information"
+        android:src="@drawable/ic_test_mode"
+        android:layout_marginEnd="@dimen/_10sdp"
+        app:layout_constraintEnd_toStartOf="@id/ivLocalStartStop"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
         android:id="@+id/ivGun1Half"
         android:layout_width="0dp"
         android:layout_height="0dp"

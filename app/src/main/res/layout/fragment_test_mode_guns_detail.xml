@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:paddingHorizontal="@dimen/_40sdp"
+    android:paddingVertical="@dimen/_20sdp">
+
+    <include
+        android:id="@+id/incHeader"
+        layout="@layout/common_header" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_20sdp"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
+
+        <EditText
+            android:id="@+id/edtGunVoltage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:paddingHorizontal="@dimen/_25sdp"
+            android:background="@drawable/bg_black_round_rect_with_white_border"
+            android:gravity="center"
+            android:hint="@string/lbl_voltage"
+            android:paddingVertical="@dimen/_10sdp"
+            android:textColorHint="@color/light_grey"
+            android:textSize="@dimen/_10ssp"
+            android:importantForAutofill="no"
+            android:inputType="number" />
+
+        <EditText
+            android:id="@+id/edtGunCurrent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:paddingHorizontal="@dimen/_25sdp"
+            android:background="@drawable/bg_black_round_rect_with_white_border"
+            android:gravity="center"
+            android:hint="@string/lbl_current"
+            android:paddingVertical="@dimen/_10sdp"
+            android:textColorHint="@color/light_grey"
+            android:textSize="@dimen/_10ssp"
+            android:importantForAutofill="no"
+            android:inputType="number" />
+
+        <Button
+            android:id="@+id/btnOutputOnOff"
+            style="@style/CommonButtonTheme"
+            android:layout_marginTop="@dimen/_15sdp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingVertical="@dimen/_10sdp"
+            android:paddingHorizontal="@dimen/_15sdp"
+            android:text="@string/lbl_output_on"
+            android:textSize="@dimen/_12ssp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_20sdp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnACMeterInfo"
+                style="@style/CommonButtonTheme"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingVertical="@dimen/_5sdp"
+                android:paddingHorizontal="@dimen/_10sdp"
+                android:textSize="@dimen/_10ssp"
+                android:text="@string/lbl_ac_meter_information" />
+
+            <Button
+                android:id="@+id/btnDCMeterInfo"
+                style="@style/CommonButtonTheme"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:layout_weight="1"
+                android:paddingVertical="@dimen/_5sdp"
+                android:paddingHorizontal="@dimen/_10sdp"
+                android:textSize="@dimen/_10ssp"
+                android:text="@string/lbl_dc_meter_information" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>
