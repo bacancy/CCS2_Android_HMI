@@ -1,6 +1,8 @@
 package com.bacancy.ccs2androidhmi.views.fragment
 
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,9 +10,11 @@ import androidx.fragment.app.viewModels
 import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentTestModeHomeBinding
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils
 import com.bacancy.ccs2androidhmi.util.PrefHelper
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
 import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
+import com.bacancy.ccs2androidhmi.views.listener.FragmentChangeListener
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -23,6 +27,15 @@ class TestModeHomeFragment : BaseFragment() {
     @Inject
     lateinit var prefHelper: PrefHelper
 
+    private var fragmentChangeListener: FragmentChangeListener? = null
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is FragmentChangeListener) {
+            fragmentChangeListener = context
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -30,6 +43,18 @@ class TestModeHomeFragment : BaseFragment() {
         binding = FragmentTestModeHomeBinding.inflate(layoutInflater)
         (requireActivity() as HMIDashboardActivity).showHideBackIcon(true)
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.i("TAG", "onResume: TestMode Called")
+        prefHelper.setBoolean("IS_IN_TEST_MODE", true)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.i("TAG", "onPause: TestMode Called")
+        prefHelper.setBoolean("IS_IN_TEST_MODE", false)
     }
 
     override fun setScreenHeaderViews() {
@@ -42,8 +67,25 @@ class TestModeHomeFragment : BaseFragment() {
 
         binding.apply {
 
+            btnGun1.setOnClickListener {
+                openTestModeGunsDetailFragment(1)
+            }
+
+            btnGun2.setOnClickListener {
+                openTestModeGunsDetailFragment(2)
+            }
+
         }
 
+    }
+
+    private fun openTestModeGunsDetailFragment(gunNumber: Int) {
+        (requireActivity() as HMIDashboardActivity).showOrHideEmergencyStop(0)
+        val bundle = Bundle()
+        bundle.putInt(GunsChargingInfoUtils.SELECTED_GUN, gunNumber)
+        val fragment = TestModeGunsDetailFragment()
+        fragment.arguments = bundle
+        fragmentChangeListener?.replaceFragment(fragment)
     }
 
 }

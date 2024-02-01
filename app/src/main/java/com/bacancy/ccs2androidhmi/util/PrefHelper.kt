@@ -42,4 +42,14 @@ class PrefHelper(context: Context) {
         return sharedPreferences.getBoolean(key, defaultValue)
     }
 
+    fun setIntValue(key: String, value: Int) {
+        val editor: SharedPreferences.Editor = sharedPreferences.edit()
+        editor.putInt(key, value)
+        editor.apply()
+    }
+
+    fun getIntValue(key: String, defaultValue: Int): Int {
+        return sharedPreferences.getInt(key, defaultValue)
+    }
+
 }

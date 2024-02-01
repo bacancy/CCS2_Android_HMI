@@ -3,6 +3,7 @@ package com.bacancy.ccs2androidhmi.util
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.getIntValueFromByte
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.hexStringToDecimal
 import java.util.Locale
+import kotlin.random.Random
 
 object CommonUtils {
 
@@ -60,5 +61,9 @@ object CommonUtils {
         )
 
         return "$formattedDate $formattedTime"
+    }
+
+    fun generateRandomNumber(): Int {
+        return Random.nextInt(1, 101)
     }
 }

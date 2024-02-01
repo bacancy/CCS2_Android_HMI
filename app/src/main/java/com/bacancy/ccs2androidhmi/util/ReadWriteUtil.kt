@@ -40,9 +40,12 @@ object ReadWriteUtil {
                             "writeToSingleHoldingRegisterNew: BufferedInputStream available bytes - ${bufferedInputStream.available()}"
                         )
                         delay(DELAY_BETWEEN_READ_AND_WRITE)
-                        /*val responseFrame = ByteArray(7)
+
+                        val responseFrame = ByteArray(7)
                         bufferedInputStream.mark(0)
-                        bufferedInputStream.read(responseFrame)*/
+                        if(bufferedInputStream.available() > 0){
+                            bufferedInputStream.read(responseFrame)
+                        }
                         onAuthDataReceived(null)
                     }
                 } catch (e: TimeoutCancellationException) {
@@ -53,9 +56,11 @@ object ReadWriteUtil {
                         )
                     withContext(Dispatchers.IO) {
                         delay(DELAY_BETWEEN_READ_AND_WRITE)
-                        /*val responseFrame = ByteArray(7)
+                        val responseFrame = ByteArray(7)
                         bufferedInputStream.mark(0)
-                        bufferedInputStream.read(responseFrame)*/
+                        if(bufferedInputStream.available() > 0){
+                            bufferedInputStream.read(responseFrame)
+                        }
                         onAuthDataReceived(null)
                     }
                 }

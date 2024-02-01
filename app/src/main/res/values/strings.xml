@@ -103,7 +103,7 @@
     <string name="gun_2_info">GUN - 2 \n<b>(%1$s)</b></string>
     <string name="lbl_plugged_in">(Plugged In)</string>
     <string name="hint_00_00">00:00</string>
-    <string name="hint_mac_address">00–00–00-00-00-00-00-00</string>
+    <string name="hint_mac_address">00–00–00–00–00–00-00-00</string>
     <string name="hint_date_time">00/01/1900 00:00:00</string>
     <string name="hint_float">0.00</string>
     <string name="hint_0">0</string>
@@ -124,5 +124,9 @@
     <string name="lbl_test_mode">Test Mode</string>
     <string name="lbl_output_on">Output On</string>
     <string name="lbl_output_off">Output Off</string>
+    <string name="lbl_voltage_v">Voltage(v)</string>
+    <string name="lbl_current_a">Current(A)</string>
+    <string name="hint_between_200_1000v">between 200 – 1000V</string>
+    <string name="hint_between_0_100a">between 0 – 100A</string>
 
 </resources>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
@@ -11,59 +12,101 @@
         android:id="@+id/incHeader"
         layout="@layout/common_header" />
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_20sdp"
-        android:orientation="vertical"
-        android:gravity="center_horizontal">
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+
+        <TextView
+            android:id="@+id/tvVoltageLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/lbl_voltage_v"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_12ssp"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="@dimen/_10sdp"
+            app:layout_constraintEnd_toStartOf="@id/edtGunVoltage"
+            app:layout_constraintBottom_toBottomOf="@id/edtGunVoltage"
+            app:layout_constraintTop_toTopOf="@id/edtGunVoltage" />
 
         <EditText
             android:id="@+id/edtGunVoltage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_10sdp"
-            android:paddingHorizontal="@dimen/_25sdp"
             android:background="@drawable/bg_black_round_rect_with_white_border"
             android:gravity="center"
-            android:hint="@string/lbl_voltage"
+            android:hint="@string/hint_between_200_1000v"
+            android:imeOptions="actionDone"
+            android:importantForAutofill="no"
+            android:inputType="number"
+            android:maxLength="4"
+            android:paddingHorizontal="@dimen/_25sdp"
             android:paddingVertical="@dimen/_10sdp"
             android:textColorHint="@color/light_grey"
             android:textSize="@dimen/_10ssp"
-            android:importantForAutofill="no"
-            android:inputType="number" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvCurrentLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/lbl_current_a"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_12ssp"
+            android:layout_marginEnd="@dimen/_10sdp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/edtGunCurrent"
+            app:layout_constraintBottom_toBottomOf="@id/edtGunCurrent"
+            app:layout_constraintTop_toTopOf="@id/edtGunCurrent" />
 
         <EditText
             android:id="@+id/edtGunCurrent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_10sdp"
-            android:paddingHorizontal="@dimen/_25sdp"
             android:background="@drawable/bg_black_round_rect_with_white_border"
             android:gravity="center"
-            android:hint="@string/lbl_current"
+            android:hint="@string/hint_between_0_100a"
+            android:imeOptions="actionDone"
+            android:importantForAutofill="no"
+            android:inputType="number"
+            android:maxLength="3"
+            android:paddingHorizontal="@dimen/_25sdp"
             android:paddingVertical="@dimen/_10sdp"
             android:textColorHint="@color/light_grey"
             android:textSize="@dimen/_10ssp"
-            android:importantForAutofill="no"
-            android:inputType="number" />
+            app:layout_constraintEnd_toEndOf="@id/edtGunVoltage"
+            app:layout_constraintStart_toStartOf="@id/edtGunVoltage"
+            app:layout_constraintTop_toBottomOf="@id/edtGunVoltage" />
 
         <Button
             android:id="@+id/btnOutputOnOff"
             style="@style/CommonButtonTheme"
-            android:layout_marginTop="@dimen/_15sdp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingVertical="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_15sdp"
             android:paddingHorizontal="@dimen/_15sdp"
+            android:paddingVertical="@dimen/_10sdp"
             android:text="@string/lbl_output_on"
-            android:textSize="@dimen/_12ssp" />
+            android:textSize="@dimen/_12ssp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/edtGunCurrent" />
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_20sdp"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btnOutputOnOff">
 
             <Button
                 android:id="@+id/btnACMeterInfo"
@@ -71,10 +114,10 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:paddingVertical="@dimen/_5sdp"
                 android:paddingHorizontal="@dimen/_10sdp"
-                android:textSize="@dimen/_10ssp"
-                android:text="@string/lbl_ac_meter_information" />
+                android:paddingVertical="@dimen/_5sdp"
+                android:text="@string/lbl_ac_meter_information"
+                android:textSize="@dimen/_10ssp" />
 
             <Button
                 android:id="@+id/btnDCMeterInfo"
@@ -83,13 +126,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_10sdp"
                 android:layout_weight="1"
-                android:paddingVertical="@dimen/_5sdp"
                 android:paddingHorizontal="@dimen/_10sdp"
-                android:textSize="@dimen/_10ssp"
-                android:text="@string/lbl_dc_meter_information" />
+                android:paddingVertical="@dimen/_5sdp"
+                android:text="@string/lbl_dc_meter_information"
+                android:textSize="@dimen/_10ssp" />
 
         </LinearLayout>
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </LinearLayout>

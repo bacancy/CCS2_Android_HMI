@@ -383,4 +383,6 @@ class GunsHomeScreenFragment : BaseFragment() {
         fragment.arguments = bundle
         fragmentChangeListener?.replaceFragment(fragment)
     }
+
+
 }

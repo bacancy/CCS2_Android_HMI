@@ -26,6 +26,7 @@ import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_LOCAL_START
 import com.bacancy.ccs2androidhmi.util.CommonUtils.INSIDE_LOCAL_START_STOP_SCREEN
 import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_GUN_1_CLICKED
 import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_GUN_2_CLICKED
+import com.bacancy.ccs2androidhmi.util.CommonUtils.generateRandomNumber
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_DENIED
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_SUCCESS
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_TIMEOUT
@@ -155,7 +156,12 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
     private fun startReading() {
         lifecycleScope.launch {
             delay(mCommonDelay)
-            readMiscInfo()
+            val isInTestMode = prefHelper.getBoolean("IS_IN_TEST_MODE", false)
+            if (isInTestMode) {
+                writeForTestModeOnOff(1)
+            } else {
+                writeForTestModeOnOff(0)
+            }
         }
     }
 
@@ -532,7 +538,7 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
         }
     }
 
-    private fun chooseLocalStartStopOrAuthenticateMethod(){
+    private fun chooseLocalStartStopOrAuthenticateMethod() {
         if (prefHelper.getBoolean(
                 INSIDE_LOCAL_START_STOP_SCREEN,
                 false
@@ -958,6 +964,9 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
         }
     }
 
+    /**
+     * This method will be called active/inactive test mode
+     * */
     private fun writeForTestModeOnOff(isTestMode: Int = 0) {
         //1- Test Mode ON
         //0- Test Mode OFF
@@ -969,26 +978,116 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                 350,
                 isTestMode, {
                     Log.d(TAG, "writeForTestModeOnOff: Response Got")
-                    lifecycleScope.launch {
-                        //startReading()
+                    if (isTestMode != 1) {
+                        lifecycleScope.launch {
+                            delay(500)
+                            readMiscInfo()
+                        }
+                    } else {
+                        checkGunsTestModeValuesChanges()
                     }
                 }, {})
         }
     }
 
-    private fun writeForUpdateTestMode(testModeValue: Int = 0) {
+    private fun checkGunsTestModeValuesChanges() {
+        lifecycleScope.launch {
+            //If any value written in test mode in guns then call here
+            Log.d(
+                TAG,
+                "checkGunsTestModeValuesChanges: IS_OUTPUT_ON_OFF_VALUE_CHANGED = ${
+                    prefHelper.getBoolean(
+                        "IS_OUTPUT_ON_OFF_VALUE_CHANGED",
+                        false
+                    )
+                }"
+            )
+            if (prefHelper.getBoolean("IS_GUN_VOLTAGE_CHANGED", false)) {
+                if (prefHelper.getIntValue("SELECTED_GUN_IN_TEST_MODE", 1) == 1) {
+                    writeForGunsRectifier(
+                        354,
+                        prefHelper.getIntValue("GUN1_VOLTAGE", 0)
+                    )
+                } else {
+                    writeForGunsRectifier(
+                        357,
+                        prefHelper.getIntValue("GUN2_VOLTAGE", 0)
+                    )
+                }
+
+            } else if (prefHelper.getBoolean("IS_GUN_CURRENT_CHANGED", false)) {
+                if (prefHelper.getIntValue("SELECTED_GUN_IN_TEST_MODE", 1) == 1) {
+                    writeForGunsRectifier(
+                        355,
+                        prefHelper.getIntValue("GUN1_CURRENT", 0)
+                    )
+                } else {
+                    writeForGunsRectifier(
+                        358,
+                        prefHelper.getIntValue("GUN2_CURRENT", 0)
+                    )
+                }
+
+            } else if (prefHelper.getBoolean("IS_OUTPUT_ON_OFF_VALUE_CHANGED", false)) {
+                Log.d(TAG, "checkGunsTestModeValuesChanges: IS_OUTPUT_ON_OFF_VALUE_CHANGED IN IF")
+                if (prefHelper.getIntValue("SELECTED_GUN_IN_TEST_MODE", 1) == 1) {
+                    writeForGunsRectifier(
+                        356,
+                        prefHelper.getIntValue("OUTPUT_ON_OFF_VALUE", 0)
+                    )
+                } else {
+                    writeForGunsRectifier(
+                        359,
+                        prefHelper.getIntValue("OUTPUT_ON_OFF_VALUE", 0)
+                    )
+                }
+            } else {
+                delay(mCommonDelay)
+                readMiscInfo()
+            }
+        }
+    }
+
+    /**
+     * This method will be called everytime after writing any value in guns rectifier
+     * */
+    private fun writeForUpdateTestMode() {
         //0 - By default
-        //? - Which value
-        Log.i(TAG, "writeForUpdateTestMode Request Started - $testModeValue")
+        //? -Random value
+        Log.i(TAG, "writeForUpdateTestMode Request Started")
         lifecycleScope.launch(Dispatchers.IO) {
             ReadWriteUtil.writeToSingleHoldingRegisterNew(
                 mOutputStream,
                 mInputStream,
                 351,
-                testModeValue, {
+                generateRandomNumber(), {
                     Log.d(TAG, "writeForUpdateTestMode: Response Got")
                     lifecycleScope.launch {
-                        //startReading()
+                        readMiscInfo()
+                    }
+                }, {})
+        }
+    }
+
+    /**
+     * This method will be called for writing voltage, current, or output on/off in guns rectifier
+     * */
+    private fun writeForGunsRectifier(registerAddress: Int, registerValue: Int) {
+        Log.i(TAG, "writeForGunsRectifier Request Started - $registerValue")
+        lifecycleScope.launch(Dispatchers.IO) {
+            delay(mCommonDelay)
+            ReadWriteUtil.writeToSingleHoldingRegisterNew(
+                mOutputStream,
+                mInputStream,
+                registerAddress,
+                registerValue, {
+                    Log.d(TAG, "writeForGunsRectifier: Response Got")
+                    lifecycleScope.launch {
+                        prefHelper.setBoolean("IS_GUN_VOLTAGE_CHANGED", false)
+                        prefHelper.setBoolean("IS_GUN_CURRENT_CHANGED", false)
+                        prefHelper.setBoolean("IS_OUTPUT_ON_OFF_VALUE_CHANGED", false)
+                        delay(mCommonDelay)
+                        writeForUpdateTestMode()
                     }
                 }, {})
         }
