@@ -40,11 +40,13 @@ import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.PLC_FAULT
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.PLUGGED_IN
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.PRECHARGE_FAIL
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.RECTIFIER_FAULT
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.RESERVED
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.SELECTED_GUN
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.SMOKE_FAULT
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.SPD_FAULT
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.TAMPER_FAULT
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.TEMPERATURE_FAULT
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.UNAVAILABLE
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.UNPLUGGED
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getChargingCurrent
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getChargingDuration
@@ -375,6 +377,8 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                                 SMOKE_FAULT,
                                 TAMPER_FAULT,
                                 MAINS_FAIL,
+                                UNAVAILABLE,
+                                RESERVED,
                                 EMERGENCY_STOP,
                                 -> {
                                     if (isGun1PluggedIn) {
@@ -707,6 +711,8 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                                 SMOKE_FAULT,
                                 TAMPER_FAULT,
                                 MAINS_FAIL,
+                                UNAVAILABLE,
+                                RESERVED,
                                 EMERGENCY_STOP,
                                 -> {
                                     if (isGun2PluggedIn) {

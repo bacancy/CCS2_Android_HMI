@@ -26,6 +26,8 @@ object GunsChargingInfoUtils {
     const val PRECHARGE_FAIL = "Precharge Fail"
     const val ISOLATION_FAIL = "Isolation Fail"
     const val MAINS_FAIL = "Mains Fail"
+    const val UNAVAILABLE = "Unavailable"
+    const val RESERVED = "Reserved"
 
     fun getInitialSoc(response: ByteArray): Int {
         val initialSocLSB = response[7].getIntValueFromByte()

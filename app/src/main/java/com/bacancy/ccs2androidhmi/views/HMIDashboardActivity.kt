@@ -181,6 +181,14 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         handler.removeCallbacks(runnable)
     }
 
+    override fun onStop() {
+        super.onStop()
+        prefHelper.setBoolean("IS_GUN_VOLTAGE_CHANGED", false)
+        prefHelper.setBoolean("IS_GUN_CURRENT_CHANGED", false)
+        prefHelper.setBoolean("IS_OUTPUT_ON_OFF_VALUE_CHANGED", false)
+        prefHelper.setBoolean("IS_IN_TEST_MODE", false)
+    }
+
     override fun replaceFragment(fragment: Fragment?) {
         if (fragment != null) {
             addNewFragment(fragment)

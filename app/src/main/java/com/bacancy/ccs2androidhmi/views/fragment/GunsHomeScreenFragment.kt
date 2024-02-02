@@ -28,11 +28,13 @@ import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.PLUGGED_IN
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.PRECHARGE_FAIL
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.PREPARING_FOR_CHARGING
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.RECTIFIER_FAULT
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.RESERVED
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.SELECTED_GUN
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.SMOKE_FAULT
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.SPD_FAULT
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.TAMPER_FAULT
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.TEMPERATURE_FAULT
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.UNAVAILABLE
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.UNPLUGGED
 import com.bacancy.ccs2androidhmi.util.PrefHelper
 import com.bacancy.ccs2androidhmi.util.gone
@@ -185,6 +187,8 @@ class GunsHomeScreenFragment : BaseFragment() {
             SMOKE_FAULT,
             TAMPER_FAULT,
             MAINS_FAIL,
+            UNAVAILABLE,
+            RESERVED,
             EMERGENCY_STOP,
             -> {
                 Log.d(
@@ -271,6 +275,8 @@ class GunsHomeScreenFragment : BaseFragment() {
             SMOKE_FAULT,
             TAMPER_FAULT,
             MAINS_FAIL,
+            UNAVAILABLE,
+            RESERVED,
             EMERGENCY_STOP,
             -> {
                 if (!shouldShowGun2SummaryDialog && isGun2ChargingStarted) {
