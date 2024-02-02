@@ -92,6 +92,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:background="#00FFFFFF"
+            android:visibility="gone"
             android:text="@string/lbl_gun_1_charging_status"
             android:textColor="@color/white"
             android:textSize="@dimen/_6ssp" />
@@ -105,6 +106,26 @@
             android:textColor="@color/white"
             android:textSize="@dimen/_6ssp"
             tools:text="Charging SoC(%) = 50%" />
+
+        <TextView
+            android:id="@+id/tvGun1ChargingVoltage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#00FFFFFF"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_6ssp"
+            tools:text="Charging Voltage(V) = 500" />
+
+        <TextView
+            android:id="@+id/tvGun1ChargingCurrent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#00FFFFFF"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_6ssp"
+            tools:text="Charging Current(A) = 50" />
 
         <TextView
             android:id="@+id/tvGun1EnergyConsumption"
@@ -175,6 +196,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:visibility="gone"
             android:background="#00FFFFFF"
             android:text="@string/lbl_gun_2_charging_status"
             android:textColor="@color/white"
@@ -188,6 +210,26 @@
             android:textColor="@color/white"
             android:textSize="@dimen/_6ssp"
             tools:text="Charging SoC(%) = 50%" />
+
+        <TextView
+            android:id="@+id/tvGun2ChargingVoltage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#00FFFFFF"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_6ssp"
+            tools:text="Charging Voltage(V) = 500" />
+
+        <TextView
+            android:id="@+id/tvGun2ChargingCurrent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#00FFFFFF"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_6ssp"
+            tools:text="Charging Current(A) = 50" />
 
         <TextView
             android:id="@+id/tvGun2EnergyConsumption"

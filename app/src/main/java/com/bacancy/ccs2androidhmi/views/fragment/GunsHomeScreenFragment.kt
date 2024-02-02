@@ -307,12 +307,16 @@ class GunsHomeScreenFragment : BaseFragment() {
             tbGunsChargingInfo.apply {
                 if (isGun1) {
                     tvGun1ChargingSoc.text = getString(R.string.lbl_gun_charging_soc, chargingSoc)
+                    tvGun1ChargingVoltage.text = getString(R.string.lbl_gun_charging_voltage, chargingVoltage)
+                    tvGun1ChargingCurrent.text = getString(R.string.lbl_gun_charging_current, chargingCurrent)
                     tvGun1Duration.text = getString(R.string.lbl_gun_charging_duration, duration)
                     tvGun1EnergyConsumption.text =
                         getString(R.string.lbl_gun_energy_consumption, energyConsumption)
                     tvGun1TotalCost.text = getString(R.string.lbl_gun_total_cost, totalCost)
                 } else {
                     tvGun2ChargingSoc.text = getString(R.string.lbl_gun_charging_soc, chargingSoc)
+                    tvGun2ChargingVoltage.text = getString(R.string.lbl_gun_charging_voltage, chargingVoltage)
+                    tvGun2ChargingCurrent.text = getString(R.string.lbl_gun_charging_current, chargingCurrent)
                     tvGun2Duration.text = getString(R.string.lbl_gun_charging_duration, duration)
                     tvGun2EnergyConsumption.text =
                         getString(R.string.lbl_gun_energy_consumption, energyConsumption)

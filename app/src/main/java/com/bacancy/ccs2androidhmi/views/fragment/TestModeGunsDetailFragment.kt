@@ -88,7 +88,7 @@ class TestModeGunsDetailFragment : BaseFragment() {
                     val edtGunVoltageValue = edtGunVoltage.text.toString().toIntOrNull()
 
                     if (edtGunVoltageValue in 200..1000) {
-                        showToast("Good ${edtGunVoltageValue ?: ""}")
+                        //showToast("Good ${edtGunVoltageValue ?: ""}")
                         edtGunVoltageValue?.let {
                             prefHelper.setBoolean("IS_GUN_VOLTAGE_CHANGED", true)
                             if (selectedGunNumber == 1) {
@@ -111,7 +111,7 @@ class TestModeGunsDetailFragment : BaseFragment() {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     val enteredCurrentValue = edtGunCurrent.text.toString().toIntOrNull()
                     if (enteredCurrentValue in 0..100) {
-                        showToast("Good ${enteredCurrentValue ?: ""}")
+                        //showToast("Good ${enteredCurrentValue ?: ""}")
                         enteredCurrentValue?.let {
                             prefHelper.setBoolean("IS_GUN_CURRENT_CHANGED", true)
                             if (selectedGunNumber == 1) {
