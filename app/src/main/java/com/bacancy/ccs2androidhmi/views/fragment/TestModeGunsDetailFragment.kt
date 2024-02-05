@@ -48,7 +48,8 @@ class TestModeGunsDetailFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentTestModeGunsDetailBinding.inflate(layoutInflater)
-        (requireActivity() as HMIDashboardActivity).showHideBackIcon(true)
+        (requireActivity() as HMIDashboardActivity).showHideBackIcon()
+        (requireActivity() as HMIDashboardActivity).showHideHomeIcon()
         prefHelper.setBoolean("IS_IN_TEST_MODE", true)
         return binding.root
     }

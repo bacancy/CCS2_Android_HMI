@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.bacancy.ccs2androidhmi.R
@@ -81,6 +82,7 @@ class GunsHomeScreenFragment : BaseFragment() {
     ): View {
         binding = FragmentGunsHomeScreenBinding.inflate(layoutInflater)
         (requireActivity() as HMIDashboardActivity).showHideBackIcon(false)
+        (requireActivity() as HMIDashboardActivity).showHideHomeIcon(false)
         observeLatestMiscInfo()
         observeGunsChargingInfo()
         return binding.root
@@ -306,21 +308,56 @@ class GunsHomeScreenFragment : BaseFragment() {
         binding.apply {
             tbGunsChargingInfo.apply {
                 if (isGun1) {
-                    tvGun1ChargingSoc.text = getString(R.string.lbl_gun_charging_soc, chargingSoc)
+                    tvGun1ChargingSoc.tvLabel.text = "Charging SoC"
+                    tvGun1ChargingSoc.tvValue.text = "$chargingSoc%"
+
+                    tvGun1ChargingVoltage.tvLabel.text = "Charging Voltage"
+                    tvGun1ChargingVoltage.tvValue.text = "$chargingVoltage V"
+
+                    tvGun1ChargingCurrent.tvLabel.text = "Charging Current"
+                    tvGun1ChargingCurrent.tvValue.text = "$chargingCurrent A"
+
+                    tvGun1EnergyConsumption.tvLabel.text = "Energy Consumption"
+                    tvGun1EnergyConsumption.tvValue.text = "$energyConsumption kWh"
+
+                    tvGun1Duration.tvLabel.text = "Duration"
+                    tvGun1Duration.tvValue.text = duration
+
+                    tvGun1TotalCost.tvLabel.text = "Total Cost"
+                    tvGun1TotalCost.tvValue.text = getString(R.string.lbl_gun_total_cost_in_rs, totalCost)
+
+                    /*tvGun1ChargingSoc.text = getString(R.string.lbl_gun_charging_soc, chargingSoc)
                     tvGun1ChargingVoltage.text = getString(R.string.lbl_gun_charging_voltage, chargingVoltage)
                     tvGun1ChargingCurrent.text = getString(R.string.lbl_gun_charging_current, chargingCurrent)
                     tvGun1Duration.text = getString(R.string.lbl_gun_charging_duration, duration)
                     tvGun1EnergyConsumption.text =
                         getString(R.string.lbl_gun_energy_consumption, energyConsumption)
-                    tvGun1TotalCost.text = getString(R.string.lbl_gun_total_cost, totalCost)
+                    tvGun1TotalCost.text = getString(R.string.lbl_gun_total_cost, totalCost)*/
                 } else {
-                    tvGun2ChargingSoc.text = getString(R.string.lbl_gun_charging_soc, chargingSoc)
+                    tvGun2ChargingSoc.tvLabel.text = "Charging SoC"
+                    tvGun2ChargingSoc.tvValue.text = "$chargingSoc%"
+
+                    tvGun2ChargingVoltage.tvLabel.text = "Charging Voltage"
+                    tvGun2ChargingVoltage.tvValue.text = "$chargingVoltage V"
+
+                    tvGun2ChargingCurrent.tvLabel.text = "Charging Current"
+                    tvGun2ChargingCurrent.tvValue.text = "$chargingCurrent A"
+
+                    tvGun2EnergyConsumption.tvLabel.text = "Energy Consumption"
+                    tvGun2EnergyConsumption.tvValue.text = "$energyConsumption kWh"
+
+                    tvGun2Duration.tvLabel.text = "Duration"
+                    tvGun2Duration.tvValue.text = duration
+
+                    tvGun2TotalCost.tvLabel.text = "Total Cost"
+                    tvGun2TotalCost.tvValue.text = getString(R.string.lbl_gun_total_cost_in_rs, totalCost)
+                    /*tvGun2ChargingSoc.text = getString(R.string.lbl_gun_charging_soc, chargingSoc)
                     tvGun2ChargingVoltage.text = getString(R.string.lbl_gun_charging_voltage, chargingVoltage)
                     tvGun2ChargingCurrent.text = getString(R.string.lbl_gun_charging_current, chargingCurrent)
                     tvGun2Duration.text = getString(R.string.lbl_gun_charging_duration, duration)
                     tvGun2EnergyConsumption.text =
                         getString(R.string.lbl_gun_energy_consumption, energyConsumption)
-                    tvGun2TotalCost.text = getString(R.string.lbl_gun_total_cost, totalCost)
+                    tvGun2TotalCost.text = getString(R.string.lbl_gun_total_cost, totalCost)*/
                 }
             }
         }
@@ -382,6 +419,20 @@ class GunsHomeScreenFragment : BaseFragment() {
 
         binding.ivTestMode.setOnClickListener {
             fragmentChangeListener?.replaceFragment(TestModeHomeFragment())
+        }
+
+        binding.ivFaultInfo.setOnClickListener {
+            fragmentChangeListener?.replaceFragment(FaultInfoFragment())
+        }
+
+        binding.ivOpenCloseOptions.setOnClickListener {
+
+            if (binding.lnrOptions.isVisible) {
+                binding.lnrOptions.gone()
+            } else {
+                binding.lnrOptions.visible()
+            }
+
         }
     }
 

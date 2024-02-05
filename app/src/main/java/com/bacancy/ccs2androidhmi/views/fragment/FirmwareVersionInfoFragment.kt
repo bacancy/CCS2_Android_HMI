@@ -25,7 +25,8 @@ class FirmwareVersionInfoFragment : BaseFragment() {
     ): View {
         binding = FragmentFirmwareVersionInfoBinding.inflate(layoutInflater)
         observeFirmwareVersionInfo()
-        (requireActivity() as HMIDashboardActivity).showHideBackIcon(true)
+        (requireActivity() as HMIDashboardActivity).showHideBackIcon()
+        (requireActivity() as HMIDashboardActivity).showHideHomeIcon()
         return binding.root
     }
 

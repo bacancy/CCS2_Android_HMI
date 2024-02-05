@@ -38,7 +38,8 @@ class LocalStartStopFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentLocalStartStopBinding.inflate(layoutInflater)
-        (requireActivity() as HMIDashboardActivity).showHideBackIcon(true)
+        (requireActivity() as HMIDashboardActivity).showHideBackIcon()
+        (requireActivity() as HMIDashboardActivity).showHideHomeIcon()
         prefHelper.setBoolean(INSIDE_LOCAL_START_STOP_SCREEN, true)
         observeGunsChargingInfo()
         return binding.root

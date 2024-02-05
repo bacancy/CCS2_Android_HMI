@@ -38,7 +38,8 @@ class GunsDCOutputInfoFragment : BaseFragment() {
     ): View {
         binding = FragmentDcMeterBinding.inflate(layoutInflater)
         selectedGunNumber = arguments?.getInt(SELECTED_GUN)!!
-        (requireActivity() as HMIDashboardActivity).showHideBackIcon(true)
+        (requireActivity() as HMIDashboardActivity).showHideBackIcon()
+        (requireActivity() as HMIDashboardActivity).showHideHomeIcon()
         observeGunsDCOutputInfo()
         return binding.root
     }

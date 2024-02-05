@@ -9,35 +9,57 @@
     android:paddingVertical="@dimen/_10sdp"
     tools:context=".views.fragment.GunsHomeScreenFragment">
 
-    <ImageView
-        android:id="@+id/ivScreenInfo"
-        android:layout_width="@dimen/_15sdp"
-        android:layout_height="@dimen/_15sdp"
-        android:contentDescription="@string/lbl_firmware_version_information"
-        android:src="@drawable/ic_info"
-        android:layout_marginEnd="@dimen/_10sdp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <LinearLayout
+        android:id="@+id/lnrOptions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintEnd_toStartOf="@id/ivOpenCloseOptions"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/ivScreenInfo"
+            android:layout_width="@dimen/_15sdp"
+            android:layout_height="@dimen/_15sdp"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:contentDescription="@string/lbl_firmware_version_information"
+            android:src="@drawable/ic_info" />
+
+        <ImageView
+            android:id="@+id/ivLocalStartStop"
+            android:layout_width="@dimen/_15sdp"
+            android:layout_height="@dimen/_15sdp"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:contentDescription="@string/lbl_firmware_version_information"
+            android:src="@drawable/ic_local_start_stop_hand_white" />
+
+        <ImageView
+            android:id="@+id/ivTestMode"
+            android:layout_width="@dimen/_16sdp"
+            android:layout_height="@dimen/_16sdp"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:contentDescription="@string/lbl_firmware_version_information"
+            android:src="@drawable/ic_test_mode" />
+
+        <ImageView
+            android:id="@+id/ivFaultInfo"
+            android:layout_width="@dimen/_16sdp"
+            android:layout_height="@dimen/_16sdp"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:contentDescription="@string/lbl_fault_information"
+            android:src="@drawable/ic_fault_info" />
+
+    </LinearLayout>
 
     <ImageView
-        android:id="@+id/ivLocalStartStop"
-        android:layout_width="@dimen/_15sdp"
-        android:layout_height="@dimen/_15sdp"
-        android:contentDescription="@string/lbl_firmware_version_information"
-        android:src="@drawable/ic_local_start_stop_hand_white"
-        android:layout_marginEnd="@dimen/_10sdp"
-        app:layout_constraintEnd_toStartOf="@id/ivScreenInfo"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
-        android:id="@+id/ivTestMode"
+        android:id="@+id/ivOpenCloseOptions"
         android:layout_width="@dimen/_16sdp"
         android:layout_height="@dimen/_16sdp"
-        android:contentDescription="@string/lbl_firmware_version_information"
-        android:src="@drawable/ic_test_mode"
         android:layout_marginEnd="@dimen/_10sdp"
-        app:layout_constraintEnd_toStartOf="@id/ivLocalStartStop"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:contentDescription="@string/lbl_fault_information"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/ic_reveal_options" />
 
     <ImageView
         android:id="@+id/ivGun1Half"
@@ -52,30 +74,31 @@
         app:layout_constraintEnd_toStartOf="@id/ivGun2Half"
         app:layout_constraintHorizontal_weight="1"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ivScreenInfo" />
+        app:layout_constraintTop_toBottomOf="@id/ivOpenCloseOptions" />
 
 
     <ImageView
         android:id="@+id/ivGun2Half"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginEnd="@dimen/_10sdp"
         android:layout_marginBottom="@dimen/_15sdp"
         android:contentDescription="@string/lbl_gun_2"
         android:scaleType="fitStart"
-        android:layout_marginEnd="@dimen/_10sdp"
         android:src="@drawable/img_gun2_unplugged"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_weight="1"
         app:layout_constraintStart_toEndOf="@id/ivGun1Half"
-        app:layout_constraintTop_toBottomOf="@id/ivScreenInfo" />
+        app:layout_constraintTop_toBottomOf="@id/ivOpenCloseOptions" />
 
     <LinearLayout
         android:id="@+id/lnrGun1ChargingStatus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/_80sdp"
-        android:layout_marginBottom="@dimen/_60sdp"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginEnd="@dimen/_60sdp"
+        android:layout_marginBottom="@dimen/_120sdp"
+        android:layout_marginTop="@dimen/_30sdp"
         android:background="@drawable/bg_button_gradient_with_white_border"
         android:gravity="start"
         android:orientation="vertical"
@@ -87,24 +110,38 @@
         app:layout_constraintStart_toStartOf="@id/ivGun1Half"
         app:layout_constraintTop_toTopOf="@id/ivGun1Half">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:background="#00FFFFFF"
-            android:visibility="gone"
-            android:text="@string/lbl_gun_1_charging_status"
-            android:textColor="@color/white"
-            android:textSize="@dimen/_6ssp" />
+        <include
+            android:id="@+id/tvGun1ChargingSoc"
+            layout="@layout/common_charging_status_view"/>
 
-        <TextView
+        <include
+            android:id="@+id/tvGun1ChargingVoltage"
+            layout="@layout/common_charging_status_view"/>
+
+        <include
+            android:id="@+id/tvGun1ChargingCurrent"
+            layout="@layout/common_charging_status_view"/>
+
+        <include
+            android:id="@+id/tvGun1EnergyConsumption"
+            layout="@layout/common_charging_status_view"/>
+
+        <include
+            android:id="@+id/tvGun1Duration"
+            layout="@layout/common_charging_status_view"/>
+
+        <include
+            android:id="@+id/tvGun1TotalCost"
+            layout="@layout/common_charging_status_view"/>
+
+        <!--<TextView
             android:id="@+id/tvGun1ChargingSoc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="#00FFFFFF"
             android:gravity="center"
             android:textColor="@color/white"
-            android:textSize="@dimen/_6ssp"
+            android:textSize="@dimen/_10ssp"
             tools:text="Charging SoC(%) = 50%" />
 
         <TextView
@@ -114,7 +151,7 @@
             android:background="#00FFFFFF"
             android:gravity="center"
             android:textColor="@color/white"
-            android:textSize="@dimen/_6ssp"
+            android:textSize="@dimen/_10ssp"
             tools:text="Charging Voltage(V) = 500" />
 
         <TextView
@@ -124,7 +161,7 @@
             android:background="#00FFFFFF"
             android:gravity="center"
             android:textColor="@color/white"
-            android:textSize="@dimen/_6ssp"
+            android:textSize="@dimen/_10ssp"
             tools:text="Charging Current(A) = 50" />
 
         <TextView
@@ -134,7 +171,7 @@
             android:background="#00FFFFFF"
             android:gravity="center"
             android:textColor="@color/white"
-            android:textSize="@dimen/_6ssp"
+            android:textSize="@dimen/_10ssp"
             tools:text="Energy Consumption = 50.0 kw" />
 
         <TextView
@@ -144,7 +181,7 @@
             android:background="#00FFFFFF"
             android:gravity="center"
             android:textColor="@color/white"
-            android:textSize="@dimen/_6ssp"
+            android:textSize="@dimen/_10ssp"
             tools:text="Duration(hh:mm) = 00:05" />
 
         <TextView
@@ -154,8 +191,8 @@
             android:background="#00FFFFFF"
             android:gravity="center"
             android:textColor="@color/white"
-            android:textSize="@dimen/_6ssp"
-            tools:text="Total Cost(INR) = $128" />
+            android:textSize="@dimen/_10ssp"
+            tools:text="Total Cost(INR) = $128" />-->
 
     </LinearLayout>
 
@@ -177,10 +214,11 @@
 
     <LinearLayout
         android:id="@+id/lnrGun2ChargingStatus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_100sdp"
-        android:layout_marginBottom="@dimen/_60sdp"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/_30sdp"
+        android:layout_marginStart="@dimen/_60sdp"
+        android:layout_marginBottom="@dimen/_120sdp"
         android:background="@drawable/bg_button_gradient_with_white_border"
         android:gravity="start"
         android:orientation="vertical"
@@ -192,15 +230,39 @@
         app:layout_constraintStart_toStartOf="@id/ivGun2Half"
         app:layout_constraintTop_toTopOf="@id/ivGun2Half">
 
-        <TextView
+        <include
+            android:id="@+id/tvGun2ChargingSoc"
+            layout="@layout/common_charging_status_view"/>
+
+        <include
+            android:id="@+id/tvGun2ChargingVoltage"
+            layout="@layout/common_charging_status_view"/>
+
+        <include
+            android:id="@+id/tvGun2ChargingCurrent"
+            layout="@layout/common_charging_status_view"/>
+
+        <include
+            android:id="@+id/tvGun2EnergyConsumption"
+            layout="@layout/common_charging_status_view"/>
+
+        <include
+            android:id="@+id/tvGun2Duration"
+            layout="@layout/common_charging_status_view"/>
+
+        <include
+            android:id="@+id/tvGun2TotalCost"
+            layout="@layout/common_charging_status_view"/>
+
+        <!--<TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:visibility="gone"
             android:background="#00FFFFFF"
             android:text="@string/lbl_gun_2_charging_status"
             android:textColor="@color/white"
-            android:textSize="@dimen/_6ssp" />
+            android:textSize="@dimen/_6ssp"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/tvGun2ChargingSoc"
@@ -208,7 +270,7 @@
             android:layout_height="wrap_content"
             android:background="#00FFFFFF"
             android:textColor="@color/white"
-            android:textSize="@dimen/_6ssp"
+            android:textSize="@dimen/_10ssp"
             tools:text="Charging SoC(%) = 50%" />
 
         <TextView
@@ -218,7 +280,7 @@
             android:background="#00FFFFFF"
             android:gravity="center"
             android:textColor="@color/white"
-            android:textSize="@dimen/_6ssp"
+            android:textSize="@dimen/_10ssp"
             tools:text="Charging Voltage(V) = 500" />
 
         <TextView
@@ -228,7 +290,7 @@
             android:background="#00FFFFFF"
             android:gravity="center"
             android:textColor="@color/white"
-            android:textSize="@dimen/_6ssp"
+            android:textSize="@dimen/_10ssp"
             tools:text="Charging Current(A) = 50" />
 
         <TextView
@@ -237,7 +299,7 @@
             android:layout_height="wrap_content"
             android:background="#00FFFFFF"
             android:textColor="@color/white"
-            android:textSize="@dimen/_6ssp"
+            android:textSize="@dimen/_10ssp"
             tools:text="Energy Consumption = 50.0 kw" />
 
         <TextView
@@ -246,7 +308,7 @@
             android:layout_height="wrap_content"
             android:background="#00FFFFFF"
             android:textColor="@color/white"
-            android:textSize="@dimen/_6ssp"
+            android:textSize="@dimen/_10ssp"
             tools:text="Duration(hh:mm) = 00:05" />
 
         <TextView
@@ -255,8 +317,8 @@
             android:layout_height="wrap_content"
             android:background="#00FFFFFF"
             android:textColor="@color/white"
-            android:textSize="@dimen/_6ssp"
-            tools:text="Total Cost(INR) = $128" />
+            android:textSize="@dimen/_10ssp"
+            tools:text="Total Cost(INR) = $128" />-->
 
     </LinearLayout>
 
@@ -295,13 +357,13 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|start"
         android:gravity="center"
-        tools:text="(Gun Plugged)"
         android:textColor="@color/yellow"
         android:textSize="@dimen/_10ssp"
         android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/tvGun1Label"
+        app:layout_constraintEnd_toEndOf="@id/tvGun1Label"
         app:layout_constraintStart_toStartOf="@id/tvGun1Label"
-        app:layout_constraintEnd_toEndOf="@id/tvGun1Label" />
+        app:layout_constraintTop_toBottomOf="@id/tvGun1Label"
+        tools:text="(Gun Plugged)" />
 
     <TextView
         android:id="@+id/tvGun2Label"
@@ -322,13 +384,13 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|start"
         android:gravity="center"
-        tools:text="(Gun Plugged)"
         android:textColor="@color/yellow"
         android:textSize="@dimen/_10ssp"
         android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/tvGun2Label"
+        app:layout_constraintEnd_toEndOf="@id/tvGun2Label"
         app:layout_constraintStart_toStartOf="@id/tvGun2Label"
-        app:layout_constraintEnd_toEndOf="@id/tvGun2Label" />
+        app:layout_constraintTop_toBottomOf="@id/tvGun2Label"
+        tools:text="(Gun Plugged)" />
 
     <TextView
         android:id="@+id/tvUnitPrice"

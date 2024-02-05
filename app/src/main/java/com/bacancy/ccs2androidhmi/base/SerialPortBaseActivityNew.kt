@@ -10,6 +10,7 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
 import com.bacancy.ccs2androidhmi.HMIApp
+import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.db.entity.TbAcMeterInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbChargingHistory
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
@@ -27,6 +28,7 @@ import com.bacancy.ccs2androidhmi.util.CommonUtils.INSIDE_LOCAL_START_STOP_SCREE
 import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_GUN_1_CLICKED
 import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_GUN_2_CLICKED
 import com.bacancy.ccs2androidhmi.util.CommonUtils.generateRandomNumber
+import com.bacancy.ccs2androidhmi.util.DialogUtils.showCustomDialog
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_DENIED
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_SUCCESS
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_TIMEOUT
@@ -100,6 +102,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 abstract class SerialPortBaseActivityNew : FragmentActivity() {
 
+    private var isReadStopped: Int = 0
     private var isGun1PluggedIn: Boolean = false
     private var isGun2PluggedIn: Boolean = false
     protected var mApplication: HMIApp? = null
@@ -185,16 +188,22 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                         if (it.toHex()
                                 .startsWith(ModBusUtils.HOLDING_REGISTERS_CORRECT_RESPONSE_BITS)
                         ) {
+                            isReadStopped = 0
                             Log.d(TAG, "readMiscInfo: Response = ${it.toHex()}")
 
                             lifecycleScope.launch {
                                 insertMiscInfoInDB(it)
                             }
                         } else {
+                            isReadStopped++
+                            showReadStoppedUI()
                             Log.e(TAG, "readMiscInfo: Error Response - ${it.toHex()}")
                         }
                         openAcMeterInfo()
                     }, onReadStopped = {
+                        isReadStopped++
+                        Log.e(TAG, "readMiscInfo: OnReadStopped Called")
+                        showReadStoppedUI()
                         startReading()
                     })
             } catch (te: TimeoutCancellationException) {
@@ -203,6 +212,17 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
             }
         }
 
+    }
+
+    private fun showReadStoppedUI(){
+        if(isReadStopped == 5){
+            lifecycleScope.launch(Dispatchers.Main){
+                showCustomDialog(getString(R.string.message_device_communication_error)) {
+                    isReadStopped = 0
+                }
+            }
+
+        }
     }
 
     private fun openAcMeterInfo() {
@@ -684,7 +704,10 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                             Log.d(TAG, "readGun2Info: Response = ${it.toHex()}")
 
                             insertGun2InfoInDB(it)
-
+                            Log.d(
+                                TAG,
+                                "readGun2Info: Gun Current State: ${getGunChargingState(it).description}"
+                            )
                             when (getGunChargingState(it).description) {
                                 UNPLUGGED -> {
                                     isGun2PluggedIn = false

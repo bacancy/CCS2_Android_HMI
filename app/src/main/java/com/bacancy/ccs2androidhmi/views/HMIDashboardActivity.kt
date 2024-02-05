@@ -49,11 +49,16 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
         showHideBackIcon()
 
+        showHideHomeIcon()
+
     }
 
     private fun handleClicks() {
         binding.incToolbar.imgBack.setOnClickListener {
             goBack()
+        }
+        binding.incToolbar.imgHome.setOnClickListener {
+            addNewFragment(GunsHomeScreenFragment(), true)
         }
     }
 
@@ -69,6 +74,17 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
             binding.incToolbar.imgBack.invisible()
         }
         if(binding.incToolbar.imgBack.isVisible){
+            binding.incToolbar.tvEmergencyStop.gone()
+        }
+    }
+
+    fun showHideHomeIcon(showHomeIcon: Boolean = true) {
+        if (showHomeIcon) {
+            binding.incToolbar.imgHome.visible()
+        } else {
+            binding.incToolbar.imgHome.invisible()
+        }
+        if (binding.incToolbar.imgHome.isVisible) {
             binding.incToolbar.tvEmergencyStop.gone()
         }
     }
@@ -131,8 +147,12 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         }
     }
 
-    private fun addNewFragment(fragment: Fragment) {
+    private fun addNewFragment(fragment: Fragment, shouldMoveToHomeScreen: Boolean = false) {
         val fragmentManager: FragmentManager = supportFragmentManager
+        if (shouldMoveToHomeScreen) {
+            //To remove all the fragments in-between calling and first fragment
+            fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+        }
         val fragmentTransaction: FragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.replace(binding.fragmentContainer.id, fragment)
         fragmentTransaction.addToBackStack(null)
@@ -158,10 +178,10 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
     private fun updateServerStatus(serverStatus: String) {
         when (serverStatus) {
-            "Ethernet" -> binding.incToolbar.imgServerStatus.setImageResource(R.drawable.ic_server_with_ethernet)
-            "GSM" -> binding.incToolbar.imgServerStatus.setImageResource(R.drawable.ic_server_with_gsm)
-            "Wifi" -> binding.incToolbar.imgServerStatus.setImageResource(R.drawable.ic_server_with_wifi)
-            else -> binding.incToolbar.imgServerStatus.setImageResource(R.drawable.ic_server_with_nothing)
+            "Ethernet" -> binding.incToolbar.imgServerStatus.setImageResource(R.drawable.ic_server_connected)
+            "GSM" -> binding.incToolbar.imgServerStatus.setImageResource(R.drawable.ic_server_connected)
+            "Wifi" -> binding.incToolbar.imgServerStatus.setImageResource(R.drawable.ic_server_connected)
+            else -> binding.incToolbar.imgServerStatus.setImageResource(R.drawable.ic_server_disconnected)
         }
     }
 
@@ -189,9 +209,9 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         prefHelper.setBoolean("IS_IN_TEST_MODE", false)
     }
 
-    override fun replaceFragment(fragment: Fragment?) {
+    override fun replaceFragment(fragment: Fragment?, shouldMoveToHomeScreen: Boolean) {
         if (fragment != null) {
-            addNewFragment(fragment)
+            addNewFragment(fragment, shouldMoveToHomeScreen)
         }
     }
 }

@@ -23,7 +23,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_10sdp"
             android:textColor="@color/white"
-            android:textSize="@dimen/_8ssp"
+            android:textSize="@dimen/_10ssp"
+            android:gravity="center"
             tools:text="To start the authentication process or view detailed parameter information, tap a specific gun icon." />
 
         <Button

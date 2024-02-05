@@ -1,5 +1,6 @@
 package com.bacancy.ccs2androidhmi.util
 
+import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.os.Build
@@ -20,7 +21,6 @@ import com.bacancy.ccs2androidhmi.util.CommonUtils.LOCAL_START_STOP_PIN
 
 object DialogUtils {
 
-    @RequiresApi(Build.VERSION_CODES.R)
     fun Context.showAlertDialog(
         title: String,
         message: String,
@@ -60,9 +60,9 @@ object DialogUtils {
         alertDialog.show()
     }
 
-    fun Fragment.showCustomDialog(message: String, onCloseClicked: () -> Unit) {
+    fun Activity.showCustomDialog(message: String, onCloseClicked: () -> Unit) {
         // Show custom dialog without creating a new class
-        val dialog = Dialog(requireActivity(), R.style.CustomAlertDialog)
+        val dialog = Dialog(this, R.style.CustomAlertDialog)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.window?.setLayout(
             WindowManager.LayoutParams.MATCH_PARENT,

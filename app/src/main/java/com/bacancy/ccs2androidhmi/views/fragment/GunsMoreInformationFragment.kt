@@ -49,15 +49,17 @@ class GunsMoreInformationFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentGunsMoreInfoScreenBinding.inflate(layoutInflater)
-        (requireActivity() as HMIDashboardActivity).showHideBackIcon(true)
-        observeGunsChargingInfo()
+        (requireActivity() as HMIDashboardActivity).showHideBackIcon()
+        (requireActivity() as HMIDashboardActivity).showHideHomeIcon()
         return binding.root
     }
 
     private fun observeGunsChargingInfo() {
         appViewModel.getUpdatedGunsChargingInfo(selectedGunNumber).observe(requireActivity()) {
-            it?.let {
-                updateGunsChargingUI(it)
+            it?.let { gunInfo ->
+                if (gunInfo.gunId == selectedGunNumber) {
+                    updateGunsChargingUI(gunInfo)
+                }
             }
         }
     }
@@ -68,11 +70,13 @@ class GunsMoreInformationFragment : BaseFragment() {
 
                 when (selectedGunNumber) {
                     1 -> {
-                        incHeader.tvHeader.text = getString(R.string.lbl_gun_1) + " ($gunChargingState)"
+                        incHeader.tvHeader.text =
+                            getString(R.string.lbl_gun_1) + " ($gunChargingState)"
                     }
 
                     2 -> {
-                        incHeader.tvHeader.text = getString(R.string.lbl_gun_2) + " ($gunChargingState)"
+                        incHeader.tvHeader.text =
+                            getString(R.string.lbl_gun_2) + " ($gunChargingState)"
                     }
                 }
 
@@ -135,10 +139,7 @@ class GunsMoreInformationFragment : BaseFragment() {
     override fun setScreenHeaderViews() {
         selectedGunNumber = arguments?.getInt(SELECTED_GUN)!!
         prefHelper.setSelectedGunNumber(SELECTED_GUN, selectedGunNumber)
-        Log.d(
-            "WONTAG",
-            "Gun Selected Now = $selectedGunNumber"
-        )
+        observeGunsChargingInfo()
         binding.apply {
             when (selectedGunNumber) {
                 1 -> {

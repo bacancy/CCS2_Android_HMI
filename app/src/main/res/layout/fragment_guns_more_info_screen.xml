@@ -37,7 +37,7 @@
             android:layout_height="match_parent" />
 
         <include
-            android:id="@+id/incChargingCurrent"
+            android:id="@+id/incChargingSoc"
             layout="@layout/common_label_and_value"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -62,7 +62,7 @@
             android:layout_height="match_parent" />
 
         <include
-            android:id="@+id/incChargingSoc"
+            android:id="@+id/incChargingCurrent"
             layout="@layout/common_label_and_value"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

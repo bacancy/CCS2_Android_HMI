@@ -2,11 +2,12 @@ package com.bacancy.ccs2androidhmi.util
 
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import kotlin.math.roundToInt
 
 object ModbusTypeConverter {
 
     fun Float.formatFloatToString(): String {
-        return String.format("%.3f", this)
+        return String.format("%.2f", this)
     }
 
     fun Byte.getIntValueFromByte(): Int {
@@ -89,5 +90,9 @@ object ModbusTypeConverter {
 
         // Convert binary to decimal
         return Integer.parseInt(binary, 2)
+    }
+
+    fun Float.changeFloatTo2Points(): Float {
+        return (this * 100F).roundToInt() / 100F //up to 2 points after decimal
     }
 }

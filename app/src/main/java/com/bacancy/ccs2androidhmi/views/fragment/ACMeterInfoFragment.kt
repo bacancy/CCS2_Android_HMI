@@ -44,7 +44,8 @@ class ACMeterInfoFragment : BaseFragment() {
     ): View {
         binding = FragmentAcMeterInfoBinding.inflate(layoutInflater)
         getLatestAcMeterInfo()
-        (requireActivity() as HMIDashboardActivity).showHideBackIcon(true)
+        (requireActivity() as HMIDashboardActivity).showHideBackIcon()
+        (requireActivity() as HMIDashboardActivity).showHideHomeIcon()
         return binding.root
     }
 

@@ -41,7 +41,8 @@ class TestModeHomeFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentTestModeHomeBinding.inflate(layoutInflater)
-        (requireActivity() as HMIDashboardActivity).showHideBackIcon(true)
+        (requireActivity() as HMIDashboardActivity).showHideBackIcon()
+        (requireActivity() as HMIDashboardActivity).showHideHomeIcon()
         return binding.root
     }
 
