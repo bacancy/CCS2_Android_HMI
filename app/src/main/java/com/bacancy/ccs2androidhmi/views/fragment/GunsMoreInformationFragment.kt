@@ -55,7 +55,7 @@ class GunsMoreInformationFragment : BaseFragment() {
     }
 
     private fun observeGunsChargingInfo() {
-        appViewModel.getUpdatedGunsChargingInfo(selectedGunNumber).observe(requireActivity()) {
+        appViewModel.getUpdatedGunsChargingInfo(selectedGunNumber).observe(viewLifecycleOwner) {
             it?.let { gunInfo ->
                 if (gunInfo.gunId == selectedGunNumber) {
                     updateGunsChargingUI(gunInfo)

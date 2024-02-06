@@ -13,17 +13,9 @@
         android:id="@+id/lnrOptions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"
+        android:visibility="visible"
         app:layout_constraintEnd_toStartOf="@id/ivOpenCloseOptions"
         app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:id="@+id/ivScreenInfo"
-            android:layout_width="@dimen/_15sdp"
-            android:layout_height="@dimen/_15sdp"
-            android:layout_marginEnd="@dimen/_10sdp"
-            android:contentDescription="@string/lbl_firmware_version_information"
-            android:src="@drawable/ic_info" />
 
         <ImageView
             android:id="@+id/ivLocalStartStop"
@@ -42,6 +34,14 @@
             android:src="@drawable/ic_test_mode" />
 
         <ImageView
+            android:id="@+id/ivScreenInfo"
+            android:layout_width="@dimen/_15sdp"
+            android:layout_height="@dimen/_15sdp"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:contentDescription="@string/lbl_firmware_version_information"
+            android:src="@drawable/ic_info" />
+
+        <ImageView
             android:id="@+id/ivFaultInfo"
             android:layout_width="@dimen/_16sdp"
             android:layout_height="@dimen/_16sdp"
@@ -57,9 +57,10 @@
         android:layout_height="@dimen/_16sdp"
         android:layout_marginEnd="@dimen/_10sdp"
         android:contentDescription="@string/lbl_fault_information"
+        android:src="@drawable/ic_reveal_options"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:src="@drawable/ic_reveal_options" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/ivGun1Half"
@@ -96,13 +97,13 @@
         android:id="@+id/lnrGun1ChargingStatus"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_marginEnd="@dimen/_60sdp"
-        android:layout_marginBottom="@dimen/_120sdp"
         android:layout_marginTop="@dimen/_30sdp"
+        android:layout_marginEnd="@dimen/_55sdp"
+        android:layout_marginBottom="@dimen/_115sdp"
         android:background="@drawable/bg_button_gradient_with_white_border"
         android:gravity="start"
         android:orientation="vertical"
-        android:paddingHorizontal="@dimen/_10sdp"
+        android:paddingHorizontal="@dimen/_5sdp"
         android:paddingVertical="@dimen/_5sdp"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/tvGun1Label"
@@ -112,27 +113,27 @@
 
         <include
             android:id="@+id/tvGun1ChargingSoc"
-            layout="@layout/common_charging_status_view"/>
+            layout="@layout/common_charging_status_view" />
 
         <include
             android:id="@+id/tvGun1ChargingVoltage"
-            layout="@layout/common_charging_status_view"/>
+            layout="@layout/common_charging_status_view" />
 
         <include
             android:id="@+id/tvGun1ChargingCurrent"
-            layout="@layout/common_charging_status_view"/>
+            layout="@layout/common_charging_status_view" />
 
         <include
             android:id="@+id/tvGun1EnergyConsumption"
-            layout="@layout/common_charging_status_view"/>
+            layout="@layout/common_charging_status_view" />
 
         <include
             android:id="@+id/tvGun1Duration"
-            layout="@layout/common_charging_status_view"/>
+            layout="@layout/common_charging_status_view" />
 
         <include
             android:id="@+id/tvGun1TotalCost"
-            layout="@layout/common_charging_status_view"/>
+            layout="@layout/common_charging_status_view" />
 
         <!--<TextView
             android:id="@+id/tvGun1ChargingSoc"
@@ -216,13 +217,13 @@
         android:id="@+id/lnrGun2ChargingStatus"
         android:layout_width="0dp"
         android:layout_height="match_parent"
+        android:layout_marginStart="@dimen/_55sdp"
         android:layout_marginTop="@dimen/_30sdp"
-        android:layout_marginStart="@dimen/_60sdp"
-        android:layout_marginBottom="@dimen/_120sdp"
+        android:layout_marginBottom="@dimen/_115sdp"
         android:background="@drawable/bg_button_gradient_with_white_border"
         android:gravity="start"
         android:orientation="vertical"
-        android:paddingHorizontal="@dimen/_10sdp"
+        android:paddingHorizontal="@dimen/_5sdp"
         android:paddingVertical="@dimen/_5sdp"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/tvGun2Label"
@@ -232,27 +233,27 @@
 
         <include
             android:id="@+id/tvGun2ChargingSoc"
-            layout="@layout/common_charging_status_view"/>
+            layout="@layout/common_charging_status_view" />
 
         <include
             android:id="@+id/tvGun2ChargingVoltage"
-            layout="@layout/common_charging_status_view"/>
+            layout="@layout/common_charging_status_view" />
 
         <include
             android:id="@+id/tvGun2ChargingCurrent"
-            layout="@layout/common_charging_status_view"/>
+            layout="@layout/common_charging_status_view" />
 
         <include
             android:id="@+id/tvGun2EnergyConsumption"
-            layout="@layout/common_charging_status_view"/>
+            layout="@layout/common_charging_status_view" />
 
         <include
             android:id="@+id/tvGun2Duration"
-            layout="@layout/common_charging_status_view"/>
+            layout="@layout/common_charging_status_view" />
 
         <include
             android:id="@+id/tvGun2TotalCost"
-            layout="@layout/common_charging_status_view"/>
+            layout="@layout/common_charging_status_view" />
 
         <!--<TextView
             android:layout_width="wrap_content"

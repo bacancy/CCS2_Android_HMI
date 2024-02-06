@@ -60,7 +60,7 @@ class ACMeterInfoFragment : BaseFragment() {
     }
 
     private fun getLatestAcMeterInfo() {
-        appViewModel.latestAcMeterInfo.observe(requireActivity()) { latestAcMeterInfo ->
+        appViewModel.latestAcMeterInfo.observe(viewLifecycleOwner) { latestAcMeterInfo ->
             if (latestAcMeterInfo != null) {
                 lifecycleScope.launch(Dispatchers.Main) {
 

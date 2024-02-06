@@ -33,7 +33,7 @@ class RectifierFaultInfoFragment : BaseFragment() {
     }
 
     private fun observeRectifierFaults() {
-        appViewModel.latestMiscInfo.observe(requireActivity()) { latestMiscInfo ->
+        appViewModel.latestMiscInfo.observe(viewLifecycleOwner) { latestMiscInfo ->
             if (latestMiscInfo != null) {
                 updateRectifierFaultUI(latestMiscInfo)
             }

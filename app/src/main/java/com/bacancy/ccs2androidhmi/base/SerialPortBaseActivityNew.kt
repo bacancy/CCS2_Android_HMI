@@ -214,9 +214,9 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
 
     }
 
-    private fun showReadStoppedUI(){
-        if(isReadStopped == 5){
-            lifecycleScope.launch(Dispatchers.Main){
+    private fun showReadStoppedUI() {
+        if (isReadStopped == 5) {
+            lifecycleScope.launch(Dispatchers.Main) {
                 showCustomDialog(getString(R.string.message_device_communication_error)) {
                     isReadStopped = 0
                 }
@@ -1031,43 +1031,20 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                     )
                 }"
             )
-            if (prefHelper.getBoolean("IS_GUN_VOLTAGE_CHANGED", false)) {
-                if (prefHelper.getIntValue("SELECTED_GUN_IN_TEST_MODE", 1) == 1) {
-                    writeForGunsRectifier(
-                        354,
-                        prefHelper.getIntValue("GUN1_VOLTAGE", 0)
-                    )
-                } else {
-                    writeForGunsRectifier(
-                        357,
-                        prefHelper.getIntValue("GUN2_VOLTAGE", 0)
-                    )
-                }
-
-            } else if (prefHelper.getBoolean("IS_GUN_CURRENT_CHANGED", false)) {
-                if (prefHelper.getIntValue("SELECTED_GUN_IN_TEST_MODE", 1) == 1) {
-                    writeForGunsRectifier(
-                        355,
-                        prefHelper.getIntValue("GUN1_CURRENT", 0)
-                    )
-                } else {
-                    writeForGunsRectifier(
-                        358,
-                        prefHelper.getIntValue("GUN2_CURRENT", 0)
-                    )
-                }
-
-            } else if (prefHelper.getBoolean("IS_OUTPUT_ON_OFF_VALUE_CHANGED", false)) {
-                Log.d(TAG, "checkGunsTestModeValuesChanges: IS_OUTPUT_ON_OFF_VALUE_CHANGED IN IF")
+            if (prefHelper.getBoolean("IS_OUTPUT_ON_OFF_VALUE_CHANGED", false)) {
+                Log.d(
+                    TAG,
+                    "checkGunsTestModeValuesChanges: IS_OUTPUT_ON_OFF_VALUE_CHANGED IN IF"
+                )
                 if (prefHelper.getIntValue("SELECTED_GUN_IN_TEST_MODE", 1) == 1) {
                     writeForGunsRectifier(
                         356,
-                        prefHelper.getIntValue("OUTPUT_ON_OFF_VALUE", 0)
+                        prefHelper.getIntValue("GUN1_OUTPUT_ON_OFF_VALUE", 0)
                     )
                 } else {
                     writeForGunsRectifier(
                         359,
-                        prefHelper.getIntValue("OUTPUT_ON_OFF_VALUE", 0)
+                        prefHelper.getIntValue("GUN1_OUTPUT_ON_OFF_VALUE", 0)
                     )
                 }
             } else {
@@ -1092,7 +1069,36 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                 generateRandomNumber(), {
                     Log.d(TAG, "writeForUpdateTestMode: Response Got")
                     lifecycleScope.launch {
-                        readMiscInfo()
+                        if (prefHelper.getBoolean("IS_GUN_VOLTAGE_CHANGED", false)) {
+                            if (prefHelper.getIntValue("SELECTED_GUN_IN_TEST_MODE", 1) == 1) {
+                                writeForGunsRectifier(
+                                    354,
+                                    prefHelper.getIntValue("GUN1_VOLTAGE", 0)
+                                )
+                            } else {
+                                writeForGunsRectifier(
+                                    357,
+                                    prefHelper.getIntValue("GUN2_VOLTAGE", 0)
+                                )
+                            }
+                            prefHelper.setBoolean("IS_GUN_VOLTAGE_CHANGED", false)
+
+                        } else if (prefHelper.getBoolean("IS_GUN_CURRENT_CHANGED", false)) {
+                            if (prefHelper.getIntValue("SELECTED_GUN_IN_TEST_MODE", 1) == 1) {
+                                writeForGunsRectifier(
+                                    355,
+                                    prefHelper.getIntValue("GUN1_CURRENT", 0)
+                                )
+                            } else {
+                                writeForGunsRectifier(
+                                    358,
+                                    prefHelper.getIntValue("GUN2_CURRENT", 0)
+                                )
+                            }
+                            prefHelper.setBoolean("IS_GUN_CURRENT_CHANGED", false)
+                        } else {
+                            readMiscInfo()
+                        }
                     }
                 }, {})
         }
@@ -1112,9 +1118,6 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                 registerValue, {
                     Log.d(TAG, "writeForGunsRectifier: Response Got")
                     lifecycleScope.launch {
-                        prefHelper.setBoolean("IS_GUN_VOLTAGE_CHANGED", false)
-                        prefHelper.setBoolean("IS_GUN_CURRENT_CHANGED", false)
-                        prefHelper.setBoolean("IS_OUTPUT_ON_OFF_VALUE_CHANGED", false)
                         delay(mCommonDelay)
                         writeForUpdateTestMode()
                     }

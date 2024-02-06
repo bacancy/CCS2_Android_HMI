@@ -32,7 +32,7 @@ class PLCFaultsFragment : BaseFragment() {
     }
 
     private fun observePLCFaults() {
-        appViewModel.latestMiscInfo.observe(requireActivity()) { latestMiscInfo ->
+        appViewModel.latestMiscInfo.observe(viewLifecycleOwner) { latestMiscInfo ->
             if (latestMiscInfo != null) {
                 updatePLCFaultUI(latestMiscInfo)
             }

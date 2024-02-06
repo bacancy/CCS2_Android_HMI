@@ -58,6 +58,8 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
             goBack()
         }
         binding.incToolbar.imgHome.setOnClickListener {
+            prefHelper.setBoolean("IS_IN_TEST_MODE", false)
+            prefHelper.setBoolean("IS_OUTPUT_ON_OFF_VALUE_CHANGED", false)
             addNewFragment(GunsHomeScreenFragment(), true)
         }
     }
@@ -207,6 +209,9 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         prefHelper.setBoolean("IS_GUN_CURRENT_CHANGED", false)
         prefHelper.setBoolean("IS_OUTPUT_ON_OFF_VALUE_CHANGED", false)
         prefHelper.setBoolean("IS_IN_TEST_MODE", false)
+        prefHelper.setBoolean(CommonUtils.GUN_1_LOCAL_START, false)
+        prefHelper.setBoolean(CommonUtils.GUN_2_LOCAL_START, false)
+
     }
 
     override fun replaceFragment(fragment: Fragment?, shouldMoveToHomeScreen: Boolean) {

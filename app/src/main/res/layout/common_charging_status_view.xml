@@ -2,22 +2,25 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/_2sdp"
     xmlns:tools="http://schemas.android.com/tools">
 
     <TextView
         android:id="@+id/tvLabel"
         android:layout_width="0dp"
-        android:layout_weight="1.5"
+        android:layout_weight="1.8"
         android:layout_height="wrap_content"
         android:background="#00FFFFFF"
+        android:lines="1"
+        android:ellipsize="end"
         android:textColor="@color/white"
-        android:textSize="@dimen/_8ssp"
-        tools:text="Energy Consumption" />
+        android:textSize="@dimen/_9ssp"
+        tools:text="Total Energy" />
 
     <TextView
         android:id="@+id/tvEquals"
         android:layout_width="0dp"
-        android:layout_weight="1"
+        android:layout_weight="0.7"
         android:layout_height="wrap_content"
         android:background="#00FFFFFF"
         android:gravity="center"
@@ -32,7 +35,7 @@
         android:layout_height="wrap_content"
         android:background="#00FFFFFF"
         android:textColor="@color/white"
-        android:textSize="@dimen/_8ssp"
+        android:textSize="@dimen/_9ssp"
         tools:text="100.20 kWh" />
 
 </LinearLayout>

@@ -54,13 +54,6 @@ class TestModeGunsDetailFragment : BaseFragment() {
         return binding.root
     }
 
-    override fun onPause() {
-        super.onPause()
-        prefHelper.setBoolean("IS_GUN_VOLTAGE_CHANGED", false)
-        prefHelper.setBoolean("IS_GUN_CURRENT_CHANGED", false)
-        prefHelper.setBoolean("IS_OUTPUT_ON_OFF_VALUE_CHANGED", false)
-    }
-
     override fun setScreenHeaderViews() {
         selectedGunNumber = arguments?.getInt(GunsChargingInfoUtils.SELECTED_GUN)!!
         prefHelper.setIntValue("SELECTED_GUN_IN_TEST_MODE", selectedGunNumber)
@@ -77,7 +70,53 @@ class TestModeGunsDetailFragment : BaseFragment() {
         }
     }
 
-    override fun setupViews() {}
+    override fun setupViews() {
+        selectedGunNumber = arguments?.getInt(GunsChargingInfoUtils.SELECTED_GUN)!!
+        binding.apply {
+
+            when (selectedGunNumber) {
+
+                1 -> {
+                    if (prefHelper.getIntValue("GUN1_VOLTAGE", 0) > 0) {
+                        prefHelper.setBoolean("IS_GUN_VOLTAGE_CHANGED", true)
+                        edtGunVoltage.setText(""+prefHelper.getIntValue("GUN1_VOLTAGE", 0))
+                    }
+                    if (prefHelper.getIntValue("GUN1_CURRENT", 0) > 0) {
+                        prefHelper.setBoolean("IS_GUN_CURRENT_CHANGED", true)
+                        edtGunCurrent.setText(""+prefHelper.getIntValue("GUN1_CURRENT", 0))
+                    }
+                    if (prefHelper.getIntValue("GUN1_OUTPUT_ON_OFF_VALUE", 0) == 1) {
+                        isOutputOn = true
+                        btnOutputOnOff.text = getString(R.string.lbl_output_off)
+                    } else {
+                        isOutputOn = false
+                        btnOutputOnOff.text = getString(R.string.lbl_output_on)
+                    }
+                }
+
+                2 -> {
+                    if (prefHelper.getIntValue("GUN2_VOLTAGE", 0) > 0) {
+                        prefHelper.setBoolean("IS_GUN_VOLTAGE_CHANGED", true)
+                        edtGunVoltage.setText(""+prefHelper.getIntValue("GUN2_VOLTAGE", 0))
+                    }
+                    if (prefHelper.getIntValue("GUN2_CURRENT", 0) > 0) {
+                        prefHelper.setBoolean("IS_GUN_CURRENT_CHANGED", true)
+                        edtGunCurrent.setText(""+prefHelper.getIntValue("GUN2_CURRENT", 0))
+                    }
+                    if (prefHelper.getIntValue("GUN2_OUTPUT_ON_OFF_VALUE", 0) == 1) {
+                        isOutputOn = true
+                        btnOutputOnOff.text = getString(R.string.lbl_output_off)
+                    } else {
+                        isOutputOn = false
+                        btnOutputOnOff.text = getString(R.string.lbl_output_on)
+                    }
+                }
+
+            }
+
+        }
+
+    }
 
     override fun handleClicks() {
 
@@ -89,7 +128,6 @@ class TestModeGunsDetailFragment : BaseFragment() {
                     val edtGunVoltageValue = edtGunVoltage.text.toString().toIntOrNull()
 
                     if (edtGunVoltageValue in 200..1000) {
-                        //showToast("Good ${edtGunVoltageValue ?: ""}")
                         edtGunVoltageValue?.let {
                             prefHelper.setBoolean("IS_GUN_VOLTAGE_CHANGED", true)
                             if (selectedGunNumber == 1) {
@@ -112,7 +150,6 @@ class TestModeGunsDetailFragment : BaseFragment() {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     val enteredCurrentValue = edtGunCurrent.text.toString().toIntOrNull()
                     if (enteredCurrentValue in 0..100) {
-                        //showToast("Good ${enteredCurrentValue ?: ""}")
                         enteredCurrentValue?.let {
                             prefHelper.setBoolean("IS_GUN_CURRENT_CHANGED", true)
                             if (selectedGunNumber == 1) {
@@ -125,12 +162,30 @@ class TestModeGunsDetailFragment : BaseFragment() {
                         showToast("Please input current between 0 to 100 A")
                     }
 
-
                     edtGunCurrent.hideKeyboard(requireContext())
                     return@setOnEditorActionListener true
                 }
                 false
             }
+
+            /*btnOutputOnOff.setOnClickListener {
+                prefHelper.setBoolean("IS_OUTPUT_ON_OFF_VALUE_CHANGED", true)
+                if (prefHelper.getBoolean("IS_OUTPUT_ON_OFF_VALUE_CHANGED", false)) {
+                    prefHelper.setBoolean("IS_OUTPUT_ON_OFF_VALUE_CHANGED", false)
+                    btnOutputOnOff.text = getString(R.string.lbl_output_on)
+                    0
+                } else {
+                    prefHelper.setBoolean("IS_OUTPUT_ON_OFF_VALUE_CHANGED", true)
+                    btnOutputOnOff.text = getString(R.string.lbl_output_off)
+                    1
+                }
+                //val value = if (isOutputOn) 1 else 0
+                if (selectedGunNumber == 1) {
+                    prefHelper.setIntValue("GUN1_OUTPUT_ON_OFF_VALUE", value)
+                } else {
+                    prefHelper.setIntValue("GUN2_OUTPUT_ON_OFF_VALUE", value)
+                }
+            }*/
 
             btnOutputOnOff.setOnClickListener {
                 prefHelper.setBoolean("IS_OUTPUT_ON_OFF_VALUE_CHANGED", true)
@@ -142,7 +197,12 @@ class TestModeGunsDetailFragment : BaseFragment() {
                     btnOutputOnOff.text = getString(R.string.lbl_output_off)
                 }
                 val value = if (isOutputOn) 1 else 0
-                prefHelper.setIntValue("OUTPUT_ON_OFF_VALUE", value)
+                //prefHelper.setIntValue("OUTPUT_ON_OFF_VALUE", value)
+                if (selectedGunNumber == 1) {
+                    prefHelper.setIntValue("GUN1_OUTPUT_ON_OFF_VALUE", value)
+                } else {
+                    prefHelper.setIntValue("GUN2_OUTPUT_ON_OFF_VALUE", value)
+                }
             }
 
             btnACMeterInfo.setOnClickListener {

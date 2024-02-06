@@ -88,7 +88,7 @@ class DeviceConnectionStatusFragment : BaseFragment() {
     )
 
     private fun observeDevicePhysicalConnectionStatus() {
-        appViewModel.latestMiscInfo.observe(requireActivity()) { latestMiscInfo ->
+        appViewModel.latestMiscInfo.observe(viewLifecycleOwner) { latestMiscInfo ->
             if (latestMiscInfo != null) {
                 updateDeviceStatusUI(latestMiscInfo)
             }

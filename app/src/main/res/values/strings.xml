@@ -111,7 +111,7 @@
     <string name="lbl_gun_charging_voltage">Charging Voltage(V) = %1$d</string>
     <string name="lbl_gun_charging_current">Charging Current(A) = %1$d</string>
     <string name="lbl_gun_charging_duration">Duration = %1$s</string>
-    <string name="lbl_gun_energy_consumption">Energy Consumption = %1$.3f kw</string>
+    <string name="lbl_gun_energy_consumption">%1$.3f kWh</string>
     <string name="lbl_gun_total_cost">Total Cost = ₹%1$.2f</string>
     <string name="lbl_gun_total_cost_in_rs">₹%1$.2f</string>
     <string name="lbl_unit_price_per_kw">Unit Price = ₹%1$.2f / kWh</string>

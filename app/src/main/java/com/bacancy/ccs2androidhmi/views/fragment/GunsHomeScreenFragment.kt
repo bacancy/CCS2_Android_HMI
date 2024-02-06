@@ -91,10 +91,12 @@ class GunsHomeScreenFragment : BaseFragment() {
     override fun onResume() {
         super.onResume()
         prefHelper.setBoolean(INSIDE_LOCAL_START_STOP_SCREEN, false)
+        prefHelper.setBoolean("IS_IN_TEST_MODE", false)
+        prefHelper.setBoolean("IS_OUTPUT_ON_OFF_VALUE_CHANGED", false)
     }
 
     private fun observeLatestMiscInfo() {
-        appViewModel.latestMiscInfo.observe(requireActivity()) { latestMiscInfo ->
+        appViewModel.latestMiscInfo.observe(viewLifecycleOwner) { latestMiscInfo ->
             if (latestMiscInfo != null) {
                 Log.i("TAG", "LatestMiscInfo: Unit Price = Rs.${latestMiscInfo.unitPrice}/kwh")
                 binding.tvUnitPrice.text =
@@ -105,13 +107,13 @@ class GunsHomeScreenFragment : BaseFragment() {
 
     private fun observeGunsChargingInfo() {
 
-        appViewModel.getUpdatedGunsChargingInfo(1).observe(requireActivity()) {
+        appViewModel.getUpdatedGunsChargingInfo(1).observe(viewLifecycleOwner) {
             it?.let {
                 updateGun1UI(it)
             }
         }
 
-        appViewModel.getUpdatedGunsChargingInfo(2).observe(requireActivity()) {
+        appViewModel.getUpdatedGunsChargingInfo(2).observe(viewLifecycleOwner) {
             it?.let {
                 updateGun2UI(it)
             }
@@ -317,10 +319,10 @@ class GunsHomeScreenFragment : BaseFragment() {
                     tvGun1ChargingCurrent.tvLabel.text = "Charging Current"
                     tvGun1ChargingCurrent.tvValue.text = "$chargingCurrent A"
 
-                    tvGun1EnergyConsumption.tvLabel.text = "Energy Consumption"
-                    tvGun1EnergyConsumption.tvValue.text = "$energyConsumption kWh"
+                    tvGun1EnergyConsumption.tvLabel.text = "Total Energy"
+                    tvGun1EnergyConsumption.tvValue.text = getString(R.string.lbl_gun_energy_consumption, energyConsumption)
 
-                    tvGun1Duration.tvLabel.text = "Duration"
+                    tvGun1Duration.tvLabel.text = "Duration (hh:mm)"
                     tvGun1Duration.tvValue.text = duration
 
                     tvGun1TotalCost.tvLabel.text = "Total Cost"
@@ -343,10 +345,10 @@ class GunsHomeScreenFragment : BaseFragment() {
                     tvGun2ChargingCurrent.tvLabel.text = "Charging Current"
                     tvGun2ChargingCurrent.tvValue.text = "$chargingCurrent A"
 
-                    tvGun2EnergyConsumption.tvLabel.text = "Energy Consumption"
-                    tvGun2EnergyConsumption.tvValue.text = "$energyConsumption kWh"
+                    tvGun2EnergyConsumption.tvLabel.text = "Total Energy"
+                    tvGun2EnergyConsumption.tvValue.text = getString(R.string.lbl_gun_energy_consumption, energyConsumption)
 
-                    tvGun2Duration.tvLabel.text = "Duration"
+                    tvGun2Duration.tvLabel.text = "Duration (hh:mm)"
                     tvGun2Duration.tvValue.text = duration
 
                     tvGun2TotalCost.tvLabel.text = "Total Cost"
@@ -376,8 +378,9 @@ class GunsHomeScreenFragment : BaseFragment() {
     private fun observeGunsLastChargingSummary(isGun1: Boolean) {
         lifecycleScope.launch {
             delay(2000)
+            //if (isAdded) {
             appViewModel.getGunsLastChargingSummary(if (isGun1) 1 else 2)
-                .observe(requireActivity()) {
+                .observe(viewLifecycleOwner) {
                     it?.let {
                         if (isGun1) {
                             if (shouldShowGun1SummaryDialog) {
@@ -392,6 +395,7 @@ class GunsHomeScreenFragment : BaseFragment() {
                         }
                     }
                 }
+            //}
         }
     }
 

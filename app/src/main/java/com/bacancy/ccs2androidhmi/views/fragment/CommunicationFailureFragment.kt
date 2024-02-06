@@ -87,7 +87,7 @@ class CommunicationFailureFragment : BaseFragment() {
     )
 
     private fun observeCommunicationFailure() {
-        appViewModel.latestMiscInfo.observe(requireActivity()) { latestMiscInfo ->
+        appViewModel.latestMiscInfo.observe(viewLifecycleOwner) { latestMiscInfo ->
             if (latestMiscInfo != null) {
                 updateCommErrorUI(latestMiscInfo)
             }

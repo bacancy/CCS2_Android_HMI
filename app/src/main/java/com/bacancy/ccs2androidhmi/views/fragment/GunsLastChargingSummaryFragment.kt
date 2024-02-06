@@ -41,7 +41,7 @@ class GunsLastChargingSummaryFragment : BaseFragment() {
     }
 
     private fun observeGunsLastChargingSummary() {
-        appViewModel.getGunsLastChargingSummary(selectedGunNumber).observe(requireActivity()) {
+        appViewModel.getGunsLastChargingSummary(selectedGunNumber).observe(viewLifecycleOwner) {
             it?.let {
                 updateGunsLastChargingSummaryUI(it)
             }

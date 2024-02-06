@@ -89,7 +89,7 @@ class GunsChargingHistoryFragment : BaseFragment() {
 
     private fun getAllChargingHistory() {
         lifecycleScope.launch {
-            appViewModel.chargingSummariesList.observe(requireActivity()) {
+            appViewModel.chargingSummariesList.observe(viewLifecycleOwner) {
                 if (it.isNotEmpty()) {
                     binding.rvChargingHistory.visible()
                     binding.tvNoDataFound.gone()

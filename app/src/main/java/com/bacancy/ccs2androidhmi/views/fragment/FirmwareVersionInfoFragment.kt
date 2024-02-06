@@ -39,7 +39,7 @@ class FirmwareVersionInfoFragment : BaseFragment() {
     override fun handleClicks() {}
 
     private fun observeFirmwareVersionInfo() {
-        appViewModel.latestMiscInfo.observe(requireActivity()) { latestMiscInfo ->
+        appViewModel.latestMiscInfo.observe(viewLifecycleOwner) { latestMiscInfo ->
             if (latestMiscInfo != null) {
                 updateFirmwareVersionUI(latestMiscInfo)
             }
