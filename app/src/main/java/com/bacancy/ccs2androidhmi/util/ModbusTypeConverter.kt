@@ -95,4 +95,12 @@ object ModbusTypeConverter {
     fun Float.changeFloatTo2Points(): Float {
         return (this * 100F).roundToInt() / 100F //up to 2 points after decimal
     }
+
+    fun stringToIntArray(input: String): IntArray {
+        val intArray = IntArray(input.length)
+        for (i in input.indices) {
+            intArray[i] = input[i].code
+        }
+        return intArray
+    }
 }

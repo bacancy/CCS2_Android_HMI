@@ -80,6 +80,7 @@ import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getUnitPrice
 import com.bacancy.ccs2androidhmi.util.ModBusUtils
 import com.bacancy.ccs2androidhmi.util.ModbusRequestFrames
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter
+import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.stringToIntArray
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.toHex
 import com.bacancy.ccs2androidhmi.util.PrefHelper
 import com.bacancy.ccs2androidhmi.util.ReadWriteUtil
@@ -139,7 +140,8 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
     override fun onResume() {
         super.onResume()
         setupSerialPort()
-        startReading()
+        writeForPinAuthorization("hello12345yello67890")
+        //startReading()
     }
 
     private fun makeFullScreen() {
@@ -217,9 +219,9 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
     private fun showReadStoppedUI() {
         if (isReadStopped == 5) {
             lifecycleScope.launch(Dispatchers.Main) {
-                showCustomDialog(getString(R.string.message_device_communication_error)) {
+                /*showCustomDialog(getString(R.string.message_device_communication_error)) {
                     isReadStopped = 0
-                }
+                }*/
             }
 
         }
@@ -932,6 +934,22 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                     minCurrent = newResponse[8]
                 )
             )
+        }
+    }
+
+    private fun writeForPinAuthorization(enteredPin: String) {
+        Log.i(TAG, "writeForPinAuthorization Request Started")
+        lifecycleScope.launch(Dispatchers.IO) {
+            ReadWriteUtil.writeToMultipleHoldingRegisterNew(
+                mOutputStream,
+                mInputStream,
+                75,
+                stringToIntArray(enteredPin), {
+                    Log.d(TAG, "writeForPinAuthorization: Response Got")
+                    lifecycleScope.launch {
+                        startReading()
+                    }
+                }, {})
         }
     }
 

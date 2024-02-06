@@ -17,6 +17,57 @@ object ReadWriteUtil {
 
     private const val DELAY_BETWEEN_READ_AND_WRITE = 500L
 
+    suspend fun writeToMultipleHoldingRegisterNew(
+        mOutputStream: OutputStream?,
+        mInputStream: InputStream?,
+        startAddress: Int,
+        regValue: IntArray,
+        onAuthDataReceived: (ByteArray?) -> Unit, onReadStopped: () -> Unit
+    ) {
+        withContext(Dispatchers.IO) {
+            val bufferedInputStream = BufferedInputStream(mInputStream)
+            val bufferedOutputStream = BufferedOutputStream(mOutputStream)
+
+            val writeRequestFrame: ByteArray =
+                ModBusUtils.createWriteMultipleRegistersRequest(startAddress, regValue)
+            withTimeout(1000) {
+                try {
+                    withContext(Dispatchers.IO) {
+                        bufferedOutputStream.write(writeRequestFrame)
+                        bufferedOutputStream.flush()
+                        Log.w(
+                            "TAG",
+                            "writeToMultipleHoldingRegisterNew: BufferedInputStream available bytes - ${bufferedInputStream.available()}"
+                        )
+                        delay(DELAY_BETWEEN_READ_AND_WRITE)
+
+                        val responseFrame = ByteArray(7)
+                        bufferedInputStream.mark(0)
+                        if(bufferedInputStream.available() > 0){
+                            bufferedInputStream.read(responseFrame)
+                        }
+                        onAuthDataReceived(null)
+                    }
+                } catch (e: TimeoutCancellationException) {
+                    Log.e(
+                        "RWU",
+                        "writeToMultipleHoldingRegisterNew: TimeOutException = ${e.printStackTrace()}",
+
+                        )
+                    withContext(Dispatchers.IO) {
+                        delay(DELAY_BETWEEN_READ_AND_WRITE)
+                        val responseFrame = ByteArray(7)
+                        bufferedInputStream.mark(0)
+                        if(bufferedInputStream.available() > 0){
+                            bufferedInputStream.read(responseFrame)
+                        }
+                        onAuthDataReceived(null)
+                    }
+                }
+            }
+        }
+    }
+
     suspend fun writeToSingleHoldingRegisterNew(
         mOutputStream: OutputStream?,
         mInputStream: InputStream?,

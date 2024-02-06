@@ -11,9 +11,14 @@ import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentGunsMoreInfoScreenBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
+import com.bacancy.ccs2androidhmi.util.DialogUtils.showPinAuthorizationDialog
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.SELECTED_GUN
 import com.bacancy.ccs2androidhmi.util.PrefHelper
+import com.bacancy.ccs2androidhmi.util.gone
 import com.bacancy.ccs2androidhmi.util.invisible
+import com.bacancy.ccs2androidhmi.util.showToast
+import com.bacancy.ccs2androidhmi.util.visible
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
 import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
 import com.bacancy.ccs2androidhmi.views.listener.FragmentChangeListener
@@ -67,6 +72,17 @@ class GunsMoreInformationFragment : BaseFragment() {
     private fun updateGunsChargingUI(tbGunsChargingInfo: TbGunsChargingInfo) {
         binding.apply {
             tbGunsChargingInfo.apply {
+
+                when (gunChargingState) {
+                    GunsChargingInfoUtils.PLUGGED_IN,
+                    GunsChargingInfoUtils.CHARGING -> {
+                        ivPinAuthorization.visible()
+                    }
+
+                    else -> {
+                        ivPinAuthorization.gone()
+                    }
+                }
 
                 when (selectedGunNumber) {
                     1 -> {
@@ -125,6 +141,14 @@ class GunsMoreInformationFragment : BaseFragment() {
 
             ivGunStateInfo.setOnClickListener {
                 fragmentChangeListener?.replaceFragment(GunsStateInfoFragment())
+            }
+
+            ivPinAuthorization.setOnClickListener {
+                showPinAuthorizationDialog({
+                    showToast(it)
+                }, {
+                    showToast("Invalid PIN")
+                })
             }
 
         }
