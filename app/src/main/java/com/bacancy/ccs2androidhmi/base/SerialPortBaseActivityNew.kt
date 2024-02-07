@@ -18,6 +18,7 @@ import com.bacancy.ccs2androidhmi.db.entity.TbGunsDcMeterInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsLastChargingSummary
 import com.bacancy.ccs2androidhmi.db.entity.TbMiscInfo
 import com.bacancy.ccs2androidhmi.util.CommonUtils.AC_METER_FRAG
+import com.bacancy.ccs2androidhmi.util.CommonUtils.AUTH_PIN_VALUE
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_DC_METER_FRAG
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_LAST_CHARGING_SUMMARY_FRAG
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_LOCAL_START
@@ -80,7 +81,6 @@ import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getUnitPrice
 import com.bacancy.ccs2androidhmi.util.ModBusUtils
 import com.bacancy.ccs2androidhmi.util.ModbusRequestFrames
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter
-import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.stringToIntArray
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.toHex
 import com.bacancy.ccs2androidhmi.util.PrefHelper
 import com.bacancy.ccs2androidhmi.util.ReadWriteUtil
@@ -140,8 +140,7 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
     override fun onResume() {
         super.onResume()
         setupSerialPort()
-        writeForPinAuthorization("hello12345yello67890")
-        //startReading()
+        startReading()
     }
 
     private fun makeFullScreen() {
@@ -219,9 +218,9 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
     private fun showReadStoppedUI() {
         if (isReadStopped == 5) {
             lifecycleScope.launch(Dispatchers.Main) {
-                /*showCustomDialog(getString(R.string.message_device_communication_error)) {
+                showCustomDialog(getString(R.string.message_device_communication_error)) {
                     isReadStopped = 0
-                }*/
+                }
             }
 
         }
@@ -574,14 +573,14 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
             ) || prefHelper.getBoolean(IS_GUN_2_CLICKED, false))
         ) {
             writeForLocalStartStop(determineLocalStartStop())
-        } else {
+        } else if (prefHelper.getSelectedGunNumber(SELECTED_GUN, 0) != 0) {
             val selectedGunNumber =
                 prefHelper.getSelectedGunNumber(SELECTED_GUN, 0)
-            if (selectedGunNumber != 0) {
-                authenticateGun(selectedGunNumber)
-            } else {
-                startReading()
-            }
+            authenticateGun(selectedGunNumber)
+        } else if (prefHelper.getStringValue(AUTH_PIN_VALUE, "").isNotEmpty()) {
+            writeForPinAuthorization(prefHelper.getStringValue(AUTH_PIN_VALUE, ""))
+        } else {
+            startReading()
         }
     }
 
@@ -940,12 +939,14 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
     private fun writeForPinAuthorization(enteredPin: String) {
         Log.i(TAG, "writeForPinAuthorization Request Started")
         lifecycleScope.launch(Dispatchers.IO) {
+            delay(500)
             ReadWriteUtil.writeToMultipleHoldingRegisterNew(
                 mOutputStream,
                 mInputStream,
                 75,
-                stringToIntArray(enteredPin), {
+                enteredPin, {
                     Log.d(TAG, "writeForPinAuthorization: Response Got")
+                    prefHelper.setStringValue(AUTH_PIN_VALUE, "")
                     lifecycleScope.launch {
                         startReading()
                     }
@@ -963,7 +964,11 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                 gunNumber, {
                     Log.d(TAG, "authenticateGun: Response Got")
                     lifecycleScope.launch {
-                        startReading()
+                        if (prefHelper.getStringValue(AUTH_PIN_VALUE, "").isNotEmpty()) {
+                            writeForPinAuthorization(prefHelper.getStringValue(AUTH_PIN_VALUE, ""))
+                        } else {
+                            startReading()
+                        }
                     }
                 }, {})
         }

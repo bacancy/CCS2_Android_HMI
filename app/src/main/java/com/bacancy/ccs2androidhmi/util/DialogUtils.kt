@@ -260,7 +260,7 @@ object DialogUtils {
             btnSubmit.setOnClickListener {
                 dialog.dismiss()
                 val edtPIN = edtPIN.text.toString()
-                if (edtPIN.isNotEmpty()) {
+                if (edtPIN.isNotEmpty() && edtPIN.length % 2 == 0) {
                     onSuccess(edtPIN)
                 } else {
                     onFailed()

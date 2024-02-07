@@ -21,7 +21,7 @@ object ReadWriteUtil {
         mOutputStream: OutputStream?,
         mInputStream: InputStream?,
         startAddress: Int,
-        regValue: IntArray,
+        regValue: String,
         onAuthDataReceived: (ByteArray?) -> Unit, onReadStopped: () -> Unit
     ) {
         withContext(Dispatchers.IO) {
@@ -29,22 +29,23 @@ object ReadWriteUtil {
             val bufferedOutputStream = BufferedOutputStream(mOutputStream)
 
             val writeRequestFrame: ByteArray =
-                ModBusUtils.createWriteMultipleRegistersRequest(startAddress, regValue)
-            withTimeout(1000) {
+                ModBusUtils.createWriteMultipleRegistersRequestForPinAuthNew(startAddress, regValue)
+            withTimeout(3000) {
                 try {
                     withContext(Dispatchers.IO) {
                         bufferedOutputStream.write(writeRequestFrame)
                         bufferedOutputStream.flush()
+                        delay(DELAY_BETWEEN_READ_AND_WRITE)
                         Log.w(
                             "TAG",
                             "writeToMultipleHoldingRegisterNew: BufferedInputStream available bytes - ${bufferedInputStream.available()}"
                         )
-                        delay(DELAY_BETWEEN_READ_AND_WRITE)
 
-                        val responseFrame = ByteArray(7)
+                        val responseFrame = ByteArray(8)
                         bufferedInputStream.mark(0)
                         if(bufferedInputStream.available() > 0){
                             bufferedInputStream.read(responseFrame)
+                            Log.w("TAG", "writeToMultipleHoldingRegisterNew: Response Frame - ${responseFrame.toHex()}")
                         }
                         onAuthDataReceived(null)
                     }
@@ -86,16 +87,20 @@ object ReadWriteUtil {
                     withContext(Dispatchers.IO) {
                         bufferedOutputStream.write(writeRequestFrame)
                         bufferedOutputStream.flush()
+
+                        delay(DELAY_BETWEEN_READ_AND_WRITE)
                         Log.w(
                             "TAG",
                             "writeToSingleHoldingRegisterNew: BufferedInputStream available bytes - ${bufferedInputStream.available()}"
                         )
-                        delay(DELAY_BETWEEN_READ_AND_WRITE)
-
                         val responseFrame = ByteArray(7)
                         bufferedInputStream.mark(0)
                         if(bufferedInputStream.available() > 0){
                             bufferedInputStream.read(responseFrame)
+                            Log.w(
+                                "TAG",
+                                "writeToSingleHoldingRegisterNew: Response Frame - ${responseFrame.toHex()}"
+                            )
                         }
                         onAuthDataReceived(null)
                     }

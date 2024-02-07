@@ -11,6 +11,7 @@ import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentGunsMoreInfoScreenBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
+import com.bacancy.ccs2androidhmi.util.CommonUtils.AUTH_PIN_VALUE
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showPinAuthorizationDialog
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.SELECTED_GUN
@@ -145,9 +146,9 @@ class GunsMoreInformationFragment : BaseFragment() {
 
             ivPinAuthorization.setOnClickListener {
                 showPinAuthorizationDialog({
-                    showToast(it)
+                    prefHelper.setStringValue(AUTH_PIN_VALUE,it)
                 }, {
-                    showToast("Invalid PIN")
+                    showToast("Invalid/Empty PIN")
                 })
             }
 
