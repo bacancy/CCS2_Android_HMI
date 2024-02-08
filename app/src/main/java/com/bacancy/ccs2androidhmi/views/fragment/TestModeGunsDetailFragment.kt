@@ -2,22 +2,18 @@ package com.bacancy.ccs2androidhmi.views.fragment
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.viewModels
 import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentTestModeGunsDetailBinding
-import com.bacancy.ccs2androidhmi.databinding.FragmentTestModeHomeBinding
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils
 import com.bacancy.ccs2androidhmi.util.PrefHelper
+import com.bacancy.ccs2androidhmi.util.ToastUtils.showCustomToast
 import com.bacancy.ccs2androidhmi.util.hideKeyboard
-import com.bacancy.ccs2androidhmi.util.showToast
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
 import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
 import com.bacancy.ccs2androidhmi.views.listener.FragmentChangeListener
@@ -137,7 +133,7 @@ class TestModeGunsDetailFragment : BaseFragment() {
                             }
                         }
                     } else {
-                        showToast("Please input voltage between 200 to 1000 V")
+                        requireContext().showCustomToast(getString(R.string.message_please_input_voltage_between_200_to_1000_v))
                     }
 
                     edtGunVoltage.hideKeyboard(requireContext())
@@ -159,7 +155,7 @@ class TestModeGunsDetailFragment : BaseFragment() {
                             }
                         }
                     } else {
-                        showToast("Please input current between 0 to 100 A")
+                        requireContext().showCustomToast(getString(R.string.message_please_input_current_between_0_to_100_a))
                     }
 
                     edtGunCurrent.hideKeyboard(requireContext())
@@ -167,25 +163,6 @@ class TestModeGunsDetailFragment : BaseFragment() {
                 }
                 false
             }
-
-            /*btnOutputOnOff.setOnClickListener {
-                prefHelper.setBoolean("IS_OUTPUT_ON_OFF_VALUE_CHANGED", true)
-                if (prefHelper.getBoolean("IS_OUTPUT_ON_OFF_VALUE_CHANGED", false)) {
-                    prefHelper.setBoolean("IS_OUTPUT_ON_OFF_VALUE_CHANGED", false)
-                    btnOutputOnOff.text = getString(R.string.lbl_output_on)
-                    0
-                } else {
-                    prefHelper.setBoolean("IS_OUTPUT_ON_OFF_VALUE_CHANGED", true)
-                    btnOutputOnOff.text = getString(R.string.lbl_output_off)
-                    1
-                }
-                //val value = if (isOutputOn) 1 else 0
-                if (selectedGunNumber == 1) {
-                    prefHelper.setIntValue("GUN1_OUTPUT_ON_OFF_VALUE", value)
-                } else {
-                    prefHelper.setIntValue("GUN2_OUTPUT_ON_OFF_VALUE", value)
-                }
-            }*/
 
             btnOutputOnOff.setOnClickListener {
                 prefHelper.setBoolean("IS_OUTPUT_ON_OFF_VALUE_CHANGED", true)
@@ -197,7 +174,6 @@ class TestModeGunsDetailFragment : BaseFragment() {
                     btnOutputOnOff.text = getString(R.string.lbl_output_off)
                 }
                 val value = if (isOutputOn) 1 else 0
-                //prefHelper.setIntValue("OUTPUT_ON_OFF_VALUE", value)
                 if (selectedGunNumber == 1) {
                     prefHelper.setIntValue("GUN1_OUTPUT_ON_OFF_VALUE", value)
                 } else {

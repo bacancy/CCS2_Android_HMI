@@ -2,7 +2,6 @@ package com.bacancy.ccs2androidhmi.views.fragment
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,9 +15,9 @@ import com.bacancy.ccs2androidhmi.util.DialogUtils.showPinAuthorizationDialog
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.SELECTED_GUN
 import com.bacancy.ccs2androidhmi.util.PrefHelper
+import com.bacancy.ccs2androidhmi.util.ToastUtils.showCustomToast
 import com.bacancy.ccs2androidhmi.util.gone
 import com.bacancy.ccs2androidhmi.util.invisible
-import com.bacancy.ccs2androidhmi.util.showToast
 import com.bacancy.ccs2androidhmi.util.visible
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
 import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
@@ -148,7 +147,7 @@ class GunsMoreInformationFragment : BaseFragment() {
                 showPinAuthorizationDialog({
                     prefHelper.setStringValue(AUTH_PIN_VALUE,it)
                 }, {
-                    showToast("Invalid/Empty PIN")
+                    requireContext().showCustomToast(getString(R.string.message_invalid_empty_pin))
                 })
             }
 

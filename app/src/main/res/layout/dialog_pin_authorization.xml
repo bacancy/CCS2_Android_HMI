@@ -10,7 +10,8 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="vertical"
-        android:padding="@dimen/_10sdp">
+        android:paddingHorizontal="@dimen/_20sdp"
+        android:paddingVertical="@dimen/_15sdp">
 
         <TextView
             android:id="@+id/tvGunsHeader"
@@ -26,28 +27,44 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_10sdp"
             android:background="@drawable/bg_black_round_rect_with_white_border"
+            android:digits="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            android:focusable="true"
             android:gravity="center"
             android:hint="@string/hint_enter_your_pin"
+            android:imeOptions="actionDone"
+            android:importantForAutofill="no"
             android:inputType="textVisiblePassword"
             android:maxLength="20"
-            android:digits="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-            android:singleLine="true"
             android:padding="@dimen/_10sdp"
-            android:imeOptions="actionDone"
+            android:singleLine="true"
             android:textColorHint="@color/light_grey"
-            android:focusable="true"
-            android:textSize="@dimen/_10ssp"
-            android:importantForAutofill="no" />
+            android:textSize="@dimen/_10ssp" />
 
-        <Button
-            android:id="@+id/btnSubmit"
-            style="@style/CommonButtonTheme"
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/_20sdp"
-            android:layout_marginTop="@dimen/_10sdp"
-            android:paddingHorizontal="@dimen/_10sdp"
-            android:text="@string/lbl_submit"
-            android:textSize="@dimen/_8ssp" />
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/btnClose"
+                style="@style/CommonButtonTheme"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_20sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:paddingHorizontal="@dimen/_10sdp"
+                android:text="@string/lbl_close"
+                android:textSize="@dimen/_8ssp" />
+
+            <Button
+                android:id="@+id/btnSubmit"
+                style="@style/CommonButtonTheme"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_20sdp"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:paddingHorizontal="@dimen/_10sdp"
+                android:text="@string/lbl_submit"
+                android:textSize="@dimen/_8ssp" />
+        </LinearLayout>
 
     </LinearLayout>
 

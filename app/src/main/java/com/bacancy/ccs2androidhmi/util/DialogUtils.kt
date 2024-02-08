@@ -255,6 +255,7 @@ object DialogUtils {
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         val binding = DialogPinAuthorizationBinding.inflate(layoutInflater)
         dialog.setContentView(binding.root)
+        dialog.setCanceledOnTouchOutside(false)
 
         binding.apply {
             btnSubmit.setOnClickListener {
@@ -265,6 +266,9 @@ object DialogUtils {
                 } else {
                     onFailed()
                 }
+            }
+            btnClose.setOnClickListener {
+                dialog.dismiss()
             }
         }
 

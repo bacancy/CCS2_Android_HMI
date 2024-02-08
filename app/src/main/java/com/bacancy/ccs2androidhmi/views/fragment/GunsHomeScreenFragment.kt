@@ -38,8 +38,8 @@ import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.TEMPERATURE_FAULT
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.UNAVAILABLE
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.UNPLUGGED
 import com.bacancy.ccs2androidhmi.util.PrefHelper
+import com.bacancy.ccs2androidhmi.util.ToastUtils.showCustomToast
 import com.bacancy.ccs2androidhmi.util.gone
-import com.bacancy.ccs2androidhmi.util.showToast
 import com.bacancy.ccs2androidhmi.util.visible
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
 import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
@@ -419,7 +419,7 @@ class GunsHomeScreenFragment : BaseFragment() {
             showPasswordPromptDialog({
                 fragmentChangeListener?.replaceFragment(LocalStartStopFragment())
             }, {
-                showToast(getString(R.string.msg_invalid_password))
+                requireContext().showCustomToast(getString(R.string.msg_invalid_password))
             })
         }
 
