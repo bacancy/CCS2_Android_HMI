@@ -14,10 +14,16 @@ import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.SerialPortBaseActivityNew
 import com.bacancy.ccs2androidhmi.databinding.ActivityHmiDashboardBinding
 import com.bacancy.ccs2androidhmi.util.CommonUtils
+import com.bacancy.ccs2androidhmi.util.DialogUtils.showPasswordPromptDialog
 import com.bacancy.ccs2androidhmi.util.gone
 import com.bacancy.ccs2androidhmi.util.invisible
+import com.bacancy.ccs2androidhmi.util.showToast
 import com.bacancy.ccs2androidhmi.util.visible
+import com.bacancy.ccs2androidhmi.views.fragment.FaultInfoFragment
+import com.bacancy.ccs2androidhmi.views.fragment.FirmwareVersionInfoFragment
 import com.bacancy.ccs2androidhmi.views.fragment.GunsHomeScreenFragment
+import com.bacancy.ccs2androidhmi.views.fragment.LocalStartStopFragment
+import com.bacancy.ccs2androidhmi.views.fragment.TestModeHomeFragment
 import com.bacancy.ccs2androidhmi.views.listener.FragmentChangeListener
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -62,6 +68,25 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
             prefHelper.setBoolean("IS_OUTPUT_ON_OFF_VALUE_CHANGED", false)
             addNewFragment(GunsHomeScreenFragment(), true)
         }
+        binding.incToolbar.ivScreenInfo.setOnClickListener {
+            addNewFragment(FirmwareVersionInfoFragment())
+        }
+
+        binding.incToolbar.ivLocalStartStop.setOnClickListener {
+            showPasswordPromptDialog({
+                addNewFragment(LocalStartStopFragment())
+            }, {
+                showToast(getString(R.string.msg_invalid_password))
+            })
+        }
+
+        binding.incToolbar.ivTestMode.setOnClickListener {
+            addNewFragment(TestModeHomeFragment())
+        }
+
+        binding.incToolbar.ivFaultInfo.setOnClickListener {
+            addNewFragment(FaultInfoFragment())
+        }
     }
 
     //For starting clock timer
@@ -74,6 +99,14 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
             binding.incToolbar.imgBack.visible()
         } else {
             binding.incToolbar.imgBack.invisible()
+        }
+    }
+
+    fun showHideSettingOptions(showSettingOptions: Boolean = false) {
+        if (showSettingOptions) {
+            binding.incToolbar.lnrOptions.visible()
+        } else {
+            binding.incToolbar.lnrOptions.gone()
         }
     }
 

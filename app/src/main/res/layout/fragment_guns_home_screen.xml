@@ -9,48 +9,6 @@
     android:paddingVertical="@dimen/_10sdp"
     tools:context=".views.fragment.GunsHomeScreenFragment">
 
-    <LinearLayout
-        android:id="@+id/lnrOptions"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="visible"
-        app:layout_constraintEnd_toStartOf="@id/ivOpenCloseOptions"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:id="@+id/ivLocalStartStop"
-            android:layout_width="@dimen/_15sdp"
-            android:layout_height="@dimen/_15sdp"
-            android:layout_marginEnd="@dimen/_10sdp"
-            android:contentDescription="@string/lbl_firmware_version_information"
-            android:src="@drawable/ic_local_start_stop_hand_white" />
-
-        <ImageView
-            android:id="@+id/ivTestMode"
-            android:layout_width="@dimen/_16sdp"
-            android:layout_height="@dimen/_16sdp"
-            android:layout_marginEnd="@dimen/_10sdp"
-            android:contentDescription="@string/lbl_firmware_version_information"
-            android:src="@drawable/ic_test_mode" />
-
-        <ImageView
-            android:id="@+id/ivScreenInfo"
-            android:layout_width="@dimen/_15sdp"
-            android:layout_height="@dimen/_15sdp"
-            android:layout_marginEnd="@dimen/_10sdp"
-            android:contentDescription="@string/lbl_firmware_version_information"
-            android:src="@drawable/ic_info" />
-
-        <ImageView
-            android:id="@+id/ivFaultInfo"
-            android:layout_width="@dimen/_16sdp"
-            android:layout_height="@dimen/_16sdp"
-            android:layout_marginEnd="@dimen/_10sdp"
-            android:contentDescription="@string/lbl_fault_information"
-            android:src="@drawable/ic_fault_info" />
-
-    </LinearLayout>
-
     <ImageView
         android:id="@+id/ivOpenCloseOptions"
         android:layout_width="@dimen/_16sdp"
@@ -195,72 +153,6 @@
             android:id="@+id/tvGun2TotalCost"
             layout="@layout/common_charging_status_view" />
 
-        <!--<TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:background="#00FFFFFF"
-            android:text="@string/lbl_gun_2_charging_status"
-            android:textColor="@color/white"
-            android:textSize="@dimen/_6ssp"
-            android:visibility="gone" />
-
-        <TextView
-            android:id="@+id/tvGun2ChargingSoc"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="#00FFFFFF"
-            android:textColor="@color/white"
-            android:textSize="@dimen/_10ssp"
-            tools:text="Charging SoC(%) = 50%" />
-
-        <TextView
-            android:id="@+id/tvGun2ChargingVoltage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="#00FFFFFF"
-            android:gravity="center"
-            android:textColor="@color/white"
-            android:textSize="@dimen/_10ssp"
-            tools:text="Charging Voltage(V) = 500" />
-
-        <TextView
-            android:id="@+id/tvGun2ChargingCurrent"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="#00FFFFFF"
-            android:gravity="center"
-            android:textColor="@color/white"
-            android:textSize="@dimen/_10ssp"
-            tools:text="Charging Current(A) = 50" />
-
-        <TextView
-            android:id="@+id/tvGun2EnergyConsumption"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="#00FFFFFF"
-            android:textColor="@color/white"
-            android:textSize="@dimen/_10ssp"
-            tools:text="Energy Consumption = 50.0 kw" />
-
-        <TextView
-            android:id="@+id/tvGun2Duration"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="#00FFFFFF"
-            android:textColor="@color/white"
-            android:textSize="@dimen/_10ssp"
-            tools:text="Duration(hh:mm) = 00:05" />
-
-        <TextView
-            android:id="@+id/tvGun2TotalCost"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="#00FFFFFF"
-            android:textColor="@color/white"
-            android:textSize="@dimen/_10ssp"
-            tools:text="Total Cost(INR) = $128" />-->
-
     </LinearLayout>
 
     <TextView
@@ -337,13 +229,17 @@
         android:id="@+id/tvUnitPrice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_rect_half_rounded"
-        android:padding="@dimen/_5sdp"
         android:textColor="@color/white"
         android:textSize="@dimen/_8ssp"
+        android:background="@drawable/bg_button_gradient_with_white_border"
         android:textStyle="bold"
+        android:layout_marginTop="@dimen/_1sdp"
+        android:paddingHorizontal="@dimen/_10sdp"
+        android:paddingVertical="@dimen/_1sdp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ivGun2Half"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         tools:text="Unit Price - Rs. 10/kwh" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

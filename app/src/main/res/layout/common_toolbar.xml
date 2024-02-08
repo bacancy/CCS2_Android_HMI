@@ -6,7 +6,51 @@
     android:layout_height="wrap_content"
     android:background="@color/black"
     android:paddingHorizontal="@dimen/_5sdp"
-    android:paddingVertical="@dimen/_10sdp">
+    android:paddingVertical="@dimen/_5sdp">
+
+    <LinearLayout
+        android:id="@+id/lnrOptions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        android:layout_marginStart="@dimen/_5sdp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/ivFaultInfo"
+            android:layout_width="@dimen/_16sdp"
+            android:layout_height="@dimen/_16sdp"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:contentDescription="@string/lbl_fault_information"
+            android:src="@drawable/ic_fault_info" />
+
+        <ImageView
+            android:id="@+id/ivScreenInfo"
+            android:layout_width="@dimen/_15sdp"
+            android:layout_height="@dimen/_15sdp"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:contentDescription="@string/lbl_firmware_version_information"
+            android:src="@drawable/ic_info" />
+
+        <ImageView
+            android:id="@+id/ivLocalStartStop"
+            android:layout_width="@dimen/_15sdp"
+            android:layout_height="@dimen/_15sdp"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:contentDescription="@string/lbl_firmware_version_information"
+            android:src="@drawable/ic_local_start_stop_hand_white" />
+
+        <ImageView
+            android:id="@+id/ivTestMode"
+            android:layout_width="@dimen/_16sdp"
+            android:layout_height="@dimen/_16sdp"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:contentDescription="@string/lbl_firmware_version_information"
+            android:src="@drawable/ic_test_mode" />
+
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/imgBack"
@@ -62,7 +106,7 @@
             android:id="@+id/imgServerStatus"
             android:layout_width="@dimen/_13sdp"
             android:layout_height="@dimen/_13sdp"
-            android:src="@drawable/ic_server_in_white" />
+            android:src="@drawable/ic_server_disconnected" />
 
         <ImageView
             android:id="@+id/imgEthernetStatus"

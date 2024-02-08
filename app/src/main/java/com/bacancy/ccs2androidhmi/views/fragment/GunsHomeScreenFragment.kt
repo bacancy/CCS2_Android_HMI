@@ -85,6 +85,7 @@ class GunsHomeScreenFragment : BaseFragment() {
         binding = FragmentGunsHomeScreenBinding.inflate(layoutInflater)
         (requireActivity() as HMIDashboardActivity).showHideBackIcon(false)
         (requireActivity() as HMIDashboardActivity).showHideHomeIcon(false)
+        (requireActivity() as HMIDashboardActivity).showHideSettingOptions(true)
         observeLatestMiscInfo()
         observeGunsChargingInfo()
         return binding.root
@@ -109,13 +110,13 @@ class GunsHomeScreenFragment : BaseFragment() {
 
     private fun observeGunsChargingInfo() {
 
-        appViewModel.getUpdatedGunsChargingInfo(1).observe(viewLifecycleOwner) {
+        appViewModel.getUpdatedGunsChargingInfo(1).observe(requireActivity()) {
             it?.let {
                 updateGun1UI(it)
             }
         }
 
-        appViewModel.getUpdatedGunsChargingInfo(2).observe(viewLifecycleOwner) {
+        appViewModel.getUpdatedGunsChargingInfo(2).observe(requireActivity()) {
             it?.let {
                 updateGun2UI(it)
             }
@@ -338,21 +339,15 @@ class GunsHomeScreenFragment : BaseFragment() {
                     tvGun1ChargingCurrent.tvValue.text = "$chargingCurrent A"
 
                     tvGun1EnergyConsumption.tvLabel.text = "Total Energy"
-                    tvGun1EnergyConsumption.tvValue.text = getString(R.string.lbl_gun_energy_consumption, energyConsumption)
+                    tvGun1EnergyConsumption.tvValue.text =
+                        getString(R.string.lbl_gun_energy_consumption, energyConsumption)
 
                     tvGun1Duration.tvLabel.text = "Duration (hh:mm)"
                     tvGun1Duration.tvValue.text = duration
 
                     tvGun1TotalCost.tvLabel.text = "Total Cost"
-                    tvGun1TotalCost.tvValue.text = getString(R.string.lbl_gun_total_cost_in_rs, totalCost)
-
-                    /*tvGun1ChargingSoc.text = getString(R.string.lbl_gun_charging_soc, chargingSoc)
-                    tvGun1ChargingVoltage.text = getString(R.string.lbl_gun_charging_voltage, chargingVoltage)
-                    tvGun1ChargingCurrent.text = getString(R.string.lbl_gun_charging_current, chargingCurrent)
-                    tvGun1Duration.text = getString(R.string.lbl_gun_charging_duration, duration)
-                    tvGun1EnergyConsumption.text =
-                        getString(R.string.lbl_gun_energy_consumption, energyConsumption)
-                    tvGun1TotalCost.text = getString(R.string.lbl_gun_total_cost, totalCost)*/
+                    tvGun1TotalCost.tvValue.text =
+                        getString(R.string.lbl_gun_total_cost_in_rs, totalCost)
                 } else {
                     tvGun2ChargingSoc.tvLabel.text = "Charging SoC"
                     tvGun2ChargingSoc.tvValue.text = "$chargingSoc%"
@@ -364,20 +359,15 @@ class GunsHomeScreenFragment : BaseFragment() {
                     tvGun2ChargingCurrent.tvValue.text = "$chargingCurrent A"
 
                     tvGun2EnergyConsumption.tvLabel.text = "Total Energy"
-                    tvGun2EnergyConsumption.tvValue.text = getString(R.string.lbl_gun_energy_consumption, energyConsumption)
+                    tvGun2EnergyConsumption.tvValue.text =
+                        getString(R.string.lbl_gun_energy_consumption, energyConsumption)
 
                     tvGun2Duration.tvLabel.text = "Duration (hh:mm)"
                     tvGun2Duration.tvValue.text = duration
 
                     tvGun2TotalCost.tvLabel.text = "Total Cost"
-                    tvGun2TotalCost.tvValue.text = getString(R.string.lbl_gun_total_cost_in_rs, totalCost)
-                    /*tvGun2ChargingSoc.text = getString(R.string.lbl_gun_charging_soc, chargingSoc)
-                    tvGun2ChargingVoltage.text = getString(R.string.lbl_gun_charging_voltage, chargingVoltage)
-                    tvGun2ChargingCurrent.text = getString(R.string.lbl_gun_charging_current, chargingCurrent)
-                    tvGun2Duration.text = getString(R.string.lbl_gun_charging_duration, duration)
-                    tvGun2EnergyConsumption.text =
-                        getString(R.string.lbl_gun_energy_consumption, energyConsumption)
-                    tvGun2TotalCost.text = getString(R.string.lbl_gun_total_cost, totalCost)*/
+                    tvGun2TotalCost.tvValue.text =
+                        getString(R.string.lbl_gun_total_cost_in_rs, totalCost)
                 }
             }
         }
@@ -396,24 +386,26 @@ class GunsHomeScreenFragment : BaseFragment() {
     private fun observeGunsLastChargingSummary(isGun1: Boolean) {
         lifecycleScope.launch {
             delay(2000)
-            //if (isAdded) {
-            appViewModel.getGunsLastChargingSummary(if (isGun1) 1 else 2)
-                .observe(viewLifecycleOwner) {
-                    it?.let {
-                        if (isGun1) {
-                            if (shouldShowGun1SummaryDialog) {
-                                shouldShowGun1SummaryDialog = false
-                                showChargingSummaryDialog(true, it) {}
-                            }
-                        } else {
-                            if (shouldShowGun2SummaryDialog) {
-                                shouldShowGun2SummaryDialog = false
-                                showChargingSummaryDialog(false, it) {}
+            try {
+                appViewModel.getGunsLastChargingSummary(if (isGun1) 1 else 2)
+                    .observe(requireActivity()) {
+                        it?.let {
+                            if (isGun1) {
+                                if (shouldShowGun1SummaryDialog) {
+                                    shouldShowGun1SummaryDialog = false
+                                    requireContext().showChargingSummaryDialog(true, it) {}
+                                }
+                            } else {
+                                if (shouldShowGun2SummaryDialog) {
+                                    shouldShowGun2SummaryDialog = false
+                                    requireContext().showChargingSummaryDialog(false, it) {}
+                                }
                             }
                         }
                     }
-                }
-            //}
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 
@@ -426,35 +418,6 @@ class GunsHomeScreenFragment : BaseFragment() {
             openGunsMoreInfoFragment(2)
         }
 
-        binding.ivScreenInfo.setOnClickListener {
-            fragmentChangeListener?.replaceFragment(FirmwareVersionInfoFragment())
-        }
-
-        binding.ivLocalStartStop.setOnClickListener {
-            showPasswordPromptDialog({
-                fragmentChangeListener?.replaceFragment(LocalStartStopFragment())
-            }, {
-                showToast(getString(R.string.msg_invalid_password))
-            })
-        }
-
-        binding.ivTestMode.setOnClickListener {
-            fragmentChangeListener?.replaceFragment(TestModeHomeFragment())
-        }
-
-        binding.ivFaultInfo.setOnClickListener {
-            fragmentChangeListener?.replaceFragment(FaultInfoFragment())
-        }
-
-        binding.ivOpenCloseOptions.setOnClickListener {
-
-            if (binding.lnrOptions.isVisible) {
-                binding.lnrOptions.gone()
-            } else {
-                binding.lnrOptions.visible()
-            }
-
-        }
     }
 
     private fun openGunsMoreInfoFragment(gunNumber: Int) {

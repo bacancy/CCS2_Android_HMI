@@ -20,7 +20,10 @@
     <style name="CommonButtonTheme">
         <item name="android:background">@drawable/bg_button_gradient_with_white_border</item>
         <item name="android:textColor">@color/white</item>
-        <item name="android:textSize">@dimen/_5ssp</item>
+        <item name="android:paddingTop">@dimen/_5sdp</item>
+        <item name="android:paddingBottom">@dimen/_5sdp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">@dimen/_8ssp</item>
         <item name="android:textAllCaps">false</item>
     </style>
     <style name="HistoryTableHeaderTheme">

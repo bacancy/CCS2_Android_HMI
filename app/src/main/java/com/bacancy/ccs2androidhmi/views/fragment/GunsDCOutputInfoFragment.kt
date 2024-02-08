@@ -40,6 +40,7 @@ class GunsDCOutputInfoFragment : BaseFragment() {
         selectedGunNumber = arguments?.getInt(SELECTED_GUN)!!
         (requireActivity() as HMIDashboardActivity).showHideBackIcon()
         (requireActivity() as HMIDashboardActivity).showHideHomeIcon()
+        (requireActivity() as HMIDashboardActivity).showHideSettingOptions()
         observeGunsDCOutputInfo()
         return binding.root
     }

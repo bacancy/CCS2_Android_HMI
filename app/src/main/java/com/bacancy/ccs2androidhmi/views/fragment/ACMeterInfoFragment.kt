@@ -46,6 +46,7 @@ class ACMeterInfoFragment : BaseFragment() {
         getLatestAcMeterInfo()
         (requireActivity() as HMIDashboardActivity).showHideBackIcon()
         (requireActivity() as HMIDashboardActivity).showHideHomeIcon()
+        (requireActivity() as HMIDashboardActivity).showHideSettingOptions()
         return binding.root
     }
 
