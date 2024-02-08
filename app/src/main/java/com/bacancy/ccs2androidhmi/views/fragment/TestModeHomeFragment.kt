@@ -81,7 +81,6 @@ class TestModeHomeFragment : BaseFragment() {
     }
 
     private fun openTestModeGunsDetailFragment(gunNumber: Int) {
-        (requireActivity() as HMIDashboardActivity).showOrHideEmergencyStop(0)
         val bundle = Bundle()
         bundle.putInt(GunsChargingInfoUtils.SELECTED_GUN, gunNumber)
         val fragment = TestModeGunsDetailFragment()

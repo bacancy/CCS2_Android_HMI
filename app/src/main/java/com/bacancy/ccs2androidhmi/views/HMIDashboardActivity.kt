@@ -75,9 +75,6 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         } else {
             binding.incToolbar.imgBack.invisible()
         }
-        if(binding.incToolbar.imgBack.isVisible){
-            binding.incToolbar.tvEmergencyStop.gone()
-        }
     }
 
     fun showHideHomeIcon(showHomeIcon: Boolean = true) {
@@ -85,9 +82,6 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
             binding.incToolbar.imgHome.visible()
         } else {
             binding.incToolbar.imgHome.invisible()
-        }
-        if (binding.incToolbar.imgHome.isVisible) {
-            binding.incToolbar.tvEmergencyStop.gone()
         }
     }
 
@@ -98,16 +92,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
                 updateEthernetStatus(latestMiscInfo.ethernetStatus)
                 adjustGSMLevel(latestMiscInfo.gsmLevel)
                 adjustWifiLevel(latestMiscInfo.wifiLevel)
-                showOrHideEmergencyStop(latestMiscInfo.emergencyButtonStatus)
             }
-        }
-    }
-
-    fun showOrHideEmergencyStop(emergencyButtonStatus: Int) {
-        if (emergencyButtonStatus == 1) {
-            binding.incToolbar.tvEmergencyStop.visible()
-        } else {
-            binding.incToolbar.tvEmergencyStop.gone()
         }
     }
 

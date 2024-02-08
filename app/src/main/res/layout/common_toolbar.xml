@@ -35,23 +35,6 @@
         app:layout_constraintStart_toEndOf="@id/imgBack"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/tvEmergencyStop"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:drawablePadding="@dimen/_5sdp"
-        android:text="@string/lbl_emergency_stop"
-        android:textColor="@color/red"
-        android:textSize="@dimen/_10ssp"
-        android:textStyle="bold"
-        android:layout_marginStart="@dimen/_5sdp"
-        android:visibility="gone"
-        app:drawableStartCompat="@drawable/ic_emergency_stop"
-        app:drawableTint="@color/red"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/imgHome"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <ImageView
         android:id="@+id/ivLogo"
         android:layout_width="@dimen/_120sdp"
@@ -110,7 +93,8 @@
         android:layout_height="wrap_content"
         android:paddingHorizontal="@dimen/_3sdp"
         android:textColor="@color/white"
-        android:textSize="@dimen/_7ssp"
+        android:textSize="@dimen/_9ssp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"

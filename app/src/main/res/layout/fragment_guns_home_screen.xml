@@ -99,7 +99,7 @@
         android:layout_height="match_parent"
         android:layout_marginTop="@dimen/_30sdp"
         android:layout_marginEnd="@dimen/_55sdp"
-        android:layout_marginBottom="@dimen/_115sdp"
+        android:layout_marginBottom="@dimen/_120sdp"
         android:background="@drawable/bg_button_gradient_with_white_border"
         android:gravity="start"
         android:orientation="vertical"
@@ -135,66 +135,6 @@
             android:id="@+id/tvGun1TotalCost"
             layout="@layout/common_charging_status_view" />
 
-        <!--<TextView
-            android:id="@+id/tvGun1ChargingSoc"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="#00FFFFFF"
-            android:gravity="center"
-            android:textColor="@color/white"
-            android:textSize="@dimen/_10ssp"
-            tools:text="Charging SoC(%) = 50%" />
-
-        <TextView
-            android:id="@+id/tvGun1ChargingVoltage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="#00FFFFFF"
-            android:gravity="center"
-            android:textColor="@color/white"
-            android:textSize="@dimen/_10ssp"
-            tools:text="Charging Voltage(V) = 500" />
-
-        <TextView
-            android:id="@+id/tvGun1ChargingCurrent"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="#00FFFFFF"
-            android:gravity="center"
-            android:textColor="@color/white"
-            android:textSize="@dimen/_10ssp"
-            tools:text="Charging Current(A) = 50" />
-
-        <TextView
-            android:id="@+id/tvGun1EnergyConsumption"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="#00FFFFFF"
-            android:gravity="center"
-            android:textColor="@color/white"
-            android:textSize="@dimen/_10ssp"
-            tools:text="Energy Consumption = 50.0 kw" />
-
-        <TextView
-            android:id="@+id/tvGun1Duration"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="#00FFFFFF"
-            android:gravity="center"
-            android:textColor="@color/white"
-            android:textSize="@dimen/_10ssp"
-            tools:text="Duration(hh:mm) = 00:05" />
-
-        <TextView
-            android:id="@+id/tvGun1TotalCost"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="#00FFFFFF"
-            android:gravity="center"
-            android:textColor="@color/white"
-            android:textSize="@dimen/_10ssp"
-            tools:text="Total Cost(INR) = $128" />-->
-
     </LinearLayout>
 
     <TextView
@@ -219,7 +159,7 @@
         android:layout_height="match_parent"
         android:layout_marginStart="@dimen/_55sdp"
         android:layout_marginTop="@dimen/_30sdp"
-        android:layout_marginBottom="@dimen/_115sdp"
+        android:layout_marginBottom="@dimen/_120sdp"
         android:background="@drawable/bg_button_gradient_with_white_border"
         android:gravity="start"
         android:orientation="vertical"

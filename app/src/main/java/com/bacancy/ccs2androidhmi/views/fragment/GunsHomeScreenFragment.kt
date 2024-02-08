@@ -38,6 +38,8 @@ import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.TEMPERATURE_FAULT
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.UNAVAILABLE
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.UNPLUGGED
 import com.bacancy.ccs2androidhmi.util.PrefHelper
+import com.bacancy.ccs2androidhmi.util.TextViewUtils.removeBlinking
+import com.bacancy.ccs2androidhmi.util.TextViewUtils.startBlinking
 import com.bacancy.ccs2androidhmi.util.gone
 import com.bacancy.ccs2androidhmi.util.showToast
 import com.bacancy.ccs2androidhmi.util.visible
@@ -130,17 +132,20 @@ class GunsHomeScreenFragment : BaseFragment() {
 
         when (tbGunsChargingInfo.gunChargingState) {
             UNPLUGGED -> {
+                binding.tvGun1State.removeBlinking()
                 shouldShowGun1SummaryDialog = false
                 binding.ivGun1Half.setImageResource(R.drawable.img_gun1_unplugged)
             }
 
             PLUGGED_IN -> {
+                binding.tvGun1State.removeBlinking()
                 shouldShowGun1SummaryDialog = false
                 binding.ivGun1Half.setImageResource(R.drawable.img_gun1_plugged)
                 binding.tvGun1State.text = getString(R.string.lbl_plugged_in)
             }
 
             CHARGING -> {
+                binding.tvGun1State.removeBlinking()
                 isGun1ChargingStarted = true
                 shouldShowGun1SummaryDialog = false
                 binding.ivGun1Half.setImageResource(R.drawable.img_gun1_charging_completed)
@@ -148,11 +153,13 @@ class GunsHomeScreenFragment : BaseFragment() {
             }
 
             PREPARING_FOR_CHARGING -> {
+                binding.tvGun1State.removeBlinking()
                 shouldShowGun1SummaryDialog = false
                 binding.ivGun1Half.setImageResource(R.drawable.img_gun1_charging_completed)
             }
 
             COMPLETE -> {
+                binding.tvGun1State.removeBlinking()
                 binding.ivGun1Half.setImageResource(R.drawable.img_gun1_charging)
                 hideGunsChargingStatusUI(true)
             }
@@ -163,15 +170,18 @@ class GunsHomeScreenFragment : BaseFragment() {
             SPD_FAULT,
             SMOKE_FAULT,
             TAMPER_FAULT -> {
+                binding.tvGun1State.startBlinking(requireContext())
                 binding.ivGun1Half.setImageResource(R.drawable.img_gun1_fault)
                 hideGunsChargingStatusUI(true)
             }
 
             EMERGENCY_STOP -> {
+                binding.tvGun1State.startBlinking(requireContext())
                 hideGunsChargingStatusUI(true)
             }
 
             else -> {
+                binding.tvGun1State.startBlinking(requireContext())
                 binding.tvGun1State.text = "(${tbGunsChargingInfo.gunChargingState})"
                 hideGunsChargingStatusUI(true)
             }
@@ -218,17 +228,20 @@ class GunsHomeScreenFragment : BaseFragment() {
 
         when (tbGunsChargingInfo.gunChargingState) {
             UNPLUGGED -> {
+                binding.tvGun2State.removeBlinking()
                 shouldShowGun2SummaryDialog = false
                 binding.ivGun2Half.setImageResource(R.drawable.img_gun2_unplugged)
             }
 
             PLUGGED_IN -> {
+                binding.tvGun2State.removeBlinking()
                 shouldShowGun2SummaryDialog = false
                 binding.ivGun2Half.setImageResource(R.drawable.img_gun2_plugged)
                 binding.tvGun2State.text = getString(R.string.lbl_plugged_in)
             }
 
             CHARGING -> {
+                binding.tvGun2State.removeBlinking()
                 isGun2ChargingStarted = true
                 shouldShowGun2SummaryDialog = false
                 binding.ivGun2Half.setImageResource(R.drawable.img_gun2_charging_completed)
@@ -236,11 +249,13 @@ class GunsHomeScreenFragment : BaseFragment() {
             }
 
             PREPARING_FOR_CHARGING -> {
+                binding.tvGun2State.removeBlinking()
                 shouldShowGun2SummaryDialog = false
                 binding.ivGun2Half.setImageResource(R.drawable.img_gun2_charging_completed)
             }
 
             COMPLETE -> {
+                binding.tvGun2State.removeBlinking()
                 binding.ivGun2Half.setImageResource(R.drawable.img_gun2_charging)
                 hideGunsChargingStatusUI(false)
             }
@@ -251,15 +266,18 @@ class GunsHomeScreenFragment : BaseFragment() {
             SPD_FAULT,
             SMOKE_FAULT,
             TAMPER_FAULT -> {
+                binding.tvGun2State.startBlinking(requireContext())
                 binding.ivGun2Half.setImageResource(R.drawable.img_gun2_fault)
                 hideGunsChargingStatusUI(false)
             }
 
             EMERGENCY_STOP -> {
+                binding.tvGun2State.startBlinking(requireContext())
                 hideGunsChargingStatusUI(false)
             }
 
             else -> {
+                binding.tvGun2State.startBlinking(requireContext())
                 binding.tvGun2State.text = "(${tbGunsChargingInfo.gunChargingState})"
                 hideGunsChargingStatusUI(false)
             }
@@ -409,7 +427,6 @@ class GunsHomeScreenFragment : BaseFragment() {
         }
 
         binding.ivScreenInfo.setOnClickListener {
-            (requireActivity() as HMIDashboardActivity).showOrHideEmergencyStop(0)
             fragmentChangeListener?.replaceFragment(FirmwareVersionInfoFragment())
         }
 
@@ -441,7 +458,6 @@ class GunsHomeScreenFragment : BaseFragment() {
     }
 
     private fun openGunsMoreInfoFragment(gunNumber: Int) {
-        (requireActivity() as HMIDashboardActivity).showOrHideEmergencyStop(0)
         val bundle = Bundle()
         bundle.putInt(SELECTED_GUN, gunNumber)
         val fragment = GunsMoreInformationFragment()
