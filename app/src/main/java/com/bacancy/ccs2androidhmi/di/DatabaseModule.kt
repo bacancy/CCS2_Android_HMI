@@ -3,6 +3,7 @@ package com.bacancy.ccs2androidhmi.di
 import android.content.Context
 import androidx.room.Room
 import com.bacancy.ccs2androidhmi.db.AppDatabase
+import com.bacancy.ccs2androidhmi.db.AppDatabase.Companion.MIGRATION_1_2
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -18,6 +19,7 @@ object DatabaseModule {
     @Provides
     fun provideAppDatabase(@ApplicationContext appContext: Context): AppDatabase {
         return Room.databaseBuilder(appContext, AppDatabase::class.java, "CCS2_HMI.db")
+            .addMigrations(MIGRATION_1_2)
             .build()
     }
 

@@ -378,24 +378,26 @@ class GunsHomeScreenFragment : BaseFragment() {
     private fun observeGunsLastChargingSummary(isGun1: Boolean) {
         lifecycleScope.launch {
             delay(2000)
-            //if (isAdded) {
-            appViewModel.getGunsLastChargingSummary(if (isGun1) 1 else 2)
-                .observe(viewLifecycleOwner) {
-                    it?.let {
-                        if (isGun1) {
-                            if (shouldShowGun1SummaryDialog) {
-                                shouldShowGun1SummaryDialog = false
-                                showChargingSummaryDialog(true, it) {}
-                            }
-                        } else {
-                            if (shouldShowGun2SummaryDialog) {
-                                shouldShowGun2SummaryDialog = false
-                                showChargingSummaryDialog(false, it) {}
+            try{
+                appViewModel.getGunsLastChargingSummary(if (isGun1) 1 else 2)
+                    .observe(requireActivity()) {
+                        it?.let {
+                            if (isGun1) {
+                                if (shouldShowGun1SummaryDialog) {
+                                    shouldShowGun1SummaryDialog = false
+                                    showChargingSummaryDialog(true, it) {}
+                                }
+                            } else {
+                                if (shouldShowGun2SummaryDialog) {
+                                    shouldShowGun2SummaryDialog = false
+                                    showChargingSummaryDialog(false, it) {}
+                                }
                             }
                         }
                     }
-                }
-            //}
+            } catch (e: Exception){
+                e.printStackTrace()
+            }
         }
     }
 

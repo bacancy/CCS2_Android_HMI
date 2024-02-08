@@ -5,6 +5,15 @@ import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.toHex
 
 object MiscInfoUtils {
 
+    const val NO_STATE = "No State"
+    const val RFID_TAG_DETECTED = "RFID Tag Detected"
+    const val RFID_TAG_VALID = "RFID Tag Valid"
+    const val RFID_TAG_INVALID = "RFID Tag Invalid"
+    const val TOKEN_ID_NONE = "Token ID None"
+    const val TOKEN_ID_SUBMITTED = "Token ID Submitted"
+    const val TOKEN_ID_VALID = "Token ID Valid"
+    const val TOKEN_ID_INVALID = "Token ID Invalid"
+
     fun getMCUFirmwareVersion(response: ByteArray): String {
         val reg3MSB = response[9].getIntValueFromByte()
         val reg3LSB = response[10].getIntValueFromByte()
@@ -106,6 +115,19 @@ object MiscInfoUtils {
     fun getDevicePhysicalConnectionStatus(response: ByteArray): String {
         return ModbusTypeConverter.byteArrayToBinaryString(response.copyOfRange(59, 61))
             .reversed().substring(0, 6)
+    }
+
+    fun getRFIDTagState(response: ByteArray): String {
+        val statusMap = mapOf(
+            "1" to RFID_TAG_DETECTED,
+            "2" to RFID_TAG_VALID,
+            "3" to RFID_TAG_INVALID,
+            "5" to TOKEN_ID_SUBMITTED,
+            "6" to TOKEN_ID_VALID,
+            "7" to TOKEN_ID_INVALID
+        )
+        val status = response.copyOfRange(73, 75).toHex()
+        return statusMap.getOrElse(status.last().toString()) { "No State" }
     }
 
 }

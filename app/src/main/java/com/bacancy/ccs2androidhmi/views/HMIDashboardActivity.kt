@@ -14,8 +14,11 @@ import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.SerialPortBaseActivityNew
 import com.bacancy.ccs2androidhmi.databinding.ActivityHmiDashboardBinding
 import com.bacancy.ccs2androidhmi.util.CommonUtils
+import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.NO_STATE
+import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.TOKEN_ID_NONE
 import com.bacancy.ccs2androidhmi.util.gone
 import com.bacancy.ccs2androidhmi.util.invisible
+import com.bacancy.ccs2androidhmi.util.showToast
 import com.bacancy.ccs2androidhmi.util.visible
 import com.bacancy.ccs2androidhmi.views.fragment.GunsHomeScreenFragment
 import com.bacancy.ccs2androidhmi.views.listener.FragmentChangeListener
@@ -75,7 +78,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         } else {
             binding.incToolbar.imgBack.invisible()
         }
-        if(binding.incToolbar.imgBack.isVisible){
+        if (binding.incToolbar.imgBack.isVisible) {
             binding.incToolbar.tvEmergencyStop.gone()
         }
     }
@@ -99,6 +102,9 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
                 adjustGSMLevel(latestMiscInfo.gsmLevel)
                 adjustWifiLevel(latestMiscInfo.wifiLevel)
                 showOrHideEmergencyStop(latestMiscInfo.emergencyButtonStatus)
+                if (latestMiscInfo.rfidTagState.isNotEmpty() && latestMiscInfo.rfidTagState != TOKEN_ID_NONE && latestMiscInfo.rfidTagState != NO_STATE) {
+                    showToast(latestMiscInfo.rfidTagState)
+                }
             }
         }
     }
