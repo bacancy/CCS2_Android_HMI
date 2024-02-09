@@ -346,7 +346,7 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                 currentL3 = newResponse[6],
                 averageCurrent = newResponse[7],
                 frequency = newResponse[10],
-                activePower = newResponse[11],
+                activePower = newResponse[8],
                 totalPower = newResponse[9]
             )
             appViewModel.insertAcMeterInfo(tbAcMeterInfo)
