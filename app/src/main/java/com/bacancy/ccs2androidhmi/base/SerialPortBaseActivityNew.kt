@@ -77,6 +77,7 @@ import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getRectifier2Code
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getRectifier3Code
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getRectifier4Code
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getUnitPrice
+import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getVendorErrorCodeInformation
 import com.bacancy.ccs2androidhmi.util.ModBusUtils
 import com.bacancy.ccs2androidhmi.util.ModbusRequestFrames
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter
@@ -241,6 +242,10 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
     }
 
     private fun insertMiscInfoInDB(it: ByteArray) {
+        Log.i(
+            TAG,
+            "insertMiscInfoInDB: Vendor Error Code Info = ${getVendorErrorCodeInformation(it)}"
+        )
         val networkStatusBits =
             ModbusTypeConverter.byteArrayToBinaryString(it.copyOfRange(3, 5))
                 .reversed()

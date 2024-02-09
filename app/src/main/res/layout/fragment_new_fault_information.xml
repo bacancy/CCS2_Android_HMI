@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:padding="@dimen/_10sdp"
+    tools:context=".views.fragment.GunsChargingHistoryFragment">
+
+    <include
+        android:id="@+id/incHeader"
+        layout="@layout/common_header" />
+
+    <LinearLayout
+        android:id="@+id/lnrTableHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:orientation="horizontal"
+        android:visibility="visible">
+
+        <TextView
+            style="@style/HistoryTableHeaderTheme"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.3"
+            android:text="@string/lbl_serial_number" />
+
+        <TextView
+            style="@style/HistoryTableHeaderTheme"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/lbl_error_desc" />
+
+        <TextView
+            style="@style/HistoryTableHeaderTheme"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/lbl_error_status" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvNoDataFound"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_black_rect_with_white_border"
+        android:gravity="center_horizontal"
+        android:padding="@dimen/_10sdp"
+        android:text="@string/lbl_no_charging_history"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_10ssp"
+        android:visibility="gone" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvVendorErrorCodeInfo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        tools:listitem="@layout/row_item_charging_history" />
+
+</LinearLayout>

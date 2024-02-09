@@ -108,4 +108,8 @@ object MiscInfoUtils {
             .reversed().substring(0, 6)
     }
 
+    fun getVendorErrorCodeInformation(response: ByteArray): String {
+        return response.copyOfRange(91, 95).toHex()
+    }
+
 }
