@@ -15,6 +15,7 @@ import com.bacancy.ccs2androidhmi.base.SerialPortBaseActivityNew
 import com.bacancy.ccs2androidhmi.databinding.ActivityHmiDashboardBinding
 import com.bacancy.ccs2androidhmi.util.CommonUtils
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showPasswordPromptDialog
+import com.bacancy.ccs2androidhmi.util.ToastUtils.showCustomToast
 import com.bacancy.ccs2androidhmi.util.gone
 import com.bacancy.ccs2androidhmi.util.invisible
 import com.bacancy.ccs2androidhmi.util.showToast
@@ -76,7 +77,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
             showPasswordPromptDialog({
                 addNewFragment(LocalStartStopFragment())
             }, {
-                showToast(getString(R.string.msg_invalid_password))
+                showCustomToast(getString(R.string.msg_invalid_password), false)
             })
         }
 

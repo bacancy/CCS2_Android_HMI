@@ -132,5 +132,7 @@
     <string name="hint_between_200_1000v">between 200 – 1000V</string>
     <string name="hint_between_0_100a">between 0 – 100A</string>
     <string name="message_device_communication_error">Device Communication Error</string>
+    <string name="lbl_gun_2_loading">Gun - 2 (Loading...)</string>
+    <string name="lbl_gun_1_loading">Gun - 1 (Loading...)</string>
 
 </resources>

@@ -563,13 +563,18 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
     }
 
     private fun chooseLocalStartStopOrAuthenticateMethod() {
+        Log.i(
+            TAG, "chooseLocalStartStopOrAuthenticateMethod: INSIDE_LOCAL_START_STOP_SCREEN => ${
+                prefHelper.getBoolean(
+                    INSIDE_LOCAL_START_STOP_SCREEN,
+                    false
+                )
+            }"
+        )
         if (prefHelper.getBoolean(
                 INSIDE_LOCAL_START_STOP_SCREEN,
                 false
-            ) && (prefHelper.getBoolean(
-                IS_GUN_1_CLICKED,
-                false
-            ) || prefHelper.getBoolean(IS_GUN_2_CLICKED, false))
+            )
         ) {
             writeForLocalStartStop(determineLocalStartStop())
         } else {

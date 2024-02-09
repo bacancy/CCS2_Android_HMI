@@ -16,6 +16,7 @@ import com.bacancy.ccs2androidhmi.databinding.FragmentTestModeGunsDetailBinding
 import com.bacancy.ccs2androidhmi.databinding.FragmentTestModeHomeBinding
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils
 import com.bacancy.ccs2androidhmi.util.PrefHelper
+import com.bacancy.ccs2androidhmi.util.ToastUtils.showCustomToast
 import com.bacancy.ccs2androidhmi.util.hideKeyboard
 import com.bacancy.ccs2androidhmi.util.showToast
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
@@ -138,7 +139,7 @@ class TestModeGunsDetailFragment : BaseFragment() {
                             }
                         }
                     } else {
-                        showToast("Please input voltage between 200 to 1000 V")
+                        requireContext().showCustomToast("Please input voltage between 200 to 1000 V", false)
                     }
 
                     edtGunVoltage.hideKeyboard(requireContext())
@@ -160,7 +161,7 @@ class TestModeGunsDetailFragment : BaseFragment() {
                             }
                         }
                     } else {
-                        showToast("Please input current between 0 to 100 A")
+                        requireContext().showCustomToast("Please input current between 0 to 100 A", false)
                     }
 
                     edtGunCurrent.hideKeyboard(requireContext())
