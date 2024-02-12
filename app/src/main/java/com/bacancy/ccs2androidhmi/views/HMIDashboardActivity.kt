@@ -5,7 +5,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.WindowManager
-import androidx.activity.OnBackPressedDispatcherOwner
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
@@ -30,8 +30,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener,
-    OnBackPressedDispatcherOwner {
+class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener{
 
     private lateinit var gunsHomeScreenFragment: GunsHomeScreenFragment
     private lateinit var binding: ActivityHmiDashboardBinding
@@ -158,21 +157,19 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
     }
 
     private fun handleBackStackChanges() {
-        supportFragmentManager.addOnBackStackChangedListener {
-            // Perform actions based on the current state of the back stack
-            // For example, update the UI or perform specific logic
+        val callback = object : OnBackPressedCallback(
+            true // default to enabled
+        ) {
+            override fun handleOnBackPressed() {
+                Log.d("TAG", "onBackPressed Count: ${supportFragmentManager.backStackEntryCount}")
+                if (supportFragmentManager.backStackEntryCount > 1) {
+                    supportFragmentManager.popBackStack()
+                } else {
+                    finish()
+                }
+            }
         }
-    }
-
-    @Deprecated("Deprecated in Java", replaceWith = ReplaceWith(""))
-    override fun onBackPressed() {
-        Log.d("TAG", "onBackPressed Count: ${supportFragmentManager.backStackEntryCount}")
-        if (supportFragmentManager.backStackEntryCount > 1) {
-            supportFragmentManager.popBackStack()
-        } else {
-            finish()
-            super.onBackPressed()
-        }
+        onBackPressedDispatcher.addCallback(this, callback)
     }
 
     private fun addNewFragment(fragment: Fragment, shouldMoveToHomeScreen: Boolean = false) {

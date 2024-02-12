@@ -25,8 +25,6 @@ import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_DC_METER_FRAG
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_LAST_CHARGING_SUMMARY_FRAG
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_LOCAL_START
 import com.bacancy.ccs2androidhmi.util.CommonUtils.INSIDE_LOCAL_START_STOP_SCREEN
-import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_GUN_1_CLICKED
-import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_GUN_2_CLICKED
 import com.bacancy.ccs2androidhmi.util.CommonUtils.generateRandomNumber
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showCustomDialog
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_DENIED

@@ -16,7 +16,6 @@ object MiscInfoUtils {
 
     fun getMCUFirmwareVersion(response: ByteArray): String {
         val reg3MSB = response[9].getIntValueFromByte()
-        val reg3LSB = response[10].getIntValueFromByte()
         val reg4MSB = response[11].getIntValueFromByte()
         val reg4LSB = response[12].getIntValueFromByte()
 
@@ -25,7 +24,6 @@ object MiscInfoUtils {
 
     fun getOCPPFirmwareVersion(response: ByteArray): String {
         val reg3MSB = response[65].getIntValueFromByte()
-        val reg3LSB = response[66].getIntValueFromByte()
         val reg4MSB = response[67].getIntValueFromByte()
         val reg4LSB = response[68].getIntValueFromByte()
 
@@ -47,7 +45,6 @@ object MiscInfoUtils {
 
     fun getRFIDFirmwareVersion(response: ByteArray): String {
         val reg3MSB = response[75].getIntValueFromByte()
-        val reg3LSB = response[76].getIntValueFromByte()
         val reg4MSB = response[77].getIntValueFromByte()
         val reg4LSB = response[78].getIntValueFromByte()
 
@@ -56,7 +53,6 @@ object MiscInfoUtils {
 
     fun getLEDModuleFirmwareVersion(response: ByteArray): String {
         val reg3MSB = response[79].getIntValueFromByte()
-        val reg3LSB = response[80].getIntValueFromByte()
         val reg4MSB = response[81].getIntValueFromByte()
         val reg4LSB = response[82].getIntValueFromByte()
 
@@ -65,7 +61,6 @@ object MiscInfoUtils {
 
     fun getPLC1ModuleFirmwareVersion(response: ByteArray): String {
         val reg3MSB = response[83].getIntValueFromByte()
-        val reg3LSB = response[84].getIntValueFromByte()
         val reg4MSB = response[85].getIntValueFromByte()
         val reg4LSB = response[86].getIntValueFromByte()
 
@@ -74,7 +69,6 @@ object MiscInfoUtils {
 
     fun getPLC2ModuleFirmwareVersion(response: ByteArray): String {
         val reg3MSB = response[87].getIntValueFromByte()
-        val reg3LSB = response[88].getIntValueFromByte()
         val reg4MSB = response[89].getIntValueFromByte()
         val reg4LSB = response[90].getIntValueFromByte()
 

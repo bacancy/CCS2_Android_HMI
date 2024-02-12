@@ -89,7 +89,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:contentDescription="@string/cd_servotech_logo" />
 
     <LinearLayout
         android:id="@+id/lnrNetworkStatus"
@@ -106,28 +107,32 @@
             android:id="@+id/imgServerStatus"
             android:layout_width="@dimen/_13sdp"
             android:layout_height="@dimen/_13sdp"
-            android:src="@drawable/ic_server_disconnected" />
+            android:src="@drawable/ic_server_disconnected"
+            android:contentDescription="@string/cd_server_icon" />
 
         <ImageView
             android:id="@+id/imgEthernetStatus"
             android:layout_width="@dimen/_13sdp"
             android:layout_height="@dimen/_13sdp"
             android:layout_marginStart="@dimen/_5sdp"
-            android:src="@drawable/ic_ethernet_disconnected" />
+            android:src="@drawable/ic_ethernet_disconnected"
+            android:contentDescription="@string/cd_ethernet_icon" />
 
         <ImageView
             android:id="@+id/imgGSMLevel"
             android:layout_width="@dimen/_13sdp"
             android:layout_height="@dimen/_13sdp"
             android:layout_marginStart="@dimen/_5sdp"
-            android:src="@drawable/ic_gsm_level_0" />
+            android:src="@drawable/ic_gsm_level_0"
+            android:contentDescription="@string/cd_gsm_icon" />
 
         <ImageView
             android:id="@+id/imgWifiLevel"
             android:layout_width="@dimen/_13sdp"
             android:layout_height="@dimen/_13sdp"
             android:layout_marginStart="@dimen/_5sdp"
-            android:src="@drawable/ic_wifi_level_0" />
+            android:src="@drawable/ic_wifi_level_0"
+            android:contentDescription="@string/cd_wifi_icon" />
 
     </LinearLayout>
 

@@ -2,24 +2,17 @@ package com.bacancy.ccs2androidhmi.views.fragment
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
-import androidx.core.content.ContextCompat.getSystemService
-import androidx.fragment.app.viewModels
 import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentTestModeGunsDetailBinding
-import com.bacancy.ccs2androidhmi.databinding.FragmentTestModeHomeBinding
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils
 import com.bacancy.ccs2androidhmi.util.PrefHelper
 import com.bacancy.ccs2androidhmi.util.ToastUtils.showCustomToast
 import com.bacancy.ccs2androidhmi.util.hideKeyboard
-import com.bacancy.ccs2androidhmi.util.showToast
-import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
 import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
 import com.bacancy.ccs2androidhmi.views.listener.FragmentChangeListener
 import dagger.hilt.android.AndroidEntryPoint
