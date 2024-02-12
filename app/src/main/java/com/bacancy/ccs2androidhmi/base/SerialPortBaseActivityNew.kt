@@ -440,18 +440,13 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
     private fun openGun1LastChargingSummary(shouldSave: Boolean = false) {
         lifecycleScope.launch {
             delay(mCommonDelay)
-            if (shouldSave) {
-                readGun1LastChargingSummaryInfo(shouldSave)
+            if (shouldSave || prefHelper.getScreenVisible(
+                    GUN_1_LAST_CHARGING_SUMMARY_FRAG,
+                    false
+                )) {
+                readGun1LastChargingSummaryInfo()
             } else {
-                if (prefHelper.getScreenVisible(
-                        GUN_1_LAST_CHARGING_SUMMARY_FRAG,
-                        false
-                    )
-                ) {
-                    readGun1LastChargingSummaryInfo()
-                } else {
-                    openGun1DCMeterInfo()
-                }
+                openGun1DCMeterInfo()
             }
         }
     }
@@ -459,18 +454,13 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
     private fun openGun2LastChargingSummary(shouldSave: Boolean = false) {
         lifecycleScope.launch {
             delay(mCommonDelay)
-            if (shouldSave) {
-                readGun2LastChargingSummaryInfo(shouldSave)
+            if (shouldSave || prefHelper.getScreenVisible(
+                    GUN_2_LAST_CHARGING_SUMMARY_FRAG,
+                    false
+                )) {
+                readGun2LastChargingSummaryInfo()
             } else {
-                if (prefHelper.getScreenVisible(
-                        GUN_2_LAST_CHARGING_SUMMARY_FRAG,
-                        false
-                    )
-                ) {
-                    readGun2LastChargingSummaryInfo()
-                } else {
-                    openGun2DCMeterInfo()
-                }
+                openGun2DCMeterInfo()
             }
         }
     }
@@ -493,7 +483,7 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
         )
     }
 
-    private suspend fun readGun1LastChargingSummaryInfo(shouldSaveLastChargingSummary: Boolean = false) {
+    private suspend fun readGun1LastChargingSummaryInfo() {
         Log.i(
             "SAVER",
             "readGun1LastChargingSummaryInfo: Request Sent - ${
@@ -514,11 +504,11 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                                 "SAVER",
                                 "readGun1LastChargingSummaryInfo: Response = ${it.toHex()}"
                             )
-                            if (shouldSaveLastChargingSummary) {
+                            //if (shouldSaveLastChargingSummary) {
                                 Log.w("SAVER", "INSERT LCS IN DB")
                                 insertGun1LastChargingSummaryInDB(it)
                                 insertGun1ChargingHistoryInDB(it)
-                            }
+                            //}
                         } else {
                             Log.e(
                                 TAG,
@@ -795,7 +785,7 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
         )
     }
 
-    private suspend fun readGun2LastChargingSummaryInfo(shouldSaveLastChargingSummary: Boolean = false) {
+    private suspend fun readGun2LastChargingSummaryInfo() {
         Log.i(
             TAG,
             "readGun2LastChargingSummaryInfo: Request Sent - ${
@@ -813,10 +803,10 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                                 .startsWith(ModBusUtils.HOLDING_REGISTERS_CORRECT_RESPONSE_BITS)
                         ) {
                             Log.d(TAG, "readGun2LastChargingSummaryInfo: Response = ${it.toHex()}")
-                            if (shouldSaveLastChargingSummary) {
+                            //if (shouldSaveLastChargingSummary) {
                                 insertGun2LastChargingSummaryInDB(it)
                                 insertGun2ChargingHistoryInDB(it)
-                            }
+                            //}
                         } else {
                             Log.e(
                                 TAG,
