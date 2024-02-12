@@ -19,18 +19,17 @@
         android:gravity="center_horizontal"
         android:orientation="vertical">
 
-
         <TextView
             android:id="@+id/tvVoltageLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/_10sdp"
             android:text="@string/lbl_voltage_v"
             android:textColor="@color/white"
             android:textSize="@dimen/_12ssp"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginEnd="@dimen/_10sdp"
-            app:layout_constraintEnd_toStartOf="@id/edtGunVoltage"
             app:layout_constraintBottom_toBottomOf="@id/edtGunVoltage"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/edtGunVoltage"
             app:layout_constraintTop_toTopOf="@id/edtGunVoltage" />
 
         <EditText
@@ -46,6 +45,7 @@
             android:maxLength="4"
             android:paddingHorizontal="@dimen/_25sdp"
             android:paddingVertical="@dimen/_10sdp"
+            android:textColor="@color/white"
             android:textColorHint="@color/light_grey"
             android:textSize="@dimen/_10ssp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -56,13 +56,13 @@
             android:id="@+id/tvCurrentLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/_10sdp"
             android:text="@string/lbl_current_a"
             android:textColor="@color/white"
             android:textSize="@dimen/_12ssp"
-            android:layout_marginEnd="@dimen/_10sdp"
+            app:layout_constraintBottom_toBottomOf="@id/edtGunCurrent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintEnd_toStartOf="@id/edtGunCurrent"
-            app:layout_constraintBottom_toBottomOf="@id/edtGunCurrent"
             app:layout_constraintTop_toTopOf="@id/edtGunCurrent" />
 
         <EditText
@@ -79,6 +79,7 @@
             android:maxLength="3"
             android:paddingHorizontal="@dimen/_25sdp"
             android:paddingVertical="@dimen/_10sdp"
+            android:textColor="@color/white"
             android:textColorHint="@color/light_grey"
             android:textSize="@dimen/_10ssp"
             app:layout_constraintEnd_toEndOf="@id/edtGunVoltage"

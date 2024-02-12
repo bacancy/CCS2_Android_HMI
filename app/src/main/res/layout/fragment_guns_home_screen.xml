@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    android:paddingVertical="@dimen/_10sdp"
+    android:paddingVertical="@dimen/_5sdp"
     tools:context=".views.fragment.GunsHomeScreenFragment">
 
     <ImageView
@@ -235,7 +235,7 @@
         android:textStyle="bold"
         android:layout_marginTop="@dimen/_1sdp"
         android:paddingHorizontal="@dimen/_10sdp"
-        android:paddingVertical="@dimen/_1sdp"
+        android:paddingVertical="@dimen/_2sdp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/ivGun2Half"
         app:layout_constraintStart_toStartOf="parent"

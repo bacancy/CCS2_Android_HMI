@@ -72,6 +72,7 @@ import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getPLC1ModuleFirmwareVersio
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getPLC2Fault
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getPLC2ModuleFirmwareVersion
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getRFIDFirmwareVersion
+import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getRFIDTagState
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getRectifier1Code
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getRectifier2Code
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getRectifier3Code
@@ -290,7 +291,8 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                     it
                 ),
                 unitPrice = getUnitPrice(it),
-                emergencyButtonStatus = getEmergencyButtonStatus(it)
+                emergencyButtonStatus = getEmergencyButtonStatus(it),
+                rfidTagState = getRFIDTagState(it)
             )
         )
     }

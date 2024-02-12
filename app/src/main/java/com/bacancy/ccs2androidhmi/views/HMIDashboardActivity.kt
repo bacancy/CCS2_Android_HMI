@@ -6,7 +6,6 @@ import android.os.Looper
 import android.util.Log
 import android.view.WindowManager
 import androidx.activity.OnBackPressedDispatcherOwner
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
@@ -15,10 +14,11 @@ import com.bacancy.ccs2androidhmi.base.SerialPortBaseActivityNew
 import com.bacancy.ccs2androidhmi.databinding.ActivityHmiDashboardBinding
 import com.bacancy.ccs2androidhmi.util.CommonUtils
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showPasswordPromptDialog
+import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.NO_STATE
+import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.TOKEN_ID_NONE
 import com.bacancy.ccs2androidhmi.util.ToastUtils.showCustomToast
 import com.bacancy.ccs2androidhmi.util.gone
 import com.bacancy.ccs2androidhmi.util.invisible
-import com.bacancy.ccs2androidhmi.util.showToast
 import com.bacancy.ccs2androidhmi.util.visible
 import com.bacancy.ccs2androidhmi.views.fragment.FaultInfoFragment
 import com.bacancy.ccs2androidhmi.views.fragment.FirmwareVersionInfoFragment
@@ -126,6 +126,13 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
                 updateEthernetStatus(latestMiscInfo.ethernetStatus)
                 adjustGSMLevel(latestMiscInfo.gsmLevel)
                 adjustWifiLevel(latestMiscInfo.wifiLevel)
+                if (latestMiscInfo.rfidTagState.isNotEmpty() && latestMiscInfo.rfidTagState != TOKEN_ID_NONE && latestMiscInfo.rfidTagState != NO_STATE) {
+                    if (latestMiscInfo.rfidTagState.endsWith("Invalid")) {
+                        showCustomToast(latestMiscInfo.rfidTagState, false)
+                    } else {
+                        showCustomToast(latestMiscInfo.rfidTagState, true)
+                    }
+                }
             }
         }
     }

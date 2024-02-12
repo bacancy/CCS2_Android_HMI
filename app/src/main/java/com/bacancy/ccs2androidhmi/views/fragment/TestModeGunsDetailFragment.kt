@@ -30,7 +30,6 @@ class TestModeGunsDetailFragment : BaseFragment() {
 
     private var isOutputOn: Boolean = false
     private lateinit var binding: FragmentTestModeGunsDetailBinding
-    private val appViewModel: AppViewModel by viewModels()
     private var selectedGunNumber: Int = 1
     private var fragmentChangeListener: FragmentChangeListener? = null
 
@@ -79,14 +78,14 @@ class TestModeGunsDetailFragment : BaseFragment() {
             when (selectedGunNumber) {
 
                 1 -> {
-                    if (prefHelper.getIntValue("GUN1_VOLTAGE", 0) > 0) {
+                    /*if (prefHelper.getIntValue("GUN1_VOLTAGE", 0) > 0) {
                         prefHelper.setBoolean("IS_GUN_VOLTAGE_CHANGED", true)
                         edtGunVoltage.setText(""+prefHelper.getIntValue("GUN1_VOLTAGE", 0))
                     }
                     if (prefHelper.getIntValue("GUN1_CURRENT", 0) > 0) {
                         prefHelper.setBoolean("IS_GUN_CURRENT_CHANGED", true)
                         edtGunCurrent.setText(""+prefHelper.getIntValue("GUN1_CURRENT", 0))
-                    }
+                    }*/
                     if (prefHelper.getIntValue("GUN1_OUTPUT_ON_OFF_VALUE", 0) == 1) {
                         isOutputOn = true
                         btnOutputOnOff.text = getString(R.string.lbl_output_off)
@@ -97,14 +96,14 @@ class TestModeGunsDetailFragment : BaseFragment() {
                 }
 
                 2 -> {
-                    if (prefHelper.getIntValue("GUN2_VOLTAGE", 0) > 0) {
+                    /*if (prefHelper.getIntValue("GUN2_VOLTAGE", 0) > 0) {
                         prefHelper.setBoolean("IS_GUN_VOLTAGE_CHANGED", true)
                         edtGunVoltage.setText(""+prefHelper.getIntValue("GUN2_VOLTAGE", 0))
                     }
                     if (prefHelper.getIntValue("GUN2_CURRENT", 0) > 0) {
                         prefHelper.setBoolean("IS_GUN_CURRENT_CHANGED", true)
                         edtGunCurrent.setText(""+prefHelper.getIntValue("GUN2_CURRENT", 0))
-                    }
+                    }*/
                     if (prefHelper.getIntValue("GUN2_OUTPUT_ON_OFF_VALUE", 0) == 1) {
                         isOutputOn = true
                         btnOutputOnOff.text = getString(R.string.lbl_output_off)
