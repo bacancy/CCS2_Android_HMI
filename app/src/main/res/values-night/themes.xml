@@ -12,7 +12,13 @@
         <item name="android:fontFamily">@font/hmi_font_family</item>
         <item name="android:colorBackground">@color/black</item>
         <item name="colorOnBackground">@color/white</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="viewThemeColor">@color/white</item>
+        <item name="dialogBackground">@drawable/bg_black_round_rect_with_white_border</item>
     </style>
+
+    <style name="Theme.CCS2AndroidHMI" parent="Base.Theme.CCS2AndroidHMI" />
+
     <style name="AppTheme.CustomButtonTheme" parent="Theme.CCS2AndroidHMI">
         <item name="android:backgroundTint">@color/green</item>
     </style>

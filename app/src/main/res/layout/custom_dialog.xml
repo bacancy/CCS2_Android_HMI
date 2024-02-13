@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/bg_black_round_rect_with_white_border">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="?attr/dialogBackground">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,6 +16,7 @@
         <ImageView
             android:layout_width="@dimen/_15sdp"
             android:layout_height="@dimen/_15sdp"
+            app:tint="?attr/viewThemeColor"
             android:src="@drawable/ic_info" />
 
         <TextView
@@ -22,7 +24,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_10sdp"
-            android:textColor="@color/white"
             android:textSize="@dimen/_10ssp"
             android:gravity="center"
             tools:text="To start the authentication process or view detailed parameter information, tap a specific gun icon." />

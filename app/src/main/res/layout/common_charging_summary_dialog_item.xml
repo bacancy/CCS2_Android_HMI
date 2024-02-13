@@ -16,7 +16,6 @@
         android:paddingHorizontal="@dimen/_10sdp"
         android:gravity="center_vertical"
         android:lines="1"
-        android:textColor="@color/white"
         android:textSize="@dimen/_8ssp"
         tools:text="@string/lbl_charging_start_date_time" />
 
@@ -29,7 +28,6 @@
         android:paddingHorizontal="@dimen/_20sdp"
         android:paddingVertical="@dimen/_5sdp"
         tools:text="0.00"
-        android:textColor="@color/white"
         android:textSize="@dimen/_8ssp" />
 
     <TextView

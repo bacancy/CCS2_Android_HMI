@@ -1,11 +1,13 @@
 package com.bacancy.ccs2androidhmi.views
 
+import android.app.UiModeManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.WindowManager
 import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
@@ -59,7 +61,19 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
     }
 
+    private fun toggleTheme() {
+        val newNightMode = if (prefHelper.getBoolean("isDarkTheme", false)) AppCompatDelegate.MODE_NIGHT_NO else AppCompatDelegate.MODE_NIGHT_YES
+        val uiManager = getSystemService(UI_MODE_SERVICE) as UiModeManager
+        uiManager.setApplicationNightMode(newNightMode)
+        prefHelper.setBoolean("isDarkTheme", !prefHelper.getBoolean("isDarkTheme", false))
+    }
+
     private fun handleClicks() {
+
+        binding.incToolbar.ivLogo.setOnClickListener {
+            toggleTheme()
+        }
+
         binding.incToolbar.imgBack.setOnClickListener {
             goBack()
         }
