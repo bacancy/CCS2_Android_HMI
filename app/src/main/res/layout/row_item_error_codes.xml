@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/tvSerialNo"
+        style="@style/HistoryTableColumnsTheme"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.3"
+        tools:text="1" />
+
+    <TextView
+        android:id="@+id/tvErrorCodeName"
+        style="@style/HistoryTableColumnsTheme"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        tools:text="HIGH_NEUTRAL_TO_EARTH_VOLTAGE" />
+
+    <TextView
+        android:id="@+id/tvErrorCodeStatus"
+        style="@style/HistoryTableColumnsTheme"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        tools:text="Abnormal" />
+
+</LinearLayout>

@@ -95,4 +95,20 @@ object ModbusTypeConverter {
     fun Float.changeFloatTo2Points(): Float {
         return (this * 100F).roundToInt() / 100F //up to 2 points after decimal
     }
+
+    fun hexToBinary(hex: String): String {
+        val hexChars = "0123456789ABCDEF"
+        val binaryChars = "0000 0001 0010 0011 0100 0101 0110 0111 1000 1001 1010 1011 1100 1101 1110 1111".split(" ")
+        val binaryMap = mutableMapOf<Char, String>()
+        hexChars.forEachIndexed { index, c ->
+            binaryMap[c] = binaryChars[index]
+        }
+
+        val binaryStringBuilder = StringBuilder()
+        hex.forEach { c ->
+            binaryStringBuilder.append(binaryMap[c])
+        }
+
+        return binaryStringBuilder.toString()
+    }
 }

@@ -14,7 +14,7 @@ import com.bacancy.ccs2androidhmi.db.entity.TbMiscInfo
 
 @Database(
     entities = [TbChargingHistory::class, TbAcMeterInfo::class, TbMiscInfo::class, TbGunsDcMeterInfo::class, TbGunsChargingInfo::class, TbGunsLastChargingSummary::class],
-    version = 2
+    version = 3
 )
 abstract class AppDatabase : RoomDatabase() {
 
@@ -25,6 +25,13 @@ abstract class AppDatabase : RoomDatabase() {
         val MIGRATION_1_2: Migration = object : Migration(1, 2) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("ALTER TABLE tbMiscInfo ADD COLUMN rfidTagState TEXT DEFAULT '' NOT NULL")
+            }
+        }
+
+        val MIGRATION_2_3: Migration = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE tbMiscInfo ADD COLUMN chargerErrorCodes TEXT DEFAULT '' NOT NULL")
+                db.execSQL("ALTER TABLE tbGunsChargingInfo ADD COLUMN gunsErrorCodes TEXT DEFAULT '' NOT NULL")
             }
         }
 

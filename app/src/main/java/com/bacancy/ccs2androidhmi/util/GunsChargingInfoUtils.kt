@@ -1,6 +1,7 @@
 package com.bacancy.ccs2androidhmi.util
 
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.getIntValueFromByte
+import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.toHex
 import kotlin.math.roundToInt
 
 object GunsChargingInfoUtils {
@@ -123,6 +124,9 @@ object GunsChargingInfoUtils {
 
     fun getTotalCost(response: ByteArray): Float {
         return ModbusTypeConverter.byteArrayToFloat(response.copyOfRange(35, 39))
+    }
+    fun getGunSpecificErrorCodeInformation(response: ByteArray): String {
+        return response.copyOfRange(39, 47).toHex()
     }
 
 }

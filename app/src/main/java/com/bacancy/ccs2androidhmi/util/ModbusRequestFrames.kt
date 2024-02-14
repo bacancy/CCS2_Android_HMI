@@ -39,14 +39,14 @@ object ModbusRequestFrames {
 
     fun getGun1InfoRequestFrame(
         startAddress: Int = 100,
-        quantity: Int = 18
+        quantity: Int = 22
     ): ByteArray {
         return ModBusUtils.createReadHoldingRegistersRequest(startAddress, quantity)
     }
 
     fun getGun2InfoRequestFrame(
         startAddress: Int = 200,
-        quantity: Int = 18
+        quantity: Int = 22
     ): ByteArray {
         return ModBusUtils.createReadHoldingRegistersRequest(startAddress, quantity)
     }

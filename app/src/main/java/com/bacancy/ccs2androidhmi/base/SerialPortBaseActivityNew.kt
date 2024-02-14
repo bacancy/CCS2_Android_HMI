@@ -81,6 +81,7 @@ import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getVendorErrorCodeInformati
 import com.bacancy.ccs2androidhmi.util.ModBusUtils
 import com.bacancy.ccs2androidhmi.util.ModbusRequestFrames
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter
+import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.hexToBinary
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.toHex
 import com.bacancy.ccs2androidhmi.util.PrefHelper
 import com.bacancy.ccs2androidhmi.util.ReadWriteUtil
@@ -242,7 +243,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
     private fun insertMiscInfoInDB(it: ByteArray) {
         Log.i(
             TAG,
-            "insertMiscInfoInDB: Vendor Error Code Info = ${getVendorErrorCodeInformation(it)}"
+            "insertMiscInfoInDB: Vendor Error Code Info = ${hexToBinary(getVendorErrorCodeInformation(it))}"
         )
         val networkStatusBits =
             ModbusTypeConverter.byteArrayToBinaryString(it.copyOfRange(3, 5))
@@ -289,7 +290,8 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 ),
                 unitPrice = getUnitPrice(it),
                 emergencyButtonStatus = getEmergencyButtonStatus(it),
-                rfidTagState = getRFIDTagState(it)
+                rfidTagState = getRFIDTagState(it),
+                chargerErrorCodes = hexToBinary(getVendorErrorCodeInformation(it))
             )
         )
     }
@@ -465,6 +467,10 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
     }
 
     private fun insertGun1InfoInDB(it: ByteArray) {
+        Log.i(
+            TAG,
+            "insertGun1InfoInDB: Gun 1 Error Code = ${hexToBinary(getGunSpecificErrorCodeInformation(it))}"
+        )
         appViewModel.insertGunsChargingInfo(
             TbGunsChargingInfo(
                 gunId = 1,
@@ -477,7 +483,8 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 chargingCurrent = getChargingCurrent(it),
                 duration = getChargingDuration(it),
                 energyConsumption = getChargingEnergyConsumption(it),
-                totalCost = getTotalCost(it)
+                totalCost = getTotalCost(it),
+                gunsErrorCodes = hexToBinary(getGunSpecificErrorCodeInformation(it))
             )
         )
     }
@@ -767,6 +774,10 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
     }
 
     private fun insertGun2InfoInDB(it: ByteArray) {
+        Log.i(
+            TAG,
+            "insertGun2InfoInDB: Gun 2 Error Code = ${hexToBinary(getGunSpecificErrorCodeInformation(it))}"
+        )
         appViewModel.insertGunsChargingInfo(
             TbGunsChargingInfo(
                 gunId = 2,
@@ -779,7 +790,8 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 chargingCurrent = getChargingCurrent(it),
                 duration = getChargingDuration(it),
                 energyConsumption = getChargingEnergyConsumption(it),
-                totalCost = getTotalCost(it)
+                totalCost = getTotalCost(it),
+                gunsErrorCodes = hexToBinary(getGunSpecificErrorCodeInformation(it))
             )
         )
     }

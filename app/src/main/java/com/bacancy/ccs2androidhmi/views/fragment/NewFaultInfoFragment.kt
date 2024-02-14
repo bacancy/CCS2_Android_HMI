@@ -6,55 +6,120 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
-import com.bacancy.ccs2androidhmi.databinding.FragmentGunsChargingHistoryBinding
 import com.bacancy.ccs2androidhmi.databinding.FragmentNewFaultInformationBinding
-import com.bacancy.ccs2androidhmi.db.entity.TbChargingHistory
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.SELECTED_GUN
-import com.bacancy.ccs2androidhmi.util.gone
-import com.bacancy.ccs2androidhmi.util.visible
+import com.bacancy.ccs2androidhmi.models.ErrorCodes
+import com.bacancy.ccs2androidhmi.util.StateAndModesUtils
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
-import com.bacancy.ccs2androidhmi.views.adapters.ChargingHistoryListAdapter
-import com.google.gson.Gson
+import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
+import com.bacancy.ccs2androidhmi.views.adapters.ErrorCodesListAdapter
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class NewFaultInfoFragment : BaseFragment() {
 
-    private var selectedGunNumber: Int = 1
-    private lateinit var chargingHistoryAdapter: ChargingHistoryListAdapter
+    private lateinit var chargingHistoryAdapter: ErrorCodesListAdapter
     private lateinit var binding: FragmentNewFaultInformationBinding
     private val appViewModel: AppViewModel by viewModels()
+    val abnormalErrorCodesList = mutableListOf<StateAndModesUtils.GunsErrorCode>()
+    val finalErrorCodesList = mutableListOf<ErrorCodes>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentNewFaultInformationBinding.inflate(layoutInflater)
-        selectedGunNumber = arguments?.getInt(SELECTED_GUN)!!
+        (requireActivity() as HMIDashboardActivity).showHideBackIcon()
+        (requireActivity() as HMIDashboardActivity).showHideHomeIcon()
+        (requireActivity() as HMIDashboardActivity).showHideSettingOptions()
+
         return binding.root
     }
 
-    private fun getSampleHistory(): MutableList<TbChargingHistory> {
-        val historyList = mutableListOf<TbChargingHistory>()
+    private fun observeGunsInfo() {
+        appViewModel.getUpdatedGunsChargingInfo(1).observe(requireActivity()) {
+            it?.let {
+                Log.i(
+                    "NEWFAULT",
+                    "observeMiscInfo: Gun1 Error Code - ${getAbnormalErrorCodesList(it.gunsErrorCodes)}"
+                )
+                abnormalErrorCodesList.addAll(getAbnormalErrorCodesList(it.gunsErrorCodes))
+                chargingHistoryAdapter.submitList(changeToFinalList(abnormalErrorCodesList))
+            }
+        }
+
+        appViewModel.getUpdatedGunsChargingInfo(2).observe(requireActivity()) {
+            it?.let {
+                Log.i(
+                    "NEWFAULT",
+                    "observeMiscInfo: Gun2 Error Code - ${getAbnormalErrorCodesList(it.gunsErrorCodes)}"
+                )
+                abnormalErrorCodesList.addAll(getAbnormalErrorCodesList(it.gunsErrorCodes))
+                chargingHistoryAdapter.submitList(changeToFinalList(abnormalErrorCodesList))
+            }
+        }
+
+    }
+
+    private fun changeToFinalList(abnormalErrorCodesList: MutableList<StateAndModesUtils.GunsErrorCode>): MutableList<ErrorCodes>? {
+        val newErrorCodesList = mutableListOf<ErrorCodes>()
+        Log.i("TAG", "changeToFinalList: AbnormalList $abnormalErrorCodesList")
+        abnormalErrorCodesList.forEachIndexed { index, gunsErrorCode ->
+            newErrorCodesList.add(ErrorCodes(index, gunsErrorCode.name, "Abnormal"))
+        }
+        Log.i("TAG", "changeToFinalList: NewList $newErrorCodesList")
+        return newErrorCodesList
+    }
+
+    private fun observeMiscInfo() {
+        appViewModel.latestMiscInfo.observe(requireActivity()) { latestMiscInfo ->
+            if (latestMiscInfo != null) {
+                Log.i(
+                    "NEWFAULT",
+                    "observeMiscInfo: Charger Error Code - ${
+                        getAbnormalErrorCodesList(
+                            latestMiscInfo.chargerErrorCodes
+                        )
+                    }"
+                )
+                abnormalErrorCodesList.addAll(getAbnormalErrorCodesList(latestMiscInfo.chargerErrorCodes))
+                chargingHistoryAdapter.submitList(changeToFinalList(abnormalErrorCodesList))
+            }
+        }
+    }
+
+    private fun getAbnormalErrorCodesList(errorCodeString: String): List<StateAndModesUtils.GunsErrorCode> {
+
+        // Reverse the string so that the LSB (Least Significant Bit) corresponds to the first index
+        val reversedString = errorCodeString.reversed()
+
+        val abnormalErrors = mutableListOf<StateAndModesUtils.GunsErrorCode>()
+        val normalErrors = mutableListOf<StateAndModesUtils.GunsErrorCode>()
+
+        for (index in StateAndModesUtils.GunsErrorCode.values().indices) {
+            val char = if (index < reversedString.length) reversedString[index] else '0'
+            val errorCode = StateAndModesUtils.GunsErrorCode.values()[index]
+            if (char == '1') {
+                abnormalErrors.add(errorCode)
+            } else {
+                normalErrors.add(errorCode)
+            }
+        }
+
+        //allErrors.filter { it -> it in abnormalErrors }.forEach { println(it) }
+        //allErrors.filter { it -> it in normalErrors }.forEach { println(it) }
+        return abnormalErrors
+    }
+
+    private fun getSampleErrorCodesList(): MutableList<ErrorCodes> {
+        val historyList = mutableListOf<ErrorCodes>()
         for (i in 1..5) {
-            val chargingSummary = TbChargingHistory(
-                summaryId = i,
-                gunNumber = 1,
-                evMacAddress = "00-00-00-01-87-OF-66-30",
-                chargingStartTime = "27/12/2023 15:50:10",
-                chargingEndTime = "27/12/2023 15:55:10",
-                totalChargingTime = "5",
-                startSoc = "50",
-                endSoc = "85",
-                energyConsumption = "15.60",
-                sessionEndReason = "Emergency",
-                customSessionEndReason = "",
-                totalCost = ""
+            val chargingSummary = ErrorCodes(
+                id = i,
+                errorCodeName = "PLC_COMM_FAIL",
+                errorCodeStatus = "Abnormal"
             )
             historyList.add(chargingSummary)
         }
@@ -63,43 +128,22 @@ class NewFaultInfoFragment : BaseFragment() {
 
     override fun setScreenHeaderViews() {
         binding.apply {
-            if (selectedGunNumber == 1) {
-                incHeader.tvHeader.text = getString(R.string.lbl_gun_1)
-            } else {
-                incHeader.tvHeader.text = getString(R.string.lbl_gun_2)
-            }
-            incHeader.tvSubHeader.text = getString(R.string.lbl_charging_history)
-            incHeader.tvSubHeader.visible()
+            incHeader.tvHeader.text = getString(R.string.lbl_fault_information)
         }
     }
 
     override fun setupViews() {
-        chargingHistoryAdapter = ChargingHistoryListAdapter {}
+        chargingHistoryAdapter = ErrorCodesListAdapter {}
         binding.apply {
             rvVendorErrorCodeInfo.apply {
                 layoutManager = LinearLayoutManager(requireActivity())
                 adapter = chargingHistoryAdapter
             }
         }
-        //chargingHistoryAdapter.submitList(getSampleHistory())
-        appViewModel.getChargingHistoryByGunNumber(selectedGunNumber)
-        getAllChargingHistory()
+        observeMiscInfo()
+        observeGunsInfo()
     }
 
     override fun handleClicks() {}
 
-    private fun getAllChargingHistory() {
-        lifecycleScope.launch {
-            appViewModel.chargingSummariesList.observe(viewLifecycleOwner) {
-                if (it.isNotEmpty()) {
-                    binding.rvVendorErrorCodeInfo.visible()
-                    binding.tvNoDataFound.gone()
-                    chargingHistoryAdapter.submitList(it)
-                } else {
-                    binding.rvVendorErrorCodeInfo.gone()
-                    binding.tvNoDataFound.visible()
-                }
-            }
-        }
-    }
 }

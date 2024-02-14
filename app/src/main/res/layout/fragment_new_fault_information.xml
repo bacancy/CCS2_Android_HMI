@@ -60,7 +60,7 @@
         android:id="@+id/rvVendorErrorCodeInfo"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone"
-        tools:listitem="@layout/row_item_charging_history" />
+        android:visibility="visible"
+        tools:listitem="@layout/row_item_error_codes" />
 
 </LinearLayout>

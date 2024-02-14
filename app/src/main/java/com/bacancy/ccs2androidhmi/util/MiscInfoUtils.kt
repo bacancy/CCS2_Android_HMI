@@ -112,7 +112,7 @@ object MiscInfoUtils {
     }
 
     fun getVendorErrorCodeInformation(response: ByteArray): String {
-        return response.copyOfRange(91, 95).toHex()
+        return response.copyOfRange(91, 99).toHex()
     }
 
     fun getRFIDTagState(response: ByteArray): String {
