@@ -4,10 +4,10 @@ import android.os.Bundle
 import android.util.Log
 import android_serialport_api.SerialPort
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
 import com.bacancy.ccs2androidhmi.HMIApp
 import com.bacancy.ccs2androidhmi.R
@@ -56,6 +56,7 @@ import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getChargingVoltage
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getDemandCurrent
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getDemandVoltage
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getGunChargingState
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getGunSpecificErrorCodeInformation
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getInitialSoc
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getTotalCost
 import com.bacancy.ccs2androidhmi.util.LastChargingSummaryUtils
@@ -87,7 +88,6 @@ import com.bacancy.ccs2androidhmi.util.ResponseSizes
 import com.bacancy.ccs2androidhmi.util.StateAndModesUtils
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.delay
@@ -98,9 +98,8 @@ import java.io.OutputStream
 import javax.inject.Inject
 
 
-@OptIn(DelicateCoroutinesApi::class)
 @AndroidEntryPoint
-abstract class SerialPortBaseActivityNew : FragmentActivity() {
+abstract class SerialPortBaseActivityNew : AppCompatActivity() {
 
     private var isReadStopped: Int = 0
     private var isGun1PluggedIn: Boolean = false
@@ -444,7 +443,7 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                     GUN_1_LAST_CHARGING_SUMMARY_FRAG,
                     false
                 )) {
-                readGun1LastChargingSummaryInfo()
+                readGun1LastChargingSummaryInfo(shouldSave)
             } else {
                 openGun1DCMeterInfo()
             }
@@ -458,7 +457,7 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                     GUN_2_LAST_CHARGING_SUMMARY_FRAG,
                     false
                 )) {
-                readGun2LastChargingSummaryInfo()
+                readGun2LastChargingSummaryInfo(shouldSave)
             } else {
                 openGun2DCMeterInfo()
             }
@@ -483,7 +482,7 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
         )
     }
 
-    private suspend fun readGun1LastChargingSummaryInfo() {
+    private suspend fun readGun1LastChargingSummaryInfo(shouldSaveLastChargingSummary: Boolean = false) {
         Log.i(
             "SAVER",
             "readGun1LastChargingSummaryInfo: Request Sent - ${
@@ -504,11 +503,11 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                                 "SAVER",
                                 "readGun1LastChargingSummaryInfo: Response = ${it.toHex()}"
                             )
-                            //if (shouldSaveLastChargingSummary) {
+                            if (shouldSaveLastChargingSummary) {
                                 Log.w("SAVER", "INSERT LCS IN DB")
                                 insertGun1LastChargingSummaryInDB(it)
                                 insertGun1ChargingHistoryInDB(it)
-                            //}
+                            }
                         } else {
                             Log.e(
                                 TAG,
@@ -785,7 +784,7 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
         )
     }
 
-    private suspend fun readGun2LastChargingSummaryInfo() {
+    private suspend fun readGun2LastChargingSummaryInfo(shouldSaveLastChargingSummary: Boolean = false) {
         Log.i(
             TAG,
             "readGun2LastChargingSummaryInfo: Request Sent - ${
@@ -803,10 +802,10 @@ abstract class SerialPortBaseActivityNew : FragmentActivity() {
                                 .startsWith(ModBusUtils.HOLDING_REGISTERS_CORRECT_RESPONSE_BITS)
                         ) {
                             Log.d(TAG, "readGun2LastChargingSummaryInfo: Response = ${it.toHex()}")
-                            //if (shouldSaveLastChargingSummary) {
+                            if (shouldSaveLastChargingSummary) {
                                 insertGun2LastChargingSummaryInDB(it)
                                 insertGun2ChargingHistoryInDB(it)
-                            //}
+                            }
                         } else {
                             Log.e(
                                 TAG,

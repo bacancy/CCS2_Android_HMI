@@ -1,6 +1,7 @@
 package com.bacancy.ccs2androidhmi.views
 
 import android.app.UiModeManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -62,15 +63,22 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
     }
 
     private fun toggleTheme() {
-        val newNightMode = if (prefHelper.getBoolean("isDarkTheme", false)) AppCompatDelegate.MODE_NIGHT_NO else AppCompatDelegate.MODE_NIGHT_YES
-        val uiManager = getSystemService(UI_MODE_SERVICE) as UiModeManager
-        uiManager.setApplicationNightMode(newNightMode)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            // Device API level is 31 or higher
+            val newNightMode = if (prefHelper.getBoolean("isDarkTheme", false)) UiModeManager.MODE_NIGHT_NO else UiModeManager.MODE_NIGHT_YES
+            val uiManager = getSystemService(UI_MODE_SERVICE) as UiModeManager
+            uiManager.setApplicationNightMode(newNightMode)
+        } else {
+            // Device API level is 30 or lower
+            val newNightMode = if (prefHelper.getBoolean("isDarkTheme", false)) AppCompatDelegate.MODE_NIGHT_NO else AppCompatDelegate.MODE_NIGHT_YES
+            AppCompatDelegate.setDefaultNightMode(newNightMode)
+        }
         prefHelper.setBoolean("isDarkTheme", !prefHelper.getBoolean("isDarkTheme", false))
     }
 
     private fun handleClicks() {
 
-        binding.incToolbar.ivLogo.setOnClickListener {
+        binding.incToolbar.ivSwitchDarkMode.setOnClickListener {
             toggleTheme()
         }
 

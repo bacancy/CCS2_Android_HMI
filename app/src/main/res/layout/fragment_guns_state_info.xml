@@ -20,7 +20,6 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/lbl_gun_state_info"
-            android:textColor="@color/white"
             android:textSize="@dimen/_14ssp" />
 
         <Button
@@ -41,7 +40,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/_1sdp"
         android:layout_marginTop="@dimen/_5sdp"
-        android:background="@color/white"
+        android:background="?attr/viewThemeColor"
         android:visibility="visible" />
 
     <androidx.recyclerview.widget.RecyclerView

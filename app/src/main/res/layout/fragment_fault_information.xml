@@ -19,11 +19,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_15sdp"
-        android:background="@drawable/bg_black_rect_with_white_border"
+        android:background="?attr/dialogBackground"
         android:gravity="center_horizontal"
         android:padding="@dimen/_10sdp"
         android:text="@string/lbl_plc_faults"
-        android:textColor="@color/white"
         android:textSize="@dimen/_10ssp" />
 
     <TextView
@@ -31,11 +30,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_10sdp"
-        android:background="@drawable/bg_black_rect_with_white_border"
+        android:background="?attr/dialogBackground"
         android:gravity="center_horizontal"
         android:padding="@dimen/_10sdp"
         android:text="@string/lbl_rectifier_faults"
-        android:textColor="@color/white"
         android:textSize="@dimen/_10ssp" />
 
     <TextView
@@ -43,11 +41,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_10sdp"
-        android:background="@drawable/bg_black_rect_with_white_border"
+        android:background="?attr/dialogBackground"
         android:gravity="center_horizontal"
         android:padding="@dimen/_10sdp"
         android:text="@string/lbl_communication_error"
-        android:textColor="@color/white"
         android:textSize="@dimen/_10ssp" />
 
     <TextView
@@ -55,11 +52,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_10sdp"
-        android:background="@drawable/bg_black_rect_with_white_border"
+        android:background="?attr/dialogBackground"
         android:gravity="center_horizontal"
         android:padding="@dimen/_10sdp"
         android:text="@string/lbl_miscellaneous_error"
-        android:textColor="@color/white"
         android:textSize="@dimen/_10ssp" />
 
 </LinearLayout>

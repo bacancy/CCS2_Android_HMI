@@ -104,7 +104,6 @@
         android:layout_marginEnd="@dimen/_60sdp"
         android:background="#00FFFFFF"
         android:gravity="center"
-        android:textColor="@color/white"
         android:textSize="@dimen/_8ssp"
         app:layout_constraintBottom_toTopOf="@id/tvGun1Label"
         app:layout_constraintEnd_toEndOf="@id/ivGun1Half"
@@ -164,7 +163,6 @@
         android:layout_marginTop="@dimen/_60sdp"
         android:background="#00FFFFFF"
         android:gravity="center"
-        android:textColor="@color/white"
         android:textSize="@dimen/_8ssp"
         app:layout_constraintBottom_toTopOf="@id/tvGun2Label"
         app:layout_constraintEnd_toEndOf="@id/ivGun2Half"
@@ -179,7 +177,6 @@
         android:layout_marginStart="@dimen/_65sdp"
         android:gravity="center"
         android:text="@string/lbl_gun_1"
-        android:textColor="@color/white"
         android:textSize="@dimen/_8ssp"
         app:layout_constraintBottom_toBottomOf="@id/ivGun1Half"
         app:layout_constraintStart_toStartOf="@id/ivGun1Half" />
@@ -206,7 +203,6 @@
         android:layout_marginEnd="@dimen/_65sdp"
         android:gravity="center"
         android:text="@string/lbl_gun_2"
-        android:textColor="@color/white"
         android:textSize="@dimen/_8ssp"
         app:layout_constraintBottom_toBottomOf="@id/ivGun2Half"
         app:layout_constraintEnd_toEndOf="@id/ivGun2Half" />

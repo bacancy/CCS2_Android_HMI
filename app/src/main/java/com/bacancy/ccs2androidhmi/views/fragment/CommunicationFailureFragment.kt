@@ -1,5 +1,6 @@
 package com.bacancy.ccs2androidhmi.views.fragment
 
+import android.app.UiModeManager
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -14,15 +15,20 @@ import com.bacancy.ccs2androidhmi.databinding.CommonTableRowBinding
 import com.bacancy.ccs2androidhmi.databinding.FragmentCommunicationFailureBinding
 import com.bacancy.ccs2androidhmi.databinding.FragmentGunsHomeScreenBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbMiscInfo
+import com.bacancy.ccs2androidhmi.util.PrefHelper
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class CommunicationFailureFragment : BaseFragment() {
 
     private lateinit var binding: FragmentCommunicationFailureBinding
     private val appViewModel: AppViewModel by viewModels()
+
+    @Inject
+    lateinit var prefHelper: PrefHelper
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,7 +52,8 @@ class CommunicationFailureFragment : BaseFragment() {
                 binding.incPLCCommError,
                 getString(R.string.lbl_plc_communication_error),
                 null,
-                R.color.black
+                /*R.color.black*/
+                if (prefHelper.getBoolean("isDarkTheme", false)) R.color.black else R.color.white
             ),
             ViewData(
                 binding.incRectifierCommError,
@@ -58,7 +65,7 @@ class CommunicationFailureFragment : BaseFragment() {
                 binding.incOCPPCommError,
                 getString(R.string.lbl_ocpp_communication_error),
                 null,
-                R.color.black
+                if (prefHelper.getBoolean("isDarkTheme", false)) R.color.black else R.color.white
             ),
             ViewData(
                 binding.incModbusMasterCommError,

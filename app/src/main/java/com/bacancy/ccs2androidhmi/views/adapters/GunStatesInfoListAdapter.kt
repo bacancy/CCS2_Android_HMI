@@ -49,7 +49,7 @@ class GunStatesInfoListAdapter(var onItemClick: (GunStatesInfo) -> Unit) :
 
                 when(sampleModel.gunStateMode){
                     "White" -> {
-                        tvGunStateLabel.setTextColor(itemView.resources.getColor(R.color.white))
+                        //tvGunStateLabel.setTextColor(itemView.resources.getColor(R.color.white))
                     }
                     "Blue" -> {
                         tvGunStateLabel.setTextColor(itemView.resources.getColor(R.color.sky_blue))

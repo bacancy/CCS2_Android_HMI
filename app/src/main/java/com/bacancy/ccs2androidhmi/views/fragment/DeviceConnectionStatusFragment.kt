@@ -14,15 +14,20 @@ import com.bacancy.ccs2androidhmi.databinding.CommonTableRowBinding
 import com.bacancy.ccs2androidhmi.databinding.FragmentGunsHomeScreenBinding
 import com.bacancy.ccs2androidhmi.databinding.FragmentMiscErrorsBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbMiscInfo
+import com.bacancy.ccs2androidhmi.util.PrefHelper
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class DeviceConnectionStatusFragment : BaseFragment() {
 
     private lateinit var binding: FragmentMiscErrorsBinding
     private val appViewModel: AppViewModel by viewModels()
+
+    @Inject
+    lateinit var prefHelper: PrefHelper
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,7 +51,7 @@ class DeviceConnectionStatusFragment : BaseFragment() {
                 binding.incRFIDModule,
                 getString(R.string.lbl_rfid_module),
                 null,
-                R.color.black
+                if (prefHelper.getBoolean("isDarkTheme", false)) R.color.black else R.color.white
             ),
             ViewData(
                 binding.incLEDModule,
@@ -54,14 +59,14 @@ class DeviceConnectionStatusFragment : BaseFragment() {
                 null,
                 R.color.light_trans_sky_blue
             ),
-            ViewData(binding.incACMeter, getString(R.string.lbl_ac_meter), null, R.color.black),
+            ViewData(binding.incACMeter, getString(R.string.lbl_ac_meter), null, if (prefHelper.getBoolean("isDarkTheme", false)) R.color.black else R.color.white),
             ViewData(
                 binding.incDCMeter1,
                 getString(R.string.lbl_dc_meter_1),
                 null,
                 R.color.light_trans_sky_blue
             ),
-            ViewData(binding.incDCMeter2, getString(R.string.lbl_dc_meter_2), null, R.color.black)
+            ViewData(binding.incDCMeter2, getString(R.string.lbl_dc_meter_2), null, if (prefHelper.getBoolean("isDarkTheme", false)) R.color.black else R.color.white)
         )
 
         viewDataList.forEach { data ->

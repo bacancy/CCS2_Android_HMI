@@ -18,6 +18,15 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/ivSwitchDarkMode"
+            android:layout_width="@dimen/_16sdp"
+            android:layout_height="@dimen/_16sdp"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:contentDescription="@string/lbl_fault_information"
+            app:tint="?attr/viewThemeColor"
+            android:src="@drawable/ic_dark_mode" />
+
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/ivFaultInfo"
             android:layout_width="@dimen/_16sdp"
             android:layout_height="@dimen/_16sdp"
