@@ -27,6 +27,5 @@ data class TbMiscInfo(
     var devicePhysicalConnectionStatus: String,
     var unitPrice: Float,
     var emergencyButtonStatus: Int,
-    var rfidTagState: String,
-    var chargerErrorCodes: String
+    var rfidTagState: String
 )

@@ -32,14 +32,14 @@ class ErrorCodesListAdapter(var onItemClick: (ErrorCodes) -> Unit) :
         init {
             binding.apply {
 
-                root.setOnClickListener {
+               /* root.setOnClickListener {
                     val position = adapterPosition
                     if (position != RecyclerView.NO_POSITION) {
                         val sampleModel = getItem(position)
                         bind(sampleModel, position)
                         onItemClick(sampleModel)
                     }
-                }
+                }*/
             }
         }
 

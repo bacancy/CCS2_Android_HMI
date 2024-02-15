@@ -7,13 +7,15 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.bacancy.ccs2androidhmi.db.dao.AppDao
 import com.bacancy.ccs2androidhmi.db.entity.TbChargingHistory
 import com.bacancy.ccs2androidhmi.db.entity.TbAcMeterInfo
+import com.bacancy.ccs2androidhmi.db.entity.TbErrorCodes
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsDcMeterInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsLastChargingSummary
 import com.bacancy.ccs2androidhmi.db.entity.TbMiscInfo
 
 @Database(
-    entities = [TbChargingHistory::class, TbAcMeterInfo::class, TbMiscInfo::class, TbGunsDcMeterInfo::class, TbGunsChargingInfo::class, TbGunsLastChargingSummary::class],
+    entities = [TbChargingHistory::class, TbAcMeterInfo::class, TbMiscInfo::class, TbGunsDcMeterInfo::class, TbGunsChargingInfo::class, TbGunsLastChargingSummary::class,
+               TbErrorCodes::class],
     version = 3
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -30,8 +32,7 @@ abstract class AppDatabase : RoomDatabase() {
 
         val MIGRATION_2_3: Migration = object : Migration(2, 3) {
             override fun migrate(db: SupportSQLiteDatabase) {
-                db.execSQL("ALTER TABLE tbMiscInfo ADD COLUMN chargerErrorCodes TEXT DEFAULT '' NOT NULL")
-                db.execSQL("ALTER TABLE tbGunsChargingInfo ADD COLUMN gunsErrorCodes TEXT DEFAULT '' NOT NULL")
+                db.execSQL("CREATE TABLE IF NOT EXISTS `tbErrorCodes` (`sourceId` INTEGER NOT NULL, `sourceErrorCodes` TEXT NOT NULL, PRIMARY KEY(`sourceId`))")
             }
         }
 

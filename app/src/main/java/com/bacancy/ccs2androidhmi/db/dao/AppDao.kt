@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.bacancy.ccs2androidhmi.db.entity.TbChargingHistory
 import com.bacancy.ccs2androidhmi.db.entity.TbAcMeterInfo
+import com.bacancy.ccs2androidhmi.db.entity.TbErrorCodes
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsDcMeterInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsLastChargingSummary
@@ -54,5 +55,11 @@ interface AppDao {
 
     @Query("SELECT * FROM tbGunsLastChargingSummary WHERE gunId = :gunNumber")
     fun getGunsLastChargingSummary(gunNumber: Int): LiveData<TbGunsLastChargingSummary>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertErrorCode(tbErrorCodes: TbErrorCodes): Long
+
+    @Query("SELECT * FROM tbErrorCodes")
+    fun getAllErrorCodes(): LiveData<List<TbErrorCodes>>
 
 }

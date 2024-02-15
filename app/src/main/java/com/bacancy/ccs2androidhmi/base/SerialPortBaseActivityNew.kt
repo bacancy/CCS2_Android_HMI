@@ -13,6 +13,7 @@ import com.bacancy.ccs2androidhmi.HMIApp
 import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.db.entity.TbAcMeterInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbChargingHistory
+import com.bacancy.ccs2androidhmi.db.entity.TbErrorCodes
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsDcMeterInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsLastChargingSummary
@@ -290,10 +291,11 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 ),
                 unitPrice = getUnitPrice(it),
                 emergencyButtonStatus = getEmergencyButtonStatus(it),
-                rfidTagState = getRFIDTagState(it),
-                chargerErrorCodes = hexToBinary(getVendorErrorCodeInformation(it))
+                rfidTagState = getRFIDTagState(it)
             )
         )
+
+        appViewModel.insertErrorCode(TbErrorCodes(0,hexToBinary(getVendorErrorCodeInformation(it))))
     }
 
     private suspend fun readAcMeterInfo() {
@@ -483,10 +485,10 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 chargingCurrent = getChargingCurrent(it),
                 duration = getChargingDuration(it),
                 energyConsumption = getChargingEnergyConsumption(it),
-                totalCost = getTotalCost(it),
-                gunsErrorCodes = hexToBinary(getGunSpecificErrorCodeInformation(it))
+                totalCost = getTotalCost(it)
             )
         )
+        appViewModel.insertErrorCode(TbErrorCodes(1,hexToBinary(getGunSpecificErrorCodeInformation(it))))
     }
 
     private suspend fun readGun1LastChargingSummaryInfo(shouldSaveLastChargingSummary: Boolean = false) {
@@ -790,10 +792,10 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 chargingCurrent = getChargingCurrent(it),
                 duration = getChargingDuration(it),
                 energyConsumption = getChargingEnergyConsumption(it),
-                totalCost = getTotalCost(it),
-                gunsErrorCodes = hexToBinary(getGunSpecificErrorCodeInformation(it))
+                totalCost = getTotalCost(it)
             )
         )
+        appViewModel.insertErrorCode(TbErrorCodes(2,hexToBinary(getGunSpecificErrorCodeInformation(it))))
     }
 
     private suspend fun readGun2LastChargingSummaryInfo(shouldSaveLastChargingSummary: Boolean = false) {

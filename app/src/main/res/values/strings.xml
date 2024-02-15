@@ -144,5 +144,6 @@
     <string name="cd_ethernet_icon">ethernet icon</string>
     <string name="cd_gsm_icon">gsm icon</string>
     <string name="cd_wifi_icon">wifi icon</string>
+    <string name="lbl_error_source">Error Source</string>
 
 </resources>

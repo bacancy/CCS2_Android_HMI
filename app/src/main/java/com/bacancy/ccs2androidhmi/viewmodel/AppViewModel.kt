@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bacancy.ccs2androidhmi.db.entity.TbChargingHistory
 import com.bacancy.ccs2androidhmi.db.entity.TbAcMeterInfo
+import com.bacancy.ccs2androidhmi.db.entity.TbErrorCodes
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsDcMeterInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsLastChargingSummary
@@ -24,6 +25,7 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
 
     val latestAcMeterInfo: LiveData<TbAcMeterInfo> = mainRepository.getLatestAcMeterInfo()
     val latestMiscInfo: LiveData<TbMiscInfo> = mainRepository.getLatestMiscInfo()
+    val allErrorCodes: LiveData<List<TbErrorCodes>> = mainRepository.getAllErrorCodes()
     fun getUpdatedGunsChargingInfo(gunNumber: Int): LiveData<TbGunsChargingInfo> =
         mainRepository.getGunsChargingInfoByGunNumber(gunNumber)
 
@@ -72,6 +74,12 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
     fun insertGunsLastChargingSummary(tbGunsLastChargingSummary: TbGunsLastChargingSummary) {
         viewModelScope.launch {
             mainRepository.insertGunsLastChargingSummary(tbGunsLastChargingSummary)
+        }
+    }
+
+    fun insertErrorCode(tbErrorCodes: TbErrorCodes) {
+        viewModelScope.launch {
+            mainRepository.insertErrorCode(tbErrorCodes)
         }
     }
 

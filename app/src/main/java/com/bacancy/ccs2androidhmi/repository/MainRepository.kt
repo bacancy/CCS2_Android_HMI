@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import com.bacancy.ccs2androidhmi.db.AppDatabase
 import com.bacancy.ccs2androidhmi.db.entity.TbChargingHistory
 import com.bacancy.ccs2androidhmi.db.entity.TbAcMeterInfo
+import com.bacancy.ccs2androidhmi.db.entity.TbErrorCodes
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsDcMeterInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsLastChargingSummary
@@ -64,5 +65,12 @@ class MainRepository @Inject constructor(private val appDatabase: AppDatabase) {
         return appDatabase.appDao().getGunsLastChargingSummary(gunNumber)
     }
 
+    suspend fun insertErrorCode(tbErrorCodes: TbErrorCodes){
+        appDatabase.appDao().insertErrorCode(tbErrorCodes)
+    }
+
+    fun getAllErrorCodes(): LiveData<List<TbErrorCodes>> {
+        return appDatabase.appDao().getAllErrorCodes()
+    }
 
 }

@@ -121,35 +121,31 @@
             android:id="@+id/imgServerStatus"
             android:layout_width="@dimen/_13sdp"
             android:layout_height="@dimen/_13sdp"
-            app:tint="?attr/viewThemeColor"
-            android:src="@drawable/ic_server_disconnected"
+            tools:src="@drawable/ic_server_connected"
             android:contentDescription="@string/cd_server_icon" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imgEthernetStatus"
             android:layout_width="@dimen/_13sdp"
             android:layout_height="@dimen/_13sdp"
-            app:tint="?attr/viewThemeColor"
             android:layout_marginStart="@dimen/_5sdp"
-            android:src="@drawable/ic_ethernet_disconnected"
+            tools:src="@drawable/ic_ethernet_connected"
             android:contentDescription="@string/cd_ethernet_icon" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imgGSMLevel"
             android:layout_width="@dimen/_13sdp"
             android:layout_height="@dimen/_13sdp"
-            app:tint="?attr/viewThemeColor"
             android:layout_marginStart="@dimen/_5sdp"
-            android:src="@drawable/ic_gsm_level_0"
+            tools:src="@drawable/ic_gsm_level_2_new"
             android:contentDescription="@string/cd_gsm_icon" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imgWifiLevel"
             android:layout_width="@dimen/_13sdp"
-            app:tint="?attr/viewThemeColor"
             android:layout_height="@dimen/_13sdp"
             android:layout_marginStart="@dimen/_5sdp"
-            android:src="@drawable/ic_wifi_level_0"
+            tools:src="@drawable/ic_wifi_level_2_new"
             android:contentDescription="@string/cd_wifi_icon" />
 
     </LinearLayout>
