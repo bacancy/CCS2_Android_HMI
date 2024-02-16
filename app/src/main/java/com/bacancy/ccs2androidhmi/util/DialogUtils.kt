@@ -102,6 +102,7 @@ object DialogUtils {
     fun Context.showChargingSummaryDialog(
         isGun1: Boolean,
         tbGunsLastChargingSummary: TbGunsLastChargingSummary,
+        isDarkTheme: Boolean,
         onCloseClicked: () -> Unit
     ) {
         Log.i("JAN25", "showChargingSummaryDialog: CALLED - $isGun1")
@@ -120,7 +121,7 @@ object DialogUtils {
             incChargingDuration.tvSummaryUnit.visible()
             incChargingDuration.tvSummaryUnit.text = getString(R.string.lbl_min)
             incChargingDuration.tvSummaryValue.text = getString(R.string.hint_0)
-            incChargingDuration.root.setBackgroundColor(resources.getColor(R.color.black))
+            incChargingDuration.root.setBackgroundColor(resources.getColor(if (isDarkTheme) R.color.black else R.color.white))
 
             incChargingStartDateTime.tvSummaryLabel.text =
                 getString(R.string.lbl_charging_start_date_time)
@@ -132,7 +133,7 @@ object DialogUtils {
                 getString(R.string.lbl_charging_end_date_time)
             incChargingEndDateTime.tvSummaryUnit.invisible()
             incChargingEndDateTime.tvSummaryValue.text = getString(R.string.hint_date_time)
-            incChargingEndDateTime.root.setBackgroundColor(resources.getColor(R.color.black))
+            incChargingEndDateTime.root.setBackgroundColor(resources.getColor(if (isDarkTheme) R.color.black else R.color.white))
 
             incStartSOC.tvSummaryLabel.text = getString(R.string.lbl_start_soc)
             incStartSOC.tvSummaryUnit.visible()
@@ -144,7 +145,7 @@ object DialogUtils {
             incEndSOC.tvSummaryUnit.visible()
             incEndSOC.tvSummaryUnit.text = getString(R.string.lbl_percentage)
             incEndSOC.tvSummaryValue.text = getString(R.string.hint_0)
-            incEndSOC.root.setBackgroundColor(resources.getColor(R.color.black))
+            incEndSOC.root.setBackgroundColor(resources.getColor(if (isDarkTheme) R.color.black else R.color.white))
 
             incEnergyConsumption.tvSummaryLabel.text = getString(R.string.lbl_energy_consumption)
             incEnergyConsumption.tvSummaryUnit.visible()
@@ -155,7 +156,7 @@ object DialogUtils {
             incSessionEndReason.tvSummaryLabel.text = getString(R.string.lbl_session_end_reason)
             incSessionEndReason.tvSummaryUnit.invisible()
             incSessionEndReason.tvSummaryValue.text = ""
-            incSessionEndReason.root.setBackgroundColor(resources.getColor(R.color.black))
+            incSessionEndReason.root.setBackgroundColor(resources.getColor(if (isDarkTheme) R.color.black else R.color.white))
 
             tvGunsHeader.text =
                 if (isGun1) "Gun - 1 Charging Summary" else "Gun - 2 Charging Summary"

@@ -13,6 +13,8 @@ import com.bacancy.ccs2androidhmi.databinding.FragmentNewFaultInformationBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbErrorCodes
 import com.bacancy.ccs2androidhmi.models.ErrorCodes
 import com.bacancy.ccs2androidhmi.util.StateAndModesUtils
+import com.bacancy.ccs2androidhmi.util.gone
+import com.bacancy.ccs2androidhmi.util.visible
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
 import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
 import com.bacancy.ccs2androidhmi.views.adapters.ErrorCodesListAdapter
@@ -51,14 +53,28 @@ class NewFaultInfoFragment : BaseFragment() {
         lifecycleScope.launch(Dispatchers.Main) {
             val updatedErrorCodesList = mutableListOf<ErrorCodes>()
             errorCodes.forEach { tbErrorCodes ->
-                updatedErrorCodesList.addAll(getAbnormalErrorCodesList(tbErrorCodes.sourceErrorCodes, tbErrorCodes.sourceId))
+                updatedErrorCodesList.addAll(
+                    getAbnormalErrorCodesList(
+                        tbErrorCodes.sourceErrorCodes,
+                        tbErrorCodes.sourceId
+                    )
+                )
             }
-
-            allErrorCodesListAdapter.submitList(updatedErrorCodesList)
+            if (updatedErrorCodesList.isNotEmpty()) {
+                binding.tvNoDataFound.gone()
+                binding.rvVendorErrorCodeInfo.visible()
+                allErrorCodesListAdapter.submitList(updatedErrorCodesList)
+            } else {
+                binding.tvNoDataFound.visible()
+                binding.rvVendorErrorCodeInfo.gone()
+            }
         }
     }
 
-    private fun getAbnormalErrorCodesList(errorCodeString: String, type: Int): MutableList<ErrorCodes> {
+    private fun getAbnormalErrorCodesList(
+        errorCodeString: String,
+        type: Int
+    ): MutableList<ErrorCodes> {
 
         // Reverse the string so that the LSB (Least Significant Bit) corresponds to the first index
         val reversedString = errorCodeString.reversed()
@@ -80,13 +96,33 @@ class NewFaultInfoFragment : BaseFragment() {
         abnormalErrors.forEachIndexed { index, gunsErrorCode ->
             when (type) {
                 0 -> {
-                    newErrorCodesList.add(ErrorCodes(gunsErrorCode.value, gunsErrorCode.name, "Charger"))
+                    newErrorCodesList.add(
+                        ErrorCodes(
+                            gunsErrorCode.value,
+                            gunsErrorCode.name,
+                            "Charger"
+                        )
+                    )
                 }
+
                 1 -> {
-                    newErrorCodesList.add(ErrorCodes(gunsErrorCode.value, gunsErrorCode.name, "Gun 1"))
+                    newErrorCodesList.add(
+                        ErrorCodes(
+                            gunsErrorCode.value,
+                            gunsErrorCode.name,
+                            "Gun 1"
+                        )
+                    )
                 }
+
                 2 -> {
-                    newErrorCodesList.add(ErrorCodes(gunsErrorCode.value, gunsErrorCode.name, "Gun 2"))
+                    newErrorCodesList.add(
+                        ErrorCodes(
+                            gunsErrorCode.value,
+                            gunsErrorCode.name,
+                            "Gun 2"
+                        )
+                    )
                 }
             }
         }

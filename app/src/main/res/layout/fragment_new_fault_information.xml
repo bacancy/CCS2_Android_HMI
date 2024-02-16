@@ -51,7 +51,7 @@
         android:background="@drawable/bg_black_rect_with_white_border"
         android:gravity="center_horizontal"
         android:padding="@dimen/_10sdp"
-        android:text="@string/lbl_no_charging_history"
+        android:text="@string/lbl_no_faults_detected"
         android:textColor="@color/white"
         android:textSize="@dimen/_10ssp"
         android:visibility="gone" />

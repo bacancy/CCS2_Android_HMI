@@ -390,15 +390,24 @@ class GunsHomeScreenFragment : BaseFragment() {
                 appViewModel.getGunsLastChargingSummary(if (isGun1) 1 else 2)
                     .observe(requireActivity()) {
                         it?.let {
+                            val isDarkTheme = prefHelper.getBoolean("isDarkTheme", false)
                             if (isGun1) {
                                 if (shouldShowGun1SummaryDialog) {
                                     shouldShowGun1SummaryDialog = false
-                                    requireContext().showChargingSummaryDialog(true, it) {}
+                                    requireContext().showChargingSummaryDialog(
+                                        true,
+                                        it,
+                                        isDarkTheme
+                                    ) {}
                                 }
                             } else {
                                 if (shouldShowGun2SummaryDialog) {
                                     shouldShowGun2SummaryDialog = false
-                                    requireContext().showChargingSummaryDialog(false, it) {}
+                                    requireContext().showChargingSummaryDialog(
+                                        false,
+                                        it,
+                                        isDarkTheme
+                                    ) {}
                                 }
                             }
                         }

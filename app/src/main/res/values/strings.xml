@@ -145,5 +145,6 @@
     <string name="cd_gsm_icon">gsm icon</string>
     <string name="cd_wifi_icon">wifi icon</string>
     <string name="lbl_error_source">Error Source</string>
+    <string name="lbl_no_faults_detected">No Faults Detected</string>
 
 </resources>
