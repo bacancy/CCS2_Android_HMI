@@ -6,7 +6,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.bacancy.ccs2androidhmi.R
@@ -15,7 +14,6 @@ import com.bacancy.ccs2androidhmi.databinding.FragmentGunsHomeScreenBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
 import com.bacancy.ccs2androidhmi.util.CommonUtils.INSIDE_LOCAL_START_STOP_SCREEN
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showChargingSummaryDialog
-import com.bacancy.ccs2androidhmi.util.DialogUtils.showPasswordPromptDialog
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_DENIED
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_TIMEOUT
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.CHARGING
@@ -38,10 +36,10 @@ import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.TEMPERATURE_FAULT
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.UNAVAILABLE
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.UNPLUGGED
 import com.bacancy.ccs2androidhmi.util.PrefHelper
+import com.bacancy.ccs2androidhmi.util.PrefHelper.Companion.IS_DARK_THEME
 import com.bacancy.ccs2androidhmi.util.TextViewUtils.removeBlinking
 import com.bacancy.ccs2androidhmi.util.TextViewUtils.startBlinking
 import com.bacancy.ccs2androidhmi.util.gone
-import com.bacancy.ccs2androidhmi.util.showToast
 import com.bacancy.ccs2androidhmi.util.visible
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
 import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
@@ -390,7 +388,7 @@ class GunsHomeScreenFragment : BaseFragment() {
                 appViewModel.getGunsLastChargingSummary(if (isGun1) 1 else 2)
                     .observe(requireActivity()) {
                         it?.let {
-                            val isDarkTheme = prefHelper.getBoolean("isDarkTheme", false)
+                            val isDarkTheme = prefHelper.getBoolean(IS_DARK_THEME, false)
                             if (isGun1) {
                                 if (shouldShowGun1SummaryDialog) {
                                     shouldShowGun1SummaryDialog = false

@@ -19,7 +19,7 @@ import com.bacancy.ccs2androidhmi.util.CommonUtils
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showPasswordPromptDialog
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.NO_STATE
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.TOKEN_ID_NONE
-import com.bacancy.ccs2androidhmi.util.PrefHelper
+import com.bacancy.ccs2androidhmi.util.PrefHelper.Companion.IS_DARK_THEME
 import com.bacancy.ccs2androidhmi.util.ToastUtils.showCustomToast
 import com.bacancy.ccs2androidhmi.util.gone
 import com.bacancy.ccs2androidhmi.util.invisible
@@ -45,7 +45,6 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
     override fun onCreate(savedInstanceState: Bundle?) {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         super.onCreate(savedInstanceState)
-        applyTheme()
         binding = ActivityHmiDashboardBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -70,7 +69,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             // Device API level is 31 or higher
             val newNightMode = if (prefHelper.getBoolean(
-                    "isDarkTheme",
+                    IS_DARK_THEME,
                     false
                 )
             ) UiModeManager.MODE_NIGHT_NO else UiModeManager.MODE_NIGHT_YES
@@ -79,34 +78,13 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         } else {
             // Device API level is 30 or lower
             val newNightMode = if (prefHelper.getBoolean(
-                    "isDarkTheme",
+                    IS_DARK_THEME,
                     false
                 )
             ) AppCompatDelegate.MODE_NIGHT_NO else AppCompatDelegate.MODE_NIGHT_YES
             AppCompatDelegate.setDefaultNightMode(newNightMode)
         }
-        prefHelper.setBoolean("isDarkTheme", !prefHelper.getBoolean("isDarkTheme", false))
-    }
-
-    private fun applyTheme() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val uiManager = getSystemService(UI_MODE_SERVICE) as UiModeManager
-            // Device API level is 31 or higher
-            if (prefHelper.getBoolean("isDarkTheme", false)) uiManager.setApplicationNightMode(
-                UiModeManager.MODE_NIGHT_YES
-            ) else uiManager.setApplicationNightMode(UiModeManager.MODE_NIGHT_NO)
-
-        } else {
-            // Device API level is 30 or lower
-            if (prefHelper.getBoolean(
-                    "isDarkTheme",
-                    false
-                )
-            ) AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES) else AppCompatDelegate.setDefaultNightMode(
-                AppCompatDelegate.MODE_NIGHT_NO
-            )
-
-        }
+        prefHelper.setBoolean(IS_DARK_THEME, !prefHelper.getBoolean(IS_DARK_THEME, false))
     }
 
     private fun handleClicks() {

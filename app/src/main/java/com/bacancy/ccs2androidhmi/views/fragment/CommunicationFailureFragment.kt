@@ -1,9 +1,6 @@
 package com.bacancy.ccs2androidhmi.views.fragment
 
-import android.app.UiModeManager
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,11 +10,9 @@ import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.CommonTableRowBinding
 import com.bacancy.ccs2androidhmi.databinding.FragmentCommunicationFailureBinding
-import com.bacancy.ccs2androidhmi.databinding.FragmentGunsHomeScreenBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbMiscInfo
 import com.bacancy.ccs2androidhmi.util.PrefHelper
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
-import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -46,14 +41,13 @@ class CommunicationFailureFragment : BaseFragment() {
     override fun setupViews() {
         binding.incTableHeader.tvLabel1.text = getString(R.string.lbl_fault_type_information)
         binding.incTableHeader.tvLabel2.text = getString(R.string.lbl_status)
-
         val viewDataList = listOf(
             ViewData(
                 binding.incPLCCommError,
                 getString(R.string.lbl_plc_communication_error),
                 null,
                 /*R.color.black*/
-                if (prefHelper.getBoolean("isDarkTheme", false)) R.color.black else R.color.white
+                R.color.inverse_color
             ),
             ViewData(
                 binding.incRectifierCommError,
@@ -65,7 +59,7 @@ class CommunicationFailureFragment : BaseFragment() {
                 binding.incOCPPCommError,
                 getString(R.string.lbl_ocpp_communication_error),
                 null,
-                if (prefHelper.getBoolean("isDarkTheme", false)) R.color.black else R.color.white
+                R.color.inverse_color
             ),
             ViewData(
                 binding.incModbusMasterCommError,

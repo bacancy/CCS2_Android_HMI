@@ -1,7 +1,6 @@
 package com.bacancy.ccs2androidhmi.views.fragment
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,9 +13,9 @@ import com.bacancy.ccs2androidhmi.util.CommonUtils
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.SELECTED_GUN
 import com.bacancy.ccs2androidhmi.util.PrefHelper
 import com.bacancy.ccs2androidhmi.util.invisible
+import com.bacancy.ccs2androidhmi.util.setBackgroundColorBasedOnTheme
 import com.bacancy.ccs2androidhmi.util.visible
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
-import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -104,7 +103,7 @@ class GunsLastChargingSummaryFragment : BaseFragment() {
             incChargingDuration.tvSummaryUnit.visible()
             incChargingDuration.tvSummaryUnit.text = getString(R.string.lbl_min)
             incChargingDuration.tvSummaryValue.text = getString(R.string.hint_0)
-            incChargingDuration.root.setBackgroundColor(resources.getColor(if (prefHelper.getBoolean("isDarkTheme", false)) R.color.black else R.color.white))
+            incChargingDuration.root.setBackgroundColorBasedOnTheme()
 
             incChargingStartDateTime.tvSummaryLabel.text =
                 getString(R.string.lbl_charging_start_date_time)
@@ -116,7 +115,7 @@ class GunsLastChargingSummaryFragment : BaseFragment() {
                 getString(R.string.lbl_charging_end_date_time)
             incChargingEndDateTime.tvSummaryUnit.invisible()
             incChargingEndDateTime.tvSummaryValue.text = getString(R.string.hint_date_time)
-            incChargingEndDateTime.root.setBackgroundColor(resources.getColor(if (prefHelper.getBoolean("isDarkTheme", false)) R.color.black else R.color.white))
+            incChargingEndDateTime.root.setBackgroundColorBasedOnTheme()
 
             incStartSOC.tvSummaryLabel.text = getString(R.string.lbl_start_soc)
             incStartSOC.tvSummaryUnit.visible()
@@ -128,7 +127,7 @@ class GunsLastChargingSummaryFragment : BaseFragment() {
             incEndSOC.tvSummaryUnit.visible()
             incEndSOC.tvSummaryUnit.text = getString(R.string.lbl_percentage)
             incEndSOC.tvSummaryValue.text = getString(R.string.hint_0)
-            incEndSOC.root.setBackgroundColor(resources.getColor(if (prefHelper.getBoolean("isDarkTheme", false)) R.color.black else R.color.white))
+            incEndSOC.root.setBackgroundColorBasedOnTheme()
 
             incEnergyConsumption.tvSummaryLabel.text = getString(R.string.lbl_energy_consumption)
             incEnergyConsumption.tvSummaryUnit.visible()
@@ -139,7 +138,7 @@ class GunsLastChargingSummaryFragment : BaseFragment() {
             incSessionEndReason.tvSummaryLabel.text = getString(R.string.lbl_session_end_reason)
             incSessionEndReason.tvSummaryUnit.invisible()
             incSessionEndReason.tvSummaryValue.text = ""
-            incSessionEndReason.root.setBackgroundColor(resources.getColor(if (prefHelper.getBoolean("isDarkTheme", false)) R.color.black else R.color.white))
+            incSessionEndReason.root.setBackgroundColorBasedOnTheme()
 
 
         }

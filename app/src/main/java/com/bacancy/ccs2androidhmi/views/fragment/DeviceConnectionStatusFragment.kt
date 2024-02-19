@@ -1,8 +1,6 @@
 package com.bacancy.ccs2androidhmi.views.fragment
 
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,12 +9,10 @@ import androidx.fragment.app.viewModels
 import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.CommonTableRowBinding
-import com.bacancy.ccs2androidhmi.databinding.FragmentGunsHomeScreenBinding
 import com.bacancy.ccs2androidhmi.databinding.FragmentMiscErrorsBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbMiscInfo
 import com.bacancy.ccs2androidhmi.util.PrefHelper
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
-import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -45,13 +41,12 @@ class DeviceConnectionStatusFragment : BaseFragment() {
     override fun setupViews() {
         binding.incTableHeader.tvLabel1.text = getString(R.string.lbl_device_information)
         binding.incTableHeader.tvLabel2.text = getString(R.string.lbl_status)
-
         val viewDataList = listOf(
             ViewData(
                 binding.incRFIDModule,
                 getString(R.string.lbl_rfid_module),
                 null,
-                if (prefHelper.getBoolean("isDarkTheme", false)) R.color.black else R.color.white
+                R.color.inverse_color
             ),
             ViewData(
                 binding.incLEDModule,
@@ -59,14 +54,14 @@ class DeviceConnectionStatusFragment : BaseFragment() {
                 null,
                 R.color.light_trans_sky_blue
             ),
-            ViewData(binding.incACMeter, getString(R.string.lbl_ac_meter), null, if (prefHelper.getBoolean("isDarkTheme", false)) R.color.black else R.color.white),
+            ViewData(binding.incACMeter, getString(R.string.lbl_ac_meter), null, R.color.inverse_color),
             ViewData(
                 binding.incDCMeter1,
                 getString(R.string.lbl_dc_meter_1),
                 null,
                 R.color.light_trans_sky_blue
             ),
-            ViewData(binding.incDCMeter2, getString(R.string.lbl_dc_meter_2), null, if (prefHelper.getBoolean("isDarkTheme", false)) R.color.black else R.color.white)
+            ViewData(binding.incDCMeter2, getString(R.string.lbl_dc_meter_2), null, R.color.inverse_color)
         )
 
         viewDataList.forEach { data ->

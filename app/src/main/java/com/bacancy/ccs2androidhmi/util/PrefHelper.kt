@@ -10,6 +10,7 @@ class PrefHelper(context: Context) {
 
     companion object {
         private const val PREF_NAME = "HMIPrefs"
+        const val IS_DARK_THEME = "isDarkTheme"
     }
 
     fun setSelectedGunNumber(key: String, value: Int) {
