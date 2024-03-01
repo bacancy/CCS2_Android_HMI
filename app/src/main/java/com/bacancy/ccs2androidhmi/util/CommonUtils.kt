@@ -22,6 +22,8 @@ object CommonUtils {
     const val GUN_2_LOCAL_START = "GUN_2_LOCAL_START"
     const val LOCAL_START_STOP_PIN = "123456"
 
+    const val AUTH_PIN_VALUE="AUTH_PIN_VALUE"
+
     private fun swapAdjacentElements(array: MutableList<Int>): MutableList<Int> {
         for (i in 0 until array.size - 1 step 2) {
             // Swap adjacent elements

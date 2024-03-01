@@ -111,4 +111,12 @@ object ModbusTypeConverter {
 
         return binaryStringBuilder.toString()
     }
+
+    fun stringToIntArray(input: String): IntArray {
+        val intArray = IntArray(input.length)
+        for (i in input.indices) {
+            intArray[i] = input[i].code
+        }
+        return intArray
+    }
 }

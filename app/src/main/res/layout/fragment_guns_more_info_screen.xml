@@ -9,13 +9,28 @@
     android:padding="@dimen/_10sdp"
     tools:context=".views.fragment.GunsMoreInformationFragment">
 
-    <ImageView
-        android:id="@+id/ivGunStateInfo"
-        android:layout_width="@dimen/_15sdp"
-        android:layout_height="@dimen/_15sdp"
-        android:layout_gravity="end"
-        app:tint="?attr/viewThemeColor"
-        android:src="@drawable/ic_info" />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end">
+
+        <ImageView
+            android:id="@+id/ivPinAuthorization"
+            android:layout_width="@dimen/_18sdp"
+            android:layout_height="@dimen/_18sdp"
+            android:visibility="invisible"
+            app:tint="?attr/viewThemeColor"
+            android:src="@drawable/ic_pin_authorization" />
+
+        <ImageView
+            android:id="@+id/ivGunStateInfo"
+            app:tint="?attr/viewThemeColor"
+            android:layout_width="@dimen/_15sdp"
+            android:layout_height="@dimen/_15sdp"
+            android:layout_marginStart="@dimen/_5sdp"
+            android:src="@drawable/ic_info" />
+
+    </LinearLayout>
 
     <include
         android:id="@+id/incHeader"

@@ -17,6 +17,58 @@ object ReadWriteUtil {
 
     private const val DELAY_BETWEEN_READ_AND_WRITE = 500L
 
+    suspend fun writeToMultipleHoldingRegisterNew(
+        mOutputStream: OutputStream?,
+        mInputStream: InputStream?,
+        startAddress: Int,
+        regValue: String,
+        onAuthDataReceived: (ByteArray?) -> Unit, onReadStopped: () -> Unit
+    ) {
+        withContext(Dispatchers.IO) {
+            val bufferedInputStream = BufferedInputStream(mInputStream)
+            val bufferedOutputStream = BufferedOutputStream(mOutputStream)
+
+            val writeRequestFrame: ByteArray =
+                ModBusUtils.createWriteMultipleRegistersRequestForPinAuthNew(startAddress, regValue)
+            withTimeout(3000) {
+                try {
+                    withContext(Dispatchers.IO) {
+                        bufferedOutputStream.write(writeRequestFrame)
+                        bufferedOutputStream.flush()
+                        delay(DELAY_BETWEEN_READ_AND_WRITE)
+                        Log.w(
+                            "TAG",
+                            "writeToMultipleHoldingRegisterNew: BufferedInputStream available bytes - ${bufferedInputStream.available()}"
+                        )
+
+                        val responseFrame = ByteArray(8)
+                        bufferedInputStream.mark(0)
+                        if(bufferedInputStream.available() > 0){
+                            bufferedInputStream.read(responseFrame)
+                            Log.w("TAG", "writeToMultipleHoldingRegisterNew: Response Frame - ${responseFrame.toHex()}")
+                        }
+                        onAuthDataReceived(null)
+                    }
+                } catch (e: TimeoutCancellationException) {
+                    Log.e(
+                        "RWU",
+                        "writeToMultipleHoldingRegisterNew: TimeOutException = ${e.printStackTrace()}",
+
+                        )
+                    withContext(Dispatchers.IO) {
+                        delay(DELAY_BETWEEN_READ_AND_WRITE)
+                        val responseFrame = ByteArray(7)
+                        bufferedInputStream.mark(0)
+                        if(bufferedInputStream.available() > 0){
+                            bufferedInputStream.read(responseFrame)
+                        }
+                        onAuthDataReceived(null)
+                    }
+                }
+            }
+        }
+    }
+
     suspend fun writeToSingleHoldingRegisterNew(
         mOutputStream: OutputStream?,
         mInputStream: InputStream?,
@@ -35,16 +87,20 @@ object ReadWriteUtil {
                     withContext(Dispatchers.IO) {
                         bufferedOutputStream.write(writeRequestFrame)
                         bufferedOutputStream.flush()
+
+                        delay(DELAY_BETWEEN_READ_AND_WRITE)
                         Log.w(
                             "TAG",
                             "writeToSingleHoldingRegisterNew: BufferedInputStream available bytes - ${bufferedInputStream.available()}"
                         )
-                        delay(DELAY_BETWEEN_READ_AND_WRITE)
-
                         val responseFrame = ByteArray(7)
                         bufferedInputStream.mark(0)
                         if(bufferedInputStream.available() > 0){
                             bufferedInputStream.read(responseFrame)
+                            Log.w(
+                                "TAG",
+                                "writeToSingleHoldingRegisterNew: Response Frame - ${responseFrame.toHex()}"
+                            )
                         }
                         onAuthDataReceived(null)
                     }

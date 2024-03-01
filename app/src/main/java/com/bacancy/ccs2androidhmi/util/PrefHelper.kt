@@ -53,4 +53,14 @@ class PrefHelper(context: Context) {
         return sharedPreferences.getInt(key, defaultValue)
     }
 
+    fun setStringValue(key: String, value: String) {
+        val editor: SharedPreferences.Editor = sharedPreferences.edit()
+        editor.putString(key, value)
+        editor.apply()
+    }
+
+    fun getStringValue(key: String, defaultValue: String): String {
+        return sharedPreferences.getString(key, defaultValue).toString()
+    }
+
 }

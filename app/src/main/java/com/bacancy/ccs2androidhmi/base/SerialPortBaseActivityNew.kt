@@ -19,6 +19,7 @@ import com.bacancy.ccs2androidhmi.db.entity.TbGunsDcMeterInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsLastChargingSummary
 import com.bacancy.ccs2androidhmi.db.entity.TbMiscInfo
 import com.bacancy.ccs2androidhmi.util.CommonUtils.AC_METER_FRAG
+import com.bacancy.ccs2androidhmi.util.CommonUtils.AUTH_PIN_VALUE
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_DC_METER_FRAG
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_LAST_CHARGING_SUMMARY_FRAG
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_LOCAL_START
@@ -217,6 +218,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
 
     private fun showReadStoppedUI() {
         if (isReadStopped == 5) {
+            prefHelper.setStringValue(AUTH_PIN_VALUE, "")
             lifecycleScope.launch(Dispatchers.Main) {
                 showCustomDialog(getString(R.string.message_device_communication_error)) {
                     isReadStopped = 0
@@ -580,14 +582,14 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
             )
         ) {
             writeForLocalStartStop(determineLocalStartStop())
-        } else {
+        } else if (prefHelper.getSelectedGunNumber(SELECTED_GUN, 0) != 0) {
             val selectedGunNumber =
                 prefHelper.getSelectedGunNumber(SELECTED_GUN, 0)
-            if (selectedGunNumber != 0) {
-                authenticateGun(selectedGunNumber)
-            } else {
-                startReading()
-            }
+            authenticateGun(selectedGunNumber)
+        } else if (prefHelper.getStringValue(AUTH_PIN_VALUE, "").isNotEmpty()) {
+            writeForPinAuthorization(prefHelper.getStringValue(AUTH_PIN_VALUE, ""))
+        } else {
+            startReading()
         }
     }
 
@@ -948,6 +950,26 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
         }
     }
 
+    private fun writeForPinAuthorization(enteredPin: String) {
+        Log.i(TAG, "writeForPinAuthorization Request Started")
+        lifecycleScope.launch(Dispatchers.IO) {
+            delay(500)
+            ReadWriteUtil.writeToMultipleHoldingRegisterNew(
+                mOutputStream,
+                mInputStream,
+                75,
+                enteredPin, {
+                    Log.d(TAG, "writeForPinAuthorization: Response Got")
+                    prefHelper.setStringValue(AUTH_PIN_VALUE, "")
+                    lifecycleScope.launch {
+                        startReading()
+                    }
+                }, {
+                    prefHelper.setStringValue(AUTH_PIN_VALUE, "")
+                })
+        }
+    }
+
     private fun authenticateGun(gunNumber: Int) {
         Log.i(TAG, "Gun $gunNumber authenticateGun Request Started")
         lifecycleScope.launch(Dispatchers.IO) {
@@ -958,7 +980,11 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 gunNumber, {
                     Log.d(TAG, "authenticateGun: Response Got")
                     lifecycleScope.launch {
-                        startReading()
+                        if (prefHelper.getStringValue(AUTH_PIN_VALUE, "").isNotEmpty()) {
+                            writeForPinAuthorization(prefHelper.getStringValue(AUTH_PIN_VALUE, ""))
+                        } else {
+                            startReading()
+                        }
                     }
                 }, {})
         }
