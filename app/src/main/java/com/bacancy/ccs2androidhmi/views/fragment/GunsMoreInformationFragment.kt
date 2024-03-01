@@ -10,6 +10,7 @@ import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentGunsMoreInfoScreenBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
+import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_PIN_AUTHORIZATION
 import com.bacancy.ccs2androidhmi.util.CommonUtils.AUTH_PIN_VALUE
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showPinAuthorizationDialog
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils
@@ -77,7 +78,9 @@ class GunsMoreInformationFragment : BaseFragment() {
                 when (gunChargingState) {
                     GunsChargingInfoUtils.PLUGGED_IN,
                     GunsChargingInfoUtils.CHARGING -> {
-                        ivPinAuthorization.visible()
+                        if(SHOW_PIN_AUTHORIZATION){
+                            ivPinAuthorization.visible()
+                        }
                     }
 
                     else -> {
@@ -148,7 +151,7 @@ class GunsMoreInformationFragment : BaseFragment() {
                 showPinAuthorizationDialog({
                     prefHelper.setStringValue(AUTH_PIN_VALUE,it)
                 }, {
-                    requireContext().showCustomToast(getString(R.string.message_invalid_empty_pin))
+                    requireContext().showCustomToast(getString(R.string.message_invalid_empty_pin), false)
                 })
             }
 

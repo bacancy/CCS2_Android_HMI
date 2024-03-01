@@ -1,6 +1,8 @@
 package com.bacancy.ccs2androidhmi.views
 
+import android.Manifest
 import android.app.UiModeManager
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -8,12 +10,17 @@ import android.os.Looper
 import android.util.Log
 import android.view.WindowManager
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import com.bacancy.ccs2androidhmi.R
+import com.bacancy.ccs2androidhmi.base.SerialPortBaseActivityNew
 import com.bacancy.ccs2androidhmi.databinding.ActivityHmiDashboardBinding
+import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_LOCAL_START_STOP
+import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_TEST_MODE
 import com.bacancy.ccs2androidhmi.util.CommonUtils
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showPasswordPromptDialog
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.NO_STATE
@@ -50,6 +57,8 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         gunsHomeScreenFragment = GunsHomeScreenFragment()
         addNewFragment(gunsHomeScreenFragment)
 
+        handleViewsVisibility()
+
         handleClicks()
 
         handleBackStackChanges()
@@ -62,6 +71,57 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
         showHideHomeIcon()
 
+        if (!hasStoragePermissions()) {
+            requestStoragePermissions()
+        }
+
+    }
+
+    private fun hasStoragePermissions(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        ) == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun requestStoragePermissions() {
+        val permissions = arrayOf(
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        )
+        storagePermissionLauncher.launch(permissions)
+    }
+
+    private val storagePermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { result ->
+            val readPermission = result.getValue(Manifest.permission.READ_EXTERNAL_STORAGE)
+            val writePermission = result.getValue(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            if (readPermission && writePermission) {
+                showCustomToast(getString(R.string.msg_permission_granted), true)
+            } else {
+                showCustomToast(getString(R.string.msg_permission_not_granted), false)
+            }
+
+        }
+
+    private fun handleViewsVisibility() {
+        binding.apply {
+            if (SHOW_LOCAL_START_STOP) {
+                binding.incToolbar.ivLocalStartStop.visible()
+            } else {
+                binding.incToolbar.ivLocalStartStop.gone()
+            }
+
+            if (SHOW_TEST_MODE) {
+                binding.incToolbar.ivTestMode.visible()
+            } else {
+                binding.incToolbar.ivTestMode.gone()
+            }
+        }
     }
 
     private fun toggleTheme() {

@@ -151,5 +151,7 @@
     <string name="message_invalid_empty_pin">Invalid/Empty PIN</string>
     <string name="message_please_input_voltage_between_200_to_1000_v">Please input voltage between 200 to 1000 V</string>
     <string name="message_please_input_current_between_0_to_100_a">Please input current between 0 to 100 A</string>
+    <string name="msg_permission_granted">Permission Granted</string>
+    <string name="msg_permission_not_granted">Storage permission is required to export charging history.</string>
 
 </resources>
