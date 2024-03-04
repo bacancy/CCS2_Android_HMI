@@ -23,6 +23,9 @@ object CommonUtils {
     const val LOCAL_START_STOP_PIN = "123456"
 
     const val AUTH_PIN_VALUE="AUTH_PIN_VALUE"
+    const val FILE_NAME_DATE_TIME_FORMAT = "yyyyMMdd_HHmmss"
+    const val FILE_NAME_PREFIX = "ccs2_"
+    const val FILE_NAME_EXTENSION = "csv"
 
     private fun swapAdjacentElements(array: MutableList<Int>): MutableList<Int> {
         for (i in 0 until array.size - 1 step 2) {

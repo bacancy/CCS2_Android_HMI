@@ -3,7 +3,6 @@ package com.bacancy.ccs2androidhmi.views.fragment
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -59,10 +58,10 @@ class GunsChargingHistoryFragment : BaseFragment() {
 
     private fun getSampleHistory(): MutableList<TbChargingHistory> {
         val historyList = mutableListOf<TbChargingHistory>()
-        for (i in 1..5) {
+        for (i in 1..550) {
             val chargingSummary = TbChargingHistory(
                 summaryId = i,
-                gunNumber = 1 * i,
+                gunNumber = if(i % 2 == 0) 1 else 2,
                 evMacAddress = "00-00-00-02-88-AF-56-39",
                 chargingStartTime = "01/03/2024 17:59:10",
                 chargingEndTime = "01/03/2024 18:59:10",
@@ -99,15 +98,14 @@ class GunsChargingHistoryFragment : BaseFragment() {
                 adapter = chargingHistoryAdapter
             }
         }
-        chargingHistoryAdapter.submitList(getSampleHistory())
-        /*appViewModel.getChargingHistoryByGunNumber(selectedGunNumber)
-        getAllChargingHistory()*/
+        //chargingHistoryAdapter.submitList(getSampleHistory())
+        appViewModel.getChargingHistoryByGunNumber(selectedGunNumber)
+        getAllChargingHistory()
     }
 
     private fun getAllChargingHistory() {
         lifecycleScope.launch {
             appViewModel.chargingSummariesList.observe(viewLifecycleOwner) {
-                Log.d("FRITAG", "getChargingHistory: ${it.size}")
                 if (it.isNotEmpty()) {
                     binding.rvChargingHistory.visible()
                     binding.tvNoDataFound.gone()
@@ -125,10 +123,12 @@ class GunsChargingHistoryFragment : BaseFragment() {
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             val selectedFolderUri = result.data?.data ?: return@registerForActivityResult
-            requireContext().exportCSVInCustomDirectory(
-                chargingHistoryAdapter.currentList,
-                selectedFolderUri
-            )
+            lifecycleScope.launch {
+                requireContext().exportCSVInCustomDirectory(
+                    chargingHistoryAdapter.currentList,
+                    selectedFolderUri
+                )
+            }
         }
     }
 

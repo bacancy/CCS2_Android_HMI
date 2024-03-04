@@ -4,12 +4,19 @@ import android.content.Context
 import android.net.Uri
 import android.os.Environment
 import android.util.Log
-import android.widget.Toast
 import androidx.documentfile.provider.DocumentFile
+import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.db.entity.TbChargingHistory
+import com.bacancy.ccs2androidhmi.util.CommonUtils.FILE_NAME_DATE_TIME_FORMAT
+import com.bacancy.ccs2androidhmi.util.CommonUtils.FILE_NAME_EXTENSION
+import com.bacancy.ccs2androidhmi.util.CommonUtils.FILE_NAME_PREFIX
+import com.bacancy.ccs2androidhmi.util.ToastUtils.showCustomToast
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
+import java.io.OutputStreamWriter
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -58,33 +65,72 @@ object CSVExporter {
         }
     }
 
-    fun Context.exportCSVInCustomDirectory(dataList: List<TbChargingHistory>, folderUri: Uri) {
-        if (isExternalStorageWritable()) {
-            try {
-                val file = DocumentFile.fromTreeUri(this, folderUri)?.createFile("text/csv", generateFileNameWithTimestamp())
-                val outputStream = this.contentResolver.openOutputStream(file?.uri!!)
-                //outputStream?.write("some string".toByteArray())
-                outputStream?.bufferedWriter().use { writer ->
-                    // Write header
-                    writer?.write("GunId,EV Mac Address,Charging Start Time, Charging End Time, Total Charging Time\n")
-                    // Write data
-                    dataList.forEach { model ->
-                        writer?.write("${model.gunNumber},${model.evMacAddress},${model.chargingStartTime},${model.chargingEndTime},${model.totalChargingTime},\n")
+    suspend fun Context.exportCSVInCustomDirectory(
+        dataList: List<TbChargingHistory>,
+        folderUri: Uri
+    ) {
+        withContext(Dispatchers.IO) {
+            if (isExternalStorageWritable()) {
+                try {
+                    val file = DocumentFile.fromTreeUri(this@exportCSVInCustomDirectory, folderUri)
+                        ?.createFile(getString(R.string.csv_mime_type), generateFileNameWithTimestamp())
+
+                    file?.let { documentFile ->
+                        contentResolver.openOutputStream(documentFile.uri)?.use { outputStream ->
+                            OutputStreamWriter(outputStream).use { writer ->
+                                val csvStringBuilder = StringBuilder()
+                                csvStringBuilder.appendLine(getString(R.string.csv_row_headers))
+
+                                // Batch writing data
+                                dataList.chunked(100) { batch ->
+                                    batch.forEach { model ->
+                                        val line =
+                                            "${model.summaryId},${model.gunNumber},${model.evMacAddress},${model.chargingStartTime},${model.chargingEndTime},${model.totalChargingTime},${model.startSoc},${model.endSoc},${model.energyConsumption},${model.sessionEndReason}"
+                                        csvStringBuilder.appendLine(line)
+                                    }
+                                    writer.write(csvStringBuilder.toString())
+                                    csvStringBuilder.clear()
+                                }
+                            }
+                        }
+                        withContext(Dispatchers.Main) {
+                            this@exportCSVInCustomDirectory.showCustomToast(
+                                getString(R.string.msg_file_saved_successfully),
+                                true
+                            )
+                        }
+                    } ?: withContext(Dispatchers.Main) {
+                        this@exportCSVInCustomDirectory.showCustomToast(
+                            getString(R.string.msg_failed_to_create_file),
+                            false
+                        )
+                    }
+                } catch (e: IOException) {
+                    Log.e(TAG, "IOException: ${e.message}")
+                    withContext(Dispatchers.Main) {
+                        this@exportCSVInCustomDirectory.showCustomToast(
+                            getString(R.string.msg_failed_to_save_file),
+                            false
+                        )
                     }
                 }
-                outputStream?.close()
-                Toast.makeText(this, "File saved successfully", Toast.LENGTH_SHORT).show()
-            } catch (e: IOException) {
-                Toast.makeText(this, "Failed to save file", Toast.LENGTH_SHORT).show()
-                e.printStackTrace()
+            } else {
+                Log.e(TAG, "External storage not writable")
+                withContext(Dispatchers.Main) {
+                    this@exportCSVInCustomDirectory.showCustomToast(
+                        getString(R.string.msg_external_storage_not_writable),
+                        false
+                    )
+                }
             }
-        } else {
-            Log.e(TAG, "External storage not writable")
         }
     }
 
-    private fun generateFileNameWithTimestamp(prefix: String = "ccs2_", extension: String = "csv"): String {
-        val dateFormat = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault())
+    private fun generateFileNameWithTimestamp(
+        prefix: String = FILE_NAME_PREFIX,
+        extension: String = FILE_NAME_EXTENSION
+    ): String {
+        val dateFormat = SimpleDateFormat(FILE_NAME_DATE_TIME_FORMAT, Locale.getDefault())
         val currentTimeStamp = dateFormat.format(Date())
         return "$prefix$currentTimeStamp.$extension"
     }
