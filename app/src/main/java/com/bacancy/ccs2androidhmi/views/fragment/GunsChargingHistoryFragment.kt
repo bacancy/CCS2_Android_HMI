@@ -62,7 +62,7 @@ class GunsChargingHistoryFragment : BaseFragment() {
         for (i in 1..5) {
             val chargingSummary = TbChargingHistory(
                 summaryId = i,
-                gunNumber = 1*i,
+                gunNumber = 1 * i,
                 evMacAddress = "00-00-00-02-88-AF-56-39",
                 chargingStartTime = "01/03/2024 17:59:10",
                 chargingEndTime = "01/03/2024 18:59:10",
@@ -99,9 +99,9 @@ class GunsChargingHistoryFragment : BaseFragment() {
                 adapter = chargingHistoryAdapter
             }
         }
-        //chargingHistoryAdapter.submitList(getSampleHistory())
-        appViewModel.getChargingHistoryByGunNumber(selectedGunNumber)
-        getAllChargingHistory()
+        chargingHistoryAdapter.submitList(getSampleHistory())
+        /*appViewModel.getChargingHistoryByGunNumber(selectedGunNumber)
+        getAllChargingHistory()*/
     }
 
     private fun getAllChargingHistory() {
@@ -125,13 +125,17 @@ class GunsChargingHistoryFragment : BaseFragment() {
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             val selectedFolderUri = result.data?.data ?: return@registerForActivityResult
-            requireContext().exportCSVInCustomDirectory(chargingHistoryAdapter.currentList, selectedFolderUri)
+            requireContext().exportCSVInCustomDirectory(
+                chargingHistoryAdapter.currentList,
+                selectedFolderUri
+            )
         }
     }
 
     private fun openFoldersStructure() {
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
-        intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+        intent.flags =
+            Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
         storageLauncher.launch(intent)
     }
 

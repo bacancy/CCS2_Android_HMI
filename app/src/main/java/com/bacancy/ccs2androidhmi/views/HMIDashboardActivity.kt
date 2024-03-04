@@ -1,8 +1,6 @@
 package com.bacancy.ccs2androidhmi.views
 
-import android.Manifest
 import android.app.UiModeManager
-import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -10,9 +8,8 @@ import android.os.Looper
 import android.util.Log
 import android.view.WindowManager
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
@@ -48,6 +45,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
     private lateinit var binding: ActivityHmiDashboardBinding
     val handler = Handler(Looper.getMainLooper())
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         super.onCreate(savedInstanceState)
@@ -70,43 +68,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         showHideBackIcon()
 
         showHideHomeIcon()
-
-        if (!hasStoragePermissions()) {
-            requestStoragePermissions()
-        }
-
     }
-
-    private fun hasStoragePermissions(): Boolean {
-        return ContextCompat.checkSelfPermission(
-            this,
-            Manifest.permission.READ_EXTERNAL_STORAGE
-        ) == PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ) == PackageManager.PERMISSION_GRANTED
-    }
-
-    private fun requestStoragePermissions() {
-        val permissions = arrayOf(
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        )
-        storagePermissionLauncher.launch(permissions)
-    }
-
-    private val storagePermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { result ->
-            val readPermission = result.getValue(Manifest.permission.READ_EXTERNAL_STORAGE)
-            val writePermission = result.getValue(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-            if (readPermission && writePermission) {
-                showCustomToast(getString(R.string.msg_permission_granted), true)
-            } else {
-                showCustomToast(getString(R.string.msg_permission_not_granted), false)
-            }
-
-        }
 
     private fun handleViewsVisibility() {
         binding.apply {
