@@ -67,7 +67,8 @@ object CSVExporter {
 
     suspend fun Context.exportCSVInCustomDirectory(
         dataList: List<TbChargingHistory>,
-        folderUri: Uri
+        folderUri: Uri,
+        callback: (String) -> Unit
     ) {
         withContext(Dispatchers.IO) {
             if (isExternalStorageWritable()) {
@@ -98,12 +99,14 @@ object CSVExporter {
                                 getString(R.string.msg_file_saved_successfully),
                                 true
                             )
+                            callback(getString(R.string.msg_file_saved_successfully))
                         }
                     } ?: withContext(Dispatchers.Main) {
                         this@exportCSVInCustomDirectory.showCustomToast(
                             getString(R.string.msg_failed_to_create_file),
                             false
                         )
+                        callback(getString(R.string.msg_failed_to_create_file))
                     }
                 } catch (e: IOException) {
                     Log.e(TAG, "IOException: ${e.message}")
@@ -112,6 +115,7 @@ object CSVExporter {
                             getString(R.string.msg_failed_to_save_file),
                             false
                         )
+                        callback(getString(R.string.msg_failed_to_save_file))
                     }
                 }
             } else {
@@ -121,6 +125,7 @@ object CSVExporter {
                         getString(R.string.msg_external_storage_not_writable),
                         false
                     )
+                    callback(getString(R.string.msg_external_storage_not_writable))
                 }
             }
         }

@@ -20,12 +20,12 @@ import javax.inject.Inject
 @HiltViewModel
 class AppViewModel @Inject constructor(private val mainRepository: MainRepository) : ViewModel() {
 
-    private val _chargingSummariesList = MutableLiveData<List<TbChargingHistory>>()
-    val chargingSummariesList: LiveData<List<TbChargingHistory>> = _chargingSummariesList
-
     val latestAcMeterInfo: LiveData<TbAcMeterInfo> = mainRepository.getLatestAcMeterInfo()
+
     val latestMiscInfo: LiveData<TbMiscInfo> = mainRepository.getLatestMiscInfo()
+
     val allErrorCodes: LiveData<List<TbErrorCodes>> = mainRepository.getAllErrorCodes()
+
     fun getUpdatedGunsChargingInfo(gunNumber: Int): LiveData<TbGunsChargingInfo> =
         mainRepository.getGunsChargingInfoByGunNumber(gunNumber)
 
@@ -41,9 +41,11 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
         }
     }
 
-    fun getChargingHistoryByGunNumber(gunNumber: Int) {
+    fun getChargingHistoryByGunNumber(gunNumber: Int) = mainRepository.getGunsChargingHistory(gunNumber)
+
+    fun deleteChargingHistoryByGunId(gunNumber: Int) {
         viewModelScope.launch {
-            _chargingSummariesList.value = mainRepository.getGunsChargingHistory(gunNumber)
+            mainRepository.deleteChargingHistoryByGunId(gunNumber)
         }
     }
 

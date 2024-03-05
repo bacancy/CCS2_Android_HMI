@@ -159,5 +159,8 @@
     <string name="msg_failed_to_save_file">Failed to save file</string>
     <string name="msg_external_storage_not_writable">External storage not writable</string>
     <string name="csv_mime_type">text/csv</string>
+    <string name="lbl_yes">Yes</string>
+    <string name="lbl_no">No</string>
+    <string name="msg_are_you_sure_to_delete">Do you want to delete the charging history from the app as you have exported it in CSV?.</string>
 
 </resources>

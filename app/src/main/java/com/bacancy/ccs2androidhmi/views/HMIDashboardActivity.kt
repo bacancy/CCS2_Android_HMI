@@ -13,9 +13,11 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
+import androidx.lifecycle.lifecycleScope
 import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.SerialPortBaseActivityNew
 import com.bacancy.ccs2androidhmi.databinding.ActivityHmiDashboardBinding
+import com.bacancy.ccs2androidhmi.db.entity.TbChargingHistory
 import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_LOCAL_START_STOP
 import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_TEST_MODE
 import com.bacancy.ccs2androidhmi.util.CommonUtils
@@ -34,6 +36,9 @@ import com.bacancy.ccs2androidhmi.views.fragment.NewFaultInfoFragment
 import com.bacancy.ccs2androidhmi.views.fragment.TestModeHomeFragment
 import com.bacancy.ccs2androidhmi.views.listener.FragmentChangeListener
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -68,6 +73,31 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         showHideBackIcon()
 
         showHideHomeIcon()
+
+        insertSampleChargingHistory()
+    }
+
+    private fun insertSampleChargingHistory() {
+        for (i in 1..20) {
+            val chargingSummary = TbChargingHistory(
+                summaryId = i,
+                gunNumber = if (i % 2 == 0) 1 else 2,
+                evMacAddress = "00-00-00-02-88-AF-56-39",
+                chargingStartTime = "01/03/2024 17:59:10",
+                chargingEndTime = "01/03/2024 18:59:10",
+                totalChargingTime = "60",
+                startSoc = "50",
+                endSoc = "85",
+                energyConsumption = "15.60",
+                sessionEndReason = "Emergency",
+                customSessionEndReason = "",
+                totalCost = ""
+            )
+            lifecycleScope.launch(Dispatchers.IO) {
+                appViewModel.insertChargingSummary(chargingSummary)
+                delay(500)
+            }
+        }
     }
 
     private fun handleViewsVisibility() {

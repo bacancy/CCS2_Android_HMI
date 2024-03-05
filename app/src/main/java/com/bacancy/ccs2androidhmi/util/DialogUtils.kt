@@ -11,6 +11,7 @@ import android.view.WindowManager
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.bacancy.ccs2androidhmi.R
+import com.bacancy.ccs2androidhmi.databinding.CustomDialogAreYouSureBinding
 import com.bacancy.ccs2androidhmi.databinding.CustomDialogBinding
 import com.bacancy.ccs2androidhmi.databinding.DialogGunsChargingSummaryBinding
 import com.bacancy.ccs2androidhmi.databinding.DialogPasswordPromptBinding
@@ -77,6 +78,51 @@ object DialogUtils {
             btnClose.setOnClickListener {
                 dialog.dismiss()
                 onCloseClicked()
+            }
+        }
+
+        val uiFlags = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
+                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
+                View.SYSTEM_UI_FLAG_FULLSCREEN or
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
+                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+
+        dialog.window?.let { window ->
+            window.decorView.systemUiVisibility = uiFlags
+
+            val layoutParams = window.attributes
+            layoutParams.flags = layoutParams.flags or
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+            window.attributes = layoutParams
+        }
+
+        // Show the dialog
+        dialog.show()
+    }
+
+    fun Activity.showCustomDialogForAreYouSure(message: String, onYesClicked: () -> Unit, onNoClicked: () -> Unit) {
+        // Show custom dialog without creating a new class
+        val dialog = Dialog(this, R.style.CustomAlertDialog)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.window?.setLayout(
+            WindowManager.LayoutParams.MATCH_PARENT,
+            WindowManager.LayoutParams.WRAP_CONTENT
+        )
+        val binding = CustomDialogAreYouSureBinding.inflate(layoutInflater)
+        dialog.setContentView(binding.root)
+
+        // Initialize your custom views and handle interactions here
+        binding.apply {
+            tvMessage.text = message
+            btnYes.setOnClickListener {
+                dialog.dismiss()
+                onYesClicked()
+            }
+            btnNo.setOnClickListener {
+                dialog.dismiss()
+                onNoClicked()
             }
         }
 

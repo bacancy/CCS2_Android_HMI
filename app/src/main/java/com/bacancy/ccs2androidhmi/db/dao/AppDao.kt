@@ -13,6 +13,7 @@ import com.bacancy.ccs2androidhmi.db.entity.TbGunsDcMeterInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsLastChargingSummary
 import com.bacancy.ccs2androidhmi.db.entity.TbMiscInfo
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 
 @Dao
 interface AppDao {
@@ -24,7 +25,10 @@ interface AppDao {
     suspend fun getAllChargingSummaries(): List<TbChargingHistory>
 
     @Query("SELECT * FROM tbChargingHistory WHERE gunNumber = :gunNumber ORDER BY summaryId DESC")
-    suspend fun getGunsChargingHistory(gunNumber: Int): List<TbChargingHistory>
+    fun getGunsChargingHistory(gunNumber: Int): Flow<List<TbChargingHistory>>
+
+    @Query("DELETE FROM TbChargingHistory WHERE gunNumber = :gunNumber")
+    suspend fun deleteChargingHistoryByGunId(gunNumber: Int)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAcMeterInfo(tbAcMeterInfo: TbAcMeterInfo): Long

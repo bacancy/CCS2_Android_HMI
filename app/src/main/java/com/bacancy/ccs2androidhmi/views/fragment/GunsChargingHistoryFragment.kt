@@ -16,6 +16,7 @@ import com.bacancy.ccs2androidhmi.databinding.FragmentGunsChargingHistoryBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbChargingHistory
 import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_EXPORT_CHARGING_HISTORY
 import com.bacancy.ccs2androidhmi.util.CSVExporter.exportCSVInCustomDirectory
+import com.bacancy.ccs2androidhmi.util.DialogUtils.showCustomDialogForAreYouSure
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.SELECTED_GUN
 import com.bacancy.ccs2androidhmi.util.gone
 import com.bacancy.ccs2androidhmi.util.visible
@@ -46,9 +47,9 @@ class GunsChargingHistoryFragment : BaseFragment() {
         handleViewsVisibility()
     }
 
-    private fun handleViewsVisibility() {
+    private fun handleViewsVisibility(hasHistoryData: Boolean = false) {
         binding.apply {
-            if (SHOW_EXPORT_CHARGING_HISTORY) {
+            if (SHOW_EXPORT_CHARGING_HISTORY && hasHistoryData) {
                 ivExportChargingHistory.visible()
             } else {
                 ivExportChargingHistory.gone()
@@ -58,10 +59,10 @@ class GunsChargingHistoryFragment : BaseFragment() {
 
     private fun getSampleHistory(): MutableList<TbChargingHistory> {
         val historyList = mutableListOf<TbChargingHistory>()
-        for (i in 1..550) {
+        for (i in 1..10) {
             val chargingSummary = TbChargingHistory(
                 summaryId = i,
-                gunNumber = if(i % 2 == 0) 1 else 2,
+                gunNumber = if (i % 2 == 0) 1 else 2,
                 evMacAddress = "00-00-00-02-88-AF-56-39",
                 chargingStartTime = "01/03/2024 17:59:10",
                 chargingEndTime = "01/03/2024 18:59:10",
@@ -99,13 +100,12 @@ class GunsChargingHistoryFragment : BaseFragment() {
             }
         }
         //chargingHistoryAdapter.submitList(getSampleHistory())
-        appViewModel.getChargingHistoryByGunNumber(selectedGunNumber)
         getAllChargingHistory()
     }
 
     private fun getAllChargingHistory() {
         lifecycleScope.launch {
-            appViewModel.chargingSummariesList.observe(viewLifecycleOwner) {
+            appViewModel.getChargingHistoryByGunNumber(selectedGunNumber).collect {
                 if (it.isNotEmpty()) {
                     binding.rvChargingHistory.visible()
                     binding.tvNoDataFound.gone()
@@ -114,6 +114,7 @@ class GunsChargingHistoryFragment : BaseFragment() {
                     binding.rvChargingHistory.gone()
                     binding.tvNoDataFound.visible()
                 }
+                handleViewsVisibility(it.isNotEmpty())
             }
         }
     }
@@ -127,7 +128,22 @@ class GunsChargingHistoryFragment : BaseFragment() {
                 requireContext().exportCSVInCustomDirectory(
                     chargingHistoryAdapter.currentList,
                     selectedFolderUri
-                )
+                ) { message ->
+                    when (message) {
+                        getString(R.string.msg_file_saved_successfully) -> {
+                            requireActivity().showCustomDialogForAreYouSure(getString(R.string.msg_are_you_sure_to_delete),
+                                {
+                                    //Yes - Delete charging history from local DB for selected gun
+                                    appViewModel.deleteChargingHistoryByGunId(selectedGunNumber)
+                                },
+                                {
+                                    //No - Do nothing and close the dialog
+                                })
+                        }
+
+                        else -> {}
+                    }
+                }
             }
         }
     }

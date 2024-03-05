@@ -10,6 +10,7 @@ import com.bacancy.ccs2androidhmi.db.entity.TbGunsDcMeterInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsLastChargingSummary
 import com.bacancy.ccs2androidhmi.db.entity.TbMiscInfo
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 class MainRepository @Inject constructor(private val appDatabase: AppDatabase) {
@@ -22,8 +23,12 @@ class MainRepository @Inject constructor(private val appDatabase: AppDatabase) {
         return appDatabase.appDao().getAllChargingSummaries()
     }
 
-    suspend fun getGunsChargingHistory(gunNumber: Int): List<TbChargingHistory> {
+    fun getGunsChargingHistory(gunNumber: Int): Flow<List<TbChargingHistory>> {
         return appDatabase.appDao().getGunsChargingHistory(gunNumber)
+    }
+
+    suspend fun deleteChargingHistoryByGunId(gunNumber: Int) {
+        return appDatabase.appDao().deleteChargingHistoryByGunId(gunNumber)
     }
 
     suspend fun insertAcMeterInfo(acMeterInfo: TbAcMeterInfo){
