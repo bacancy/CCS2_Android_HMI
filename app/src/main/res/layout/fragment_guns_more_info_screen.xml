@@ -46,7 +46,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_20sdp">
+        android:layout_marginTop="@dimen/_15sdp">
 
         <include
             android:id="@+id/incInitialSoc"
@@ -146,7 +146,32 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_20sdp"
+        android:layout_marginTop="@dimen/_10sdp">
+
+        <include
+            android:id="@+id/incGunTemperatureDCPositive"
+            layout="@layout/common_label_and_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <View
+            android:layout_width="@dimen/_20sdp"
+            android:layout_height="match_parent" />
+
+        <include
+            android:id="@+id/incGunTemperatureDCNegative"
+            layout="@layout/common_label_and_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_10sdp"
         android:orientation="horizontal">
 
         <Button
