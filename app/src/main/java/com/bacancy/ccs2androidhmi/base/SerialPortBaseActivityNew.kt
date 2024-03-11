@@ -59,6 +59,8 @@ import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getDemandCurrent
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getDemandVoltage
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getGunChargingState
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getGunSpecificErrorCodeInformation
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getGunTemperatureDCNegative
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getGunTemperatureDCPositive
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getInitialSoc
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getTotalCost
 import com.bacancy.ccs2androidhmi.util.LastChargingSummaryUtils
@@ -471,10 +473,6 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
     }
 
     private fun insertGun1InfoInDB(it: ByteArray) {
-        Log.i(
-            TAG,
-            "insertGun1InfoInDB: Gun 1 Error Code = ${hexToBinary(getGunSpecificErrorCodeInformation(it))}"
-        )
         appViewModel.insertGunsChargingInfo(
             TbGunsChargingInfo(
                 gunId = 1,
@@ -487,7 +485,9 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 chargingCurrent = getChargingCurrent(it),
                 duration = getChargingDuration(it),
                 energyConsumption = getChargingEnergyConsumption(it),
-                totalCost = getTotalCost(it)
+                totalCost = getTotalCost(it),
+                gunTemperatureDCPositive = getGunTemperatureDCPositive(it),
+                gunTemperatureDCNegative = getGunTemperatureDCNegative(it)
             )
         )
         appViewModel.insertErrorCode(TbErrorCodes(1,hexToBinary(getGunSpecificErrorCodeInformation(it))))
@@ -778,10 +778,6 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
     }
 
     private fun insertGun2InfoInDB(it: ByteArray) {
-        Log.i(
-            TAG,
-            "insertGun2InfoInDB: Gun 2 Error Code = ${hexToBinary(getGunSpecificErrorCodeInformation(it))}"
-        )
         appViewModel.insertGunsChargingInfo(
             TbGunsChargingInfo(
                 gunId = 2,
@@ -794,7 +790,9 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 chargingCurrent = getChargingCurrent(it),
                 duration = getChargingDuration(it),
                 energyConsumption = getChargingEnergyConsumption(it),
-                totalCost = getTotalCost(it)
+                totalCost = getTotalCost(it),
+                gunTemperatureDCPositive = getGunTemperatureDCPositive(it),
+                gunTemperatureDCNegative = getGunTemperatureDCNegative(it)
             )
         )
         appViewModel.insertErrorCode(TbErrorCodes(2,hexToBinary(getGunSpecificErrorCodeInformation(it))))

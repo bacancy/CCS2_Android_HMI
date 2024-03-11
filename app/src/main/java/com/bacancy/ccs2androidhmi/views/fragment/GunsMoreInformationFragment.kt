@@ -108,6 +108,8 @@ class GunsMoreInformationFragment : BaseFragment() {
                 incChargingSoc.tvValue.text = chargingSoc.toString()
                 incDuration.tvValue.text = duration
                 incEnergyConsumption.tvValue.text = energyConsumption.toString()
+                incGunTemperatureDCPositive.tvValue.text = gunTemperatureDCPositive.toString()
+                incGunTemperatureDCNegative.tvValue.text = gunTemperatureDCNegative.toString()
             }
         }
     }
@@ -207,6 +209,12 @@ class GunsMoreInformationFragment : BaseFragment() {
 
             incEnergyConsumption.tvLabel.text = getString(R.string.lbl_energy_consumption)
             incEnergyConsumption.tvValueUnit.text = getString(R.string.lbl_kw)
+
+            incGunTemperatureDCPositive.tvLabel.text = getString(R.string.lbl_gun_temp_dc_positive)
+            incGunTemperatureDCPositive.tvValueUnit.text = getString(R.string.lbl_celsius)
+
+            incGunTemperatureDCNegative.tvLabel.text = getString(R.string.lbl_gun_temp_dc_negative)
+            incGunTemperatureDCNegative.tvValueUnit.text = getString(R.string.lbl_celsius)
         }
     }
 }

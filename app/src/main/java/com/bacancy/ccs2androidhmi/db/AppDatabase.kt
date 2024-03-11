@@ -16,7 +16,7 @@ import com.bacancy.ccs2androidhmi.db.entity.TbMiscInfo
 @Database(
     entities = [TbChargingHistory::class, TbAcMeterInfo::class, TbMiscInfo::class, TbGunsDcMeterInfo::class, TbGunsChargingInfo::class, TbGunsLastChargingSummary::class,
                TbErrorCodes::class],
-    version = 3
+    version = 4
 )
 abstract class AppDatabase : RoomDatabase() {
 
@@ -33,6 +33,13 @@ abstract class AppDatabase : RoomDatabase() {
         val MIGRATION_2_3: Migration = object : Migration(2, 3) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("CREATE TABLE IF NOT EXISTS `tbErrorCodes` (`sourceId` INTEGER NOT NULL, `sourceErrorCodes` TEXT NOT NULL, PRIMARY KEY(`sourceId`))")
+            }
+        }
+
+        val MIGRATION_3_4: Migration = object : Migration(3, 4) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE tbGunsChargingInfo ADD COLUMN gunTemperatureDCPositive REAL DEFAULT 0.0 NOT NULL")
+                db.execSQL("ALTER TABLE tbGunsChargingInfo ADD COLUMN gunTemperatureDCNegative REAL DEFAULT 0.0 NOT NULL")
             }
         }
 

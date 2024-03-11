@@ -2,13 +2,14 @@ package com.bacancy.ccs2androidhmi.util
 
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.getIntValueFromByte
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.toHex
+import kotlin.math.pow
 import kotlin.math.roundToInt
 
 object GunsChargingInfoUtils {
 
     const val SELECTED_GUN = "SELECTED_GUN"
 
-    const val UNPLUGGED ="Unplugged"
+    const val UNPLUGGED = "Unplugged"
     const val PLUGGED_IN = "Plugged In & Waiting for Authentication"
     const val AUTHENTICATION_SUCCESS = "Authentication Success"
     const val CHARGING = "Charging"
@@ -30,103 +31,74 @@ object GunsChargingInfoUtils {
     const val UNAVAILABLE = "Unavailable"
     const val RESERVED = "Reserved"
 
-    fun getInitialSoc(response: ByteArray): Int {
-        val initialSocLSB = response[7].getIntValueFromByte()
-        val initialSocMSB = response[8].getIntValueFromByte()
-        return ModbusTypeConverter.getActualIntValueFromHighAndLowBytes(
-            initialSocLSB,
-            initialSocMSB
+    fun getGunChargingState(response: ByteArray): StateAndModesUtils.GunChargingState {
+        return StateAndModesUtils.GunChargingState.fromStateValue(
+            getIntValueFromBytes(response, 5, 6)
         )
+    }
+
+    fun getInitialSoc(response: ByteArray): Int {
+        return getIntValueFromBytes(response, 7, 8)
     }
 
     fun getChargingSoc(response: ByteArray): Int {
-        val initialSocLSB = response[9].getIntValueFromByte()
-        val initialSocMSB = response[10].getIntValueFromByte()
-        return ModbusTypeConverter.getActualIntValueFromHighAndLowBytes(
-            initialSocLSB,
-            initialSocMSB
-        )
-    }
-
-    fun getDemandVoltage(response: ByteArray): Int {
-        val initialSocLSB = response[19].getIntValueFromByte()
-        val initialSocMSB = response[20].getIntValueFromByte()
-        return ModbusTypeConverter.getActualIntValueFromHighAndLowBytes(
-            initialSocLSB,
-            initialSocMSB
-        )
-    }
-
-    fun getDemandCurrent(response: ByteArray): Int {
-        val initialSocLSB = response[21].getIntValueFromByte()
-        val initialSocMSB = response[22].getIntValueFromByte()
-        return ModbusTypeConverter.getActualIntValueFromHighAndLowBytes(
-            initialSocLSB,
-            initialSocMSB
-        )
-    }
-
-    fun getChargingVoltage(response: ByteArray): Int {
-        val initialSocLSB = response[15].getIntValueFromByte()
-        val initialSocMSB = response[16].getIntValueFromByte()
-        return ModbusTypeConverter.getActualIntValueFromHighAndLowBytes(
-            initialSocLSB,
-            initialSocMSB
-        )
-    }
-
-    fun getChargingCurrent(response: ByteArray): Int {
-        val initialSocLSB = response[17].getIntValueFromByte()
-        val initialSocMSB = response[18].getIntValueFromByte()
-        return ModbusTypeConverter.getActualIntValueFromHighAndLowBytes(
-            initialSocLSB,
-            initialSocMSB
-        )
+        return getIntValueFromBytes(response, 9, 10)
     }
 
     fun getChargingDuration(response: ByteArray): String {
-        val durationInMinutesLSB = response[11].getIntValueFromByte()
-        val durationInMinutesMSB = response[12].getIntValueFromByte()
-        val durationInHoursLSB = response[13].getIntValueFromByte()
-        val durationInHoursMSB = response[14].getIntValueFromByte()
-        val hour =
-            ModbusTypeConverter.getActualIntValueFromHighAndLowBytes(
-                durationInHoursLSB,
-                durationInHoursMSB
-            )
-        val minutes =
-            ModbusTypeConverter.getActualIntValueFromHighAndLowBytes(
-                durationInMinutesLSB,
-                durationInMinutesMSB
-            )
+        val minutes = getIntValueFromBytes(response, 11, 12)
+        val hour = getIntValueFromBytes(response, 13, 14)
         // Use String.format to add leading zeros
         val formattedHour = String.format("%02d", hour)
         val formattedMinutes = String.format("%02d", minutes)
-
         return "$formattedHour:$formattedMinutes"
     }
 
-    fun getChargingEnergyConsumption(response: ByteArray): Float {
-        val floatValue = ModbusTypeConverter.byteArrayToFloat(response.copyOfRange(23, 27))
-        return (floatValue * 1000F).roundToInt() / 1000F //up to 3 points after decimal
+    fun getChargingVoltage(response: ByteArray): Int {
+        return getIntValueFromBytes(response, 15, 16)
     }
 
-    fun getGunChargingState(response: ByteArray): StateAndModesUtils.GunChargingState {
-        val chargingStateLSB = response[5].getIntValueFromByte()
-        val chargingStateMSB = response[6].getIntValueFromByte()
-        return StateAndModesUtils.GunChargingState.fromStateValue(
-            ModbusTypeConverter.getActualIntValueFromHighAndLowBytes(
-                chargingStateLSB,
-                chargingStateMSB
-            )
-        )
+    fun getChargingCurrent(response: ByteArray): Int {
+        return getIntValueFromBytes(response, 17, 18)
+    }
+
+    fun getDemandVoltage(response: ByteArray): Int {
+        return getIntValueFromBytes(response, 19, 20)
+    }
+
+    fun getDemandCurrent(response: ByteArray): Int {
+        return getIntValueFromBytes(response, 21, 22)
+    }
+
+    fun getChargingEnergyConsumption(response: ByteArray): Float {
+        return getFloatValueFromBytes(response, 23, 27)
+    }
+
+    fun getGunTemperatureDCPositive(response: ByteArray): Float {
+        return getFloatValueFromBytes(response, 27, 31, 2)
+    }
+
+    fun getGunTemperatureDCNegative(response: ByteArray): Float {
+        return getFloatValueFromBytes(response, 31, 35, 2)
     }
 
     fun getTotalCost(response: ByteArray): Float {
-        return ModbusTypeConverter.byteArrayToFloat(response.copyOfRange(35, 39))
+        return getFloatValueFromBytes(response, 35, 39, 2)
     }
+
     fun getGunSpecificErrorCodeInformation(response: ByteArray): String {
         return response.copyOfRange(39, 47).toHex()
     }
 
+    private fun getFloatValueFromBytes(response: ByteArray, fromIndex: Int, toIndex: Int, decimalPoints: Int = 3): Float {
+        val floatValue = ModbusTypeConverter.byteArrayToFloat(response.copyOfRange(fromIndex, toIndex))
+        val multiplier = 10.0.pow(decimalPoints.toDouble())
+        return (floatValue * multiplier).roundToInt() / multiplier.toFloat()
+    }
+
+    private fun getIntValueFromBytes(response: ByteArray, lsbIndex: Int, msbIndex: Int): Int {
+        val lsb = response[lsbIndex].getIntValueFromByte()
+        val msb = response[msbIndex].getIntValueFromByte()
+        return ModbusTypeConverter.getActualIntValueFromHighAndLowBytes(lsb, msb)
+    }
 }

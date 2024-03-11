@@ -162,5 +162,8 @@
     <string name="lbl_yes">Yes</string>
     <string name="lbl_no">No</string>
     <string name="msg_are_you_sure_to_delete">Do you want to delete the charging history from the app as you have exported it in CSV?.</string>
+    <string name="lbl_gun_temp_dc_positive">Gun Temperature DC+</string>
+    <string name="lbl_gun_temp_dc_negative">Gun Temperature DC-</string>
+    <string name="lbl_celsius">°C</string>
 
 </resources>
