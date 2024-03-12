@@ -12,12 +12,6 @@ import androidx.lifecycle.lifecycleScope
 import com.bacancy.ccs2androidhmi.HMIApp
 import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.db.entity.TbAcMeterInfo
-import com.bacancy.ccs2androidhmi.db.entity.TbChargingHistory
-import com.bacancy.ccs2androidhmi.db.entity.TbErrorCodes
-import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
-import com.bacancy.ccs2androidhmi.db.entity.TbGunsDcMeterInfo
-import com.bacancy.ccs2androidhmi.db.entity.TbGunsLastChargingSummary
-import com.bacancy.ccs2androidhmi.db.entity.TbMiscInfo
 import com.bacancy.ccs2androidhmi.util.CommonUtils.AC_METER_FRAG
 import com.bacancy.ccs2androidhmi.util.CommonUtils.AUTH_PIN_VALUE
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_DC_METER_FRAG
@@ -50,47 +44,13 @@ import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.TAMPER_FAULT
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.TEMPERATURE_FAULT
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.UNAVAILABLE
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.UNPLUGGED
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getChargingCurrent
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getChargingDuration
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getChargingEnergyConsumption
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getChargingSoc
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getChargingVoltage
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getDemandCurrent
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getDemandVoltage
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getGunChargingState
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getGunSpecificErrorCodeInformation
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getGunTemperatureDCNegative
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getGunTemperatureDCPositive
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getInitialSoc
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getTotalCost
-import com.bacancy.ccs2androidhmi.util.LastChargingSummaryUtils
-import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getCommunicationErrorCodes
-import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getDevicePhysicalConnectionStatus
-import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getEmergencyButtonStatus
-import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getLEDModuleFirmwareVersion
-import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getMCUFirmwareVersion
-import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getOCPPFirmwareVersion
-import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getPLC1Fault
-import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getPLC1ModuleFirmwareVersion
-import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getPLC2Fault
-import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getPLC2ModuleFirmwareVersion
-import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getRFIDFirmwareVersion
-import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getRFIDTagState
-import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getRectifier1Code
-import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getRectifier2Code
-import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getRectifier3Code
-import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getRectifier4Code
-import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getUnitPrice
-import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.getVendorErrorCodeInformation
 import com.bacancy.ccs2androidhmi.util.ModBusUtils
 import com.bacancy.ccs2androidhmi.util.ModbusRequestFrames
-import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter
-import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.hexToBinary
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.toHex
 import com.bacancy.ccs2androidhmi.util.PrefHelper
 import com.bacancy.ccs2androidhmi.util.ReadWriteUtil
 import com.bacancy.ccs2androidhmi.util.ResponseSizes
-import com.bacancy.ccs2androidhmi.util.StateAndModesUtils
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -196,7 +156,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                             Log.d(TAG, "readMiscInfo: Response = ${it.toHex()}")
 
                             lifecycleScope.launch {
-                                insertMiscInfoInDB(it)
+                                appViewModel.insertMiscInfoInDB(it)
                             }
                         } else {
                             isReadStopped++
@@ -245,63 +205,6 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
         }
     }
 
-    private fun insertMiscInfoInDB(it: ByteArray) {
-        Log.i(
-            TAG,
-            "insertMiscInfoInDB: Vendor Error Code Info = ${hexToBinary(getVendorErrorCodeInformation(it))}"
-        )
-        val networkStatusBits =
-            ModbusTypeConverter.byteArrayToBinaryString(it.copyOfRange(3, 5))
-                .reversed()
-                .substring(0, 11)
-        val arrayOfNetworkStatusBits = networkStatusBits.toCharArray()
-        val wifiNetworkStrengthBits = arrayOfNetworkStatusBits.copyOfRange(0, 3)
-        val gsmNetworkStrengthBits = arrayOfNetworkStatusBits.copyOfRange(3, 7)
-        val ethernetConnectedBits = arrayOfNetworkStatusBits.copyOfRange(7, 8)
-        val serverConnectedWithBits =
-            arrayOfNetworkStatusBits.copyOfRange(8, 11)
-
-        //Insert into DB
-        appViewModel.insertMiscInfo(
-            TbMiscInfo(
-                1,
-                serverConnectedWith = StateAndModesUtils.checkServerConnectedWith(
-                    serverConnectedWithBits
-                ),
-                ethernetStatus = StateAndModesUtils.checkIfEthernetIsConnected(
-                    ethernetConnectedBits
-                ),
-                gsmLevel = StateAndModesUtils.checkGSMNetworkStrength(
-                    gsmNetworkStrengthBits
-                ).toInt(),
-                wifiLevel = StateAndModesUtils.checkWifiNetworkStrength(
-                    wifiNetworkStrengthBits
-                ).toInt(),
-                mcuFirmwareVersion = getMCUFirmwareVersion(it),
-                ocppFirmwareVersion = getOCPPFirmwareVersion(it),
-                rfidFirmwareVersion = getRFIDFirmwareVersion(it),
-                ledFirmwareVersion = getLEDModuleFirmwareVersion(it),
-                plc1FirmwareVersion = getPLC1ModuleFirmwareVersion(it),
-                plc2FirmwareVersion = getPLC2ModuleFirmwareVersion(it),
-                plc1Fault = getPLC1Fault(it),
-                plc2Fault = getPLC2Fault(it),
-                rectifier1Fault = getRectifier1Code(it),
-                rectifier2Fault = getRectifier2Code(it),
-                rectifier3Fault = getRectifier3Code(it),
-                rectifier4Fault = getRectifier4Code(it),
-                communicationError = getCommunicationErrorCodes(it),
-                devicePhysicalConnectionStatus = getDevicePhysicalConnectionStatus(
-                    it
-                ),
-                unitPrice = getUnitPrice(it),
-                emergencyButtonStatus = getEmergencyButtonStatus(it),
-                rfidTagState = getRFIDTagState(it)
-            )
-        )
-
-        appViewModel.insertErrorCode(TbErrorCodes(0,hexToBinary(getVendorErrorCodeInformation(it))))
-    }
-
     private suspend fun readAcMeterInfo() {
         Log.i(
             TAG,
@@ -336,8 +239,6 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 startReading()
             }
         }
-
-
     }
 
     private fun insertACMeterInfoInDB(it: ByteArray) {
@@ -378,7 +279,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                                 .startsWith(ModBusUtils.HOLDING_REGISTERS_CORRECT_RESPONSE_BITS)
                         ) {
                             Log.d(TAG, "readGun1Info: Response = ${it.toHex()}")
-                            insertGun1InfoInDB(it)
+                            appViewModel.insertGun1InfoInDB(it)
                             Log.d(
                                 TAG,
                                 "readGun1Info: Gun Current State: ${getGunChargingState(it).description}"
@@ -441,7 +342,6 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 startReading()
             }
         }
-
     }
 
     private fun openGun1LastChargingSummary(shouldSave: Boolean = false) {
@@ -450,7 +350,8 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
             if (shouldSave || prefHelper.getScreenVisible(
                     GUN_1_LAST_CHARGING_SUMMARY_FRAG,
                     false
-                )) {
+                )
+            ) {
                 readGun1LastChargingSummaryInfo(shouldSave)
             } else {
                 openGun1DCMeterInfo()
@@ -464,33 +365,13 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
             if (shouldSave || prefHelper.getScreenVisible(
                     GUN_2_LAST_CHARGING_SUMMARY_FRAG,
                     false
-                )) {
+                )
+            ) {
                 readGun2LastChargingSummaryInfo(shouldSave)
             } else {
                 openGun2DCMeterInfo()
             }
         }
-    }
-
-    private fun insertGun1InfoInDB(it: ByteArray) {
-        appViewModel.insertGunsChargingInfo(
-            TbGunsChargingInfo(
-                gunId = 1,
-                gunChargingState = getGunChargingState(it).description,
-                initialSoc = getInitialSoc(it),
-                chargingSoc = getChargingSoc(it),
-                demandVoltage = getDemandVoltage(it),
-                demandCurrent = getDemandCurrent(it),
-                chargingVoltage = getChargingVoltage(it),
-                chargingCurrent = getChargingCurrent(it),
-                duration = getChargingDuration(it),
-                energyConsumption = getChargingEnergyConsumption(it),
-                totalCost = getTotalCost(it),
-                gunTemperatureDCPositive = getGunTemperatureDCPositive(it),
-                gunTemperatureDCNegative = getGunTemperatureDCNegative(it)
-            )
-        )
-        appViewModel.insertErrorCode(TbErrorCodes(1,hexToBinary(getGunSpecificErrorCodeInformation(it))))
     }
 
     private suspend fun readGun1LastChargingSummaryInfo(shouldSaveLastChargingSummary: Boolean = false) {
@@ -516,8 +397,8 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                             )
                             if (shouldSaveLastChargingSummary) {
                                 Log.w("SAVER", "INSERT LCS IN DB")
-                                insertGun1LastChargingSummaryInDB(it)
-                                insertGun1ChargingHistoryInDB(it)
+                                appViewModel.insertGun1LastChargingSummaryInDB(it)
+                                appViewModel.insertGun1ChargingHistoryInDB(it)
                             }
                         } else {
                             Log.e(
@@ -534,7 +415,6 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 startReading()
             }
         }
-
     }
 
     private fun openGun1DCMeterInfo() {
@@ -593,49 +473,6 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
         }
     }
 
-    private fun insertGun1ChargingHistoryInDB(it: ByteArray) {
-        val chargingSummary = TbChargingHistory(
-            gunNumber = 1,
-            evMacAddress = LastChargingSummaryUtils.getEVMacAddress(it),
-            chargingStartTime = LastChargingSummaryUtils.getChargingStartTime(it),
-            chargingEndTime = LastChargingSummaryUtils.getChargingEndTime(it),
-            totalChargingTime = LastChargingSummaryUtils.getTotalChargingTime(it),
-            startSoc = LastChargingSummaryUtils.getStartSoc(it),
-            endSoc = LastChargingSummaryUtils.getEndSoc(it),
-            energyConsumption = LastChargingSummaryUtils.getEnergyConsumption(it),
-            sessionEndReason = LastChargingSummaryUtils.getSessionEndReason(it),
-            customSessionEndReason = "NA",
-            totalCost = LastChargingSummaryUtils.getTotalCost(it)
-        )
-        appViewModel.insertChargingSummary(chargingSummary)
-    }
-
-    private fun insertGun1LastChargingSummaryInDB(it: ByteArray) {
-        appViewModel.insertGunsLastChargingSummary(
-            TbGunsLastChargingSummary(
-                gunId = 1,
-                evMacAddress = LastChargingSummaryUtils.getEVMacAddress(it),
-                chargingDuration = LastChargingSummaryUtils.getTotalChargingTime(
-                    it
-                ),
-                chargingStartDateTime = LastChargingSummaryUtils.getChargingStartTime(
-                    it
-                ),
-                chargingEndDateTime = LastChargingSummaryUtils.getChargingEndTime(
-                    it
-                ),
-                startSoc = LastChargingSummaryUtils.getStartSoc(it),
-                endSoc = LastChargingSummaryUtils.getEndSoc(it),
-                energyConsumption = LastChargingSummaryUtils.getEnergyConsumption(
-                    it
-                ),
-                sessionEndReason = LastChargingSummaryUtils.getSessionEndReason(
-                    it
-                )
-            )
-        )
-    }
-
     private suspend fun readGun1DCMeterInfo() {
         Log.i(
             TAG,
@@ -655,7 +492,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                                 .startsWith(ModBusUtils.INPUT_REGISTERS_CORRECT_RESPONSE_BITS)
                         ) {
                             Log.d(TAG, "readGun1DCMeterInfo: Response = ${it.toHex()}")
-                            insertGun1DCMeterInfoInDB(it)
+                            appViewModel.insertGun1DCMeterInfoInDB(it)
 
                         } else {
                             Log.e(TAG, "readGun1DCMeterInfo: Error Response - ${it.toHex()}")
@@ -671,28 +508,6 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 Log.e(TAG, "readMiscInfo: Timeout Occurred", te.cause)
                 startReading()
             }
-        }
-
-    }
-
-    private fun insertGun1DCMeterInfoInDB(it: ByteArray) {
-        val newResponse = ModBusUtils.parseInputRegistersResponse(it)
-        Log.i(TAG, "insertGun1DCMeterInfoInDB: DC LIST = ${newResponse.toList()}")
-        if (newResponse.isNotEmpty()) {
-            appViewModel.insertGunsDCMeterInfo(
-                TbGunsDcMeterInfo(
-                    gunId = 1,
-                    voltage = newResponse[0],
-                    current = newResponse[1],
-                    power = newResponse[2],
-                    importEnergy = newResponse[3],
-                    exportEnergy = newResponse[4],
-                    maxVoltage = newResponse[5],
-                    minVoltage = newResponse[6],
-                    maxCurrent = newResponse[7],
-                    minCurrent = newResponse[8]
-                )
-            )
         }
     }
 
@@ -713,7 +528,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                         ) {
                             Log.d(TAG, "readGun2Info: Response = ${it.toHex()}")
 
-                            insertGun2InfoInDB(it)
+                            appViewModel.insertGun2InfoInDB(it)
                             Log.d(
                                 TAG,
                                 "readGun2Info: Gun Current State: ${getGunChargingState(it).description}"
@@ -774,28 +589,6 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 startReading()
             }
         }
-
-    }
-
-    private fun insertGun2InfoInDB(it: ByteArray) {
-        appViewModel.insertGunsChargingInfo(
-            TbGunsChargingInfo(
-                gunId = 2,
-                gunChargingState = getGunChargingState(it).description,
-                initialSoc = getInitialSoc(it),
-                chargingSoc = getChargingSoc(it),
-                demandVoltage = getDemandVoltage(it),
-                demandCurrent = getDemandCurrent(it),
-                chargingVoltage = getChargingVoltage(it),
-                chargingCurrent = getChargingCurrent(it),
-                duration = getChargingDuration(it),
-                energyConsumption = getChargingEnergyConsumption(it),
-                totalCost = getTotalCost(it),
-                gunTemperatureDCPositive = getGunTemperatureDCPositive(it),
-                gunTemperatureDCNegative = getGunTemperatureDCNegative(it)
-            )
-        )
-        appViewModel.insertErrorCode(TbErrorCodes(2,hexToBinary(getGunSpecificErrorCodeInformation(it))))
     }
 
     private suspend fun readGun2LastChargingSummaryInfo(shouldSaveLastChargingSummary: Boolean = false) {
@@ -817,8 +610,8 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                         ) {
                             Log.d(TAG, "readGun2LastChargingSummaryInfo: Response = ${it.toHex()}")
                             if (shouldSaveLastChargingSummary) {
-                                insertGun2LastChargingSummaryInDB(it)
-                                insertGun2ChargingHistoryInDB(it)
+                                appViewModel.insertGun2LastChargingSummaryInDB(it)
+                                appViewModel.insertGun2ChargingHistoryInDB(it)
                             }
                         } else {
                             Log.e(
@@ -835,51 +628,6 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 startReading()
             }
         }
-
-    }
-
-
-    private fun insertGun2ChargingHistoryInDB(it: ByteArray) {
-        val chargingSummary = TbChargingHistory(
-            gunNumber = 2,
-            evMacAddress = LastChargingSummaryUtils.getEVMacAddress(it),
-            chargingStartTime = LastChargingSummaryUtils.getChargingStartTime(it),
-            chargingEndTime = LastChargingSummaryUtils.getChargingEndTime(it),
-            totalChargingTime = LastChargingSummaryUtils.getTotalChargingTime(it),
-            startSoc = LastChargingSummaryUtils.getStartSoc(it),
-            endSoc = LastChargingSummaryUtils.getEndSoc(it),
-            energyConsumption = LastChargingSummaryUtils.getEnergyConsumption(it),
-            sessionEndReason = LastChargingSummaryUtils.getSessionEndReason(it),
-            customSessionEndReason = "NA",
-            totalCost = LastChargingSummaryUtils.getTotalCost(it)
-        )
-        appViewModel.insertChargingSummary(chargingSummary)
-    }
-
-    private fun insertGun2LastChargingSummaryInDB(it: ByteArray) {
-        appViewModel.insertGunsLastChargingSummary(
-            TbGunsLastChargingSummary(
-                gunId = 2,
-                evMacAddress = LastChargingSummaryUtils.getEVMacAddress(it),
-                chargingDuration = LastChargingSummaryUtils.getTotalChargingTime(
-                    it
-                ),
-                chargingStartDateTime = LastChargingSummaryUtils.getChargingStartTime(
-                    it
-                ),
-                chargingEndDateTime = LastChargingSummaryUtils.getChargingEndTime(
-                    it
-                ),
-                startSoc = LastChargingSummaryUtils.getStartSoc(it),
-                endSoc = LastChargingSummaryUtils.getEndSoc(it),
-                energyConsumption = LastChargingSummaryUtils.getEnergyConsumption(
-                    it
-                ),
-                sessionEndReason = LastChargingSummaryUtils.getSessionEndReason(
-                    it
-                )
-            )
-        )
     }
 
     private suspend fun readGun2DCMeterInfo() {
@@ -900,7 +648,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                                 .startsWith(ModBusUtils.INPUT_REGISTERS_CORRECT_RESPONSE_BITS)
                         ) {
                             Log.d(TAG, "readGun2DCMeterInfo: Response = ${it.toHex()}")
-                            insertGun2DCMeterInfoInDB(it)
+                            appViewModel.insertGun2DCMeterInfoInDB(it)
                         } else {
                             Log.e(TAG, "readGun2DCMeterInfo: Error Response - ${it.toHex()}")
                         }
@@ -924,27 +672,6 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 Log.e(TAG, "readMiscInfo: Timeout Occurred", te.cause)
                 startReading()
             }
-        }
-
-    }
-
-    private fun insertGun2DCMeterInfoInDB(it: ByteArray) {
-        val newResponse = ModBusUtils.parseInputRegistersResponse(it)
-        if (newResponse.isNotEmpty()) {
-            appViewModel.insertGunsDCMeterInfo(
-                TbGunsDcMeterInfo(
-                    gunId = 2,
-                    voltage = newResponse[0],
-                    current = newResponse[1],
-                    power = newResponse[2],
-                    importEnergy = newResponse[3],
-                    exportEnergy = newResponse[4],
-                    maxVoltage = newResponse[5],
-                    minVoltage = newResponse[6],
-                    maxCurrent = newResponse[7],
-                    minCurrent = newResponse[8]
-                )
-            )
         }
     }
 

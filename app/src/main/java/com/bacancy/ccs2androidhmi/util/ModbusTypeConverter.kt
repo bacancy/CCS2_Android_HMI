@@ -2,6 +2,7 @@ package com.bacancy.ccs2androidhmi.util
 
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import kotlin.math.pow
 import kotlin.math.roundToInt
 
 object ModbusTypeConverter {
@@ -14,7 +15,7 @@ object ModbusTypeConverter {
         return this.toInt() and 0xFF
     }
 
-    fun getActualIntValueFromHighAndLowBytes(highByte: Int, lowByte: Int): Int {
+    private fun getActualIntValueFromHighAndLowBytes(highByte: Int, lowByte: Int): Int {
         return (highByte shl 8) or lowByte
     }
 
@@ -118,5 +119,25 @@ object ModbusTypeConverter {
             intArray[i] = input[i].code
         }
         return intArray
+    }
+
+    fun getIntValueFromBytes(response: ByteArray, lsbIndex: Int, msbIndex: Int): Int {
+        val lsb = response[lsbIndex].getIntValueFromByte()
+        val msb = response[msbIndex].getIntValueFromByte()
+        return getActualIntValueFromHighAndLowBytes(lsb, msb)
+    }
+
+    fun getFloatValueFromBytes(response: ByteArray, fromIndex: Int, toIndex: Int, decimalPoints: Int = 3): Float {
+        val floatValue = byteArrayToFloat(response.copyOfRange(fromIndex, toIndex))
+        val multiplier = 10.0.pow(decimalPoints.toDouble())
+        return (floatValue * multiplier).roundToInt() / multiplier.toFloat()
+    }
+
+    fun ByteArray.getRangedArray(intRange: IntRange): ByteArray {
+        return this.copyOfRange(intRange.first, intRange.last + 1)
+    }
+
+    fun CharArray.getRangedArray(intRange: IntRange): CharArray {
+        return this.copyOfRange(intRange.first, intRange.last + 1)
     }
 }

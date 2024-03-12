@@ -1,17 +1,22 @@
 package com.bacancy.ccs2androidhmi.viewmodel
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.bacancy.ccs2androidhmi.db.entity.TbChargingHistory
 import com.bacancy.ccs2androidhmi.db.entity.TbAcMeterInfo
+import com.bacancy.ccs2androidhmi.db.entity.TbChargingHistory
 import com.bacancy.ccs2androidhmi.db.entity.TbErrorCodes
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsDcMeterInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsLastChargingSummary
 import com.bacancy.ccs2androidhmi.db.entity.TbMiscInfo
 import com.bacancy.ccs2androidhmi.repository.MainRepository
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils
+import com.bacancy.ccs2androidhmi.util.LastChargingSummaryUtils
+import com.bacancy.ccs2androidhmi.util.MiscInfoUtils
+import com.bacancy.ccs2androidhmi.util.ModBusUtils
+import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter
+import com.bacancy.ccs2androidhmi.util.StateAndModesUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
@@ -55,34 +60,267 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
         }
     }
 
-    fun insertMiscInfo(tbMiscInfo: TbMiscInfo) {
+    private fun insertMiscInfo(tbMiscInfo: TbMiscInfo) {
         viewModelScope.launch {
             mainRepository.insertMiscInfo(tbMiscInfo)
         }
     }
 
-    fun insertGunsChargingInfo(tbGunsChargingInfo: TbGunsChargingInfo) {
+    private fun insertGunsChargingInfo(tbGunsChargingInfo: TbGunsChargingInfo) {
         viewModelScope.launch {
             mainRepository.insertGunsChargingInfo(tbGunsChargingInfo)
         }
     }
 
-    fun insertGunsDCMeterInfo(tbGunsDcMeterInfo: TbGunsDcMeterInfo) {
+    private fun insertGunsDCMeterInfo(tbGunsDcMeterInfo: TbGunsDcMeterInfo) {
         viewModelScope.launch {
             mainRepository.insertGunsDCMeterInfo(tbGunsDcMeterInfo)
         }
     }
 
-    fun insertGunsLastChargingSummary(tbGunsLastChargingSummary: TbGunsLastChargingSummary) {
+    private fun insertGunsLastChargingSummary(tbGunsLastChargingSummary: TbGunsLastChargingSummary) {
         viewModelScope.launch {
             mainRepository.insertGunsLastChargingSummary(tbGunsLastChargingSummary)
         }
     }
 
-    fun insertErrorCode(tbErrorCodes: TbErrorCodes) {
+    private fun insertErrorCode(tbErrorCodes: TbErrorCodes) {
         viewModelScope.launch {
             mainRepository.insertErrorCode(tbErrorCodes)
         }
     }
 
+    fun insertMiscInfoInDB(it: ByteArray) {
+        insertMiscInfo(
+            TbMiscInfo(
+                1,
+                serverConnectedWith = StateAndModesUtils.checkServerConnectedWith(
+                    MiscInfoUtils.getServerStatusBits(it)
+                ),
+                ethernetStatus = StateAndModesUtils.checkIfEthernetIsConnected(
+                    MiscInfoUtils.getEthernetStatusBits(it)
+                ),
+                gsmLevel = StateAndModesUtils.checkGSMNetworkStrength(
+                    MiscInfoUtils.getGSMStatusBits(it)
+                ).toInt(),
+                wifiLevel = StateAndModesUtils.checkWifiNetworkStrength(
+                    MiscInfoUtils.getWifiStatusBits(it)
+                ).toInt(),
+                mcuFirmwareVersion = MiscInfoUtils.getMCUFirmwareVersion(it),
+                ocppFirmwareVersion = MiscInfoUtils.getOCPPFirmwareVersion(it),
+                rfidFirmwareVersion = MiscInfoUtils.getRFIDFirmwareVersion(it),
+                ledFirmwareVersion = MiscInfoUtils.getLEDModuleFirmwareVersion(it),
+                plc1FirmwareVersion = MiscInfoUtils.getPLC1ModuleFirmwareVersion(it),
+                plc2FirmwareVersion = MiscInfoUtils.getPLC2ModuleFirmwareVersion(it),
+                plc1Fault = MiscInfoUtils.getPLC1Fault(it),
+                plc2Fault = MiscInfoUtils.getPLC2Fault(it),
+                rectifier1Fault = MiscInfoUtils.getRectifier1Code(it),
+                rectifier2Fault = MiscInfoUtils.getRectifier2Code(it),
+                rectifier3Fault = MiscInfoUtils.getRectifier3Code(it),
+                rectifier4Fault = MiscInfoUtils.getRectifier4Code(it),
+                communicationError = MiscInfoUtils.getCommunicationErrorCodes(it),
+                devicePhysicalConnectionStatus = MiscInfoUtils.getDevicePhysicalConnectionStatus(
+                    it
+                ),
+                unitPrice = MiscInfoUtils.getUnitPrice(it),
+                emergencyButtonStatus = MiscInfoUtils.getEmergencyButtonStatus(it),
+                rfidTagState = MiscInfoUtils.getRFIDTagState(it)
+            )
+        )
+
+        insertErrorCode(
+            TbErrorCodes(
+                0,
+                ModbusTypeConverter.hexToBinary(MiscInfoUtils.getVendorErrorCodeInformation(it))
+            )
+        )
+    }
+
+    fun insertGun1InfoInDB(it: ByteArray) {
+        insertGunsChargingInfo(
+            TbGunsChargingInfo(
+                gunId = 1,
+                gunChargingState = GunsChargingInfoUtils.getGunChargingState(it).description,
+                initialSoc = GunsChargingInfoUtils.getInitialSoc(it),
+                chargingSoc = GunsChargingInfoUtils.getChargingSoc(it),
+                demandVoltage = GunsChargingInfoUtils.getDemandVoltage(it),
+                demandCurrent = GunsChargingInfoUtils.getDemandCurrent(it),
+                chargingVoltage = GunsChargingInfoUtils.getChargingVoltage(it),
+                chargingCurrent = GunsChargingInfoUtils.getChargingCurrent(it),
+                duration = GunsChargingInfoUtils.getChargingDuration(it),
+                energyConsumption = GunsChargingInfoUtils.getChargingEnergyConsumption(it),
+                totalCost = GunsChargingInfoUtils.getTotalCost(it),
+                gunTemperatureDCPositive = GunsChargingInfoUtils.getGunTemperatureDCPositive(it),
+                gunTemperatureDCNegative = GunsChargingInfoUtils.getGunTemperatureDCNegative(it)
+            )
+        )
+
+        insertErrorCode(
+            TbErrorCodes(
+                1,
+                ModbusTypeConverter.hexToBinary(
+                    GunsChargingInfoUtils.getGunSpecificErrorCodeInformation(
+                        it
+                    )
+                )
+            )
+        )
+    }
+
+    fun insertGun1ChargingHistoryInDB(it: ByteArray) {
+        val chargingSummary = TbChargingHistory(
+            gunNumber = 1,
+            evMacAddress = LastChargingSummaryUtils.getEVMacAddress(it),
+            chargingStartTime = LastChargingSummaryUtils.getChargingStartTime(it),
+            chargingEndTime = LastChargingSummaryUtils.getChargingEndTime(it),
+            totalChargingTime = LastChargingSummaryUtils.getTotalChargingTime(it),
+            startSoc = LastChargingSummaryUtils.getStartSoc(it),
+            endSoc = LastChargingSummaryUtils.getEndSoc(it),
+            energyConsumption = LastChargingSummaryUtils.getEnergyConsumption(it),
+            sessionEndReason = LastChargingSummaryUtils.getSessionEndReason(it),
+            customSessionEndReason = "NA",
+            totalCost = LastChargingSummaryUtils.getTotalCost(it)
+        )
+        insertChargingSummary(chargingSummary)
+    }
+
+    fun insertGun1LastChargingSummaryInDB(it: ByteArray) {
+        insertGunsLastChargingSummary(
+            TbGunsLastChargingSummary(
+                gunId = 1,
+                evMacAddress = LastChargingSummaryUtils.getEVMacAddress(it),
+                chargingDuration = LastChargingSummaryUtils.getTotalChargingTime(
+                    it
+                ),
+                chargingStartDateTime = LastChargingSummaryUtils.getChargingStartTime(
+                    it
+                ),
+                chargingEndDateTime = LastChargingSummaryUtils.getChargingEndTime(
+                    it
+                ),
+                startSoc = LastChargingSummaryUtils.getStartSoc(it),
+                endSoc = LastChargingSummaryUtils.getEndSoc(it),
+                energyConsumption = LastChargingSummaryUtils.getEnergyConsumption(
+                    it
+                ),
+                sessionEndReason = LastChargingSummaryUtils.getSessionEndReason(
+                    it
+                )
+            )
+        )
+    }
+
+    fun insertGun1DCMeterInfoInDB(it: ByteArray) {
+        val newResponse = ModBusUtils.parseInputRegistersResponse(it)
+        if (newResponse.isNotEmpty()) {
+            insertGunsDCMeterInfo(
+                TbGunsDcMeterInfo(
+                    gunId = 1,
+                    voltage = newResponse[0],
+                    current = newResponse[1],
+                    power = newResponse[2],
+                    importEnergy = newResponse[3],
+                    exportEnergy = newResponse[4],
+                    maxVoltage = newResponse[5],
+                    minVoltage = newResponse[6],
+                    maxCurrent = newResponse[7],
+                    minCurrent = newResponse[8]
+                )
+            )
+        }
+    }
+
+    fun insertGun2InfoInDB(it: ByteArray) {
+        insertGunsChargingInfo(
+            TbGunsChargingInfo(
+                gunId = 2,
+                gunChargingState = GunsChargingInfoUtils.getGunChargingState(it).description,
+                initialSoc = GunsChargingInfoUtils.getInitialSoc(it),
+                chargingSoc = GunsChargingInfoUtils.getChargingSoc(it),
+                demandVoltage = GunsChargingInfoUtils.getDemandVoltage(it),
+                demandCurrent = GunsChargingInfoUtils.getDemandCurrent(it),
+                chargingVoltage = GunsChargingInfoUtils.getChargingVoltage(it),
+                chargingCurrent = GunsChargingInfoUtils.getChargingCurrent(it),
+                duration = GunsChargingInfoUtils.getChargingDuration(it),
+                energyConsumption = GunsChargingInfoUtils.getChargingEnergyConsumption(it),
+                totalCost = GunsChargingInfoUtils.getTotalCost(it),
+                gunTemperatureDCPositive = GunsChargingInfoUtils.getGunTemperatureDCPositive(it),
+                gunTemperatureDCNegative = GunsChargingInfoUtils.getGunTemperatureDCNegative(it)
+            )
+        )
+
+        insertErrorCode(
+            TbErrorCodes(
+                2,
+                ModbusTypeConverter.hexToBinary(
+                    GunsChargingInfoUtils.getGunSpecificErrorCodeInformation(
+                        it
+                    )
+                )
+            )
+        )
+    }
+
+    fun insertGun2ChargingHistoryInDB(it: ByteArray) {
+        val chargingSummary = TbChargingHistory(
+            gunNumber = 2,
+            evMacAddress = LastChargingSummaryUtils.getEVMacAddress(it),
+            chargingStartTime = LastChargingSummaryUtils.getChargingStartTime(it),
+            chargingEndTime = LastChargingSummaryUtils.getChargingEndTime(it),
+            totalChargingTime = LastChargingSummaryUtils.getTotalChargingTime(it),
+            startSoc = LastChargingSummaryUtils.getStartSoc(it),
+            endSoc = LastChargingSummaryUtils.getEndSoc(it),
+            energyConsumption = LastChargingSummaryUtils.getEnergyConsumption(it),
+            sessionEndReason = LastChargingSummaryUtils.getSessionEndReason(it),
+            customSessionEndReason = "NA",
+            totalCost = LastChargingSummaryUtils.getTotalCost(it)
+        )
+        insertChargingSummary(chargingSummary)
+    }
+
+    fun insertGun2LastChargingSummaryInDB(it: ByteArray) {
+        insertGunsLastChargingSummary(
+            TbGunsLastChargingSummary(
+                gunId = 2,
+                evMacAddress = LastChargingSummaryUtils.getEVMacAddress(it),
+                chargingDuration = LastChargingSummaryUtils.getTotalChargingTime(
+                    it
+                ),
+                chargingStartDateTime = LastChargingSummaryUtils.getChargingStartTime(
+                    it
+                ),
+                chargingEndDateTime = LastChargingSummaryUtils.getChargingEndTime(
+                    it
+                ),
+                startSoc = LastChargingSummaryUtils.getStartSoc(it),
+                endSoc = LastChargingSummaryUtils.getEndSoc(it),
+                energyConsumption = LastChargingSummaryUtils.getEnergyConsumption(
+                    it
+                ),
+                sessionEndReason = LastChargingSummaryUtils.getSessionEndReason(
+                    it
+                )
+            )
+        )
+    }
+
+    fun insertGun2DCMeterInfoInDB(it: ByteArray) {
+        val newResponse = ModBusUtils.parseInputRegistersResponse(it)
+        if (newResponse.isNotEmpty()) {
+            insertGunsDCMeterInfo(
+                TbGunsDcMeterInfo(
+                    gunId = 2,
+                    voltage = newResponse[0],
+                    current = newResponse[1],
+                    power = newResponse[2],
+                    importEnergy = newResponse[3],
+                    exportEnergy = newResponse[4],
+                    maxVoltage = newResponse[5],
+                    minVoltage = newResponse[6],
+                    maxCurrent = newResponse[7],
+                    minCurrent = newResponse[8]
+                )
+            )
+        }
+    }
 }

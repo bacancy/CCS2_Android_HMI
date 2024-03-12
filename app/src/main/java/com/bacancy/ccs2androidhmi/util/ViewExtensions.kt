@@ -26,16 +26,9 @@ fun TextView.setValue(value: Float) {
     this.text = value.formatFloatToString()
 }
 
-fun Activity.showToast(message: String) {
+fun Context.showToast(message: String) {
     Toast.makeText(
         this,
-        message, Toast.LENGTH_SHORT
-    ).show()
-}
-
-fun Fragment.showToast(message: String) {
-    Toast.makeText(
-        requireActivity(),
         message, Toast.LENGTH_SHORT
     ).show()
 }
