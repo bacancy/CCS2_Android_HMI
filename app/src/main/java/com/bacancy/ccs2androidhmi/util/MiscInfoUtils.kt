@@ -1,5 +1,6 @@
 package com.bacancy.ccs2androidhmi.util
 
+import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.ByteRanges.CHARGE_MODE
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.ByteRanges.COMMUNICATION_ERROR_CODES
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.ByteRanges.DEVICE_PHYSICAL_CONNECTION_STATUS
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.ByteRanges.EMERGENCY_BUTTON_STATUS
@@ -48,6 +49,7 @@ object MiscInfoUtils {
         val GSM_STATUS_BITS = 3..6
         val ETHERNET_STATUS_BITS = 7..7
         val SERVER_STATUS_BITS = 8..10
+        val CHARGE_MODE = 175..176
     }
 
     object FirmwareIndices {
@@ -67,6 +69,9 @@ object MiscInfoUtils {
     private const val TOKEN_ID_SUBMITTED = "Token ID Submitted"
     private const val TOKEN_ID_VALID = "Token ID Valid"
     private const val TOKEN_ID_INVALID = "Token ID Invalid"
+    private const val MODE_STANDALONE = "Standalone"
+    private const val MODE_DYNAMIC = "Dynamic"
+    private const val MODE_DUAL_SOCKET = "Dual Socket"
 
     private fun getFirmwareVersion(response: ByteArray, startIndex: Int): String {
         val reg3MSB = response[startIndex].getIntValueFromByte()
@@ -190,6 +195,16 @@ object MiscInfoUtils {
 
     fun getServerStatusBits(response: ByteArray): CharArray {
         return getNetworkStatusData(response).getRangedArray(SERVER_STATUS_BITS)
+    }
+
+    fun getChargeModes(response: ByteArray): String {
+        val statusMap = mapOf(
+            "1" to MODE_STANDALONE,
+            "2" to MODE_DYNAMIC,
+            "3" to MODE_DUAL_SOCKET,
+        )
+        val status = response.getRangedArray(CHARGE_MODE).toHex()
+        return statusMap.getOrElse(status.last().toString()) { MODE_DYNAMIC }
     }
 
 }

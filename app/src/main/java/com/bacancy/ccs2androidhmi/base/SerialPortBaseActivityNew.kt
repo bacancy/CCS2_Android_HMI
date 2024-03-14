@@ -889,6 +889,25 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
         }
     }
 
+    private fun writeForChargeMode(chargeMode: String = "1/2/3") {
+        Log.i(TAG, "writeForChargeMode Request Started")
+        lifecycleScope.launch(Dispatchers.IO) {
+            delay(500)
+            ReadWriteUtil.writeToMultipleHoldingRegisterNew(
+                mOutputStream,
+                mInputStream,
+                86,
+                chargeMode, {
+                    Log.d(TAG, "writeForChargeMode: Response Got")
+                    lifecycleScope.launch {
+                        startReading()
+                    }
+                }, {
+                    startReading()
+                })
+        }
+    }
+
     companion object {
         private const val TAG = "SerialPortBaseActivityN"
     }
