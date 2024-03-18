@@ -18,10 +18,10 @@ object GunsChargingInfoUtils {
         val DEMAND_VOLTAGE = 19..20
         val DEMAND_CURRENT = 21..22
         val CHARGING_ENERGY_CONSUMPTION = 23..27
-        val GUN_TEMPERATURE_DC_POSITIVE = 27..30
-        val GUN_TEMPERATURE_DC_NEGATIVE = 31..34
-        val TOTAL_COST = 35..38
-        val GUN_SPECIFIC_ERROR_CODE_INFORMATION = 39..46
+        val GUN_TEMPERATURE_DC_POSITIVE = 27..31
+        val GUN_TEMPERATURE_DC_NEGATIVE = 31..35
+        val TOTAL_COST = 35..39
+        val GUN_SPECIFIC_ERROR_CODE_INFORMATION = 39..47
     }
 
     const val SELECTED_GUN = "SELECTED_GUN"

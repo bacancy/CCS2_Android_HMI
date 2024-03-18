@@ -56,9 +56,7 @@ import javax.inject.Inject
 class SeimensGunsHomeScreenFragment : BaseFragment() {
 
     private var isGun1ChargingStarted: Boolean = false
-    private var isGun2ChargingStarted: Boolean = false
     private var shouldShowGun1SummaryDialog: Boolean = false
-    private var shouldShowGun2SummaryDialog: Boolean = false
     private lateinit var binding: FragmentSeimensGunsHomeScreenBinding
     private var fragmentChangeListener: FragmentChangeListener? = null
     private val appViewModel: AppViewModel by viewModels()
@@ -116,14 +114,18 @@ class SeimensGunsHomeScreenFragment : BaseFragment() {
     private fun updateGun1UI(tbGunsChargingInfo: TbGunsChargingInfo) {
         when (tbGunsChargingInfo.gunChargingState) {
             UNPLUGGED -> {
+                shouldShowGun1SummaryDialog = false
                 binding.ivSingleGun.setImageResource(R.drawable.ic_single_gun_unplugged)
             }
 
             PLUGGED_IN -> {
+                shouldShowGun1SummaryDialog = false
                 binding.ivSingleGun.setImageResource(R.drawable.ic_single_gun_plugged)
             }
 
             CHARGING -> {
+                shouldShowGun1SummaryDialog = false
+                isGun1ChargingStarted = true
                 binding.ivSingleGun.setImageResource(R.drawable.ic_single_gun_charging_in_process)
             }
 
@@ -139,6 +141,33 @@ class SeimensGunsHomeScreenFragment : BaseFragment() {
             TAMPER_FAULT,
             EMERGENCY_STOP -> {
                 binding.ivSingleGun.setImageResource(R.drawable.ic_single_gun_fault)
+            }
+        }
+
+        when (tbGunsChargingInfo.gunChargingState) {
+            COMPLETE,
+            COMMUNICATION_ERROR,
+            AUTHENTICATION_TIMEOUT,
+            PLC_FAULT,
+            RECTIFIER_FAULT,
+            AUTHENTICATION_DENIED,
+            PRECHARGE_FAIL,
+            ISOLATION_FAIL,
+            TEMPERATURE_FAULT,
+            SPD_FAULT,
+            SMOKE_FAULT,
+            TAMPER_FAULT,
+            MAINS_FAIL,
+            UNAVAILABLE,
+            RESERVED,
+            EMERGENCY_STOP,
+            -> {
+                if (!shouldShowGun1SummaryDialog && isGun1ChargingStarted) {
+                    isGun1ChargingStarted = false
+                    shouldShowGun1SummaryDialog = true
+                    observeGunsLastChargingSummary()
+                }
+
             }
         }
     }
