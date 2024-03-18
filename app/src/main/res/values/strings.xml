@@ -165,5 +165,9 @@
     <string name="lbl_gun_temp_dc_positive">Gun Temperature DC+</string>
     <string name="lbl_gun_temp_dc_negative">Gun Temperature DC-</string>
     <string name="lbl_celsius">°C</string>
-
+    <string name="online">Online</string>
+    <string name="offline">Offline</string>
+    <string name="lbl_controller_model_name">Model:\nSICHARGE RC 30 W</string>
+    <string name="lbl_unit_cost">Unit Cost = ₹%s/kWh</string>
+    <string name="lbl_tap_to_charge">Tap to charge</string>
 </resources>

@@ -43,6 +43,7 @@ import com.bacancy.ccs2androidhmi.util.gone
 import com.bacancy.ccs2androidhmi.util.visible
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
 import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
+import com.bacancy.ccs2androidhmi.views.listener.DashboardActivityContract
 import com.bacancy.ccs2androidhmi.views.listener.FragmentChangeListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
@@ -81,9 +82,7 @@ class GunsHomeScreenFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentGunsHomeScreenBinding.inflate(layoutInflater)
-        (requireActivity() as HMIDashboardActivity).showHideBackIcon(false)
-        (requireActivity() as HMIDashboardActivity).showHideHomeIcon(false)
-        (requireActivity() as HMIDashboardActivity).showHideSettingOptions(true)
+        (requireActivity() as DashboardActivityContract).updateTopBar(true)
         observeLatestMiscInfo()
         observeGunsChargingInfo()
         return binding.root

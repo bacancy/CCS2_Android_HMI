@@ -15,4 +15,5 @@
     <color name="light_teal">#395363</color>
     <color name="light_trans_sky_blue">#306D95AF</color>
     <color name="inverse_color">#FFFFFF</color>
+    <color name="mid_blue">#00aea7</color>
 </resources>

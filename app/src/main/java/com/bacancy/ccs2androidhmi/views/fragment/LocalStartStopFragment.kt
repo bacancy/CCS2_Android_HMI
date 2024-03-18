@@ -18,6 +18,7 @@ import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils
 import com.bacancy.ccs2androidhmi.util.PrefHelper
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
 import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
+import com.bacancy.ccs2androidhmi.views.listener.DashboardActivityContract
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -38,9 +39,7 @@ class LocalStartStopFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentLocalStartStopBinding.inflate(layoutInflater)
-        (requireActivity() as HMIDashboardActivity).showHideBackIcon()
-        (requireActivity() as HMIDashboardActivity).showHideHomeIcon()
-        (requireActivity() as HMIDashboardActivity).showHideSettingOptions()
+        (requireActivity() as DashboardActivityContract).updateTopBar(false)
         prefHelper.setBoolean(INSIDE_LOCAL_START_STOP_SCREEN, true)
         observeGunsChargingInfo()
         prefHelper.setBoolean(IS_GUN_1_CLICKED, false)

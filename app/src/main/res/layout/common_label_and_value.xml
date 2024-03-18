@@ -16,15 +16,11 @@
         tools:text="@string/lbl_energy_consumption"
         android:textSize="@dimen/_10ssp" />
 
-    <View
-        android:layout_width="@dimen/_10sdp"
-        android:layout_height="match_parent" />
 
     <LinearLayout
         android:layout_weight="1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_10sdp"
         android:background="@drawable/bg_rectangle_for_values"
         android:orientation="horizontal">
 

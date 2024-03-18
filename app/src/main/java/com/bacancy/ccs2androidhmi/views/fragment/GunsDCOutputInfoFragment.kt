@@ -17,6 +17,7 @@ import com.bacancy.ccs2androidhmi.util.setValue
 import com.bacancy.ccs2androidhmi.util.visible
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
 import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
+import com.bacancy.ccs2androidhmi.views.listener.DashboardActivityContract
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -38,9 +39,7 @@ class GunsDCOutputInfoFragment : BaseFragment() {
     ): View {
         binding = FragmentDcMeterBinding.inflate(layoutInflater)
         selectedGunNumber = arguments?.getInt(SELECTED_GUN)!!
-        (requireActivity() as HMIDashboardActivity).showHideBackIcon()
-        (requireActivity() as HMIDashboardActivity).showHideHomeIcon()
-        (requireActivity() as HMIDashboardActivity).showHideSettingOptions()
+        (requireActivity() as DashboardActivityContract).updateTopBar(false)
         observeGunsDCOutputInfo()
         return binding.root
     }

@@ -11,6 +11,7 @@ import com.bacancy.ccs2androidhmi.databinding.FragmentFirmwareVersionInfoBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbMiscInfo
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
 import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
+import com.bacancy.ccs2androidhmi.views.listener.DashboardActivityContract
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -25,9 +26,7 @@ class FirmwareVersionInfoFragment : BaseFragment() {
     ): View {
         binding = FragmentFirmwareVersionInfoBinding.inflate(layoutInflater)
         observeFirmwareVersionInfo()
-        (requireActivity() as HMIDashboardActivity).showHideBackIcon()
-        (requireActivity() as HMIDashboardActivity).showHideHomeIcon()
-        (requireActivity() as HMIDashboardActivity).showHideSettingOptions()
+        (requireActivity() as DashboardActivityContract).updateTopBar(false)
         return binding.root
     }
 

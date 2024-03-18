@@ -16,6 +16,7 @@ import com.bacancy.ccs2androidhmi.util.PrefHelper
 import com.bacancy.ccs2androidhmi.util.ToastUtils.showCustomToast
 import com.bacancy.ccs2androidhmi.util.hideKeyboard
 import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
+import com.bacancy.ccs2androidhmi.views.listener.DashboardActivityContract
 import com.bacancy.ccs2androidhmi.views.listener.FragmentChangeListener
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -43,9 +44,7 @@ class TestModeGunsDetailFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentTestModeGunsDetailBinding.inflate(layoutInflater)
-        (requireActivity() as HMIDashboardActivity).showHideBackIcon()
-        (requireActivity() as HMIDashboardActivity).showHideHomeIcon()
-        (requireActivity() as HMIDashboardActivity).showHideSettingOptions()
+        (requireActivity() as DashboardActivityContract).updateTopBar(false)
         prefHelper.setBoolean("IS_IN_TEST_MODE", true)
         return binding.root
     }

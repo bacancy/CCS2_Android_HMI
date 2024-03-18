@@ -1,4 +1,4 @@
-package com.bacancy.ccs2androidhmi.views
+package com.bacancy.ccs2androidhmi.views.activity.seimens
 
 import android.app.UiModeManager
 import android.os.Build
@@ -10,6 +10,7 @@ import android.view.WindowManager
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
@@ -17,7 +18,9 @@ import androidx.lifecycle.lifecycleScope
 import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.SerialPortBaseActivityNew
 import com.bacancy.ccs2androidhmi.databinding.ActivityHmiDashboardBinding
+import com.bacancy.ccs2androidhmi.databinding.ActivitySeimensHmiDashboardBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbChargingHistory
+import com.bacancy.ccs2androidhmi.util.AppConfig
 import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_LOCAL_START_STOP
 import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_TEST_MODE
 import com.bacancy.ccs2androidhmi.util.CommonUtils
@@ -34,6 +37,7 @@ import com.bacancy.ccs2androidhmi.views.fragment.GunsHomeScreenFragment
 import com.bacancy.ccs2androidhmi.views.fragment.LocalStartStopFragment
 import com.bacancy.ccs2androidhmi.views.fragment.NewFaultInfoFragment
 import com.bacancy.ccs2androidhmi.views.fragment.TestModeHomeFragment
+import com.bacancy.ccs2androidhmi.views.fragment.seimens.SeimensGunsHomeScreenFragment
 import com.bacancy.ccs2androidhmi.views.listener.DashboardActivityContract
 import com.bacancy.ccs2androidhmi.views.listener.FragmentChangeListener
 import dagger.hilt.android.AndroidEntryPoint
@@ -45,21 +49,21 @@ import java.util.Calendar
 import java.util.Locale
 
 @AndroidEntryPoint
-class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener,
+class SeimensHMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener,
     DashboardActivityContract {
 
-    private lateinit var gunsHomeScreenFragment: GunsHomeScreenFragment
-    private lateinit var binding: ActivityHmiDashboardBinding
+    private lateinit var gunsHomeScreenFragment: SeimensGunsHomeScreenFragment
+    private lateinit var binding: ActivitySeimensHmiDashboardBinding
     val handler = Handler(Looper.getMainLooper())
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         super.onCreate(savedInstanceState)
-        binding = ActivityHmiDashboardBinding.inflate(layoutInflater)
+        binding = ActivitySeimensHmiDashboardBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        gunsHomeScreenFragment = GunsHomeScreenFragment()
+        gunsHomeScreenFragment = SeimensGunsHomeScreenFragment()
         addNewFragment(gunsHomeScreenFragment)
 
         handleViewsVisibility()
@@ -148,7 +152,11 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         binding.incToolbar.imgHome.setOnClickListener {
             prefHelper.setBoolean("IS_IN_TEST_MODE", false)
             prefHelper.setBoolean("IS_OUTPUT_ON_OFF_VALUE_CHANGED", false)
-            addNewFragment(GunsHomeScreenFragment(), true)
+            if (AppConfig.IS_SEIMENS_CLIENT) {
+                addNewFragment(SeimensGunsHomeScreenFragment(), true)
+            } else {
+                addNewFragment(GunsHomeScreenFragment(), true)
+            }
         }
         binding.incToolbar.ivScreenInfo.setOnClickListener {
             addNewFragment(FirmwareVersionInfoFragment())
@@ -224,6 +232,18 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         }
     }
 
+    override fun updateTopBar(isHomeScreen: Boolean) {
+        if (!isHomeScreen) {
+            showHideBackIcon(true)
+            showHideHomeIcon(true)
+            showHideSettingOptions(false)
+        } else {
+            showHideBackIcon(false)
+            showHideHomeIcon(false)
+            showHideSettingOptions(true)
+        }
+    }
+
     private val runnable = object : Runnable {
         override fun run() {
             updateTimerUI()
@@ -285,10 +305,33 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
     private fun updateServerStatus(serverStatus: String) {
         when (serverStatus) {
-            "Ethernet" -> binding.incToolbar.imgServerStatus.setImageResource(R.drawable.ic_server_connected)
-            "GSM" -> binding.incToolbar.imgServerStatus.setImageResource(R.drawable.ic_server_connected)
-            "Wifi" -> binding.incToolbar.imgServerStatus.setImageResource(R.drawable.ic_server_connected)
-            else -> binding.incToolbar.imgServerStatus.setImageResource(R.drawable.ic_server_disconnected)
+            "Ethernet" -> {
+                binding.incToolbar.tvServerStatus.text = getString(R.string.online)
+                binding.incToolbar.tvServerStatus.background =
+                    AppCompatResources.getDrawable(this, R.drawable.ic_server_online_gradient)
+                binding.incToolbar.imgServerStatus.setImageResource(R.drawable.ic_server_connected)
+            }
+
+            "GSM" -> {
+                binding.incToolbar.tvServerStatus.text = getString(R.string.online)
+                binding.incToolbar.tvServerStatus.background =
+                    AppCompatResources.getDrawable(this, R.drawable.ic_server_online_gradient)
+                binding.incToolbar.imgServerStatus.setImageResource(R.drawable.ic_server_connected)
+            }
+
+            "Wifi" -> {
+                binding.incToolbar.tvServerStatus.text = getString(R.string.online)
+                binding.incToolbar.tvServerStatus.background =
+                    AppCompatResources.getDrawable(this, R.drawable.ic_server_online_gradient)
+                binding.incToolbar.imgServerStatus.setImageResource(R.drawable.ic_server_connected)
+            }
+
+            else -> {
+                binding.incToolbar.tvServerStatus.text = getString(R.string.offline)
+                binding.incToolbar.tvServerStatus.background =
+                    AppCompatResources.getDrawable(this, R.drawable.ic_server_offline_gradient)
+                binding.incToolbar.imgServerStatus.setImageResource(R.drawable.ic_server_disconnected)
+            }
         }
     }
 
@@ -322,18 +365,6 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
     override fun replaceFragment(fragment: Fragment?, shouldMoveToHomeScreen: Boolean) {
         if (fragment != null) {
             addNewFragment(fragment, shouldMoveToHomeScreen)
-        }
-    }
-
-    override fun updateTopBar(isHomeScreen: Boolean) {
-        if (!isHomeScreen) {
-            showHideBackIcon(true)
-            showHideHomeIcon(true)
-            showHideSettingOptions(false)
-        } else {
-            showHideBackIcon(false)
-            showHideHomeIcon(false)
-            showHideSettingOptions(true)
         }
     }
 }

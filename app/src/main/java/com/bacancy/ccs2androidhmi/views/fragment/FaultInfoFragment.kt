@@ -10,6 +10,7 @@ import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentFaultInformationBinding
 import com.bacancy.ccs2androidhmi.util.gone
 import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
+import com.bacancy.ccs2androidhmi.views.listener.DashboardActivityContract
 import com.bacancy.ccs2androidhmi.views.listener.FragmentChangeListener
 
 class FaultInfoFragment : BaseFragment() {
@@ -29,9 +30,7 @@ class FaultInfoFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentFaultInformationBinding.inflate(layoutInflater)
-        (requireActivity() as HMIDashboardActivity).showHideBackIcon()
-        (requireActivity() as HMIDashboardActivity).showHideHomeIcon()
-        (requireActivity() as HMIDashboardActivity).showHideSettingOptions()
+        (requireActivity() as DashboardActivityContract).updateTopBar(false)
         return binding.root
     }
 

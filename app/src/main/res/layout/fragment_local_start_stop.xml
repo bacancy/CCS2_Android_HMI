@@ -33,6 +33,7 @@
             android:id="@+id/btnStartStopGun2"
             style="@style/CommonButtonTheme"
             android:layout_width="wrap_content"
+            android:visibility="gone"
             android:layout_height="wrap_content"
             android:paddingVertical="@dimen/_5sdp"
             android:paddingHorizontal="@dimen/_15sdp"

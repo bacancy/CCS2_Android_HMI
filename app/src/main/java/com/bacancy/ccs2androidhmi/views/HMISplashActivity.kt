@@ -10,8 +10,10 @@ import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import com.bacancy.ccs2androidhmi.databinding.ActivityHmisplashBinding
+import com.bacancy.ccs2androidhmi.util.AppConfig.IS_SEIMENS_CLIENT
 import com.bacancy.ccs2androidhmi.util.PrefHelper
 import com.bacancy.ccs2androidhmi.util.PrefHelper.Companion.IS_DARK_THEME
+import com.bacancy.ccs2androidhmi.views.activity.seimens.SeimensHMIDashboardActivity
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -35,7 +37,11 @@ class HMISplashActivity : AppCompatActivity() {
     }
 
     private val runnable = Runnable {
-        startActivity(Intent(this@HMISplashActivity, HMIDashboardActivity::class.java))
+        if (IS_SEIMENS_CLIENT) {
+            startActivity(Intent(this@HMISplashActivity, SeimensHMIDashboardActivity::class.java))
+        } else {
+            startActivity(Intent(this@HMISplashActivity, HMIDashboardActivity::class.java))
+        }
         finish()
     }
 

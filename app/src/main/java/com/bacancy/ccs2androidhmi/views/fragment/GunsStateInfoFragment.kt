@@ -11,6 +11,7 @@ import com.bacancy.ccs2androidhmi.models.GunStatesInfo
 import com.bacancy.ccs2androidhmi.util.StateAndModesUtils.getGunStates
 import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
 import com.bacancy.ccs2androidhmi.views.adapters.GunStatesInfoListAdapter
+import com.bacancy.ccs2androidhmi.views.listener.DashboardActivityContract
 
 class GunsStateInfoFragment : BaseFragment() {
 
@@ -29,7 +30,7 @@ class GunsStateInfoFragment : BaseFragment() {
 
     override fun handleClicks() {
         binding.btnClose.setOnClickListener {
-            (requireActivity() as HMIDashboardActivity).goBack()
+            (requireActivity() as DashboardActivityContract).goBack()
         }
     }
 

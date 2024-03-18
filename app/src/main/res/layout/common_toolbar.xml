@@ -11,20 +11,21 @@
         android:id="@+id/lnrOptions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="visible"
         android:layout_marginStart="@dimen/_5sdp"
-        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/ivSwitchDarkMode"
             android:layout_width="@dimen/_16sdp"
             android:layout_height="@dimen/_16sdp"
+            android:visibility="gone"
             android:layout_marginEnd="@dimen/_10sdp"
             android:contentDescription="@string/lbl_fault_information"
-            app:tint="?attr/viewThemeColor"
-            android:src="@drawable/ic_dark_mode" />
+            android:src="@drawable/ic_dark_mode"
+            app:tint="?attr/viewThemeColor" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/ivFaultInfo"
@@ -32,35 +33,35 @@
             android:layout_height="@dimen/_16sdp"
             android:layout_marginEnd="@dimen/_10sdp"
             android:contentDescription="@string/lbl_fault_information"
-            app:tint="?attr/viewThemeColor"
-            android:src="@drawable/ic_fault_info" />
+            android:src="@drawable/ic_fault_info"
+            app:tint="?attr/viewThemeColor" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/ivScreenInfo"
             android:layout_width="@dimen/_15sdp"
             android:layout_height="@dimen/_15sdp"
             android:layout_marginEnd="@dimen/_10sdp"
-            app:tint="?attr/viewThemeColor"
             android:contentDescription="@string/lbl_firmware_version_information"
-            android:src="@drawable/ic_info" />
+            android:src="@drawable/ic_info"
+            app:tint="?attr/viewThemeColor" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/ivLocalStartStop"
             android:layout_width="@dimen/_15sdp"
             android:layout_height="@dimen/_15sdp"
-            app:tint="?attr/viewThemeColor"
             android:layout_marginEnd="@dimen/_10sdp"
             android:contentDescription="@string/lbl_firmware_version_information"
-            android:src="@drawable/ic_local_start_stop_hand_white" />
+            android:src="@drawable/ic_local_start_stop_hand_white"
+            app:tint="?attr/viewThemeColor" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/ivTestMode"
             android:layout_width="@dimen/_16sdp"
             android:layout_height="@dimen/_16sdp"
             android:layout_marginEnd="@dimen/_10sdp"
-            app:tint="?attr/viewThemeColor"
             android:contentDescription="@string/lbl_firmware_version_information"
-            android:src="@drawable/ic_test_mode" />
+            android:src="@drawable/ic_test_mode"
+            app:tint="?attr/viewThemeColor" />
 
     </LinearLayout>
 
@@ -71,40 +72,58 @@
         android:clickable="true"
         android:contentDescription="@string/cd_back"
         android:focusable="true"
-        android:visibility="gone"
-        app:tint="?attr/viewThemeColor"
         android:src="@drawable/ic_back_arrow"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="?attr/viewThemeColor" />
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/imgHome"
         android:layout_width="@dimen/_18sdp"
         android:layout_height="@dimen/_18sdp"
+        android:layout_marginStart="@dimen/_5sdp"
         android:clickable="true"
         android:contentDescription="@string/cd_back"
         android:focusable="true"
-        android:visibility="gone"
-        app:tint="?attr/viewThemeColor"
         android:src="@drawable/ic_home"
-        android:layout_marginStart="@dimen/_5sdp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/imgBack"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="?attr/viewThemeColor" />
 
     <ImageView
         android:id="@+id/ivLogo"
         android:layout_width="@dimen/_120sdp"
         android:layout_height="@dimen/_30sdp"
         android:adjustViewBounds="true"
+        android:contentDescription="@string/cd_servotech_logo"
         android:gravity="center"
         android:src="@drawable/img_servotech_logo"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvServerStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ic_server_online_gradient"
+        android:gravity="center"
+        android:paddingVertical="@dimen/_2sdp"
+        android:paddingHorizontal="@dimen/_10sdp"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_9ssp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:contentDescription="@string/cd_servotech_logo" />
+        tools:text="Online" />
 
     <LinearLayout
         android:id="@+id/lnrNetworkStatus"
@@ -112,7 +131,6 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/_5sdp"
         android:gravity="center"
-        app:layout_constraintStart_toEndOf="@id/ivLogo"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/tvDateTime"
         app:layout_constraintTop_toTopOf="parent">
@@ -121,41 +139,41 @@
             android:id="@+id/imgServerStatus"
             android:layout_width="@dimen/_13sdp"
             android:layout_height="@dimen/_13sdp"
-            tools:src="@drawable/ic_server_connected"
-            android:contentDescription="@string/cd_server_icon" />
+            android:contentDescription="@string/cd_server_icon"
+            tools:src="@drawable/ic_server_connected" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imgEthernetStatus"
             android:layout_width="@dimen/_13sdp"
             android:layout_height="@dimen/_13sdp"
             android:layout_marginStart="@dimen/_5sdp"
-            tools:src="@drawable/ic_ethernet_connected"
-            android:contentDescription="@string/cd_ethernet_icon" />
+            android:contentDescription="@string/cd_ethernet_icon"
+            tools:src="@drawable/ic_ethernet_connected" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imgGSMLevel"
             android:layout_width="@dimen/_13sdp"
             android:layout_height="@dimen/_13sdp"
             android:layout_marginStart="@dimen/_5sdp"
-            tools:src="@drawable/ic_gsm_level_2_new"
-            android:contentDescription="@string/cd_gsm_icon" />
+            android:contentDescription="@string/cd_gsm_icon"
+            tools:src="@drawable/ic_gsm_level_2_new" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imgWifiLevel"
             android:layout_width="@dimen/_13sdp"
             android:layout_height="@dimen/_13sdp"
             android:layout_marginStart="@dimen/_5sdp"
-            tools:src="@drawable/ic_wifi_level_2_new"
-            android:contentDescription="@string/cd_wifi_icon" />
+            android:contentDescription="@string/cd_wifi_icon"
+            tools:src="@drawable/ic_wifi_level_2_new" />
 
     </LinearLayout>
 
     <TextView
         android:id="@+id/tvDateTime"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingHorizontal="@dimen/_3sdp"
-        android:textSize="@dimen/_9ssp"
+        android:textSize="@dimen/_7ssp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
