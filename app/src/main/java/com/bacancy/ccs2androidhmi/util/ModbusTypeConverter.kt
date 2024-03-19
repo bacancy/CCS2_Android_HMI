@@ -20,8 +20,8 @@ object ModbusTypeConverter {
     }
 
     fun byteArrayToFloat(bytes: ByteArray): Float {
-        val byteBuffer = ByteBuffer.wrap(bytes).order(ByteOrder.BIG_ENDIAN)
-        return if (byteBuffer.hasRemaining()) {
+        return if (bytes.size >= 4) {
+            val byteBuffer = ByteBuffer.wrap(bytes).order(ByteOrder.BIG_ENDIAN)
             byteBuffer.float
         } else {
             0.0F

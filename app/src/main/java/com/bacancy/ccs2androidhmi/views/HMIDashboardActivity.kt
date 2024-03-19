@@ -18,10 +18,14 @@ import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.SerialPortBaseActivityNew
 import com.bacancy.ccs2androidhmi.databinding.ActivityHmiDashboardBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbChargingHistory
+import com.bacancy.ccs2androidhmi.mqtt.MQTTClient
+import com.bacancy.ccs2androidhmi.mqtt.ServerConstants.SERVER_URI
 import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_LOCAL_START_STOP
 import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_TEST_MODE
 import com.bacancy.ccs2androidhmi.util.CommonUtils
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showPasswordPromptDialog
+import com.bacancy.ccs2androidhmi.util.LogUtils.debugLog
+import com.bacancy.ccs2androidhmi.util.LogUtils.errorLog
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.NO_STATE
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.TOKEN_ID_NONE
 import com.bacancy.ccs2androidhmi.util.PrefHelper.Companion.IS_DARK_THEME
@@ -39,6 +43,11 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.eclipse.paho.client.mqttv3.IMqttActionListener
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken
+import org.eclipse.paho.client.mqttv3.IMqttToken
+import org.eclipse.paho.client.mqttv3.MqttCallback
+import org.eclipse.paho.client.mqttv3.MqttMessage
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -49,6 +58,8 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
     private lateinit var gunsHomeScreenFragment: GunsHomeScreenFragment
     private lateinit var binding: ActivityHmiDashboardBinding
     val handler = Handler(Looper.getMainLooper())
+
+    private lateinit var mqttClient: MQTTClient
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,6 +86,95 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         showHideHomeIcon()
 
         insertSampleChargingHistory()
+
+        initMQTT()
+    }
+
+    private fun initMQTT() {
+        mqttClient = MQTTClient(this, SERVER_URI, "")
+
+        //connectToMQTT()
+    }
+
+    private fun connectToMQTT() {
+        mqttClient.connect("", "", object : IMqttActionListener {
+            override fun onSuccess(asyncActionToken: IMqttToken?) {
+                debugLog("Connect onSuccess")
+            }
+
+            override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
+                errorLog("Connect onFailure")
+            }
+
+        }, object : MqttCallback {
+            override fun connectionLost(cause: Throwable?) {
+                errorLog("Connect Connection Lost")
+            }
+
+            override fun messageArrived(topic: String?, message: MqttMessage?) {
+                debugLog("Connect Message Arrived = $message")
+            }
+
+            override fun deliveryComplete(token: IMqttDeliveryToken?) {
+                debugLog("Connect Delivery Complete")
+            }
+        })
+    }
+
+    private fun disconnectWithMQTT() {
+        if (mqttClient.isConnected()) {
+            mqttClient.disconnect(object : IMqttActionListener {
+                override fun onSuccess(asyncActionToken: IMqttToken?) {
+                    debugLog("Disconnect onSuccess")
+                }
+
+                override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
+                    errorLog("Disconnect onFailure")
+                }
+            })
+        }
+    }
+
+    private fun subscribeTopic(topicName: String) {
+        if (mqttClient.isConnected()) {
+            mqttClient.subscribe(topicName, 1, object : IMqttActionListener {
+                override fun onSuccess(asyncActionToken: IMqttToken?) {
+                    debugLog("Subscribe onSuccess")
+                }
+
+                override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
+                    errorLog("Subscribe onFailure")
+                }
+            })
+        }
+    }
+
+    private fun unsubscribeTopic(topicName: String) {
+        if (mqttClient.isConnected()) {
+            mqttClient.unsubscribe(topicName, object : IMqttActionListener {
+                override fun onSuccess(asyncActionToken: IMqttToken?) {
+                    debugLog("UnSubscribe onFailure")
+                }
+
+                override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
+                    errorLog("UnSubscribe onFailure")
+                }
+            })
+        }
+    }
+
+    private fun publishMessageToTopic(topicName: String, message: String) {
+        if (mqttClient.isConnected()) {
+            mqttClient.publish(topicName, message, 1, false, object : IMqttActionListener {
+                override fun onSuccess(asyncActionToken: IMqttToken?) {
+                    debugLog("Publish onSuccess")
+                }
+
+                override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
+                    errorLog("Publish onFailure")
+                }
+            })
+        }
     }
 
     private fun insertSampleChargingHistory() {

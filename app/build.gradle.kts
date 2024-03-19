@@ -76,4 +76,8 @@ dependencies {
     implementation("com.intuit.sdp:sdp-android:$sdpVersion")
     implementation("com.intuit.ssp:ssp-android:$sspVersion")
 
+    implementation("org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.4")
+    implementation("org.eclipse.paho:org.eclipse.paho.android.service:1.1.1")
+    implementation("androidx.localbroadcastmanager:localbroadcastmanager::1.1.0")
+
 }
