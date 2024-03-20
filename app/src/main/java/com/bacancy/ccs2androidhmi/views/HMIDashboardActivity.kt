@@ -14,21 +14,21 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.lifecycleScope
+import androidx.work.Constraints
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.SerialPortBaseActivityNew
 import com.bacancy.ccs2androidhmi.databinding.ActivityHmiDashboardBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbChargingHistory
 import com.bacancy.ccs2androidhmi.mqtt.MQTTClient
-import com.bacancy.ccs2androidhmi.mqtt.ResponseModel
 import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_LOCAL_START_STOP
 import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_TEST_MODE
 import com.bacancy.ccs2androidhmi.util.CommonUtils
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showPasswordPromptDialog
-import com.bacancy.ccs2androidhmi.util.LogUtils.debugLog
-import com.bacancy.ccs2androidhmi.util.LogUtils.errorLog
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.NO_STATE
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.TOKEN_ID_NONE
-import com.bacancy.ccs2androidhmi.util.NetworkUtils.isInternetConnected
 import com.bacancy.ccs2androidhmi.util.PrefHelper.Companion.IS_DARK_THEME
 import com.bacancy.ccs2androidhmi.util.ToastUtils.showCustomToast
 import com.bacancy.ccs2androidhmi.util.gone
@@ -40,16 +40,11 @@ import com.bacancy.ccs2androidhmi.views.fragment.LocalStartStopFragment
 import com.bacancy.ccs2androidhmi.views.fragment.NewFaultInfoFragment
 import com.bacancy.ccs2androidhmi.views.fragment.TestModeHomeFragment
 import com.bacancy.ccs2androidhmi.views.listener.FragmentChangeListener
-import com.google.gson.Gson
+import com.bacancy.ccs2androidhmi.worker.MQTTWorker
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.eclipse.paho.client.mqttv3.IMqttActionListener
-import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken
-import org.eclipse.paho.client.mqttv3.IMqttToken
-import org.eclipse.paho.client.mqttv3.MqttCallback
-import org.eclipse.paho.client.mqttv3.MqttMessage
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -57,7 +52,6 @@ import java.util.Locale
 @AndroidEntryPoint
 class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener {
 
-    private lateinit var mqttClient: MQTTClient
     private lateinit var gunsHomeScreenFragment: GunsHomeScreenFragment
     private lateinit var binding: ActivityHmiDashboardBinding
     val handler = Handler(Looper.getMainLooper())
@@ -88,126 +82,19 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
         insertSampleChargingHistory()
 
-        initMQTT()
+        startMQTTFromWorker()
     }
 
-    private fun initMQTT() {
-        mqttClient = MQTTClient(this, MQTT_SERVER_URI, MQTT_CLIENT_ID)
-        connectToMQTT()
-    }
+    private fun startMQTTFromWorker() {
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
 
-    private fun connectToMQTT() {
-        if (isInternetConnected()) {
-            mqttClient.connect(MQTT_USERNAME, MQTT_PWD, object : IMqttActionListener {
-                override fun onSuccess(asyncActionToken: IMqttToken?) {
-                    debugLog("Connect onSuccess")
-                    /*publishMessageToTopic("CCS2", Gson().toJson(SampleModel(2,"Preparing for charging")))*/
-                    subscribeTopic("CHARGER")
-                }
+        val mqttWorkRequest = OneTimeWorkRequestBuilder<MQTTWorker>()
+            .setConstraints(constraints)
+            .build()
 
-                override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
-                    errorLog("Connect onFailure - ${exception?.printStackTrace()}")
-                }
-
-            }, object : MqttCallback {
-                override fun connectionLost(cause: Throwable?) {
-                    errorLog("Connect Connection Lost")
-                }
-
-                override fun messageArrived(topic: String?, message: MqttMessage?) {
-                    debugLog("Connect Data Arrived from Topic=$topic Message=$message")
-                    if(topic == "CHARGER"){
-                        val messageInModel = Gson().fromJson(message.toString(), ResponseModel::class.java)
-                        debugLog("MESSAGE IN MODEL = $messageInModel")
-                    }
-                }
-
-                override fun deliveryComplete(token: IMqttDeliveryToken?) {
-                    debugLog("Connect Delivery Complete")
-                }
-            })
-        } else {
-            errorLog(getString(R.string.msg_internet_connection_unavailable))
-        }
-    }
-
-    private fun disconnectWithMQTT() {
-        if (isInternetConnected()) {
-            if (mqttClient.isConnected()) {
-                mqttClient.disconnect(object : IMqttActionListener {
-                    override fun onSuccess(asyncActionToken: IMqttToken?) {
-                        debugLog("Disconnect onSuccess")
-                    }
-
-                    override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
-                        errorLog("Disconnect onFailure")
-                    }
-                })
-            }
-        } else {
-            errorLog(getString(R.string.msg_internet_connection_unavailable))
-        }
-    }
-
-    private fun subscribeTopic(topicName: String) {
-        if (isInternetConnected()) {
-            if (mqttClient.isConnected()) {
-                mqttClient.subscribe(topicName, 1, object : IMqttActionListener {
-                    override fun onSuccess(asyncActionToken: IMqttToken?) {
-                        debugLog("Subscribe onSuccess - $asyncActionToken")
-                    }
-
-                    override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
-                        errorLog("Subscribe onFailure")
-                    }
-                })
-            }
-        } else {
-            errorLog(getString(R.string.msg_internet_connection_unavailable))
-        }
-    }
-
-    private fun unsubscribeTopic(topicName: String) {
-        if (isInternetConnected()) {
-            if (mqttClient.isConnected()) {
-                mqttClient.unsubscribe(topicName, object : IMqttActionListener {
-                    override fun onSuccess(asyncActionToken: IMqttToken?) {
-                        debugLog("UnSubscribe onFailure")
-                    }
-
-                    override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
-                        errorLog("UnSubscribe onFailure")
-                    }
-                })
-            }
-        } else {
-            errorLog(getString(R.string.msg_internet_connection_unavailable))
-        }
-    }
-
-    private fun publishMessageToTopic(topicName: String, message: String) {
-        if (isInternetConnected()) {
-            if (mqttClient.isConnected()) {
-                mqttClient.publish(topicName, message, 1, false, object : IMqttActionListener {
-                    override fun onSuccess(asyncActionToken: IMqttToken?) {
-                        debugLog("Publish onSuccess")
-                    }
-
-                    override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
-                        errorLog("Publish onFailure")
-                    }
-                })
-            }
-        } else {
-            errorLog(getString(R.string.msg_internet_connection_unavailable))
-        }
-    }
-
-    companion object {
-        const val MQTT_SERVER_URI = "tcp://broker.mqtt.cool:1883"
-        const val MQTT_CLIENT_ID = ""
-        const val MQTT_USERNAME = ""
-        const val MQTT_PWD = ""
+        WorkManager.getInstance(this).enqueue(mqttWorkRequest)
     }
 
     private fun insertSampleChargingHistory() {
