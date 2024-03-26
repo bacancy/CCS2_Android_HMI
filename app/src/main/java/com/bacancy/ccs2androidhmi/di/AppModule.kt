@@ -32,7 +32,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideMqttClient(context: Context): MQTTClient {
+    fun provideMqttClient(@ApplicationContext context: Context): MQTTClient {
         return MQTTClient(
             context,
             MQTT_SERVER_URI,

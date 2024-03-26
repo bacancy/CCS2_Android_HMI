@@ -8,46 +8,59 @@ import android.os.Looper
 import android.util.Log
 import android.view.WindowManager
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.lifecycleScope
-import androidx.work.Constraints
-import androidx.work.NetworkType
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
 import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.SerialPortBaseActivityNew
 import com.bacancy.ccs2androidhmi.databinding.ActivityHmiDashboardBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbChargingHistory
 import com.bacancy.ccs2androidhmi.mqtt.MQTTClient
+import com.bacancy.ccs2androidhmi.mqtt.ServerConstants
+import com.bacancy.ccs2androidhmi.mqtt.ServerConstants.TOPIC_A_TO_B
+import com.bacancy.ccs2androidhmi.mqtt.ServerConstants.TOPIC_B_TO_A
+import com.bacancy.ccs2androidhmi.mqtt.models.ChargerDetailsBody
+import com.bacancy.ccs2androidhmi.mqtt.models.ConnectorStatusBody
 import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_LOCAL_START_STOP
 import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_TEST_MODE
 import com.bacancy.ccs2androidhmi.util.CommonUtils
+import com.bacancy.ccs2androidhmi.util.DateTimeUtils.getCurrentDateTime
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showPasswordPromptDialog
+import com.bacancy.ccs2androidhmi.util.LogUtils
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.NO_STATE
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.TOKEN_ID_NONE
+import com.bacancy.ccs2androidhmi.util.NetworkUtils.isInternetConnected
 import com.bacancy.ccs2androidhmi.util.PrefHelper.Companion.IS_DARK_THEME
 import com.bacancy.ccs2androidhmi.util.ToastUtils.showCustomToast
 import com.bacancy.ccs2androidhmi.util.gone
 import com.bacancy.ccs2androidhmi.util.invisible
 import com.bacancy.ccs2androidhmi.util.visible
+import com.bacancy.ccs2androidhmi.viewmodel.MQTTWorkerViewModel
 import com.bacancy.ccs2androidhmi.views.fragment.FirmwareVersionInfoFragment
 import com.bacancy.ccs2androidhmi.views.fragment.GunsHomeScreenFragment
 import com.bacancy.ccs2androidhmi.views.fragment.LocalStartStopFragment
 import com.bacancy.ccs2androidhmi.views.fragment.NewFaultInfoFragment
 import com.bacancy.ccs2androidhmi.views.fragment.TestModeHomeFragment
 import com.bacancy.ccs2androidhmi.views.listener.FragmentChangeListener
-import com.bacancy.ccs2androidhmi.worker.MQTTWorker
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import org.eclipse.paho.client.mqttv3.IMqttActionListener
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken
+import org.eclipse.paho.client.mqttv3.IMqttToken
+import org.eclipse.paho.client.mqttv3.MqttCallback
+import org.eclipse.paho.client.mqttv3.MqttMessage
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener {
@@ -55,6 +68,11 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
     private lateinit var gunsHomeScreenFragment: GunsHomeScreenFragment
     private lateinit var binding: ActivityHmiDashboardBinding
     val handler = Handler(Looper.getMainLooper())
+
+    private val mqttWorkerViewModel: MQTTWorkerViewModel by viewModels()
+
+    @Inject
+    lateinit var mqttClient: MQTTClient
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -82,19 +100,23 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
         insertSampleChargingHistory()
 
-        startMQTTFromWorker()
+        startMQTTConnection()
+
+        observePublishRequest()
     }
 
-    private fun startMQTTFromWorker() {
-        val constraints = Constraints.Builder()
-            .setRequiredNetworkType(NetworkType.CONNECTED)
-            .build()
+    private fun observePublishRequest() {
+        lifecycleScope.launch {
+            mqttWorkerViewModel.publishMessageRequest.collectLatest {
+                publishMessageToTopic(it.first, it.second)
+            }
+        }
+    }
 
-        val mqttWorkRequest = OneTimeWorkRequestBuilder<MQTTWorker>()
-            .setConstraints(constraints)
-            .build()
-
-        WorkManager.getInstance(this).enqueue(mqttWorkRequest)
+    private fun startMQTTConnection() {
+        if (mqttClient.isConnected().not()) {
+            connectToMQTT()
+        }
     }
 
     private fun insertSampleChargingHistory() {
@@ -344,6 +366,180 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
     override fun replaceFragment(fragment: Fragment?, shouldMoveToHomeScreen: Boolean) {
         if (fragment != null) {
             addNewFragment(fragment, shouldMoveToHomeScreen)
+        }
+    }
+
+    private fun connectToMQTT() {
+        if (isInternetConnected()) {
+            lifecycleScope.launch(Dispatchers.IO) {
+                mqttClient.connect(
+                    ServerConstants.MQTT_USERNAME,
+                    ServerConstants.MQTT_PWD, object : IMqttActionListener {
+                        override fun onSuccess(asyncActionToken: IMqttToken?) {
+                            LogUtils.debugLog("MQTTWorker - Connect onSuccess")
+                            subscribeTopic(TOPIC_A_TO_B)
+                            subscribeTopic(TOPIC_B_TO_A)
+                            sendInitialChargerDetails()
+                            sendConnectorStatus()
+                        }
+
+                        override fun onFailure(
+                            asyncActionToken: IMqttToken?,
+                            exception: Throwable?
+                        ) {
+                            LogUtils.errorLog("MQTTWorker - Connect onFailure - ${exception?.printStackTrace()}")
+                        }
+
+                    }, object : MqttCallback {
+                        override fun connectionLost(cause: Throwable?) {
+                            LogUtils.errorLog("MQTTWorker - Connect Connection Lost")
+                        }
+
+                        override fun messageArrived(topic: String?, message: MqttMessage?) {
+                            LogUtils.debugLog("MQTTWorker - Connect Data Arrived from Topic=$topic Message=$message")
+                            when (topic) {
+                                TOPIC_A_TO_B -> {
+                                    /*val messageInModel = Gson().fromJson(message.toString(), ResponseModel::class.java)
+                                      LogUtils.debugLog("MQTTWorker - MESSAGE IN MODEL = $messageInModel")*/
+                                }
+
+                                TOPIC_B_TO_A -> {
+                                    /*val messageInModel = Gson().fromJson(message.toString(), ResponseModel::class.java)
+                                      LogUtils.debugLog("MQTTWorker - MESSAGE IN MODEL = $messageInModel")*/
+                                }
+                            }
+                        }
+
+                        override fun deliveryComplete(token: IMqttDeliveryToken?) {
+                            LogUtils.debugLog("MQTTWorker - Connect Delivery Complete")
+                        }
+                    })
+            }
+        } else {
+            LogUtils.errorLog(getString(R.string.msg_internet_connection_unavailable))
+        }
+    }
+
+    private fun sendInitialChargerDetails() {
+        publishMessageToTopic(
+            TOPIC_A_TO_B,
+            Gson().toJson(
+                ChargerDetailsBody(
+                    chargerOutputs = "2",
+                    chargerRating = "120KW",
+                    configDateTime = getCurrentDateTime().orEmpty(),
+                    deviceMacAddress = "1133557799"
+                )
+            )
+        )
+    }
+
+    private fun sendConnectorStatus() {
+        lifecycleScope.launch {
+            delay(500)
+            publishMessageToTopic(
+                TOPIC_A_TO_B,
+                Gson().toJson(ConnectorStatusBody(connectorId = 1, connectorStatus = "Unplugged"))
+            )
+            delay(500)
+            publishMessageToTopic(
+                TOPIC_A_TO_B,
+                Gson().toJson(ConnectorStatusBody(connectorId = 2, connectorStatus = "Unplugged"))
+            )
+        }
+    }
+
+    fun disconnectWithMQTT() {
+        if (isInternetConnected()) {
+            lifecycleScope.launch(Dispatchers.IO) {
+                if (mqttClient.isConnected()) {
+                    mqttClient.disconnect(object : IMqttActionListener {
+                        override fun onSuccess(asyncActionToken: IMqttToken?) {
+                            LogUtils.debugLog("MQTTWorker - Disconnect onSuccess")
+                        }
+
+                        override fun onFailure(
+                            asyncActionToken: IMqttToken?,
+                            exception: Throwable?
+                        ) {
+                            LogUtils.errorLog("MQTTWorker - Disconnect onFailure")
+                        }
+                    })
+                }
+            }
+        } else {
+            LogUtils.errorLog(getString(R.string.msg_internet_connection_unavailable))
+        }
+    }
+
+    fun subscribeTopic(topicName: String) {
+        if (isInternetConnected()) {
+            lifecycleScope.launch(Dispatchers.IO) {
+                if (mqttClient.isConnected()) {
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        mqttClient.subscribe(topicName, 1, object : IMqttActionListener {
+                            override fun onSuccess(asyncActionToken: IMqttToken?) {
+                                LogUtils.debugLog("MQTTWorker - Subscribe to $topicName onSuccess")
+                            }
+
+                            override fun onFailure(
+                                asyncActionToken: IMqttToken?,
+                                exception: Throwable?
+                            ) {
+                                LogUtils.errorLog("MQTTWorker - Subscribe to $topicName onFailure")
+                            }
+                        })
+                    }
+                }
+            }
+        } else {
+            LogUtils.errorLog(getString(R.string.msg_internet_connection_unavailable))
+        }
+    }
+
+    fun unsubscribeTopic(topicName: String) {
+        if (isInternetConnected()) {
+            lifecycleScope.launch(Dispatchers.IO) {
+                if (mqttClient.isConnected()) {
+                    mqttClient.unsubscribe(topicName, object : IMqttActionListener {
+                        override fun onSuccess(asyncActionToken: IMqttToken?) {
+                            LogUtils.debugLog("MQTTWorker - UnSubscribe onFailure")
+                        }
+
+                        override fun onFailure(
+                            asyncActionToken: IMqttToken?,
+                            exception: Throwable?
+                        ) {
+                            LogUtils.errorLog("MQTTWorker - UnSubscribe onFailure")
+                        }
+                    })
+                }
+            }
+        } else {
+            LogUtils.errorLog(getString(R.string.msg_internet_connection_unavailable))
+        }
+    }
+
+    private fun publishMessageToTopic(topicName: String, message: String) {
+        if (isInternetConnected()) {
+            lifecycleScope.launch(Dispatchers.IO) {
+                if (mqttClient.isConnected()) {
+                    mqttClient.publish(topicName, message, 1, false, object : IMqttActionListener {
+                        override fun onSuccess(asyncActionToken: IMqttToken?) {
+                            LogUtils.debugLog("MQTTWorker - Publish onSuccess")
+                        }
+
+                        override fun onFailure(
+                            asyncActionToken: IMqttToken?,
+                            exception: Throwable?
+                        ) {
+                            LogUtils.errorLog("MQTTWorker - Publish onFailure")
+                        }
+                    })
+                }
+            }
+        } else {
+            LogUtils.errorLog(getString(R.string.msg_internet_connection_unavailable))
         }
     }
 }

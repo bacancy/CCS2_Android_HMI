@@ -10,6 +10,8 @@ import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentGunsMoreInfoScreenBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
+import com.bacancy.ccs2androidhmi.mqtt.ServerConstants.TOPIC_A_TO_B
+import com.bacancy.ccs2androidhmi.mqtt.models.ConnectorStatusBody
 import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_PIN_AUTHORIZATION
 import com.bacancy.ccs2androidhmi.util.CommonUtils.AUTH_PIN_VALUE
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showPinAuthorizationDialog
@@ -21,8 +23,10 @@ import com.bacancy.ccs2androidhmi.util.gone
 import com.bacancy.ccs2androidhmi.util.invisible
 import com.bacancy.ccs2androidhmi.util.visible
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
+import com.bacancy.ccs2androidhmi.viewmodel.MQTTWorkerViewModel
 import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
 import com.bacancy.ccs2androidhmi.views.listener.FragmentChangeListener
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -38,7 +42,7 @@ class GunsMoreInformationFragment : BaseFragment() {
     private lateinit var faultInfoFragment: FaultInfoFragment
     private var fragmentChangeListener: FragmentChangeListener? = null
     private val appViewModel: AppViewModel by viewModels()
-
+    private val mqttWorkerViewModel: MQTTWorkerViewModel by viewModels()
 
     @Inject
     lateinit var prefHelper: PrefHelper
@@ -75,6 +79,10 @@ class GunsMoreInformationFragment : BaseFragment() {
         binding.apply {
             tbGunsChargingInfo.apply {
 
+                //Send GUN 1/2 Charging State
+                mqttWorkerViewModel.sendPublishMessageRequest(TOPIC_A_TO_B to Gson().toJson(
+                    ConnectorStatusBody(connectorId = selectedGunNumber, connectorStatus = gunChargingState)
+                ))
                 when (gunChargingState) {
                     GunsChargingInfoUtils.PLUGGED_IN,
                     GunsChargingInfoUtils.CHARGING -> {

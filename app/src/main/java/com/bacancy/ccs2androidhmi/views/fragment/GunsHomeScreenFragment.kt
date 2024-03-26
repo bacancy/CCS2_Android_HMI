@@ -12,6 +12,8 @@ import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentGunsHomeScreenBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
+import com.bacancy.ccs2androidhmi.mqtt.ServerConstants.TOPIC_A_TO_B
+import com.bacancy.ccs2androidhmi.mqtt.models.ConnectorStatusBody
 import com.bacancy.ccs2androidhmi.util.CommonUtils.INSIDE_LOCAL_START_STOP_SCREEN
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showChargingSummaryDialog
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_DENIED
@@ -42,8 +44,10 @@ import com.bacancy.ccs2androidhmi.util.TextViewUtils.startBlinking
 import com.bacancy.ccs2androidhmi.util.gone
 import com.bacancy.ccs2androidhmi.util.visible
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
+import com.bacancy.ccs2androidhmi.viewmodel.MQTTWorkerViewModel
 import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
 import com.bacancy.ccs2androidhmi.views.listener.FragmentChangeListener
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -62,6 +66,8 @@ class GunsHomeScreenFragment : BaseFragment() {
 
     @Inject
     lateinit var prefHelper: PrefHelper
+
+    private val mqttWorkerViewModel: MQTTWorkerViewModel by viewModels()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -129,6 +135,10 @@ class GunsHomeScreenFragment : BaseFragment() {
 
         binding.tvGun1State.text = "(${tbGunsChargingInfo.gunChargingState})"
 
+        //Send GUN 1 Charging State
+        mqttWorkerViewModel.sendPublishMessageRequest(TOPIC_A_TO_B to Gson().toJson(
+            ConnectorStatusBody(connectorId = 1, connectorStatus = tbGunsChargingInfo.gunChargingState)
+        ))
         when (tbGunsChargingInfo.gunChargingState) {
             UNPLUGGED -> {
                 binding.tvGun1State.removeBlinking()
@@ -225,6 +235,10 @@ class GunsHomeScreenFragment : BaseFragment() {
 
         binding.tvGun2State.text = "(${tbGunsChargingInfo.gunChargingState})"
 
+        //Send GUN 2 Charging State
+        mqttWorkerViewModel.sendPublishMessageRequest(TOPIC_A_TO_B to Gson().toJson(
+            ConnectorStatusBody(connectorId = 2, connectorStatus = tbGunsChargingInfo.gunChargingState)
+        ))
         when (tbGunsChargingInfo.gunChargingState) {
             UNPLUGGED -> {
                 binding.tvGun2State.removeBlinking()
