@@ -82,4 +82,5 @@ dependencies {
     implementation("org.eclipse.paho:org.eclipse.paho.android.service:1.1.1")
     implementation("androidx.hilt:hilt-work:$hiltCompilerVersion")
 
+    implementation("androidx.fragment:fragment-ktx:1.6.2")
 }

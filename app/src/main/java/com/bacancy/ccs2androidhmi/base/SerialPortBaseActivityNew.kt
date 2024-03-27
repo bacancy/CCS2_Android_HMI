@@ -52,6 +52,7 @@ import com.bacancy.ccs2androidhmi.util.PrefHelper
 import com.bacancy.ccs2androidhmi.util.ReadWriteUtil
 import com.bacancy.ccs2androidhmi.util.ResponseSizes
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
+import com.bacancy.ccs2androidhmi.viewmodel.MQTTViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.TimeoutCancellationException
@@ -76,6 +77,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
     private val mCommonDelay = 300L
 
     val appViewModel: AppViewModel by viewModels()
+    private val mqttViewModel: MQTTViewModel by viewModels()
 
     @Inject
     lateinit var prefHelper: PrefHelper
@@ -399,6 +401,9 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                                 Log.w("SAVER", "INSERT LCS IN DB")
                                 appViewModel.insertGun1LastChargingSummaryInDB(it)
                                 appViewModel.insertGun1ChargingHistoryInDB(it)
+                                if(mqttViewModel.isMqttConnected.value){
+                                    mqttViewModel.sendPublishMessageRequest(mqttViewModel.convertByteArrayToPublishRequest(1,it))
+                                }
                             }
                         } else {
                             Log.e(
@@ -612,6 +617,9 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                             if (shouldSaveLastChargingSummary) {
                                 appViewModel.insertGun2LastChargingSummaryInDB(it)
                                 appViewModel.insertGun2ChargingHistoryInDB(it)
+                                if(mqttViewModel.isMqttConnected.value){
+                                    mqttViewModel.sendPublishMessageRequest(mqttViewModel.convertByteArrayToPublishRequest(2,it))
+                                }
                             }
                         } else {
                             Log.e(

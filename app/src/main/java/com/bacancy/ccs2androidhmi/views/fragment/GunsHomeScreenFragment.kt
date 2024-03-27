@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.bacancy.ccs2androidhmi.R
@@ -37,6 +38,7 @@ import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.TAMPER_FAULT
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.TEMPERATURE_FAULT
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.UNAVAILABLE
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.UNPLUGGED
+import com.bacancy.ccs2androidhmi.util.NetworkUtils.isInternetConnected
 import com.bacancy.ccs2androidhmi.util.PrefHelper
 import com.bacancy.ccs2androidhmi.util.PrefHelper.Companion.IS_DARK_THEME
 import com.bacancy.ccs2androidhmi.util.TextViewUtils.removeBlinking
@@ -44,7 +46,7 @@ import com.bacancy.ccs2androidhmi.util.TextViewUtils.startBlinking
 import com.bacancy.ccs2androidhmi.util.gone
 import com.bacancy.ccs2androidhmi.util.visible
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
-import com.bacancy.ccs2androidhmi.viewmodel.MQTTWorkerViewModel
+import com.bacancy.ccs2androidhmi.viewmodel.MQTTViewModel
 import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
 import com.bacancy.ccs2androidhmi.views.listener.FragmentChangeListener
 import com.google.gson.Gson
@@ -67,7 +69,7 @@ class GunsHomeScreenFragment : BaseFragment() {
     @Inject
     lateinit var prefHelper: PrefHelper
 
-    private val mqttWorkerViewModel: MQTTWorkerViewModel by viewModels()
+    private val mqttViewModel: MQTTViewModel by activityViewModels()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -136,9 +138,9 @@ class GunsHomeScreenFragment : BaseFragment() {
         binding.tvGun1State.text = "(${tbGunsChargingInfo.gunChargingState})"
 
         //Send GUN 1 Charging State
-        mqttWorkerViewModel.sendPublishMessageRequest(TOPIC_A_TO_B to Gson().toJson(
-            ConnectorStatusBody(connectorId = 1, connectorStatus = tbGunsChargingInfo.gunChargingState)
-        ))
+        if(requireContext().isInternetConnected()){
+            mqttViewModel.sendGunStatusToMqtt(1, tbGunsChargingInfo.gunChargingState)
+        }
         when (tbGunsChargingInfo.gunChargingState) {
             UNPLUGGED -> {
                 binding.tvGun1State.removeBlinking()
@@ -236,9 +238,9 @@ class GunsHomeScreenFragment : BaseFragment() {
         binding.tvGun2State.text = "(${tbGunsChargingInfo.gunChargingState})"
 
         //Send GUN 2 Charging State
-        mqttWorkerViewModel.sendPublishMessageRequest(TOPIC_A_TO_B to Gson().toJson(
-            ConnectorStatusBody(connectorId = 2, connectorStatus = tbGunsChargingInfo.gunChargingState)
-        ))
+        if(requireContext().isInternetConnected()) {
+            mqttViewModel.sendGunStatusToMqtt(2, tbGunsChargingInfo.gunChargingState)
+        }
         when (tbGunsChargingInfo.gunChargingState) {
             UNPLUGGED -> {
                 binding.tvGun2State.removeBlinking()
