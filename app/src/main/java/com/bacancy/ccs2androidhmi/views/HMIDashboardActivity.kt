@@ -41,6 +41,7 @@ import com.bacancy.ccs2androidhmi.views.fragment.LocalStartStopFragment
 import com.bacancy.ccs2androidhmi.views.fragment.NewFaultInfoFragment
 import com.bacancy.ccs2androidhmi.views.fragment.TestModeHomeFragment
 import com.bacancy.ccs2androidhmi.views.listener.FragmentChangeListener
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -55,6 +56,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
     val handler = Handler(Looper.getMainLooper())
 
     private val mqttViewModel: MQTTViewModel by viewModels()
+    private val TAG = "HMIDashboardActivity"
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -88,7 +90,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
     private fun startMQTTConnection() {
         lifecycleScope.launch {
             if (isInternetConnected()) {
-                mqttViewModel.connectToMQTT()
+                mqttViewModel.connectToMQTT(this@HMIDashboardActivity)
             }
         }
     }
@@ -184,13 +186,26 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
             mqttViewModel.topicSubscriptionState.collect {
                 when (it) {
                     is Resource.Loading -> {}
-                    is Resource.Success -> {}
-                    is Resource.Error -> {
-                        LogUtils.errorLog(it.message)
+                    is Resource.Success -> {
+                        Log.e(TAG, "topicSubscribeSuccess:  ${Gson().toJson(it.data)}")
                     }
 
-                    is Resource.DeliveryComplete -> {}
-                    is Resource.IncomingMessage -> {}
+                    is Resource.Error -> {
+                        Log.e(TAG, "topicSubscribeError:  ${Gson().toJson(it.message)}")
+                    }
+
+                    is Resource.DeliveryComplete -> {
+                        Log.e(TAG, "topicSubscribeDeliveryComplete:  ${Gson().toJson(it.data)}")
+                    }
+
+                    is Resource.IncomingMessage -> {
+                        Log.e(
+                            TAG,
+                            "topicSubscribeTopic:  ${Gson().toJson(it.topic)}  topicSubscribeMqttMessage:${
+                                Gson().toJson(it.message)
+                            }"
+                        )
+                    }
                 }
             }
         }

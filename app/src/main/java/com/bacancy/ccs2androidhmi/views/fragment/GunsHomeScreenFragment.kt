@@ -138,7 +138,7 @@ class GunsHomeScreenFragment : BaseFragment() {
         binding.tvGun1State.text = "(${tbGunsChargingInfo.gunChargingState})"
 
         //Send GUN 1 Charging State
-        if(requireContext().isInternetConnected()){
+        if (requireContext().isInternetConnected()) {
             mqttViewModel.sendGunStatusToMqtt(1, tbGunsChargingInfo.gunChargingState)
         }
         when (tbGunsChargingInfo.gunChargingState) {
@@ -238,7 +238,7 @@ class GunsHomeScreenFragment : BaseFragment() {
         binding.tvGun2State.text = "(${tbGunsChargingInfo.gunChargingState})"
 
         //Send GUN 2 Charging State
-        if(requireContext().isInternetConnected()) {
+        if (requireContext().isInternetConnected()) {
             mqttViewModel.sendGunStatusToMqtt(2, tbGunsChargingInfo.gunChargingState)
         }
         when (tbGunsChargingInfo.gunChargingState) {
@@ -439,6 +439,14 @@ class GunsHomeScreenFragment : BaseFragment() {
 
         binding.tvGun2Actor.setOnClickListener {
             openGunsMoreInfoFragment(2)
+        }
+
+        binding.tvGun1Label.setOnClickListener {
+
+            mqttViewModel.publishMessageToTopic(
+                TOPIC_A_TO_B,
+                "{\"id\":\"T001\",\"chargerRating\":\"60KW\",\"chargerOutputs\":\"2\",\"deviceMacAddress\":\"AA:BB:CC:11:22:33\",\"configDateTime\":\"01-04-2024T04:00:00\"}"
+            )
         }
 
     }

@@ -1,5 +1,8 @@
 package com.bacancy.ccs2androidhmi.viewmodel
 
+import android.content.Context
+import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bacancy.ccs2androidhmi.mqtt.MQTTClient
@@ -10,6 +13,7 @@ import com.bacancy.ccs2androidhmi.mqtt.models.ConnectorStatusBody
 import com.bacancy.ccs2androidhmi.util.DateTimeUtils
 import com.bacancy.ccs2androidhmi.util.LastChargingSummaryUtils
 import com.bacancy.ccs2androidhmi.util.Resource
+import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
 import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -68,7 +72,7 @@ class MQTTViewModel @Inject constructor(private val mqttClient: MQTTClient) : Vi
         _gun2LastChargingStatus.value = lastStatus
     }
 
-    fun connectToMQTT() {
+    fun connectToMQTT(requiredContext: Context) {
         _mqttConnectState.value = Resource.Loading()
         viewModelScope.launch(Dispatchers.IO) {
             mqttClient.connect(
@@ -95,7 +99,9 @@ class MQTTViewModel @Inject constructor(private val mqttClient: MQTTClient) : Vi
                     }
 
                     override fun messageArrived(topic: String?, message: MqttMessage?) {
+                        Log.e("checkMessageArrived","MQTT  ${topic.toString()}  message: ${message.toString()}")
                         _mqttConnectState.value = Resource.IncomingMessage(topic, message)
+                        Toast.makeText(requiredContext,"${message}",Toast.LENGTH_LONG).show()
                     }
 
                     override fun deliveryComplete(token: IMqttDeliveryToken?) {
