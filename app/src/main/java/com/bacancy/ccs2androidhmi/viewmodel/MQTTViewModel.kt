@@ -194,11 +194,11 @@ class MQTTViewModel @Inject constructor(private val mqttClient: MQTTClient) : Vi
         }
     }
 
-    fun getInitialChargerDetails(devId: String): Pair<String, String> {
+    fun getInitialChargerDetails(devId: String, chargerRatings: String, chargerOutputs: String): Pair<String, String> {
         return ServerConstants.getTOPIC_A_TO_B(devId) to Gson().toJson(
             ChargerDetailsBody(
-                chargerOutputs = "2",//need to send this dynamically
-                chargerRating = "120KW",//need to send this dynamically
+                chargerOutputs = chargerOutputs,
+                chargerRating = chargerRatings,
                 configDateTime = DateTimeUtils.getCurrentDateTime().orEmpty(),
                 deviceMacAddress = devId
             )
@@ -217,12 +217,13 @@ class MQTTViewModel @Inject constructor(private val mqttClient: MQTTClient) : Vi
             energyConsumption = LastChargingSummaryUtils.getEnergyConsumption(it),
             sessionEndReason = LastChargingSummaryUtils.getSessionEndReason(it),
             customSessionEndReason = "NA",
-            totalCost = LastChargingSummaryUtils.getTotalCost(it)
+            totalCost = LastChargingSummaryUtils.getTotalCost(it),
+            deviceMacAddress = deviceMacAddress
         )
         return ServerConstants.getTOPIC_A_TO_B(deviceMacAddress) to Gson().toJson(chargingHistoryBody)
     }
 
-    fun sendGunStatusToMqtt(topic: String,selectedGunNumber: Int, gunChargingState: String) {
+    fun sendGunStatusToMqtt(deviceMacAddress: String,selectedGunNumber: Int, gunChargingState: String) {
         if (isMqttConnected.value) {
             val lastChargingStatus = if (selectedGunNumber == 1) {
                 gun1LastChargingStatus.value
@@ -232,10 +233,13 @@ class MQTTViewModel @Inject constructor(private val mqttClient: MQTTClient) : Vi
 
             if (lastChargingStatus != gunChargingState) {
                 sendPublishMessageRequest(
-                    topic to Gson().toJson(
+                    ServerConstants.getTOPIC_A_TO_B(
+                        deviceMacAddress
+                    ) to Gson().toJson(
                         ConnectorStatusBody(
                             connectorId = selectedGunNumber,
-                            connectorStatus = gunChargingState
+                            connectorStatus = gunChargingState,
+                            deviceMacAddress = deviceMacAddress
                         )
                     )
                 )

@@ -95,38 +95,15 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
             appViewModel.deviceMacAddress.collect { deviceMacAddress ->
                 Log.d(TAG, "observeDeviceMacAddress: 1 - $deviceMacAddress")
                 if (deviceMacAddress.isNotEmpty()) {
-                    Log.d(TAG, "observeDeviceMacAddress: 2 - $deviceMacAddress")
-                    if (prefHelper.getStringValue(DEVICE_MAC_ADDRESS, "").isEmpty()) {
+                    val savedMacAddress = prefHelper.getStringValue(DEVICE_MAC_ADDRESS, "")
+                    if (savedMacAddress.isEmpty()) {
                         prefHelper.setStringValue(DEVICE_MAC_ADDRESS, deviceMacAddress)
                     }
-                    if (prefHelper.getStringValue(DEVICE_MAC_ADDRESS, "").isNotEmpty()) {
-                        if (isInternetConnected()) {
-                            Log.d(TAG, "observeDeviceMacAddress: 3 - Internet connected")
-                            mqttViewModel.subscribeTopic(
-                                getTOPIC_A_TO_B(
-                                    prefHelper.getStringValue(
-                                        DEVICE_MAC_ADDRESS, ""
-                                    )
-                                )
-                            )
-                            mqttViewModel.subscribeTopic(
-                                getTOPIC_B_TO_A(
-                                    prefHelper.getStringValue(
-                                        DEVICE_MAC_ADDRESS, ""
-                                    )
-                                )
-                            )
-                            val initialChargerDetails =
-                                mqttViewModel.getInitialChargerDetails(
-                                    prefHelper.getStringValue(
-                                        DEVICE_MAC_ADDRESS, ""
-                                    )
-                                )
-                            mqttViewModel.publishMessageToTopic(
-                                initialChargerDetails.first,
-                                initialChargerDetails.second
-                            )
-                        }
+                    if (savedMacAddress.isNotEmpty() && isInternetConnected()) {
+                        val topicA = getTOPIC_A_TO_B(savedMacAddress)
+                        val topicB = getTOPIC_B_TO_A(savedMacAddress)
+                        mqttViewModel.subscribeTopic(topicA)
+                        mqttViewModel.subscribeTopic(topicB)
                     }
                 }
             }

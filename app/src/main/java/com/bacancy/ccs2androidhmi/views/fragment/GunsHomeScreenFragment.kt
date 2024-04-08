@@ -138,12 +138,9 @@ class GunsHomeScreenFragment : BaseFragment() {
 
         //Send GUN 1 Charging State
         if (requireContext().isInternetConnected() && prefHelper.getStringValue(CommonUtils.DEVICE_MAC_ADDRESS, "").isNotEmpty()) {
-            mqttViewModel.sendGunStatusToMqtt(
-                ServerConstants.getTOPIC_A_TO_B(
-                    prefHelper.getStringValue(
-                        CommonUtils.DEVICE_MAC_ADDRESS, ""
-                    )
-                ), 1, tbGunsChargingInfo.gunChargingState
+            mqttViewModel.sendGunStatusToMqtt(prefHelper.getStringValue(
+                CommonUtils.DEVICE_MAC_ADDRESS, ""
+            ), 1, tbGunsChargingInfo.gunChargingState
             )
         }
         when (tbGunsChargingInfo.gunChargingState) {
@@ -244,10 +241,8 @@ class GunsHomeScreenFragment : BaseFragment() {
 
         //Send GUN 2 Charging State
         if (requireContext().isInternetConnected() && prefHelper.getStringValue(CommonUtils.DEVICE_MAC_ADDRESS, "").isNotEmpty()) {
-            mqttViewModel.sendGunStatusToMqtt(ServerConstants.getTOPIC_A_TO_B(
-                prefHelper.getStringValue(
-                    CommonUtils.DEVICE_MAC_ADDRESS, ""
-                )
+            mqttViewModel.sendGunStatusToMqtt(prefHelper.getStringValue(
+                CommonUtils.DEVICE_MAC_ADDRESS, ""
             ),2, tbGunsChargingInfo.gunChargingState)
         }
         when (tbGunsChargingInfo.gunChargingState) {

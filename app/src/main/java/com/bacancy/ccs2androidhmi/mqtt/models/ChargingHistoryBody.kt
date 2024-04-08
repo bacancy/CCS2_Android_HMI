@@ -14,5 +14,6 @@ data class ChargingHistoryBody(
     val sessionEndReason: String,
     val startSoc: String,
     val totalChargingTime: String,
-    val totalCost: String
+    val totalCost: String,
+    val deviceMacAddress: String
 )

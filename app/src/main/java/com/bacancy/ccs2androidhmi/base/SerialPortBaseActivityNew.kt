@@ -14,6 +14,8 @@ import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.db.entity.TbAcMeterInfo
 import com.bacancy.ccs2androidhmi.util.CommonUtils.AC_METER_FRAG
 import com.bacancy.ccs2androidhmi.util.CommonUtils.AUTH_PIN_VALUE
+import com.bacancy.ccs2androidhmi.util.CommonUtils.CHARGER_OUTPUTS
+import com.bacancy.ccs2androidhmi.util.CommonUtils.CHARGER_RATINGS
 import com.bacancy.ccs2androidhmi.util.CommonUtils.DEVICE_MAC_ADDRESS
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_DC_METER_FRAG
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_LAST_CHARGING_SUMMARY_FRAG
@@ -22,6 +24,7 @@ import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_DC_METER_FRAG
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_LAST_CHARGING_SUMMARY_FRAG
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_LOCAL_START
 import com.bacancy.ccs2androidhmi.util.CommonUtils.INSIDE_LOCAL_START_STOP_SCREEN
+import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_INITIAL_CHARGER_DETAILS_PUBLISHED
 import com.bacancy.ccs2androidhmi.util.CommonUtils.generateRandomNumber
 import com.bacancy.ccs2androidhmi.util.CommonUtils.getCleanedMacAddress
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showCustomDialog
@@ -50,6 +53,7 @@ import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getGunChargingState
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils
 import com.bacancy.ccs2androidhmi.util.ModBusUtils
 import com.bacancy.ccs2androidhmi.util.ModbusRequestFrames
+import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.toHex
 import com.bacancy.ccs2androidhmi.util.PrefHelper
 import com.bacancy.ccs2androidhmi.util.ReadWriteUtil
@@ -159,7 +163,11 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                         ) {
                             isReadStopped = 0
                             Log.d(TAG, "readMiscInfo: Response = ${it.toHex()}")
-                            appViewModel.updateDeviceMacAddress(MiscInfoUtils.getBluetoothMacAddress(it).getCleanedMacAddress())
+                            appViewModel.updateDeviceMacAddress(
+                                MiscInfoUtils.getBluetoothMacAddress(
+                                    it
+                                ).getCleanedMacAddress()
+                            )
                             lifecycleScope.launch {
                                 appViewModel.insertMiscInfoInDB(it)
                             }
@@ -168,7 +176,9 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                             showReadStoppedUI()
                             Log.e(TAG, "readMiscInfo: Error Response - ${it.toHex()}")
                         }
-                        openAcMeterInfo()
+                        lifecycleScope.launch {
+                            readChargerRatings()
+                        }
                     }, onReadStopped = {
                         isReadStopped++
                         Log.e(TAG, "readMiscInfo: OnReadStopped Called")
@@ -181,6 +191,120 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
             }
         }
 
+    }
+
+    private suspend fun readChargerRatings() {
+        withTimeout(1000) {
+            try {
+                Log.i(
+                    TAG,
+                    "readChargerRatings: Request Sent - ${
+                        ModbusRequestFrames.getChargerRatingsRequestFrame().toHex()
+                    }"
+                )
+                ReadWriteUtil.writeRequestAndReadResponse(
+                    mOutputStream,
+                    mInputStream,
+                    ResponseSizes.SINGLE_REGISTER_RESPONSE_SIZE,
+                    ModbusRequestFrames.getChargerRatingsRequestFrame(),
+                    onDataReceived = {
+                        if (it.toHex()
+                                .startsWith(ModBusUtils.HOLDING_REGISTERS_CORRECT_RESPONSE_BITS)
+                        ) {
+                            isReadStopped = 0
+                            Log.d(TAG, "readChargerRatings: Response = ${it.toHex()}")
+                            val ratings = ModbusTypeConverter.getIntValueFromBytes(
+                                it,
+                                3,
+                                4
+                            )
+                            Log.d(
+                                TAG, "readChargerRatings: Data = $ratings"
+                            )
+                            prefHelper.setStringValue(CHARGER_RATINGS, ratings.toString())
+                        } else {
+                            isReadStopped++
+                            showReadStoppedUI()
+                            Log.e(TAG, "readChargerRatings: Error Response - ${it.toHex()}")
+                        }
+                        lifecycleScope.launch {
+                            readChargerTotalOutputs()
+                        }
+                    }, onReadStopped = {
+                        isReadStopped++
+                        Log.e(TAG, "readChargerRatings: OnReadStopped Called")
+                        showReadStoppedUI()
+                        startReading()
+                    })
+            } catch (te: TimeoutCancellationException) {
+                Log.e(TAG, "readChargerRatings: Timeout Occurred", te.cause)
+                startReading()
+            }
+        }
+
+    }
+
+    private suspend fun readChargerTotalOutputs() {
+        withTimeout(1000) {
+            try {
+                Log.i(
+                    TAG,
+                    "readChargerTotalOutputs: Request Sent - ${
+                        ModbusRequestFrames.getChargerOutputsRequestFrame().toHex()
+                    }"
+                )
+                ReadWriteUtil.writeRequestAndReadResponse(
+                    mOutputStream,
+                    mInputStream,
+                    ResponseSizes.SINGLE_REGISTER_RESPONSE_SIZE,
+                    ModbusRequestFrames.getChargerOutputsRequestFrame(),
+                    onDataReceived = {
+                        if (it.toHex()
+                                .startsWith(ModBusUtils.HOLDING_REGISTERS_CORRECT_RESPONSE_BITS)
+                        ) {
+                            isReadStopped = 0
+                            Log.d(TAG, "readChargerTotalOutputs: Response = ${it.toHex()}")
+                            val outputs = ModbusTypeConverter.getIntValueFromBytes(
+                                it,
+                                3,
+                                4
+                            )
+                            Log.d(
+                                TAG, "readChargerTotalOutputs: Data = $outputs"
+                            )
+                            prefHelper.setStringValue(CHARGER_OUTPUTS, outputs.toString())
+                            sendInitialChargerDetailsToServer()
+                        } else {
+                            isReadStopped++
+                            showReadStoppedUI()
+                            Log.e(TAG, "readChargerTotalOutputs: Error Response - ${it.toHex()}")
+                        }
+                        openAcMeterInfo()
+                    }, onReadStopped = {
+                        isReadStopped++
+                        Log.e(TAG, "readChargerTotalOutputs: OnReadStopped Called")
+                        showReadStoppedUI()
+                        startReading()
+                    })
+            } catch (te: TimeoutCancellationException) {
+                Log.e(TAG, "readChargerTotalOutputs: Timeout Occurred", te.cause)
+                startReading()
+            }
+        }
+    }
+
+    private fun sendInitialChargerDetailsToServer() {
+        if (prefHelper.getBoolean(IS_INITIAL_CHARGER_DETAILS_PUBLISHED, false)) return
+
+        val deviceMacAddress = prefHelper.getStringValue(DEVICE_MAC_ADDRESS, "")
+        val chargerRatings = prefHelper.getStringValue(CHARGER_RATINGS, "")
+        val chargerOutputs = prefHelper.getStringValue(CHARGER_OUTPUTS, "")
+
+        if (deviceMacAddress.isNotEmpty() && chargerRatings.isNotEmpty() && chargerOutputs.isNotEmpty()) {
+            val initialChargerDetails = mqttViewModel.getInitialChargerDetails(deviceMacAddress, chargerRatings, chargerOutputs)
+            mqttViewModel.publishMessageToTopic(initialChargerDetails.first, initialChargerDetails.second)
+            prefHelper.setBoolean(IS_INITIAL_CHARGER_DETAILS_PUBLISHED, true)
+        }
     }
 
     private fun showReadStoppedUI() {
@@ -406,9 +530,10 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                                 appViewModel.insertGun1ChargingHistoryInDB(it)
                                 if (mqttViewModel.isMqttConnected.value) {
                                     mqttViewModel.sendPublishMessageRequest(
-                                        mqttViewModel.convertByteArrayToPublishRequest(prefHelper.getStringValue(
-                                            DEVICE_MAC_ADDRESS, ""
-                                        ),
+                                        mqttViewModel.convertByteArrayToPublishRequest(
+                                            prefHelper.getStringValue(
+                                                DEVICE_MAC_ADDRESS, ""
+                                            ),
                                             1,
                                             it
                                         )
@@ -629,9 +754,10 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                                 appViewModel.insertGun2ChargingHistoryInDB(it)
                                 if (mqttViewModel.isMqttConnected.value) {
                                     mqttViewModel.sendPublishMessageRequest(
-                                        mqttViewModel.convertByteArrayToPublishRequest(prefHelper.getStringValue(
-                                            DEVICE_MAC_ADDRESS, ""
-                                        ),
+                                        mqttViewModel.convertByteArrayToPublishRequest(
+                                            prefHelper.getStringValue(
+                                                DEVICE_MAC_ADDRESS, ""
+                                            ),
                                             2,
                                             it
                                         )

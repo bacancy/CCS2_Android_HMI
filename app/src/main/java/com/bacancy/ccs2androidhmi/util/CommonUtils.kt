@@ -27,6 +27,9 @@ object CommonUtils {
     const val FILE_NAME_PREFIX = "ccs2_"
     const val FILE_NAME_EXTENSION = "csv"
     const val DEVICE_MAC_ADDRESS = "DEVICE_MAC_ADDRESS"
+    const val CHARGER_RATINGS = "CHARGER_RATINGS"
+    const val CHARGER_OUTPUTS = "CHARGER_OUTPUTS"
+    const val IS_INITIAL_CHARGER_DETAILS_PUBLISHED = "IS_INITIAL_CHARGER_DETAILS_PUBLISHED"
 
     private fun swapAdjacentElements(array: MutableList<Int>): MutableList<Int> {
         for (i in 0 until array.size - 1 step 2) {

@@ -80,13 +80,16 @@ class GunsMoreInformationFragment : BaseFragment() {
             tbGunsChargingInfo.apply {
 
                 //Send GUN 1/2 Charging State
-                if (requireContext().isInternetConnected() && prefHelper.getStringValue(CommonUtils.DEVICE_MAC_ADDRESS, "").isNotEmpty()) {
+                if (requireContext().isInternetConnected() && prefHelper.getStringValue(
+                        CommonUtils.DEVICE_MAC_ADDRESS,
+                        ""
+                    ).isNotEmpty()
+                ) {
                     mqttViewModel.sendGunStatusToMqtt(
-                        ServerConstants.getTOPIC_A_TO_B(
                         prefHelper.getStringValue(
                             CommonUtils.DEVICE_MAC_ADDRESS, ""
-                        )
-                    ),selectedGunNumber, gunChargingState)
+                        ), selectedGunNumber, gunChargingState
+                    )
                 }
 
                 when (gunChargingState) {
