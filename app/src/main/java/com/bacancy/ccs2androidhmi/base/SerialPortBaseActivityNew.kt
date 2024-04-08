@@ -14,6 +14,7 @@ import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.db.entity.TbAcMeterInfo
 import com.bacancy.ccs2androidhmi.util.CommonUtils.AC_METER_FRAG
 import com.bacancy.ccs2androidhmi.util.CommonUtils.AUTH_PIN_VALUE
+import com.bacancy.ccs2androidhmi.util.CommonUtils.DEVICE_MAC_ADDRESS
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_DC_METER_FRAG
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_LAST_CHARGING_SUMMARY_FRAG
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_LOCAL_START
@@ -22,6 +23,7 @@ import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_LAST_CHARGING_SUMMARY_F
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_LOCAL_START
 import com.bacancy.ccs2androidhmi.util.CommonUtils.INSIDE_LOCAL_START_STOP_SCREEN
 import com.bacancy.ccs2androidhmi.util.CommonUtils.generateRandomNumber
+import com.bacancy.ccs2androidhmi.util.CommonUtils.getCleanedMacAddress
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showCustomDialog
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_DENIED
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_SUCCESS
@@ -45,6 +47,7 @@ import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.TEMPERATURE_FAULT
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.UNAVAILABLE
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.UNPLUGGED
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getGunChargingState
+import com.bacancy.ccs2androidhmi.util.MiscInfoUtils
 import com.bacancy.ccs2androidhmi.util.ModBusUtils
 import com.bacancy.ccs2androidhmi.util.ModbusRequestFrames
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.toHex
@@ -156,7 +159,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                         ) {
                             isReadStopped = 0
                             Log.d(TAG, "readMiscInfo: Response = ${it.toHex()}")
-
+                            appViewModel.updateDeviceMacAddress(MiscInfoUtils.getBluetoothMacAddress(it).getCleanedMacAddress())
                             lifecycleScope.launch {
                                 appViewModel.insertMiscInfoInDB(it)
                             }
@@ -401,8 +404,15 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                                 Log.w("SAVER", "INSERT LCS IN DB")
                                 appViewModel.insertGun1LastChargingSummaryInDB(it)
                                 appViewModel.insertGun1ChargingHistoryInDB(it)
-                                if(mqttViewModel.isMqttConnected.value){
-                                    mqttViewModel.sendPublishMessageRequest(mqttViewModel.convertByteArrayToPublishRequest(1,it))
+                                if (mqttViewModel.isMqttConnected.value) {
+                                    mqttViewModel.sendPublishMessageRequest(
+                                        mqttViewModel.convertByteArrayToPublishRequest(prefHelper.getStringValue(
+                                            DEVICE_MAC_ADDRESS, ""
+                                        ),
+                                            1,
+                                            it
+                                        )
+                                    )
                                 }
                             }
                         } else {
@@ -617,8 +627,15 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                             if (shouldSaveLastChargingSummary) {
                                 appViewModel.insertGun2LastChargingSummaryInDB(it)
                                 appViewModel.insertGun2ChargingHistoryInDB(it)
-                                if(mqttViewModel.isMqttConnected.value){
-                                    mqttViewModel.sendPublishMessageRequest(mqttViewModel.convertByteArrayToPublishRequest(2,it))
+                                if (mqttViewModel.isMqttConnected.value) {
+                                    mqttViewModel.sendPublishMessageRequest(
+                                        mqttViewModel.convertByteArrayToPublishRequest(prefHelper.getStringValue(
+                                            DEVICE_MAC_ADDRESS, ""
+                                        ),
+                                            2,
+                                            it
+                                        )
+                                    )
                                 }
                             }
                         } else {

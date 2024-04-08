@@ -18,11 +18,12 @@ import androidx.lifecycle.lifecycleScope
 import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.SerialPortBaseActivityNew
 import com.bacancy.ccs2androidhmi.databinding.ActivityHmiDashboardBinding
-import com.bacancy.ccs2androidhmi.mqtt.ServerConstants.TOPIC_A_TO_B
-import com.bacancy.ccs2androidhmi.mqtt.ServerConstants.TOPIC_B_TO_A
+import com.bacancy.ccs2androidhmi.mqtt.ServerConstants.getTOPIC_A_TO_B
+import com.bacancy.ccs2androidhmi.mqtt.ServerConstants.getTOPIC_B_TO_A
 import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_LOCAL_START_STOP
 import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_TEST_MODE
 import com.bacancy.ccs2androidhmi.util.CommonUtils
+import com.bacancy.ccs2androidhmi.util.CommonUtils.DEVICE_MAC_ADDRESS
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showPasswordPromptDialog
 import com.bacancy.ccs2androidhmi.util.LogUtils
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.NO_STATE
@@ -85,6 +86,51 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         startMQTTConnection()
 
         observeMqttOperations()
+
+        observeDeviceMacAddress()
+    }
+
+    private fun observeDeviceMacAddress() {
+        lifecycleScope.launch {
+            appViewModel.deviceMacAddress.collect { deviceMacAddress ->
+                Log.d(TAG, "observeDeviceMacAddress: 1 - $deviceMacAddress")
+                if (deviceMacAddress.isNotEmpty()) {
+                    Log.d(TAG, "observeDeviceMacAddress: 2 - $deviceMacAddress")
+                    if (prefHelper.getStringValue(DEVICE_MAC_ADDRESS, "").isEmpty()) {
+                        prefHelper.setStringValue(DEVICE_MAC_ADDRESS, deviceMacAddress)
+                    }
+                    if (prefHelper.getStringValue(DEVICE_MAC_ADDRESS, "").isNotEmpty()) {
+                        if (isInternetConnected()) {
+                            Log.d(TAG, "observeDeviceMacAddress: 3 - Internet connected")
+                            mqttViewModel.subscribeTopic(
+                                getTOPIC_A_TO_B(
+                                    prefHelper.getStringValue(
+                                        DEVICE_MAC_ADDRESS, ""
+                                    )
+                                )
+                            )
+                            mqttViewModel.subscribeTopic(
+                                getTOPIC_B_TO_A(
+                                    prefHelper.getStringValue(
+                                        DEVICE_MAC_ADDRESS, ""
+                                    )
+                                )
+                            )
+                            val initialChargerDetails =
+                                mqttViewModel.getInitialChargerDetails(
+                                    prefHelper.getStringValue(
+                                        DEVICE_MAC_ADDRESS, ""
+                                    )
+                                )
+                            mqttViewModel.publishMessageToTopic(
+                                initialChargerDetails.first,
+                                initialChargerDetails.second
+                            )
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private fun startMQTTConnection() {
@@ -119,16 +165,6 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
                     is Resource.Loading -> {}
                     is Resource.Success -> {
                         LogUtils.debugLog("MQTTWorker - Connect onSuccess")
-                        if (isInternetConnected()) {
-                            mqttViewModel.subscribeTopic(TOPIC_A_TO_B)
-                            mqttViewModel.subscribeTopic(TOPIC_B_TO_A)
-                            val initialChargerDetails =
-                                mqttViewModel.getInitialChargerDetails()
-                            mqttViewModel.publishMessageToTopic(
-                                initialChargerDetails.first,
-                                initialChargerDetails.second
-                            )
-                        }
                     }
 
                     is Resource.Error -> {

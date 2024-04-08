@@ -10,9 +10,9 @@ import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentGunsMoreInfoScreenBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
-import com.bacancy.ccs2androidhmi.mqtt.ServerConstants.TOPIC_A_TO_B
-import com.bacancy.ccs2androidhmi.mqtt.models.ConnectorStatusBody
+import com.bacancy.ccs2androidhmi.mqtt.ServerConstants
 import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_PIN_AUTHORIZATION
+import com.bacancy.ccs2androidhmi.util.CommonUtils
 import com.bacancy.ccs2androidhmi.util.CommonUtils.AUTH_PIN_VALUE
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showPinAuthorizationDialog
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils
@@ -27,7 +27,6 @@ import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
 import com.bacancy.ccs2androidhmi.viewmodel.MQTTViewModel
 import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
 import com.bacancy.ccs2androidhmi.views.listener.FragmentChangeListener
-import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -81,8 +80,13 @@ class GunsMoreInformationFragment : BaseFragment() {
             tbGunsChargingInfo.apply {
 
                 //Send GUN 1/2 Charging State
-                if (requireContext().isInternetConnected()) {
-                    mqttViewModel.sendGunStatusToMqtt(selectedGunNumber, gunChargingState)
+                if (requireContext().isInternetConnected() && prefHelper.getStringValue(CommonUtils.DEVICE_MAC_ADDRESS, "").isNotEmpty()) {
+                    mqttViewModel.sendGunStatusToMqtt(
+                        ServerConstants.getTOPIC_A_TO_B(
+                        prefHelper.getStringValue(
+                            CommonUtils.DEVICE_MAC_ADDRESS, ""
+                        )
+                    ),selectedGunNumber, gunChargingState)
                 }
 
                 when (gunChargingState) {

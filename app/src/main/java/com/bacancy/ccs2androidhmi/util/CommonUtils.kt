@@ -26,6 +26,7 @@ object CommonUtils {
     const val FILE_NAME_DATE_TIME_FORMAT = "yyyyMMdd_HHmmss"
     const val FILE_NAME_PREFIX = "ccs2_"
     const val FILE_NAME_EXTENSION = "csv"
+    const val DEVICE_MAC_ADDRESS = "DEVICE_MAC_ADDRESS"
 
     private fun swapAdjacentElements(array: MutableList<Int>): MutableList<Int> {
         for (i in 0 until array.size - 1 step 2) {
@@ -43,6 +44,10 @@ object CommonUtils {
         return ModbusTypeConverter.decimalArrayToHexArray(convertedArray).joinToString(separator).uppercase(
             Locale.ROOT
         )
+    }
+
+    fun String.getCleanedMacAddress(): String {
+        return this.replace(":","")
     }
 
     fun getSimpleMacAddress(macAddressArray: ByteArray, separator: String = ":"): String {

@@ -13,8 +13,8 @@ import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentGunsHomeScreenBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
-import com.bacancy.ccs2androidhmi.mqtt.ServerConstants.TOPIC_A_TO_B
-import com.bacancy.ccs2androidhmi.mqtt.models.ConnectorStatusBody
+import com.bacancy.ccs2androidhmi.mqtt.ServerConstants
+import com.bacancy.ccs2androidhmi.util.CommonUtils
 import com.bacancy.ccs2androidhmi.util.CommonUtils.INSIDE_LOCAL_START_STOP_SCREEN
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showChargingSummaryDialog
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_DENIED
@@ -49,7 +49,6 @@ import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
 import com.bacancy.ccs2androidhmi.viewmodel.MQTTViewModel
 import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
 import com.bacancy.ccs2androidhmi.views.listener.FragmentChangeListener
-import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -138,8 +137,14 @@ class GunsHomeScreenFragment : BaseFragment() {
         binding.tvGun1State.text = "(${tbGunsChargingInfo.gunChargingState})"
 
         //Send GUN 1 Charging State
-        if (requireContext().isInternetConnected()) {
-            mqttViewModel.sendGunStatusToMqtt(1, tbGunsChargingInfo.gunChargingState)
+        if (requireContext().isInternetConnected() && prefHelper.getStringValue(CommonUtils.DEVICE_MAC_ADDRESS, "").isNotEmpty()) {
+            mqttViewModel.sendGunStatusToMqtt(
+                ServerConstants.getTOPIC_A_TO_B(
+                    prefHelper.getStringValue(
+                        CommonUtils.DEVICE_MAC_ADDRESS, ""
+                    )
+                ), 1, tbGunsChargingInfo.gunChargingState
+            )
         }
         when (tbGunsChargingInfo.gunChargingState) {
             UNPLUGGED -> {
@@ -238,8 +243,12 @@ class GunsHomeScreenFragment : BaseFragment() {
         binding.tvGun2State.text = "(${tbGunsChargingInfo.gunChargingState})"
 
         //Send GUN 2 Charging State
-        if (requireContext().isInternetConnected()) {
-            mqttViewModel.sendGunStatusToMqtt(2, tbGunsChargingInfo.gunChargingState)
+        if (requireContext().isInternetConnected() && prefHelper.getStringValue(CommonUtils.DEVICE_MAC_ADDRESS, "").isNotEmpty()) {
+            mqttViewModel.sendGunStatusToMqtt(ServerConstants.getTOPIC_A_TO_B(
+                prefHelper.getStringValue(
+                    CommonUtils.DEVICE_MAC_ADDRESS, ""
+                )
+            ),2, tbGunsChargingInfo.gunChargingState)
         }
         when (tbGunsChargingInfo.gunChargingState) {
             UNPLUGGED -> {
@@ -443,10 +452,10 @@ class GunsHomeScreenFragment : BaseFragment() {
 
         binding.tvGun1Label.setOnClickListener {
 
-            mqttViewModel.publishMessageToTopic(
+            /*mqttViewModel.publishMessageToTopic(
                 TOPIC_A_TO_B,
                 "{\"id\":\"T001\",\"chargerRating\":\"60KW\",\"chargerOutputs\":\"2\",\"deviceMacAddress\":\"AA:BB:CC:11:22:33\",\"configDateTime\":\"01-04-2024T04:00:00\"}"
-            )
+            )*/
         }
 
     }

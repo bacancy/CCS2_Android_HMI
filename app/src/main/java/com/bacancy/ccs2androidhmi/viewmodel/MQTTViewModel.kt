@@ -13,7 +13,6 @@ import com.bacancy.ccs2androidhmi.mqtt.models.ConnectorStatusBody
 import com.bacancy.ccs2androidhmi.util.DateTimeUtils
 import com.bacancy.ccs2androidhmi.util.LastChargingSummaryUtils
 import com.bacancy.ccs2androidhmi.util.Resource
-import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
 import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -195,21 +194,21 @@ class MQTTViewModel @Inject constructor(private val mqttClient: MQTTClient) : Vi
         }
     }
 
-    fun getInitialChargerDetails(): Pair<String, String> {
-        return ServerConstants.TOPIC_A_TO_B to Gson().toJson(
+    fun getInitialChargerDetails(devId: String): Pair<String, String> {
+        return ServerConstants.getTOPIC_A_TO_B(devId) to Gson().toJson(
             ChargerDetailsBody(
-                chargerOutputs = "2",
-                chargerRating = "120KW",
+                chargerOutputs = "2",//need to send this dynamically
+                chargerRating = "120KW",//need to send this dynamically
                 configDateTime = DateTimeUtils.getCurrentDateTime().orEmpty(),
-                deviceMacAddress = "1133557799"
+                deviceMacAddress = devId
             )
         )
     }
 
-    fun convertByteArrayToPublishRequest(connectorId: Int, it: ByteArray): Pair<String, String> {
+    fun convertByteArrayToPublishRequest(deviceMacAddress: String,connectorId: Int, it: ByteArray): Pair<String, String> {
         val chargingHistoryBody = ChargingHistoryBody(
             connectorId = connectorId,
-            evMacAddress = LastChargingSummaryUtils.getEVMacAddress(it),//need to send mac address without :
+            evMacAddress = LastChargingSummaryUtils.getEVMacAddress(it),
             chargingStartTime = LastChargingSummaryUtils.getChargingStartTime(it),
             chargingEndTime = LastChargingSummaryUtils.getChargingEndTime(it),
             totalChargingTime = LastChargingSummaryUtils.getTotalChargingTime(it),
@@ -220,10 +219,10 @@ class MQTTViewModel @Inject constructor(private val mqttClient: MQTTClient) : Vi
             customSessionEndReason = "NA",
             totalCost = LastChargingSummaryUtils.getTotalCost(it)
         )
-        return ServerConstants.TOPIC_A_TO_B to Gson().toJson(chargingHistoryBody)
+        return ServerConstants.getTOPIC_A_TO_B(deviceMacAddress) to Gson().toJson(chargingHistoryBody)
     }
 
-    fun sendGunStatusToMqtt(selectedGunNumber: Int, gunChargingState: String) {
+    fun sendGunStatusToMqtt(topic: String,selectedGunNumber: Int, gunChargingState: String) {
         if (isMqttConnected.value) {
             val lastChargingStatus = if (selectedGunNumber == 1) {
                 gun1LastChargingStatus.value
@@ -233,7 +232,7 @@ class MQTTViewModel @Inject constructor(private val mqttClient: MQTTClient) : Vi
 
             if (lastChargingStatus != gunChargingState) {
                 sendPublishMessageRequest(
-                    ServerConstants.TOPIC_A_TO_B to Gson().toJson(
+                    topic to Gson().toJson(
                         ConnectorStatusBody(
                             connectorId = selectedGunNumber,
                             connectorStatus = gunChargingState

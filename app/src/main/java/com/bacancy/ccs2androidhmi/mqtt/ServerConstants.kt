@@ -12,13 +12,11 @@ object ServerConstants {
     /*const val TOPIC_A_TO_B = "bacancy-technology/e-commissioning/device/info"
     const val TOPIC_B_TO_A = "UPS/1133557799/bTOa"*/
 
-
     const val TOPIC_A_TO_B = "bt/e-comm/D2:D1:D4:D3:D6:D5/status"
     const val TOPIC_B_TO_A = "bt/e-comm/D2:D1:D4:D3:D6:D5/control"
 
     fun getTOPIC_A_TO_B(devId:String):String{
-
-        return "bt/e-comm/${devId}/control"
+        return "bt/e-comm/${devId}/status"
     }
 
     fun getTOPIC_B_TO_A(devId:String):String{

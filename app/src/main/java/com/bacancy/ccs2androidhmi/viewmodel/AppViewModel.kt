@@ -19,6 +19,8 @@ import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter
 import com.bacancy.ccs2androidhmi.util.StateAndModesUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -30,6 +32,13 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
     val latestMiscInfo: LiveData<TbMiscInfo> = mainRepository.getLatestMiscInfo()
 
     val allErrorCodes: LiveData<List<TbErrorCodes>> = mainRepository.getAllErrorCodes()
+
+    private val _deviceMacAddress = MutableStateFlow("")
+    val deviceMacAddress = _deviceMacAddress.asStateFlow()
+
+    fun updateDeviceMacAddress(macAddress: String){
+        _deviceMacAddress.value = macAddress
+    }
 
     fun getUpdatedGunsChargingInfo(gunNumber: Int): LiveData<TbGunsChargingInfo> =
         mainRepository.getGunsChargingInfoByGunNumber(gunNumber)
