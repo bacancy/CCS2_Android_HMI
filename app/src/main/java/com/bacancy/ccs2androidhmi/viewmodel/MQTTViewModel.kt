@@ -201,13 +201,15 @@ class MQTTViewModel @Inject constructor(private val mqttClient: MQTTClient) : Vi
     fun getInitialChargerDetails(
         devId: String,
         chargerRatings: String,
-        chargerOutputs: String
+        chargerOutputs: String,
+        unitPrice: String
     ): Pair<String, String> {
         return ServerConstants.getTopicAtoB(devId) to Gson().toJson(
             ChargerDetailsBody(
                 chargerOutputs = chargerOutputs,
                 chargerRating = "${chargerRatings}KW",
                 configDateTime = DateTimeUtils.getCurrentDateTime().orEmpty(),
+                unitPrice = unitPrice,
                 deviceMacAddress = devId.addColonsToMacAddress()
             )
         )

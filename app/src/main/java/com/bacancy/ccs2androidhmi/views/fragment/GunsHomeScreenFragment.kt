@@ -13,9 +13,9 @@ import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentGunsHomeScreenBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
-import com.bacancy.ccs2androidhmi.mqtt.ServerConstants
 import com.bacancy.ccs2androidhmi.util.CommonUtils
 import com.bacancy.ccs2androidhmi.util.CommonUtils.INSIDE_LOCAL_START_STOP_SCREEN
+import com.bacancy.ccs2androidhmi.util.CommonUtils.UNIT_PRICE
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showChargingSummaryDialog
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_DENIED
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_TIMEOUT
@@ -107,6 +107,11 @@ class GunsHomeScreenFragment : BaseFragment() {
         appViewModel.latestMiscInfo.observe(viewLifecycleOwner) { latestMiscInfo ->
             if (latestMiscInfo != null) {
                 Log.i("TAG", "LatestMiscInfo: Unit Price = Rs.${latestMiscInfo.unitPrice}/kwh")
+                try {
+                    prefHelper.setStringValue(UNIT_PRICE, latestMiscInfo.unitPrice.toString())
+                } catch (e: Exception) {
+                    prefHelper.setStringValue(UNIT_PRICE, "0.0")
+                }
                 binding.tvUnitPrice.text =
                     getString(R.string.lbl_unit_price_per_kw, latestMiscInfo.unitPrice)
             }

@@ -30,6 +30,7 @@ object CommonUtils {
     const val CHARGER_RATINGS = "CHARGER_RATINGS"
     const val CHARGER_OUTPUTS = "CHARGER_OUTPUTS"
     const val IS_INITIAL_CHARGER_DETAILS_PUBLISHED = "IS_INITIAL_CHARGER_DETAILS_PUBLISHED"
+    const val UNIT_PRICE = "UNIT_PRICE"
 
     private fun swapAdjacentElements(array: MutableList<Int>): MutableList<Int> {
         for (i in 0 until array.size - 1 step 2) {

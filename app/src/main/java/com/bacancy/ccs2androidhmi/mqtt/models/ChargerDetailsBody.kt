@@ -6,6 +6,7 @@ data class ChargerDetailsBody(
     val chargerOutputs: String,
     val chargerRating: String,
     val configDateTime: String,
+    val unitPrice: String,
     val deviceMacAddress: String,
     val id: String = CHARGER_DETAILS_ID
 )
