@@ -18,12 +18,13 @@ import androidx.lifecycle.lifecycleScope
 import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.SerialPortBaseActivityNew
 import com.bacancy.ccs2androidhmi.databinding.ActivityHmiDashboardBinding
-import com.bacancy.ccs2androidhmi.mqtt.ServerConstants.getTOPIC_A_TO_B
-import com.bacancy.ccs2androidhmi.mqtt.ServerConstants.getTOPIC_B_TO_A
+import com.bacancy.ccs2androidhmi.mqtt.ServerConstants.getTopicAtoB
+import com.bacancy.ccs2androidhmi.mqtt.ServerConstants.getTopicBtoA
 import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_LOCAL_START_STOP
 import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_TEST_MODE
 import com.bacancy.ccs2androidhmi.util.CommonUtils
 import com.bacancy.ccs2androidhmi.util.CommonUtils.DEVICE_MAC_ADDRESS
+import com.bacancy.ccs2androidhmi.util.DateTimeUtils.convertDateFormat
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showPasswordPromptDialog
 import com.bacancy.ccs2androidhmi.util.LogUtils
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.NO_STATE
@@ -100,8 +101,8 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
                         prefHelper.setStringValue(DEVICE_MAC_ADDRESS, deviceMacAddress)
                     }
                     if (savedMacAddress.isNotEmpty() && isInternetConnected()) {
-                        val topicA = getTOPIC_A_TO_B(savedMacAddress)
-                        val topicB = getTOPIC_B_TO_A(savedMacAddress)
+                        val topicA = getTopicAtoB(savedMacAddress)
+                        val topicB = getTopicBtoA(savedMacAddress)
                         mqttViewModel.subscribeTopic(topicA)
                         mqttViewModel.subscribeTopic(topicB)
                     }
@@ -113,7 +114,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
     private fun startMQTTConnection() {
         lifecycleScope.launch {
             if (isInternetConnected()) {
-                mqttViewModel.connectToMQTT(this@HMIDashboardActivity)
+                mqttViewModel.connectToMQTT()
             }
         }
     }

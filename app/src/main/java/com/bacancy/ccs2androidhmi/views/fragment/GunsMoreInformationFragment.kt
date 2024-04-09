@@ -80,16 +80,19 @@ class GunsMoreInformationFragment : BaseFragment() {
             tbGunsChargingInfo.apply {
 
                 //Send GUN 1/2 Charging State
-                if (requireContext().isInternetConnected() && prefHelper.getStringValue(
-                        CommonUtils.DEVICE_MAC_ADDRESS,
-                        ""
-                    ).isNotEmpty()
-                ) {
-                    mqttViewModel.sendGunStatusToMqtt(
-                        prefHelper.getStringValue(
-                            CommonUtils.DEVICE_MAC_ADDRESS, ""
-                        ), selectedGunNumber, gunChargingState
-                    )
+                val chargerOutputs = prefHelper.getStringValue(CommonUtils.CHARGER_OUTPUTS, "")
+                if (selectedGunNumber == 1 || (selectedGunNumber == 2 && chargerOutputs == "2")) {
+                    if (requireContext().isInternetConnected() && prefHelper.getStringValue(
+                            CommonUtils.DEVICE_MAC_ADDRESS,
+                            ""
+                        ).isNotEmpty()
+                    ) {
+                        mqttViewModel.sendGunStatusToMqtt(
+                            prefHelper.getStringValue(
+                                CommonUtils.DEVICE_MAC_ADDRESS, ""
+                            ), selectedGunNumber, gunChargingState
+                        )
+                    }
                 }
 
                 when (gunChargingState) {

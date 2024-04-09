@@ -137,10 +137,15 @@ class GunsHomeScreenFragment : BaseFragment() {
         binding.tvGun1State.text = "(${tbGunsChargingInfo.gunChargingState})"
 
         //Send GUN 1 Charging State
-        if (requireContext().isInternetConnected() && prefHelper.getStringValue(CommonUtils.DEVICE_MAC_ADDRESS, "").isNotEmpty()) {
-            mqttViewModel.sendGunStatusToMqtt(prefHelper.getStringValue(
-                CommonUtils.DEVICE_MAC_ADDRESS, ""
-            ), 1, tbGunsChargingInfo.gunChargingState
+        if (requireContext().isInternetConnected() && prefHelper.getStringValue(
+                CommonUtils.DEVICE_MAC_ADDRESS,
+                ""
+            ).isNotEmpty()
+        ) {
+            mqttViewModel.sendGunStatusToMqtt(
+                prefHelper.getStringValue(
+                    CommonUtils.DEVICE_MAC_ADDRESS, ""
+                ), 1, tbGunsChargingInfo.gunChargingState
             )
         }
         when (tbGunsChargingInfo.gunChargingState) {
@@ -240,10 +245,19 @@ class GunsHomeScreenFragment : BaseFragment() {
         binding.tvGun2State.text = "(${tbGunsChargingInfo.gunChargingState})"
 
         //Send GUN 2 Charging State
-        if (requireContext().isInternetConnected() && prefHelper.getStringValue(CommonUtils.DEVICE_MAC_ADDRESS, "").isNotEmpty()) {
-            mqttViewModel.sendGunStatusToMqtt(prefHelper.getStringValue(
-                CommonUtils.DEVICE_MAC_ADDRESS, ""
-            ),2, tbGunsChargingInfo.gunChargingState)
+        val chargerOutputs = prefHelper.getStringValue(CommonUtils.CHARGER_OUTPUTS, "")
+        if (chargerOutputs == "2") {
+            if (requireContext().isInternetConnected() && prefHelper.getStringValue(
+                    CommonUtils.DEVICE_MAC_ADDRESS,
+                    ""
+                ).isNotEmpty()
+            ) {
+                mqttViewModel.sendGunStatusToMqtt(
+                    prefHelper.getStringValue(
+                        CommonUtils.DEVICE_MAC_ADDRESS, ""
+                    ), 2, tbGunsChargingInfo.gunChargingState
+                )
+            }
         }
         when (tbGunsChargingInfo.gunChargingState) {
             UNPLUGGED -> {
