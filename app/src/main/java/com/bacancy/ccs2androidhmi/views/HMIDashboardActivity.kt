@@ -25,6 +25,7 @@ import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_LOCAL_START_STOP
 import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_TEST_MODE
 import com.bacancy.ccs2androidhmi.util.CommonUtils
 import com.bacancy.ccs2androidhmi.util.CommonUtils.DEVICE_MAC_ADDRESS
+import com.bacancy.ccs2androidhmi.util.CommonUtils.getUniqueItems
 import com.bacancy.ccs2androidhmi.util.CommonUtils.toJsonString
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showPasswordPromptDialog
 import com.bacancy.ccs2androidhmi.util.LogUtils
@@ -56,7 +57,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
     private lateinit var gunsHomeScreenFragment: GunsHomeScreenFragment
     private lateinit var binding: ActivityHmiDashboardBinding
     val handler = Handler(Looper.getMainLooper())
-
+    private var sentErrorsList = mutableListOf<ErrorCodes>()
     private val mqttViewModel: MQTTViewModel by viewModels()
     private val TAG = "HMIDashboardActivity"
 
@@ -95,24 +96,24 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
     private fun observeAllErrorCodes() {
         appViewModel.allErrorCodes.observe(this) { errorCodes ->
-            if (errorCodes != null) {
-                Log.d(TAG, "observeAllErrorCodes: $errorCodes")
-                val updatedErrorCodesList = mutableListOf<ErrorCodes>()
-                errorCodes.forEach { tbErrorCodes ->
-                    updatedErrorCodesList.addAll(
-                        appViewModel.getAbnormalErrorCodesList(
-                            tbErrorCodes.sourceErrorCodes,
-                            tbErrorCodes.sourceId
-                        )
+            errorCodes?.let { codes ->
+                val savedMacAddress = prefHelper.getStringValue(DEVICE_MAC_ADDRESS, "")
+
+                val abnormalErrorsList = codes.flatMap { tbErrorCodes ->
+                    appViewModel.getAbnormalErrorCodesList(
+                        tbErrorCodes.sourceErrorCodes,
+                        tbErrorCodes.sourceId
                     )
-                }
-                if (updatedErrorCodesList.isNotEmpty()) {
-                    Log.d(
-                        TAG,
-                        "observeAllErrorCodes: Abnormal Errors List = $updatedErrorCodesList"
-                    )
-                    val savedMacAddress = prefHelper.getStringValue(DEVICE_MAC_ADDRESS, "")
-                    //mqttViewModel.sendErrorToServer(savedMacAddress,updatedErrorCodesList)
+                }.toMutableList()
+
+                if (abnormalErrorsList.isEmpty()) {
+                    sentErrorsList = mutableListOf()
+                } else {
+                    val uniqueErrorsList = getUniqueItems(abnormalErrorsList, sentErrorsList)
+                    if (uniqueErrorsList.isNotEmpty()) {
+                        mqttViewModel.sendErrorToServer(savedMacAddress, uniqueErrorsList)
+                        sentErrorsList.addAll(uniqueErrorsList)
+                    }
                 }
             }
         }

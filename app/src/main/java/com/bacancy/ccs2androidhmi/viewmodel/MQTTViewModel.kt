@@ -279,24 +279,26 @@ class MQTTViewModel @Inject constructor(private val mqttClient: MQTTClient) : Vi
         deviceMacAddress: String,
         updatedErrorCodesList: MutableList<ErrorCodes>
     ) {
-        updatedErrorCodesList.forEach { error ->
-            val connectorId = when (error.errorCodeStatus) {
-                "Charger" -> 0
-                "Gun 1" -> 1
-                "Gun 2" -> 2
-                else -> -1
-            }
-            if (connectorId != -1) {
-                val faultErrorsBody = FaultErrorsBody(
-                    connectorId = connectorId,
-                    configDateTime = DateTimeUtils.getCurrentDateTime().orEmpty(),
-                    errorMessage = error.errorCodeName,
-                    deviceMacAddress = deviceMacAddress
-                )
-                publishMessageToTopic(
-                    ServerConstants.getTopicAtoB(deviceMacAddress),
-                    faultErrorsBody.toJsonString()
-                )
+        if(updatedErrorCodesList.isNotEmpty()){
+            updatedErrorCodesList.forEach { error ->
+                val connectorId = when (error.errorCodeStatus) {
+                    "Charger" -> 0
+                    "Gun 1" -> 1
+                    "Gun 2" -> 2
+                    else -> -1
+                }
+                if (connectorId != -1) {
+                    val faultErrorsBody = FaultErrorsBody(
+                        connectorId = connectorId,
+                        configDateTime = DateTimeUtils.getCurrentDateTime().orEmpty(),
+                        errorMessage = error.errorCodeName,
+                        deviceMacAddress = deviceMacAddress
+                    )
+                    publishMessageToTopic(
+                        ServerConstants.getTopicAtoB(deviceMacAddress),
+                        faultErrorsBody.toJsonString()
+                    )
+                }
             }
         }
     }

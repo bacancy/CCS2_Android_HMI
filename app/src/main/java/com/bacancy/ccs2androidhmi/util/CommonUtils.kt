@@ -97,4 +97,15 @@ object CommonUtils {
         val gson = Gson()
         return gson.toJson(this)
     }
+
+    fun <T> getUniqueItems(list1: MutableList<T>, list2: MutableList<T>): MutableList<T> {
+        // Combine both lists into a single list
+        val combinedList = list1 + list2
+
+        // Group the items by their occurrence count
+        val groupedMap = combinedList.groupingBy { it }.eachCount()
+
+        // Filter the items which occur only once
+        return groupedMap.filter { it.value == 1 }.keys.toMutableList()
+    }
 }
