@@ -10,6 +10,7 @@ import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsDcMeterInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsLastChargingSummary
 import com.bacancy.ccs2androidhmi.db.entity.TbMiscInfo
+import com.bacancy.ccs2androidhmi.models.ErrorCodes
 import com.bacancy.ccs2androidhmi.repository.MainRepository
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils
 import com.bacancy.ccs2androidhmi.util.LastChargingSummaryUtils
@@ -331,5 +332,64 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
                 )
             )
         }
+    }
+
+    fun getAbnormalErrorCodesList(
+        errorCodeString: String,
+        type: Int
+    ): MutableList<ErrorCodes> {
+
+        // Reverse the string so that the LSB (Least Significant Bit) corresponds to the first index
+        val reversedString = errorCodeString.reversed()
+
+        val abnormalErrors = mutableListOf<StateAndModesUtils.GunsErrorCode>()
+        val normalErrors = mutableListOf<StateAndModesUtils.GunsErrorCode>()
+
+        for (index in StateAndModesUtils.GunsErrorCode.values().indices) {
+            val char = if (index < reversedString.length) reversedString[index] else '0'
+            val errorCode = StateAndModesUtils.GunsErrorCode.values()[index]
+            if (char == '1') {
+                abnormalErrors.add(errorCode)
+            } else {
+                normalErrors.add(errorCode)
+            }
+        }
+
+        val newErrorCodesList = mutableListOf<ErrorCodes>()
+        abnormalErrors.forEachIndexed { index, gunsErrorCode ->
+            when (type) {
+                0 -> {
+                    newErrorCodesList.add(
+                        ErrorCodes(
+                            gunsErrorCode.value,
+                            gunsErrorCode.name,
+                            "Charger"
+                        )
+                    )
+                }
+
+                1 -> {
+                    newErrorCodesList.add(
+                        ErrorCodes(
+                            gunsErrorCode.value,
+                            gunsErrorCode.name,
+                            "Gun 1"
+                        )
+                    )
+                }
+
+                2 -> {
+                    newErrorCodesList.add(
+                        ErrorCodes(
+                            gunsErrorCode.value,
+                            gunsErrorCode.name,
+                            "Gun 2"
+                        )
+                    )
+                }
+            }
+        }
+
+        return newErrorCodesList
     }
 }

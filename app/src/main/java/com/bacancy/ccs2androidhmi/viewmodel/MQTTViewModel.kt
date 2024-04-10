@@ -5,12 +5,16 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.bacancy.ccs2androidhmi.models.ErrorCodes
 import com.bacancy.ccs2androidhmi.mqtt.MQTTClient
 import com.bacancy.ccs2androidhmi.mqtt.ServerConstants
 import com.bacancy.ccs2androidhmi.mqtt.models.ChargerDetailsBody
 import com.bacancy.ccs2androidhmi.mqtt.models.ChargingHistoryBody
 import com.bacancy.ccs2androidhmi.mqtt.models.ConnectorStatusBody
+import com.bacancy.ccs2androidhmi.mqtt.models.FaultErrorsBody
+import com.bacancy.ccs2androidhmi.util.CommonUtils
 import com.bacancy.ccs2androidhmi.util.CommonUtils.addColonsToMacAddress
+import com.bacancy.ccs2androidhmi.util.CommonUtils.toJsonString
 import com.bacancy.ccs2androidhmi.util.DateTimeUtils
 import com.bacancy.ccs2androidhmi.util.DateTimeUtils.convertDateFormat
 import com.bacancy.ccs2androidhmi.util.LastChargingSummaryUtils
@@ -204,15 +208,15 @@ class MQTTViewModel @Inject constructor(private val mqttClient: MQTTClient) : Vi
         chargerOutputs: String,
         unitPrice: String
     ): Pair<String, String> {
-        return ServerConstants.getTopicAtoB(devId) to Gson().toJson(
-            ChargerDetailsBody(
-                chargerOutputs = chargerOutputs,
-                chargerRating = "${chargerRatings}KW",
-                configDateTime = DateTimeUtils.getCurrentDateTime().orEmpty(),
-                unitPrice = unitPrice,
-                deviceMacAddress = devId.addColonsToMacAddress()
-            )
-        )
+        return ServerConstants.getTopicAtoB(devId) to
+                ChargerDetailsBody(
+                    chargerOutputs = chargerOutputs,
+                    chargerRating = "${chargerRatings}KW",
+                    configDateTime = DateTimeUtils.getCurrentDateTime().orEmpty(),
+                    unitPrice = unitPrice,
+                    deviceMacAddress = devId.addColonsToMacAddress()
+                ).toJsonString()
+
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -224,7 +228,8 @@ class MQTTViewModel @Inject constructor(private val mqttClient: MQTTClient) : Vi
         val chargingHistoryBody = ChargingHistoryBody(
             connectorId = connectorId,
             evMacAddress = LastChargingSummaryUtils.getEVMacAddress(it),
-            chargingStartTime = LastChargingSummaryUtils.getChargingStartTime(it).convertDateFormat(),
+            chargingStartTime = LastChargingSummaryUtils.getChargingStartTime(it)
+                .convertDateFormat(),
             chargingEndTime = LastChargingSummaryUtils.getChargingEndTime(it).convertDateFormat(),
             totalChargingTime = LastChargingSummaryUtils.getTotalChargingTime(it),
             startSoc = LastChargingSummaryUtils.getStartSoc(it),
@@ -235,7 +240,7 @@ class MQTTViewModel @Inject constructor(private val mqttClient: MQTTClient) : Vi
             totalCost = LastChargingSummaryUtils.getTotalCost(it),
             deviceMacAddress = deviceMacAddress.addColonsToMacAddress()
         )
-        return ServerConstants.getTopicAtoB(deviceMacAddress) to Gson().toJson(chargingHistoryBody)
+        return ServerConstants.getTopicAtoB(deviceMacAddress) to chargingHistoryBody.toJsonString()
     }
 
     fun sendGunStatusToMqtt(
@@ -254,19 +259,44 @@ class MQTTViewModel @Inject constructor(private val mqttClient: MQTTClient) : Vi
                 publishMessageToTopic(
                     ServerConstants.getTopicAtoB(
                         deviceMacAddress
-                    ), Gson().toJson(
-                        ConnectorStatusBody(
-                            connectorId = selectedGunNumber,
-                            connectorStatus = gunChargingState,
-                            deviceMacAddress = deviceMacAddress.addColonsToMacAddress()
-                        )
-                    )
+                    ),
+                    ConnectorStatusBody(
+                        connectorId = selectedGunNumber,
+                        connectorStatus = gunChargingState,
+                        deviceMacAddress = deviceMacAddress.addColonsToMacAddress()
+                    ).toJsonString()
                 )
                 if (selectedGunNumber == 1) {
                     updateGun1LastChargingStatus(gunChargingState)
                 } else {
                     updateGun2LastChargingStatus(gunChargingState)
                 }
+            }
+        }
+    }
+
+    fun sendErrorToServer(
+        deviceMacAddress: String,
+        updatedErrorCodesList: MutableList<ErrorCodes>
+    ) {
+        updatedErrorCodesList.forEach { error ->
+            val connectorId = when (error.errorCodeStatus) {
+                "Charger" -> 0
+                "Gun 1" -> 1
+                "Gun 2" -> 2
+                else -> -1
+            }
+            if (connectorId != -1) {
+                val faultErrorsBody = FaultErrorsBody(
+                    connectorId = connectorId,
+                    configDateTime = DateTimeUtils.getCurrentDateTime().orEmpty(),
+                    errorMessage = error.errorCodeName,
+                    deviceMacAddress = deviceMacAddress
+                )
+                publishMessageToTopic(
+                    ServerConstants.getTopicAtoB(deviceMacAddress),
+                    faultErrorsBody.toJsonString()
+                )
             }
         }
     }

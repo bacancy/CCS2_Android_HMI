@@ -18,13 +18,14 @@ import androidx.lifecycle.lifecycleScope
 import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.SerialPortBaseActivityNew
 import com.bacancy.ccs2androidhmi.databinding.ActivityHmiDashboardBinding
+import com.bacancy.ccs2androidhmi.models.ErrorCodes
 import com.bacancy.ccs2androidhmi.mqtt.ServerConstants.getTopicAtoB
 import com.bacancy.ccs2androidhmi.mqtt.ServerConstants.getTopicBtoA
 import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_LOCAL_START_STOP
 import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_TEST_MODE
 import com.bacancy.ccs2androidhmi.util.CommonUtils
 import com.bacancy.ccs2androidhmi.util.CommonUtils.DEVICE_MAC_ADDRESS
-import com.bacancy.ccs2androidhmi.util.DateTimeUtils.convertDateFormat
+import com.bacancy.ccs2androidhmi.util.CommonUtils.toJsonString
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showPasswordPromptDialog
 import com.bacancy.ccs2androidhmi.util.LogUtils
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.NO_STATE
@@ -43,7 +44,6 @@ import com.bacancy.ccs2androidhmi.views.fragment.LocalStartStopFragment
 import com.bacancy.ccs2androidhmi.views.fragment.NewFaultInfoFragment
 import com.bacancy.ccs2androidhmi.views.fragment.TestModeHomeFragment
 import com.bacancy.ccs2androidhmi.views.listener.FragmentChangeListener
-import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -89,6 +89,33 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         observeMqttOperations()
 
         observeDeviceMacAddress()
+
+        observeAllErrorCodes()
+    }
+
+    private fun observeAllErrorCodes() {
+        appViewModel.allErrorCodes.observe(this) { errorCodes ->
+            if (errorCodes != null) {
+                Log.d(TAG, "observeAllErrorCodes: $errorCodes")
+                val updatedErrorCodesList = mutableListOf<ErrorCodes>()
+                errorCodes.forEach { tbErrorCodes ->
+                    updatedErrorCodesList.addAll(
+                        appViewModel.getAbnormalErrorCodesList(
+                            tbErrorCodes.sourceErrorCodes,
+                            tbErrorCodes.sourceId
+                        )
+                    )
+                }
+                if (updatedErrorCodesList.isNotEmpty()) {
+                    Log.d(
+                        TAG,
+                        "observeAllErrorCodes: Abnormal Errors List = $updatedErrorCodesList"
+                    )
+                    val savedMacAddress = prefHelper.getStringValue(DEVICE_MAC_ADDRESS, "")
+                    //mqttViewModel.sendErrorToServer(savedMacAddress,updatedErrorCodesList)
+                }
+            }
+        }
     }
 
     private fun observeDeviceMacAddress() {
@@ -201,22 +228,22 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
                 when (it) {
                     is Resource.Loading -> {}
                     is Resource.Success -> {
-                        Log.e(TAG, "topicSubscribeSuccess:  ${Gson().toJson(it.data)}")
+                        Log.e(TAG, "topicSubscribeSuccess:  ${it.data.toJsonString()}")
                     }
 
                     is Resource.Error -> {
-                        Log.e(TAG, "topicSubscribeError:  ${Gson().toJson(it.message)}")
+                        Log.e(TAG, "topicSubscribeError:  ${it.message.toJsonString()}")
                     }
 
                     is Resource.DeliveryComplete -> {
-                        Log.e(TAG, "topicSubscribeDeliveryComplete:  ${Gson().toJson(it.data)}")
+                        Log.e(TAG, "topicSubscribeDeliveryComplete:  ${it.data.toJsonString()}")
                     }
 
                     is Resource.IncomingMessage -> {
                         Log.e(
                             TAG,
-                            "topicSubscribeTopic:  ${Gson().toJson(it.topic)}  topicSubscribeMqttMessage:${
-                                Gson().toJson(it.message)
+                            "topicSubscribeTopic:  ${it.topic?.toJsonString()}  topicSubscribeMqttMessage:${
+                                it.message?.toJsonString()
                             }"
                         )
                     }

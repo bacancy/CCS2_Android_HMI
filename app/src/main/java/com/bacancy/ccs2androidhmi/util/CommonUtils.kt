@@ -2,6 +2,7 @@ package com.bacancy.ccs2androidhmi.util
 
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.getIntValueFromByte
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.hexStringToDecimal
+import com.google.gson.Gson
 import java.util.Locale
 import kotlin.random.Random
 
@@ -90,5 +91,10 @@ object CommonUtils {
 
     fun generateRandomNumber(): Int {
         return Random.nextInt(1, 101)
+    }
+
+    fun Any.toJsonString(): String {
+        val gson = Gson()
+        return gson.toJson(this)
     }
 }
