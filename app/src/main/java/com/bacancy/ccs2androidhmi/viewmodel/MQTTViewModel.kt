@@ -12,14 +12,13 @@ import com.bacancy.ccs2androidhmi.mqtt.models.ChargerDetailsBody
 import com.bacancy.ccs2androidhmi.mqtt.models.ChargingHistoryBody
 import com.bacancy.ccs2androidhmi.mqtt.models.ConnectorStatusBody
 import com.bacancy.ccs2androidhmi.mqtt.models.FaultErrorsBody
-import com.bacancy.ccs2androidhmi.util.CommonUtils
 import com.bacancy.ccs2androidhmi.util.CommonUtils.addColonsToMacAddress
 import com.bacancy.ccs2androidhmi.util.CommonUtils.toJsonString
 import com.bacancy.ccs2androidhmi.util.DateTimeUtils
 import com.bacancy.ccs2androidhmi.util.DateTimeUtils.convertDateFormat
+import com.bacancy.ccs2androidhmi.util.DateTimeUtils.convertToUtc
 import com.bacancy.ccs2androidhmi.util.LastChargingSummaryUtils
 import com.bacancy.ccs2androidhmi.util.Resource
-import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -212,7 +211,7 @@ class MQTTViewModel @Inject constructor(private val mqttClient: MQTTClient) : Vi
                 ChargerDetailsBody(
                     chargerOutputs = chargerOutputs,
                     chargerRating = "${chargerRatings}KW",
-                    configDateTime = DateTimeUtils.getCurrentDateTime().orEmpty(),
+                    configDateTime = DateTimeUtils.getCurrentDateTime()?.convertToUtc().orEmpty(),
                     unitPrice = unitPrice,
                     deviceMacAddress = devId.addColonsToMacAddress()
                 ).toJsonString()
@@ -229,8 +228,8 @@ class MQTTViewModel @Inject constructor(private val mqttClient: MQTTClient) : Vi
             connectorId = connectorId,
             evMacAddress = LastChargingSummaryUtils.getEVMacAddress(it),
             chargingStartTime = LastChargingSummaryUtils.getChargingStartTime(it)
-                .convertDateFormat(),
-            chargingEndTime = LastChargingSummaryUtils.getChargingEndTime(it).convertDateFormat(),
+                .convertDateFormat().convertToUtc().orEmpty(),
+            chargingEndTime = LastChargingSummaryUtils.getChargingEndTime(it).convertDateFormat().convertToUtc().orEmpty(),
             totalChargingTime = LastChargingSummaryUtils.getTotalChargingTime(it),
             startSoc = LastChargingSummaryUtils.getStartSoc(it),
             endSoc = LastChargingSummaryUtils.getEndSoc(it),
@@ -290,7 +289,7 @@ class MQTTViewModel @Inject constructor(private val mqttClient: MQTTClient) : Vi
                 if (connectorId != -1) {
                     val faultErrorsBody = FaultErrorsBody(
                         connectorId = connectorId,
-                        configDateTime = DateTimeUtils.getCurrentDateTime().orEmpty(),
+                        configDateTime = DateTimeUtils.getCurrentDateTime()?.convertToUtc().orEmpty(),
                         errorMessage = error.errorCodeName,
                         deviceMacAddress = deviceMacAddress
                     )
