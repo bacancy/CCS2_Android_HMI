@@ -26,7 +26,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_10sdp"
             android:background="?attr/dialogBackground"
-            android:digits="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
             android:focusable="true"
             android:gravity="center"
             android:hint="@string/hint_enter_your_pin"
