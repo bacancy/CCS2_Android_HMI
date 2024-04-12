@@ -61,7 +61,7 @@ object DialogUtils {
         alertDialog.show()
     }
 
-    fun Activity.showCustomDialog(message: String, onCloseClicked: () -> Unit) {
+    fun Activity.showCustomDialog(message: String, onCloseClicked: () -> Unit): Dialog {
         // Show custom dialog without creating a new class
         val dialog = Dialog(this, R.style.CustomAlertDialog)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -98,8 +98,7 @@ object DialogUtils {
             window.attributes = layoutParams
         }
 
-        // Show the dialog
-        dialog.show()
+        return dialog
     }
 
     fun Activity.showCustomDialogForAreYouSure(message: String, onYesClicked: () -> Unit, onNoClicked: () -> Unit) {

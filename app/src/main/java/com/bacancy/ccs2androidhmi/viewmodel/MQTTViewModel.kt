@@ -218,7 +218,6 @@ class MQTTViewModel @Inject constructor(private val mqttClient: MQTTClient) : Vi
 
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun convertByteArrayToPublishRequest(
         deviceMacAddress: String,
         connectorId: Int,

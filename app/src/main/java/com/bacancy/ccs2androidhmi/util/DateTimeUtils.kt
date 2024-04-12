@@ -18,16 +18,19 @@ object DateTimeUtils {
         return formatter.format(now)
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun String.convertDateFormat(): String {
-        val originalFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")
-        val targetFormatter = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val originalFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")
+            val targetFormatter = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)
 
-        // Parse the original date string
-        val date = LocalDateTime.parse(this, originalFormatter)
+            // Parse the original date string
+            val date = LocalDateTime.parse(this, originalFormatter)
 
-        // Format the parsed date in the desired format
-        return targetFormatter.format(date)
+            // Format the parsed date in the desired format
+            targetFormatter.format(date)
+        } else {
+            this
+        }
     }
 
     fun String.convertToUtc(): String? {

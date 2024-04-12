@@ -3,11 +3,8 @@ package com.bacancy.ccs2androidhmi.util
 import android.util.Log
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.toHex
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeout
-import kotlinx.coroutines.withTimeoutOrNull
 import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
 import java.io.InputStream
@@ -15,14 +12,16 @@ import java.io.OutputStream
 
 object ReadWriteUtil {
 
-    private const val DELAY_BETWEEN_READ_AND_WRITE = 500L
+    private const val DELAY_FOR_WAITING_100 = 100L
+    private const val DELAY_FOR_READING_500 = 500L
+    private const val DELAY_FOR_READING_300 = 300L
 
     suspend fun writeToMultipleHoldingRegisterNew(
         mOutputStream: OutputStream?,
         mInputStream: InputStream?,
         startAddress: Int,
         regValue: String,
-        onAuthDataReceived: (ByteArray?) -> Unit, onReadStopped: () -> Unit
+        onAuthDataReceived: (ByteArray?) -> Unit, onReadStopped: () -> Unit, responseSize: Int = 8
     ) {
         withContext(Dispatchers.IO) {
             val bufferedInputStream = BufferedInputStream(mInputStream)
@@ -30,45 +29,35 @@ object ReadWriteUtil {
 
             val writeRequestFrame: ByteArray =
                 ModBusUtils.createWriteMultipleRegistersRequestForPinAuthNew(startAddress, regValue)
-            withTimeout(3000) {
-                try {
-                    withContext(Dispatchers.IO) {
-                        bufferedOutputStream.write(writeRequestFrame)
-                        bufferedOutputStream.flush()
-                        delay(DELAY_BETWEEN_READ_AND_WRITE)
-                        Log.w(
-                            "TAG",
-                            "writeToMultipleHoldingRegisterNew: BufferedInputStream available bytes - ${bufferedInputStream.available()}"
-                        )
 
-                        val responseFrame = ByteArray(8)
-                        bufferedInputStream.mark(0)
-                        if (bufferedInputStream.available() > 0) {
-                            bufferedInputStream.read(responseFrame)
-                            Log.w(
-                                "TAG",
-                                "writeToMultipleHoldingRegisterNew: Response Frame - ${responseFrame.toHex()}"
-                            )
-                        }
-                        onAuthDataReceived(null)
-                    }
-                } catch (e: TimeoutCancellationException) {
-                    Log.e(
-                        "RWU",
-                        "writeToMultipleHoldingRegisterNew: TimeOutException = ${e.printStackTrace()}",
+            bufferedOutputStream.write(writeRequestFrame)
+            bufferedOutputStream.flush()
 
-                        )
-                    withContext(Dispatchers.IO) {
-                        delay(DELAY_BETWEEN_READ_AND_WRITE)
-                        val responseFrame = ByteArray(7)
-                        bufferedInputStream.mark(0)
-                        if (bufferedInputStream.available() > 0) {
-                            bufferedInputStream.read(responseFrame)
-                        }
-                        onAuthDataReceived(null)
-                    }
+            Log.w(
+                "TAG",
+                "writeToMultipleHoldingRegisterNew: BufferedInputStream available bytes - ${bufferedInputStream.available()}"
+            )
+            val startTime = System.currentTimeMillis()
+            while (true) {
+                val availableBytes = bufferedInputStream.available()
+                // Check if there's data available or if the timeout has been reached
+                if (availableBytes == responseSize || System.currentTimeMillis() - startTime > DELAY_FOR_READING_300) {
+                    break
                 }
+                // Short sleep to avoid busy-waiting (adjust as needed)
+                delay(DELAY_FOR_WAITING_100)
             }
+
+            val responseFrame = ByteArray(responseSize)
+            if (bufferedInputStream.available() > 0) {
+                bufferedInputStream.read(responseFrame)
+                Log.w(
+                    "TAG",
+                    "writeToMultipleHoldingRegisterNew: Response Frame - ${responseFrame.toHex()}"
+                )
+            }
+            onAuthDataReceived(null)
+
         }
     }
 
@@ -77,7 +66,7 @@ object ReadWriteUtil {
         mInputStream: InputStream?,
         startAddress: Int,
         regValue: Int,
-        onAuthDataReceived: (ByteArray?) -> Unit, onReadStopped: () -> Unit
+        onAuthDataReceived: (ByteArray?) -> Unit, onReadStopped: () -> Unit, responseSize: Int = 7
     ) {
         withContext(Dispatchers.IO) {
             val bufferedInputStream = BufferedInputStream(mInputStream)
@@ -85,49 +74,32 @@ object ReadWriteUtil {
 
             val writeRequestFrame: ByteArray =
                 ModBusUtils.createWriteSingleRegisterRequest(startAddress, regValue)
-            withTimeout(1000) {
-                try {
-                    withContext(Dispatchers.IO) {
-                        bufferedOutputStream.write(writeRequestFrame)
-                        bufferedOutputStream.flush()
+            bufferedOutputStream.write(writeRequestFrame)
+            bufferedOutputStream.flush()
 
-                        delay(DELAY_BETWEEN_READ_AND_WRITE)
-                        Log.w(
-                            "TAG",
-                            "writeToSingleHoldingRegisterNew: BufferedInputStream available bytes - ${bufferedInputStream.available()}"
-                        )
-                        val responseFrame = ByteArray(7)
-                        bufferedInputStream.mark(0)
-                        if (bufferedInputStream.available() > 0) {
-                            bufferedInputStream.read(responseFrame)
-                            Log.w(
-                                "TAG",
-                                "writeToSingleHoldingRegisterNew: Response Frame - ${responseFrame.toHex()}"
-                            )
-                        }
-                        onAuthDataReceived(null)
-                    }
-                } catch (e: Exception) {
-                    Log.e(
-                        "RWU",
-                        "writeToSingleHoldingRegisterNew: TimeOutException = ${e.printStackTrace()}",
-
-                        )
-                    try {
-                        withContext(Dispatchers.IO) {
-                            delay(DELAY_BETWEEN_READ_AND_WRITE)
-                            val responseFrame = ByteArray(7)
-                            bufferedInputStream.mark(0)
-                            if (bufferedInputStream.available() > 0) {
-                                bufferedInputStream.read(responseFrame)
-                            }
-                            onAuthDataReceived(null)
-                        }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
+            Log.w(
+                "TAG",
+                "writeToSingleHoldingRegisterNew: BufferedInputStream available bytes - ${bufferedInputStream.available()}"
+            )
+            val startTime = System.currentTimeMillis()
+            while (true) {
+                val availableBytes = bufferedInputStream.available()
+                // Check if there's data available or if the timeout has been reached
+                if (availableBytes == responseSize || System.currentTimeMillis() - startTime > DELAY_FOR_READING_300) {
+                    break
                 }
+                // Short sleep to avoid busy-waiting (adjust as needed)
+                delay(DELAY_FOR_WAITING_100)
             }
+            val responseFrame = ByteArray(responseSize)
+            if (bufferedInputStream.available() > 0) {
+                bufferedInputStream.read(responseFrame)
+                Log.w(
+                    "TAG",
+                    "writeToSingleHoldingRegisterNew: Response Frame - ${responseFrame.toHex()}"
+                )
+            }
+            onAuthDataReceived(null)
         }
     }
 
@@ -141,53 +113,51 @@ object ReadWriteUtil {
                     val bufferedInputStream = BufferedInputStream(mInputStream)
                     val bufferedOutputStream = BufferedOutputStream(mOutputStream)
 
-                    // Log: Writing request frame to output stream
                     Log.d(
                         "WriteReadFunction",
                         "Writing request frame to output stream: ${requestFrame.contentToString()}"
                     )
-                    withTimeoutOrNull(1000) {
-                        try {
-                            withContext(Dispatchers.IO) {
-                                bufferedOutputStream.write(requestFrame)
-                                bufferedOutputStream.flush()
-                            }
-                            // Log: Successfully wrote request frame to output stream
-                            Log.d(
-                                "WriteReadFunction",
-                                "Successfully wrote request frame to output stream"
-                            )
-                        } catch (e: TimeoutCancellationException) {
-                            e.printStackTrace()
-                            // Log: Timeout occurred while writing, retrying
-                            Log.e(
-                                "WriteReadFunction",
-                                "Timeout occurred while writing, retrying..."
-                            )
-                            withContext(Dispatchers.IO) {
-                                bufferedOutputStream.write(requestFrame)
-                                bufferedOutputStream.flush()
-                            }
-                            // Log: Successfully wrote request frame to output stream after timeout
-                            Log.d(
-                                "WriteReadFunction",
-                                "Successfully wrote request frame to output stream after timeout"
-                            )
+
+                    withContext(Dispatchers.IO) {
+                        bufferedOutputStream.write(requestFrame)
+                        bufferedOutputStream.flush()
+                    }
+                    Log.d(
+                        "WriteReadFunction",
+                        "Successfully wrote request frame to output stream"
+                    )
+
+                    val startTime = System.currentTimeMillis()
+                    while (true) {
+                        val availableBytes = bufferedInputStream.available()
+                        // Check if there's data available or if the timeout has been reached
+                        if (availableBytes == responseSize || System.currentTimeMillis() - startTime > DELAY_FOR_READING_500) {
+                            break
                         }
+                        // Short sleep to avoid busy-waiting (adjust as needed)
+                        delay(DELAY_FOR_WAITING_100)
                     }
 
-                    delay(DELAY_BETWEEN_READ_AND_WRITE) // waiting for 500ms between write and read
-
-                    val responseFrame = ByteArray(responseSize)
-
-                    bufferedInputStream.mark(0)
-
-                    var size = 0
-
                     if (bufferedInputStream.available() > 0) {
-                        size = bufferedInputStream.read(responseFrame)
+                        val responseFrame = ByteArray(responseSize)
+                        val size = bufferedInputStream.read(responseFrame)
+                        if (size > 0 && isValidResponse(responseFrame) && isValidCRCInResponse(
+                                responseFrame
+                            )
+                        ) {
+                            Log.i(
+                                "WriteReadFunction",
+                                "Valid response received, invoking onDataReceived"
+                            )
+                            onDataReceived(responseFrame)
+                        } else {
+                            Log.e(
+                                "WriteReadFunction",
+                                "Invalid response received, invoking onDataReceived for debugging"
+                            )
+                            onReadStopped()
+                        }
                     } else {
-                        // Log: No data available to read, stopping read operation
                         Log.i(
                             "WriteReadFunction",
                             "No data available to read, stopping read operation"
@@ -195,28 +165,10 @@ object ReadWriteUtil {
                         onReadStopped()
                         return@withContext
                     }
-                    if (size > 0 && isValidResponse(responseFrame) && isValidCRCInResponse(
-                            responseFrame
-                        )
-                    ) {
-                        // Log: Valid response received, invoking onDataReceived
-                        Log.i(
-                            "WriteReadFunction",
-                            "Valid response received, invoking onDataReceived"
-                        )
-                        onDataReceived(responseFrame)
-                    } else {
-                        // Log: Invalid response received, invoking onDataReceived for debugging
-                        Log.e(
-                            "WriteReadFunction",
-                            "Invalid response received, invoking onDataReceived for debugging"
-                        )
-                        onDataReceived(responseFrame)
-                    }
+
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                // Log: Exception occurred, printing stack trace
                 Log.e("WriteReadFunction", "Exception occurred, printing stack trace: ${e.message}")
             }
         }
@@ -234,9 +186,6 @@ object ReadWriteUtil {
             Log.d("RWU", "validateResponseCRC: Insufficient data for CRC")
             return false
         }
-
-        /*val receivedCRC = (responseBytes[responseBytes.size - 2].toInt() and 0xFF) or
-                ((responseBytes[responseBytes.size - 1].toInt() and 0xFF) shl 8)*/
 
         val responseData = responseBytes.copyOfRange(0, responseBytes.size - 2)
         val calculatedCRC = calculateCRC(responseData)
