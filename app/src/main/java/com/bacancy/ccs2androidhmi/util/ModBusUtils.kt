@@ -103,46 +103,6 @@ object ModBusUtils {
         return frame
     }
 
-    fun createWriteMultipleRegistersRequestForPinAuth(
-        startAddress: Int,
-        data: IntArray,
-        slaveAddress: Int = 1
-    ): ByteArray {
-        val quantity = data.size
-        val byteCount = 20 // Each register is 2 bytes
-        val frame = ByteArray(9 + byteCount)
-        frame[0] = slaveAddress.toByte()
-        frame[1] = WRITE_MULTIPLE_REGISTERS_FUNCTION_CODE
-        frame[2] = (startAddress shr 8).toByte()
-        frame[3] = startAddress.toByte()
-        frame[4] = (quantity shr 8).toByte()
-        frame[5] = 10.toByte()
-        frame[6] = byteCount.toByte()
-        var newData = data
-        if (data.size < 20) {
-            val result = IntArray(20) { 0 } // Initialize with zeros
-            val elementsToCopy = minOf(data.size, 20)
-            data.copyInto(result, endIndex = elementsToCopy)
-            newData = result
-        }
-
-        for (i in newData.indices step 2) {
-            val valueFirst = newData[i]
-            val valueSecond = newData[i + 1]
-            val j = if (i > 1) i - (i / 2) else 0
-            val valueIndex = 7 + 2 * j
-            frame[valueIndex] = valueFirst.toByte() // High byte of register value
-            frame[valueIndex + 1] = valueSecond.toByte() // Low byte of register value
-        }
-
-        val newCRC = calculateCRC(frame.dropLast(2).toByteArray())
-
-        frame[frame.size - 2] = newCRC[0]
-        frame[frame.size - 1] = newCRC[1]
-        Log.d("TAG", "createWriteMultipleRegistersRequestForPinAuth: FINAL HEX = ${frame.toHex()}")
-        return frame
-    }
-
     fun createWriteMultipleRegistersRequestForPinAuthNew(
         startAddress: Int,
         data: String,
@@ -159,7 +119,8 @@ object ModBusUtils {
         frame[5] = quantity.toByte()
         frame[6] = byteCount.toByte()
 
-        val newArray = hexStringToByteArray(data)
+        //val newArray = hexStringToByteArray(data)
+        val newArray = data.toByteArray(Charsets.UTF_8)
         val result = ByteArray(20)
         val elementsToCopy = minOf(newArray.size, 20)
         newArray.copyInto(result, endIndex = elementsToCopy)
