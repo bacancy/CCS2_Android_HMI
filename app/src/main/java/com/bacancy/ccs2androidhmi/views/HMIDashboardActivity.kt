@@ -99,6 +99,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
     }
 
     private fun observeChargerActiveDeactiveStates() {
+        prefHelper.setBoolean(CHARGER_ACTIVE_DEACTIVE_MESSAGE_RECD, true)//Called initially to get active state of charger
         mqttViewModel.setIsChargerActive(prefHelper.getBoolean(IS_CHARGER_ACTIVE, true))
         lifecycleScope.launch {
             mqttViewModel.isChargerActive.collect { isChargerActive ->
@@ -113,16 +114,12 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
     private fun showUIForDeactiveCharger() {
         binding.apply {
-            incToolbar.root.gone()
-            fragmentContainer.gone()
             lnrChargerInoperative.visible()
         }
     }
 
     private fun showUIForActiveCharger() {
         binding.apply {
-            incToolbar.root.visible()
-            fragmentContainer.visible()
             lnrChargerInoperative.gone()
         }
     }
@@ -374,6 +371,8 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
     private fun handleClicks() {
 
+        binding.lnrChargerInoperative.setOnClickListener {}
+
         binding.incToolbar.ivSwitchDarkMode.setOnClickListener {
             toggleTheme()
         }
@@ -486,8 +485,6 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
                 )
                 if (supportFragmentManager.backStackEntryCount > 1) {
                     supportFragmentManager.popBackStack()
-                } else {
-                    finish()
                 }
             }
         }
