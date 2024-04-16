@@ -3,6 +3,7 @@ package com.bacancy.ccs2androidhmi.util
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.getIntValueFromByte
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.hexStringToDecimal
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import java.util.Locale
 import kotlin.random.Random
 
@@ -32,6 +33,8 @@ object CommonUtils {
     const val CHARGER_OUTPUTS = "CHARGER_OUTPUTS"
     const val IS_INITIAL_CHARGER_DETAILS_PUBLISHED = "IS_INITIAL_CHARGER_DETAILS_PUBLISHED"
     const val UNIT_PRICE = "UNIT_PRICE"
+    const val IS_CHARGER_ACTIVE="IS_CHARGER_ACTIVE"
+    const val CHARGER_ACTIVE_DEACTIVE_MESSAGE_RECD = "CHARGER_MSG_RECD"
 
     private fun swapAdjacentElements(array: MutableList<Int>): MutableList<Int> {
         for (i in 0 until array.size - 1 step 2) {
@@ -96,6 +99,12 @@ object CommonUtils {
     fun Any.toJsonString(): String {
         val gson = Gson()
         return gson.toJson(this)
+    }
+
+    inline fun <reified T> String.fromJson(): T {
+        val gson = Gson()
+        val type = object : TypeToken<T>() {}.type
+        return gson.fromJson(this, type)
     }
 
     fun <T> getUniqueItems(list1: MutableList<T>, list2: MutableList<T>): MutableList<T> {

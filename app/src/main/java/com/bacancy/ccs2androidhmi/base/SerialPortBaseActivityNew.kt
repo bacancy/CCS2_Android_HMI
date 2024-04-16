@@ -13,6 +13,9 @@ import androidx.lifecycle.lifecycleScope
 import com.bacancy.ccs2androidhmi.HMIApp
 import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.db.entity.TbAcMeterInfo
+import com.bacancy.ccs2androidhmi.mqtt.ServerConstants
+import com.bacancy.ccs2androidhmi.mqtt.models.ChargerStatusConfirmationRequestBody
+import com.bacancy.ccs2androidhmi.util.CommonUtils
 import com.bacancy.ccs2androidhmi.util.CommonUtils.AC_METER_FRAG
 import com.bacancy.ccs2androidhmi.util.CommonUtils.AUTH_PIN_VALUE
 import com.bacancy.ccs2androidhmi.util.CommonUtils.CHARGER_OUTPUTS
@@ -27,8 +30,12 @@ import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_LOCAL_START
 import com.bacancy.ccs2androidhmi.util.CommonUtils.INSIDE_LOCAL_START_STOP_SCREEN
 import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_INITIAL_CHARGER_DETAILS_PUBLISHED
 import com.bacancy.ccs2androidhmi.util.CommonUtils.UNIT_PRICE
+import com.bacancy.ccs2androidhmi.util.CommonUtils.addColonsToMacAddress
 import com.bacancy.ccs2androidhmi.util.CommonUtils.generateRandomNumber
 import com.bacancy.ccs2androidhmi.util.CommonUtils.getCleanedMacAddress
+import com.bacancy.ccs2androidhmi.util.CommonUtils.toJsonString
+import com.bacancy.ccs2androidhmi.util.DateTimeUtils
+import com.bacancy.ccs2androidhmi.util.DateTimeUtils.convertToUtc
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showCustomDialog
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_DENIED
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_SUCCESS
@@ -138,13 +145,51 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
     private fun startReading() {
         lifecycleScope.launch {
             delay(mCommonDelay)
-            val isInTestMode = prefHelper.getBoolean("IS_IN_TEST_MODE", false)
-            if (isInTestMode) {
-                writeForTestModeOnOff(1)
+            val isChargerActiveDeactiveMessageRecd =
+                prefHelper.getBoolean(CommonUtils.CHARGER_ACTIVE_DEACTIVE_MESSAGE_RECD, false)
+            if (isChargerActiveDeactiveMessageRecd) {
+                prefHelper.setBoolean(CommonUtils.CHARGER_ACTIVE_DEACTIVE_MESSAGE_RECD, false)
+                val isChargerActive = prefHelper.getBoolean(CommonUtils.IS_CHARGER_ACTIVE, true)
+                Log.i(
+                    TAG,
+                    "startReading: MAKING CHARGER - ${if (isChargerActive) "OPERATIVE" else "INOPERATIVE"}"
+                )
+                writeForChargerActiveDeactive()
             } else {
-                writeForTestModeOnOff(0)
+                readMiscInfo()
             }
         }
+    }
+
+    private fun writeForChargerActiveDeactive() {
+        val isChargerActive = prefHelper.getBoolean(CommonUtils.IS_CHARGER_ACTIVE, true)
+        Log.i(TAG, "writeForChargerActiveDeactive Request Started - $isChargerActive")
+        lifecycleScope.launch(Dispatchers.IO) {
+            ReadWriteUtil.writeToSingleHoldingRegisterNew(
+                mOutputStream,
+                mInputStream,
+                442,
+                if (isChargerActive) 1 else 0, {
+                    Log.d(TAG, "writeForChargerActiveDeactive: Response Got")
+                    sendChargerStatusConfirmation(isChargerActive)
+                    lifecycleScope.launch {
+                        readMiscInfo()
+                    }
+                }, {})
+        }
+    }
+
+    private fun sendChargerStatusConfirmation(isChargerActive: Boolean) {
+        val deviceMacAddress = prefHelper.getStringValue(DEVICE_MAC_ADDRESS, "")
+        val statusMessage = if (isChargerActive) "activated" else "deactivated"
+        val chargerStatusConfirmationRequestBody = ChargerStatusConfirmationRequestBody(
+            deviceMacAddress = deviceMacAddress.addColonsToMacAddress(),
+            message = "Charger $statusMessage successfully",
+            statusDateTime = DateTimeUtils.getCurrentDateTime()?.convertToUtc().orEmpty()
+        )
+        val topic = ServerConstants.getTopicAtoB(deviceMacAddress)
+        val jsonString = chargerStatusConfirmationRequestBody.toJsonString()
+        mqttViewModel.publishMessageToTopic(topic, jsonString)
     }
 
     private suspend fun readMiscInfo() {
@@ -194,7 +239,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
 
     private fun resetReadStopCount() {
         readStopCount = 0
-        if(dialog.isShowing){
+        if (dialog.isShowing) {
             dialog.dismiss()
         }
     }
@@ -312,7 +357,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
             }
             resetReadStopCount()
         } else {
-            if(dialog.isShowing){
+            if (dialog.isShowing) {
                 dialog.dismiss()
             }
         }
@@ -600,7 +645,16 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
         } else if (prefHelper.getStringValue(AUTH_PIN_VALUE, "").isNotEmpty()) {
             writeForPinAuthorization(prefHelper.getStringValue(AUTH_PIN_VALUE, ""))
         } else {
-            startReading()
+            setupTestMode()
+        }
+    }
+
+    private fun setupTestMode() {
+        val isInTestMode = prefHelper.getBoolean("IS_IN_TEST_MODE", false)
+        if (isInTestMode) {
+            writeForTestModeOnOff(1)
+        } else {
+            writeForTestModeOnOff(0)
         }
     }
 
@@ -902,8 +956,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                     Log.d(TAG, "writeForTestModeOnOff: Response Got")
                     if (isTestMode != 1) {
                         lifecycleScope.launch {
-                            delay(500)
-                            readMiscInfo()
+                            startReading()
                         }
                     } else {
                         checkGunsTestModeValuesChanges()
@@ -941,8 +994,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                     )
                 }
             } else {
-                delay(mCommonDelay)
-                readMiscInfo()
+                startReading()
             }
         }
     }
@@ -990,7 +1042,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                             }
                             prefHelper.setBoolean("IS_GUN_CURRENT_CHANGED", false)
                         } else {
-                            readMiscInfo()
+                            startReading()
                         }
                     }
                 }, {})

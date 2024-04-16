@@ -21,10 +21,14 @@ import com.bacancy.ccs2androidhmi.databinding.ActivityHmiDashboardBinding
 import com.bacancy.ccs2androidhmi.models.ErrorCodes
 import com.bacancy.ccs2androidhmi.mqtt.ServerConstants.getTopicAtoB
 import com.bacancy.ccs2androidhmi.mqtt.ServerConstants.getTopicBtoA
+import com.bacancy.ccs2androidhmi.mqtt.models.ActiveDeactiveChargerMessageBody
 import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_LOCAL_START_STOP
 import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_TEST_MODE
 import com.bacancy.ccs2androidhmi.util.CommonUtils
+import com.bacancy.ccs2androidhmi.util.CommonUtils.CHARGER_ACTIVE_DEACTIVE_MESSAGE_RECD
 import com.bacancy.ccs2androidhmi.util.CommonUtils.DEVICE_MAC_ADDRESS
+import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_CHARGER_ACTIVE
+import com.bacancy.ccs2androidhmi.util.CommonUtils.fromJson
 import com.bacancy.ccs2androidhmi.util.CommonUtils.getUniqueItems
 import com.bacancy.ccs2androidhmi.util.CommonUtils.toJsonString
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showPasswordPromptDialog
@@ -88,8 +92,6 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         startMQTTConnection()
 
         observeMqttOperations()
-
-        observeDeviceMacAddress()
 
         observeAllErrorCodes()
     }
@@ -171,6 +173,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
                     is Resource.Loading -> {}
                     is Resource.Success -> {
                         LogUtils.debugLog("MQTTWorker - Connect onSuccess")
+                        observeDeviceMacAddress()
                     }
 
                     is Resource.Error -> {
@@ -179,6 +182,16 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
                     is Resource.IncomingMessage -> {
                         LogUtils.debugLog("MQTTWorker - Connect Data Arrived from Topic=${it.topic} Message=${it.message}")
+                        prefHelper.getStringValue(DEVICE_MAC_ADDRESS, "").let { savedMacAddress ->
+                            when (it.topic) {
+                                getTopicBtoA(savedMacAddress) -> {
+                                    it.message.toString().fromJson<ActiveDeactiveChargerMessageBody>().let { messageBody ->
+                                        prefHelper.setBoolean(IS_CHARGER_ACTIVE, messageBody.message == "ACTIVE")
+                                        prefHelper.setBoolean(CHARGER_ACTIVE_DEACTIVE_MESSAGE_RECD,true)
+                                    }
+                                }
+                            }
+                        }
                     }
 
                     is Resource.DeliveryComplete -> {
@@ -210,14 +223,23 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         lifecycleScope.launch {
             mqttViewModel.publishMessageState.collect {
                 when (it) {
-                    is Resource.Loading -> {}
-                    is Resource.Success -> {}
+                    is Resource.Loading -> {
+                        Log.d(TAG, "observePublishState: Loading")
+                    }
+                    is Resource.Success -> {
+                        Log.d(TAG, "observePublishState: Success")
+                    }
                     is Resource.Error -> {
+                        Log.d(TAG, "observePublishState: Error - $it.message")
                         LogUtils.errorLog(it.message)
                     }
 
-                    is Resource.DeliveryComplete -> {}
-                    is Resource.IncomingMessage -> {}
+                    is Resource.DeliveryComplete -> {
+                        Log.d(TAG, "observePublishState: DeliveryComplete")
+                    }
+                    is Resource.IncomingMessage -> {
+                        Log.d(TAG, "observePublishState: IncomingMessage")
+                    }
                 }
             }
         }
