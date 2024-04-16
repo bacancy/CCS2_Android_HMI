@@ -103,7 +103,7 @@ class MQTTViewModel @Inject constructor(private val mqttClient: MQTTClient) : Vi
                     }
 
                     override fun messageArrived(topic: String?, message: MqttMessage?) {
-                        Log.e(
+                        Log.i(
                             "checkMessageArrived",
                             "MQTT  ${topic.toString()}  message: ${message.toString()}"
                         )

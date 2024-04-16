@@ -130,9 +130,9 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
                     if (savedMacAddress.isEmpty()) {
                         prefHelper.setStringValue(DEVICE_MAC_ADDRESS, deviceMacAddress)
                     }
-                    if (savedMacAddress.isNotEmpty() && isInternetConnected()) {
-                        val topicA = getTopicAtoB(savedMacAddress)
-                        val topicB = getTopicBtoA(savedMacAddress)
+                    if (isInternetConnected()) {
+                        val topicA = getTopicAtoB(deviceMacAddress)
+                        val topicB = getTopicBtoA(deviceMacAddress)
                         mqttViewModel.subscribeTopic(topicA)
                         mqttViewModel.subscribeTopic(topicB)
                     }
