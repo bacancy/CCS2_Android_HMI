@@ -28,6 +28,7 @@ import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_DC_METER_FRAG
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_LAST_CHARGING_SUMMARY_FRAG
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_LOCAL_START
 import com.bacancy.ccs2androidhmi.util.CommonUtils.INSIDE_LOCAL_START_STOP_SCREEN
+import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_CHARGER_ACTIVE
 import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_INITIAL_CHARGER_DETAILS_PUBLISHED
 import com.bacancy.ccs2androidhmi.util.CommonUtils.UNIT_PRICE
 import com.bacancy.ccs2androidhmi.util.CommonUtils.addColonsToMacAddress
@@ -156,7 +157,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 )
                 writeForChargerActiveDeactive()
             } else {
-                readMiscInfo()
+                readChargerActiveDeactiveState()
             }
         }
     }
@@ -173,7 +174,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                     Log.d(TAG, "writeForChargerActiveDeactive: Response Got")
                     sendChargerStatusConfirmation(isChargerActive)
                     lifecycleScope.launch {
-                        readMiscInfo()
+                        readChargerActiveDeactiveState()
                     }
                 }, {})
         }
@@ -191,6 +192,49 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
         val topic = ServerConstants.getTopicAtoB(deviceMacAddress)
         val jsonString = chargerStatusConfirmationRequestBody.toJsonString()
         mqttViewModel.publishMessageToTopic(topic, jsonString)
+    }
+
+    private suspend fun readChargerActiveDeactiveState() {
+        Log.i(
+            TAG,
+            "readChargerActiveDeactiveState: Request Sent - ${
+                ModbusRequestFrames.getChargerActiveDeactiveStateRequestFrame().toHex()
+            }"
+        )
+        ReadWriteUtil.writeRequestAndReadResponse(
+            mOutputStream,
+            mInputStream,
+            ResponseSizes.SINGLE_REGISTER_RESPONSE_SIZE,
+            ModbusRequestFrames.getChargerActiveDeactiveStateRequestFrame(),
+            onDataReceived = {
+                if (it.toHex()
+                        .startsWith(ModBusUtils.HOLDING_REGISTERS_CORRECT_RESPONSE_BITS)
+                ) {
+                    resetReadStopCount()
+                    Log.d(TAG, "readChargerActiveDeactiveState: Response = ${it.toHex()}")
+                    val state = ModbusTypeConverter.getIntValueFromBytes(
+                        it,
+                        3,
+                        4
+                    )
+                    Log.d(
+                        TAG, "readChargerActiveDeactiveState: Data = $state"
+                    )
+                    prefHelper.setBoolean(IS_CHARGER_ACTIVE, state == 1)
+                    mqttViewModel.setIsChargerActive(state == 1)
+                } else {
+                    Log.e(TAG, "readChargerActiveDeactiveState: Error Response - ${it.toHex()}")
+                }
+                lifecycleScope.launch {
+                    readMiscInfo()
+                }
+            }, onReadStopped = {
+                showReadStoppedUI()
+                Log.e(TAG, "readChargerActiveDeactiveState: OnReadStopped Called")
+                lifecycleScope.launch {
+                    readMiscInfo()
+                }
+            })
     }
 
     private suspend fun readMiscInfo() {
