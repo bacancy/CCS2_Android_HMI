@@ -51,17 +51,23 @@ class MQTTViewModel @Inject constructor(private val mqttClient: MQTTClient) : Vi
     val mqttConnectState: StateFlow<Resource<Unit>> = _mqttConnectState
 
     private val _isMqttConnected = MutableStateFlow(false)
+    private val _isChargerActive = MutableStateFlow(true)
     private val _publishMessageRequest = MutableStateFlow("" to "")
     private val _gun1LastChargingStatus = MutableStateFlow("")
     private val _gun2LastChargingStatus = MutableStateFlow("")
 
     val isMqttConnected = _isMqttConnected.asStateFlow()
+    val isChargerActive = _isChargerActive.asStateFlow()
     val publishMessageRequest = _publishMessageRequest.asStateFlow()
     private val gun1LastChargingStatus = _gun1LastChargingStatus.asStateFlow()
     private val gun2LastChargingStatus = _gun2LastChargingStatus.asStateFlow()
 
     fun setIsMqttConnected(isConnected: Boolean) {
         _isMqttConnected.value = isConnected
+    }
+
+    fun setIsChargerActive(isChargerActive: Boolean) {
+        _isChargerActive.value = isChargerActive
     }
 
     fun sendPublishMessageRequest(request: Pair<String, String>) {

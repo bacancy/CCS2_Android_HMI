@@ -180,6 +180,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
     }
 
     private fun sendChargerStatusConfirmation(isChargerActive: Boolean) {
+        mqttViewModel.setIsChargerActive(isChargerActive)
         val deviceMacAddress = prefHelper.getStringValue(DEVICE_MAC_ADDRESS, "")
         val statusMessage = if (isChargerActive) "activated" else "deactivated"
         val chargerStatusConfirmationRequestBody = ChargerStatusConfirmationRequestBody(

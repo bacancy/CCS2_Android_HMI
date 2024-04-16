@@ -94,6 +94,37 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         observeMqttOperations()
 
         observeAllErrorCodes()
+
+        observeChargerActiveDeactiveStates()
+    }
+
+    private fun observeChargerActiveDeactiveStates() {
+        mqttViewModel.setIsChargerActive(prefHelper.getBoolean(IS_CHARGER_ACTIVE, true))
+        lifecycleScope.launch {
+            mqttViewModel.isChargerActive.collect { isChargerActive ->
+                if (isChargerActive) {
+                    showUIForActiveCharger()
+                } else {
+                    showUIForDeactiveCharger()
+                }
+            }
+        }
+    }
+
+    private fun showUIForDeactiveCharger() {
+        binding.apply {
+            incToolbar.root.gone()
+            fragmentContainer.gone()
+            lnrChargerInoperative.visible()
+        }
+    }
+
+    private fun showUIForActiveCharger() {
+        binding.apply {
+            incToolbar.root.visible()
+            fragmentContainer.visible()
+            lnrChargerInoperative.gone()
+        }
     }
 
     private fun observeAllErrorCodes() {
@@ -185,10 +216,18 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
                         prefHelper.getStringValue(DEVICE_MAC_ADDRESS, "").let { savedMacAddress ->
                             when (it.topic) {
                                 getTopicBtoA(savedMacAddress) -> {
-                                    it.message.toString().fromJson<ActiveDeactiveChargerMessageBody>().let { messageBody ->
-                                        prefHelper.setBoolean(IS_CHARGER_ACTIVE, messageBody.message == "ACTIVE")
-                                        prefHelper.setBoolean(CHARGER_ACTIVE_DEACTIVE_MESSAGE_RECD,true)
-                                    }
+                                    it.message.toString()
+                                        .fromJson<ActiveDeactiveChargerMessageBody>()
+                                        .let { messageBody ->
+                                            prefHelper.setBoolean(
+                                                IS_CHARGER_ACTIVE,
+                                                messageBody.message == "ACTIVE"
+                                            )
+                                            prefHelper.setBoolean(
+                                                CHARGER_ACTIVE_DEACTIVE_MESSAGE_RECD,
+                                                true
+                                            )
+                                        }
                                 }
                             }
                         }
@@ -226,9 +265,11 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
                     is Resource.Loading -> {
                         Log.d(TAG, "observePublishState: Loading")
                     }
+
                     is Resource.Success -> {
                         Log.d(TAG, "observePublishState: Success")
                     }
+
                     is Resource.Error -> {
                         Log.d(TAG, "observePublishState: Error - $it.message")
                         LogUtils.errorLog(it.message)
@@ -237,6 +278,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
                     is Resource.DeliveryComplete -> {
                         Log.d(TAG, "observePublishState: DeliveryComplete")
                     }
+
                     is Resource.IncomingMessage -> {
                         Log.d(TAG, "observePublishState: IncomingMessage")
                     }
