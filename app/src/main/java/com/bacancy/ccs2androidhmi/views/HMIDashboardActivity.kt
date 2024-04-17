@@ -1,6 +1,10 @@
 package com.bacancy.ccs2androidhmi.views
 
+import android.app.Activity
 import android.app.UiModeManager
+import android.app.admin.DevicePolicyManager
+import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -8,6 +12,7 @@ import android.os.Looper
 import android.util.Log
 import android.view.WindowManager
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatDelegate
@@ -22,6 +27,7 @@ import com.bacancy.ccs2androidhmi.models.ErrorCodes
 import com.bacancy.ccs2androidhmi.mqtt.ServerConstants.getTopicAtoB
 import com.bacancy.ccs2androidhmi.mqtt.ServerConstants.getTopicBtoA
 import com.bacancy.ccs2androidhmi.mqtt.models.ActiveDeactiveChargerMessageBody
+import com.bacancy.ccs2androidhmi.receiver.MyDeviceAdminReceiver
 import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_LOCAL_START_STOP
 import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_TEST_MODE
 import com.bacancy.ccs2androidhmi.util.CommonUtils
@@ -81,8 +87,6 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
         handleBackStackChanges()
 
-        startClockTimer()
-
         observeLatestMiscInfo()
 
         showHideBackIcon()
@@ -96,6 +100,8 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         observeAllErrorCodes()
 
         observeChargerActiveDeactiveStates()
+
+        requestDeviceAdminPermissions()
     }
 
     private fun observeChargerActiveDeactiveStates() {
@@ -122,6 +128,39 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         binding.apply {
             lnrChargerInoperative.gone()
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        startClockTimer()
+    }
+
+    private fun isActiveAdmin(): Boolean {
+        val devicePolicyManager = getSystemService(Context.DEVICE_POLICY_SERVICE)
+                as DevicePolicyManager
+        return devicePolicyManager.isDeviceOwnerApp(packageName)
+    }
+
+    private fun requestDeviceAdminPermissions() {
+        val launcher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                Log.d(TAG, "requestDeviceAdminPermissions: isActiveAdmin = ${isActiveAdmin()}")
+                val devicePolicyManager = getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
+                //devicePolicyManager.setLockTaskPackages(MyDeviceAdminReceiver.getComponentName(this@HMIDashboardActivity), arrayOf(packageName))
+                startLockTask()
+            }
+        }
+
+        val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN).apply {
+            putExtra(
+                DevicePolicyManager.EXTRA_DEVICE_ADMIN,
+                MyDeviceAdminReceiver.getComponentName(this@HMIDashboardActivity)
+            )
+            putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, "Need to make this app as Device Admin to provide better experience.")
+        }
+        launcher.launch(intent)
     }
 
     private fun observeAllErrorCodes() {
@@ -403,6 +442,10 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
         binding.incToolbar.ivFaultInfo.setOnClickListener {
             addNewFragment(NewFaultInfoFragment())
+        }
+
+        binding.incToolbar.ivLogo.setOnClickListener {
+            stopLockTask()
         }
     }
 
