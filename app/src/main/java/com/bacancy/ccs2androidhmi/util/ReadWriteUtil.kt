@@ -24,40 +24,51 @@ object ReadWriteUtil {
         onAuthDataReceived: (ByteArray?) -> Unit, onReadStopped: () -> Unit, responseSize: Int = 8
     ) {
         withContext(Dispatchers.IO) {
-            val bufferedInputStream = BufferedInputStream(mInputStream)
-            val bufferedOutputStream = BufferedOutputStream(mOutputStream)
+            try {
+                val bufferedInputStream = BufferedInputStream(mInputStream)
+                val bufferedOutputStream = BufferedOutputStream(mOutputStream)
 
-            val writeRequestFrame: ByteArray =
-                ModBusUtils.createWriteMultipleRegistersRequestForPinAuthNew(startAddress, regValue)
+                val writeRequestFrame: ByteArray =
+                    ModBusUtils.createWriteMultipleRegistersRequestForPinAuthNew(
+                        startAddress,
+                        regValue
+                    )
 
-            bufferedOutputStream.write(writeRequestFrame)
-            bufferedOutputStream.flush()
+                bufferedOutputStream.write(writeRequestFrame)
+                bufferedOutputStream.flush()
 
-            Log.w(
-                "TAG",
-                "writeToMultipleHoldingRegisterNew: BufferedInputStream available bytes - ${bufferedInputStream.available()}"
-            )
-            val startTime = System.currentTimeMillis()
-            while (true) {
-                val availableBytes = bufferedInputStream.available()
-                // Check if there's data available or if the timeout has been reached
-                if (availableBytes == responseSize || System.currentTimeMillis() - startTime > DELAY_FOR_READING_300) {
-                    break
-                }
-                // Short sleep to avoid busy-waiting (adjust as needed)
-                delay(DELAY_FOR_WAITING_100)
-            }
-
-            val responseFrame = ByteArray(responseSize)
-            if (bufferedInputStream.available() > 0) {
-                bufferedInputStream.read(responseFrame)
                 Log.w(
                     "TAG",
-                    "writeToMultipleHoldingRegisterNew: Response Frame - ${responseFrame.toHex()}"
+                    "writeToMultipleHoldingRegisterNew: BufferedInputStream available bytes - ${bufferedInputStream.available()}"
                 )
-            }
-            onAuthDataReceived(null)
+                val startTime = System.currentTimeMillis()
+                while (true) {
+                    val availableBytes = bufferedInputStream.available()
+                    // Check if there's data available or if the timeout has been reached
+                    if (availableBytes == responseSize || System.currentTimeMillis() - startTime > DELAY_FOR_READING_300) {
+                        break
+                    }
+                    // Short sleep to avoid busy-waiting (adjust as needed)
+                    delay(DELAY_FOR_WAITING_100)
+                }
 
+                val responseFrame = ByteArray(responseSize)
+                if (bufferedInputStream.available() > 0) {
+                    bufferedInputStream.read(responseFrame)
+                    Log.w(
+                        "TAG",
+                        "writeToMultipleHoldingRegisterNew: Response Frame - ${responseFrame.toHex()}"
+                    )
+                }
+                onAuthDataReceived(null)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Log.e(
+                    "writeToMultipleHoldingRegisterNew",
+                    "Exception occurred, printing stack trace: ${e.message}"
+                )
+                onAuthDataReceived(null)
+            }
         }
     }
 
@@ -69,37 +80,46 @@ object ReadWriteUtil {
         onAuthDataReceived: (ByteArray?) -> Unit, onReadStopped: () -> Unit, responseSize: Int = 7
     ) {
         withContext(Dispatchers.IO) {
-            val bufferedInputStream = BufferedInputStream(mInputStream)
-            val bufferedOutputStream = BufferedOutputStream(mOutputStream)
+            try {
+                val bufferedInputStream = BufferedInputStream(mInputStream)
+                val bufferedOutputStream = BufferedOutputStream(mOutputStream)
 
-            val writeRequestFrame: ByteArray =
-                ModBusUtils.createWriteSingleRegisterRequest(startAddress, regValue)
-            bufferedOutputStream.write(writeRequestFrame)
-            bufferedOutputStream.flush()
+                val writeRequestFrame: ByteArray =
+                    ModBusUtils.createWriteSingleRegisterRequest(startAddress, regValue)
+                bufferedOutputStream.write(writeRequestFrame)
+                bufferedOutputStream.flush()
 
-            Log.w(
-                "TAG",
-                "writeToSingleHoldingRegisterNew: BufferedInputStream available bytes - ${bufferedInputStream.available()}"
-            )
-            val startTime = System.currentTimeMillis()
-            while (true) {
-                val availableBytes = bufferedInputStream.available()
-                // Check if there's data available or if the timeout has been reached
-                if (availableBytes == responseSize || System.currentTimeMillis() - startTime > DELAY_FOR_READING_300) {
-                    break
-                }
-                // Short sleep to avoid busy-waiting (adjust as needed)
-                delay(DELAY_FOR_WAITING_100)
-            }
-            val responseFrame = ByteArray(responseSize)
-            if (bufferedInputStream.available() > 0) {
-                bufferedInputStream.read(responseFrame)
                 Log.w(
                     "TAG",
-                    "writeToSingleHoldingRegisterNew: Response Frame - ${responseFrame.toHex()}"
+                    "writeToSingleHoldingRegisterNew: BufferedInputStream available bytes - ${bufferedInputStream.available()}"
                 )
+                val startTime = System.currentTimeMillis()
+                while (true) {
+                    val availableBytes = bufferedInputStream.available()
+                    // Check if there's data available or if the timeout has been reached
+                    if (availableBytes == responseSize || System.currentTimeMillis() - startTime > DELAY_FOR_READING_300) {
+                        break
+                    }
+                    // Short sleep to avoid busy-waiting (adjust as needed)
+                    delay(DELAY_FOR_WAITING_100)
+                }
+                val responseFrame = ByteArray(responseSize)
+                if (bufferedInputStream.available() > 0) {
+                    bufferedInputStream.read(responseFrame)
+                    Log.w(
+                        "TAG",
+                        "writeToSingleHoldingRegisterNew: Response Frame - ${responseFrame.toHex()}"
+                    )
+                }
+                onAuthDataReceived(null)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Log.e(
+                    "writeToSingleHoldingRegisterNew",
+                    "Exception occurred, printing stack trace: ${e.message}"
+                )
+                onAuthDataReceived(null)
             }
-            onAuthDataReceived(null)
         }
     }
 

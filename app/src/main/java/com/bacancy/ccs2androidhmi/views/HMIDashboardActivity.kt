@@ -101,7 +101,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
         observeChargerActiveDeactiveStates()
 
-        //requestDeviceAdminPermissions()
+        requestDeviceAdminPermissions()
     }
 
     private fun observeChargerActiveDeactiveStates() {
