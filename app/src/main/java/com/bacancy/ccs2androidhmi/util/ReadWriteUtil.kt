@@ -170,6 +170,7 @@ object ReadWriteUtil {
             } catch (e: Exception) {
                 e.printStackTrace()
                 Log.e("WriteReadFunction", "Exception occurred, printing stack trace: ${e.message}")
+                onReadStopped()
             }
         }
     }

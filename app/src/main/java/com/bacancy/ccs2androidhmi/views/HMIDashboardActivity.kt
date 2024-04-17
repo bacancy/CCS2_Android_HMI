@@ -101,12 +101,11 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
         observeChargerActiveDeactiveStates()
 
-        requestDeviceAdminPermissions()
+        //requestDeviceAdminPermissions()
     }
 
     private fun observeChargerActiveDeactiveStates() {
         prefHelper.setBoolean(CHARGER_ACTIVE_DEACTIVE_MESSAGE_RECD, true)//Called initially to get active state of charger
-        mqttViewModel.setIsChargerActive(prefHelper.getBoolean(IS_CHARGER_ACTIVE, true))
         lifecycleScope.launch {
             mqttViewModel.isChargerActive.collect { isChargerActive ->
                 if (isChargerActive) {
@@ -147,8 +146,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         ) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 Log.d(TAG, "requestDeviceAdminPermissions: isActiveAdmin = ${isActiveAdmin()}")
-                val devicePolicyManager = getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
-                //devicePolicyManager.setLockTaskPackages(MyDeviceAdminReceiver.getComponentName(this@HMIDashboardActivity), arrayOf(packageName))
+                getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
                 startLockTask()
             }
         }

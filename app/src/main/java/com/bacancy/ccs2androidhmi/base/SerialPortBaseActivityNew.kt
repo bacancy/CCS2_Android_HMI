@@ -150,7 +150,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 prefHelper.getBoolean(CommonUtils.CHARGER_ACTIVE_DEACTIVE_MESSAGE_RECD, false)
             if (isChargerActiveDeactiveMessageRecd) {
                 prefHelper.setBoolean(CommonUtils.CHARGER_ACTIVE_DEACTIVE_MESSAGE_RECD, false)
-                val isChargerActive = prefHelper.getBoolean(CommonUtils.IS_CHARGER_ACTIVE, true)
+                val isChargerActive = prefHelper.getBoolean(IS_CHARGER_ACTIVE, true)
                 Log.i(
                     TAG,
                     "startReading: MAKING CHARGER - ${if (isChargerActive) "OPERATIVE" else "INOPERATIVE"}"
@@ -163,7 +163,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
     }
 
     private fun writeForChargerActiveDeactive() {
-        val isChargerActive = prefHelper.getBoolean(CommonUtils.IS_CHARGER_ACTIVE, true)
+        val isChargerActive = prefHelper.getBoolean(IS_CHARGER_ACTIVE, true)
         Log.i(TAG, "writeForChargerActiveDeactive Request Started - $isChargerActive")
         lifecycleScope.launch(Dispatchers.IO) {
             ReadWriteUtil.writeToSingleHoldingRegisterNew(
