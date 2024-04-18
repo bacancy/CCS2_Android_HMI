@@ -1,8 +1,6 @@
 package com.bacancy.ccs2androidhmi.viewmodel
 
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bacancy.ccs2androidhmi.models.ErrorCodes
@@ -217,7 +215,7 @@ class MQTTViewModel @Inject constructor(private val mqttClient: MQTTClient) : Vi
                 ChargerDetailsBody(
                     chargerOutputs = chargerOutputs,
                     chargerRating = "${chargerRatings}KW",
-                    configDateTime = DateTimeUtils.getCurrentDateTime()?.convertToUtc().orEmpty(),
+                    configDateTime = DateTimeUtils.getCurrentDateTime().convertToUtc().orEmpty(),
                     unitPrice = unitPrice,
                     deviceMacAddress = devId.addColonsToMacAddress()
                 ).toJsonString()
@@ -294,7 +292,7 @@ class MQTTViewModel @Inject constructor(private val mqttClient: MQTTClient) : Vi
                 if (connectorId != -1) {
                     val faultErrorsBody = FaultErrorsBody(
                         connectorId = connectorId,
-                        configDateTime = DateTimeUtils.getCurrentDateTime()?.convertToUtc().orEmpty(),
+                        configDateTime = DateTimeUtils.getCurrentDateTime().convertToUtc().orEmpty(),
                         errorMessage = error.errorCodeName,
                         deviceMacAddress = deviceMacAddress
                     )

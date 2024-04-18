@@ -3,16 +3,13 @@ package com.bacancy.ccs2androidhmi.util
 import android.icu.text.SimpleDateFormat
 import android.icu.util.TimeZone
 import android.os.Build
-import androidx.annotation.RequiresApi
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 object DateTimeUtils {
 
-    private const val DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss"
+    private const val DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX"
 
-    fun getCurrentDateTime(dateTimeFormat: String = DATE_TIME_FORMAT): String? {
+    fun getCurrentDateTime(dateTimeFormat: String = DATE_TIME_FORMAT): String {
         val now = System.currentTimeMillis()
         val formatter = SimpleDateFormat(dateTimeFormat, Locale.getDefault())
         return formatter.format(now)
@@ -20,11 +17,11 @@ object DateTimeUtils {
 
     fun String.convertDateFormat(): String {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val originalFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")
-            val targetFormatter = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)
+            val originalFormatter = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
+            val targetFormatter = SimpleDateFormat(DATE_TIME_FORMAT, Locale.getDefault())
 
             // Parse the original date string
-            val date = LocalDateTime.parse(this, originalFormatter)
+            val date = originalFormatter.parse(this)
 
             // Format the parsed date in the desired format
             targetFormatter.format(date)

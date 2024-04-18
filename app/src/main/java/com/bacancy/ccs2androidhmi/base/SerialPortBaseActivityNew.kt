@@ -187,7 +187,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
         val chargerStatusConfirmationRequestBody = ChargerStatusConfirmationRequestBody(
             deviceMacAddress = deviceMacAddress.addColonsToMacAddress(),
             message = "Charger $statusMessage successfully",
-            statusDateTime = DateTimeUtils.getCurrentDateTime()?.convertToUtc().orEmpty()
+            statusDateTime = DateTimeUtils.getCurrentDateTime().convertToUtc().orEmpty()
         )
         val topic = ServerConstants.getTopicAtoB(deviceMacAddress)
         val jsonString = chargerStatusConfirmationRequestBody.toJsonString()
