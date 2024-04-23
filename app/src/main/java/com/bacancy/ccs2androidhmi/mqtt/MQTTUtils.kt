@@ -7,4 +7,5 @@ object MQTTUtils {
     const val FAULT_ERRORS_ID = "T004"
     const val ACTIVE_DEACTIVE_CHARGER_ID = "T005"
     const val CHARGER_STATUS_CONFIRMATION_ID = "T006"
+    const val SHOW_POPUP_ID = "T007"
 }

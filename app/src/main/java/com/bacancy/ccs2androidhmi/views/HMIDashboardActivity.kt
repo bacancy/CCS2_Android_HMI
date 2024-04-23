@@ -1,6 +1,7 @@
 package com.bacancy.ccs2androidhmi.views
 
 import android.app.Activity
+import android.app.Dialog
 import android.app.UiModeManager
 import android.app.admin.DevicePolicyManager
 import android.content.Context
@@ -24,9 +25,12 @@ import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.SerialPortBaseActivityNew
 import com.bacancy.ccs2androidhmi.databinding.ActivityHmiDashboardBinding
 import com.bacancy.ccs2androidhmi.models.ErrorCodes
+import com.bacancy.ccs2androidhmi.mqtt.MQTTUtils.ACTIVE_DEACTIVE_CHARGER_ID
+import com.bacancy.ccs2androidhmi.mqtt.MQTTUtils.SHOW_POPUP_ID
 import com.bacancy.ccs2androidhmi.mqtt.ServerConstants.getTopicAtoB
 import com.bacancy.ccs2androidhmi.mqtt.ServerConstants.getTopicBtoA
 import com.bacancy.ccs2androidhmi.mqtt.models.ActiveDeactiveChargerMessageBody
+import com.bacancy.ccs2androidhmi.mqtt.models.ShowPopupMessageBody
 import com.bacancy.ccs2androidhmi.receiver.MyDeviceAdminReceiver
 import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_LOCAL_START_STOP
 import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_TEST_MODE
@@ -37,6 +41,7 @@ import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_CHARGER_ACTIVE
 import com.bacancy.ccs2androidhmi.util.CommonUtils.fromJson
 import com.bacancy.ccs2androidhmi.util.CommonUtils.getUniqueItems
 import com.bacancy.ccs2androidhmi.util.CommonUtils.toJsonString
+import com.bacancy.ccs2androidhmi.util.DialogUtils.showCustomDialog
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showPasswordPromptDialog
 import com.bacancy.ccs2androidhmi.util.LogUtils
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.NO_STATE
@@ -64,6 +69,7 @@ import java.util.Locale
 @AndroidEntryPoint
 class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener {
 
+    private lateinit var serverPopup: Dialog
     private lateinit var gunsHomeScreenFragment: GunsHomeScreenFragment
     private lateinit var binding: ActivityHmiDashboardBinding
     val handler = Handler(Looper.getMainLooper())
@@ -101,11 +107,14 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
         observeChargerActiveDeactiveStates()
 
-        requestDeviceAdminPermissions()
+        //requestDeviceAdminPermissions()
     }
 
     private fun observeChargerActiveDeactiveStates() {
-        prefHelper.setBoolean(CHARGER_ACTIVE_DEACTIVE_MESSAGE_RECD, true)//Called initially to get active state of charger
+        prefHelper.setBoolean(
+            CHARGER_ACTIVE_DEACTIVE_MESSAGE_RECD,
+            true
+        )//Called initially to get active state of charger
         lifecycleScope.launch {
             mqttViewModel.isChargerActive.collect { isChargerActive ->
                 if (isChargerActive) {
@@ -156,7 +165,10 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
                 DevicePolicyManager.EXTRA_DEVICE_ADMIN,
                 MyDeviceAdminReceiver.getComponentName(this@HMIDashboardActivity)
             )
-            putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, "Need to make this app as Device Admin to provide better experience.")
+            putExtra(
+                DevicePolicyManager.EXTRA_ADD_EXPLANATION,
+                "Need to make this app as Device Admin to provide better experience."
+            )
         }
         launcher.launch(intent)
     }
@@ -250,19 +262,53 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
                         prefHelper.getStringValue(DEVICE_MAC_ADDRESS, "").let { savedMacAddress ->
                             when (it.topic) {
                                 getTopicBtoA(savedMacAddress) -> {
-                                    it.message.toString()
-                                        .fromJson<ActiveDeactiveChargerMessageBody>()
-                                        .let { messageBody ->
-                                            prefHelper.setBoolean(
-                                                IS_CHARGER_ACTIVE,
-                                                messageBody.message == "ACTIVE"
-                                            )
-                                            prefHelper.setBoolean(
-                                                CHARGER_ACTIVE_DEACTIVE_MESSAGE_RECD,
-                                                true
-                                            )
+                                    val jsonMessage = it.message.toString()
+                                    when {
+                                        jsonMessage.contains(ACTIVE_DEACTIVE_CHARGER_ID) -> {
+                                            it.message.toString()
+                                                .fromJson<ActiveDeactiveChargerMessageBody>()
+                                                .let { messageBody ->
+                                                    Log.d(
+                                                        TAG,
+                                                        "observeConnectState: IncomingMessage - ACTIVE_DEACTIVE_CHARGER_ID - $messageBody"
+                                                    )
+                                                    prefHelper.setBoolean(
+                                                        IS_CHARGER_ACTIVE,
+                                                        messageBody.message == "ACTIVE"
+                                                    )
+                                                    prefHelper.setBoolean(
+                                                        CHARGER_ACTIVE_DEACTIVE_MESSAGE_RECD,
+                                                        true
+                                                    )
+                                                }
                                         }
+
+                                        jsonMessage.contains(SHOW_POPUP_ID) -> {
+                                            it.message.toString()
+                                                .fromJson<ShowPopupMessageBody>()
+                                                .let { messageBody ->
+                                                    Log.d(
+                                                        TAG,
+                                                        "observeConnectState: IncomingMessage - SHOW_POPUP_ID - $messageBody"
+                                                    )
+                                                    serverPopup =
+                                                        showCustomDialog(messageBody.dialogMessage) {
+                                                            popupHandler.removeCallbacks(
+                                                                dismissDialogRunnable
+                                                            )
+                                                        }
+                                                    serverPopup.show()
+                                                    if (messageBody.dialogDuration.isNotEmpty() && messageBody.dialogDuration.toInt() > 0) {
+                                                        hideServerPopupAfterGivenSeconds(messageBody.dialogDuration.toInt())
+                                                    }
+                                                }
+                                        }
+
+                                        else -> {}
+                                    }
                                 }
+
+                                else -> {}
                             }
                         }
                     }
@@ -273,6 +319,13 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
                 }
             }
         }
+    }
+
+    private val popupHandler = Handler(Looper.getMainLooper())
+    private val dismissDialogRunnable = Runnable { serverPopup.dismiss() }
+
+    private fun hideServerPopupAfterGivenSeconds(seconds: Int) {
+        popupHandler.postDelayed(dismissDialogRunnable, seconds * 1000L)
     }
 
     private fun observeDisconnectState() {
