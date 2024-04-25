@@ -24,6 +24,7 @@ import androidx.lifecycle.lifecycleScope
 import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.SerialPortBaseActivityNew
 import com.bacancy.ccs2androidhmi.databinding.ActivityHmiDashboardBinding
+import com.bacancy.ccs2androidhmi.db.entity.TbNotifications
 import com.bacancy.ccs2androidhmi.models.ErrorCodes
 import com.bacancy.ccs2androidhmi.mqtt.MQTTUtils.ACTIVE_DEACTIVE_CHARGER_ID
 import com.bacancy.ccs2androidhmi.mqtt.MQTTUtils.SHOW_POPUP_ID
@@ -41,6 +42,8 @@ import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_CHARGER_ACTIVE
 import com.bacancy.ccs2androidhmi.util.CommonUtils.fromJson
 import com.bacancy.ccs2androidhmi.util.CommonUtils.getUniqueItems
 import com.bacancy.ccs2androidhmi.util.CommonUtils.toJsonString
+import com.bacancy.ccs2androidhmi.util.DateTimeUtils
+import com.bacancy.ccs2androidhmi.util.DateTimeUtils.convertToUtc
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showCustomDialog
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showPasswordPromptDialog
 import com.bacancy.ccs2androidhmi.util.LogUtils
@@ -54,6 +57,7 @@ import com.bacancy.ccs2androidhmi.util.gone
 import com.bacancy.ccs2androidhmi.util.invisible
 import com.bacancy.ccs2androidhmi.util.visible
 import com.bacancy.ccs2androidhmi.viewmodel.MQTTViewModel
+import com.bacancy.ccs2androidhmi.views.fragment.AppNotificationsFragment
 import com.bacancy.ccs2androidhmi.views.fragment.FirmwareVersionInfoFragment
 import com.bacancy.ccs2androidhmi.views.fragment.GunsHomeScreenFragment
 import com.bacancy.ccs2androidhmi.views.fragment.LocalStartStopFragment
@@ -61,7 +65,11 @@ import com.bacancy.ccs2androidhmi.views.fragment.NewFaultInfoFragment
 import com.bacancy.ccs2androidhmi.views.fragment.TestModeHomeFragment
 import com.bacancy.ccs2androidhmi.views.listener.FragmentChangeListener
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -291,15 +299,27 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
                                                         TAG,
                                                         "observeConnectState: IncomingMessage - SHOW_POPUP_ID - $messageBody"
                                                     )
-                                                    serverPopup =
-                                                        showCustomDialog(messageBody.dialogMessage) {
-                                                            popupHandler.removeCallbacks(
-                                                                dismissDialogRunnable
+                                                    withContext(Dispatchers.IO) {
+                                                        appViewModel.insertNotifications(
+                                                            TbNotifications(
+                                                                notificationMessage = messageBody.dialogMessage,
+                                                                notificationReceiveTime =
+                                                                DateTimeUtils.getCurrentDateTime()
+                                                                    .convertToUtc().orEmpty()
                                                             )
+                                                        )
+                                                    }
+                                                    withContext(Dispatchers.Main){
+                                                        serverPopup =
+                                                            showCustomDialog(messageBody.dialogMessage, messageBody.dialogType.lowercase()) {
+                                                                popupHandler.removeCallbacks(
+                                                                    dismissDialogRunnable
+                                                                )
+                                                            }
+                                                        serverPopup.show()
+                                                        if (messageBody.dialogDuration.isNotEmpty() && messageBody.dialogDuration.toInt() > 0) {
+                                                            hideServerPopupAfterGivenSeconds(messageBody.dialogDuration.toInt())
                                                         }
-                                                    serverPopup.show()
-                                                    if (messageBody.dialogDuration.isNotEmpty() && messageBody.dialogDuration.toInt() > 0) {
-                                                        hideServerPopupAfterGivenSeconds(messageBody.dialogDuration.toInt())
                                                     }
                                                 }
                                         }

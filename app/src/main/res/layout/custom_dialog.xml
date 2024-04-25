@@ -14,8 +14,9 @@
         android:padding="@dimen/_20sdp">
 
         <ImageView
-            android:layout_width="@dimen/_15sdp"
-            android:layout_height="@dimen/_15sdp"
+            android:id="@+id/ivMessageType"
+            android:layout_width="@dimen/_17sdp"
+            android:layout_height="@dimen/_17sdp"
             app:tint="?attr/viewThemeColor"
             android:src="@drawable/ic_info" />
 
