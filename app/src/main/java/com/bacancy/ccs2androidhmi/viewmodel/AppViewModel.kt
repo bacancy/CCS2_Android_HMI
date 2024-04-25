@@ -10,6 +10,7 @@ import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsDcMeterInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsLastChargingSummary
 import com.bacancy.ccs2androidhmi.db.entity.TbMiscInfo
+import com.bacancy.ccs2androidhmi.db.entity.TbNotifications
 import com.bacancy.ccs2androidhmi.models.ErrorCodes
 import com.bacancy.ccs2androidhmi.repository.MainRepository
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils
@@ -33,6 +34,7 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
     val latestMiscInfo: LiveData<TbMiscInfo> = mainRepository.getLatestMiscInfo()
 
     val allErrorCodes: LiveData<List<TbErrorCodes>> = mainRepository.getAllErrorCodes()
+    val allNotifications: LiveData<List<TbNotifications>> = mainRepository.getAllNotifications()
 
     private val _deviceMacAddress = MutableStateFlow("")
     val deviceMacAddress = _deviceMacAddress.asStateFlow()
