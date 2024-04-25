@@ -100,6 +100,12 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
         }
     }
 
+    fun insertNotifications(tbNotifications: TbNotifications) {
+        viewModelScope.launch {
+            mainRepository.insertNotifications(tbNotifications)
+        }
+    }
+
     fun insertMiscInfoInDB(it: ByteArray) {
         insertMiscInfo(
             TbMiscInfo(

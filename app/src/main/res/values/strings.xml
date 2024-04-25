@@ -168,5 +168,7 @@
     <string name="msg_internet_connection_unavailable">Internet connection unavailable.</string>
     <string name="lbl_charger_ninoperative">CHARGER\nINOPERATIVE</string>
     <string name="msg_charger_is_inoperative">Charger is inoperative.</string>
+    <string name="lbl_no_notifications_found">No Notifications Found.</string>
+    <string name="lbl_notifications">Notifications</string>
 
 </resources>
