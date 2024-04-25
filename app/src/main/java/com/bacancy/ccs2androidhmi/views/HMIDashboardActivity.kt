@@ -495,6 +495,10 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
             addNewFragment(NewFaultInfoFragment())
         }
 
+        binding.incToolbar.ivNotifications.setOnClickListener {
+            addNewFragment(AppNotificationsFragment())
+        }
+
         binding.incToolbar.ivLogo.setOnClickListener {
             stopLockTask()
         }
