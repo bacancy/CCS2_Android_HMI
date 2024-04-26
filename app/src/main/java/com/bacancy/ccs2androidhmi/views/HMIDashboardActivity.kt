@@ -116,6 +116,8 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         observeChargerActiveDeactiveStates()
 
         //requestDeviceAdminPermissions()
+
+        //TEST COMMIT
     }
 
     private fun observeChargerActiveDeactiveStates() {
