@@ -117,7 +117,6 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
         //requestDeviceAdminPermissions()
 
-        //TEST COMMIT
     }
 
     private fun observeChargerActiveDeactiveStates() {
@@ -211,17 +210,15 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
     private fun observeDeviceMacAddress() {
         lifecycleScope.launch {
             appViewModel.deviceMacAddress.collect { deviceMacAddress ->
-                Log.d(TAG, "observeDeviceMacAddress: 1 - $deviceMacAddress")
-                if (deviceMacAddress.isNotEmpty()) {
-                    val savedMacAddress = prefHelper.getStringValue(DEVICE_MAC_ADDRESS, "")
-                    if (savedMacAddress.isEmpty()) {
-                        prefHelper.setStringValue(DEVICE_MAC_ADDRESS, deviceMacAddress)
-                    }
+                if (deviceMacAddress.isNotEmpty() && prefHelper.getStringValue(
+                        DEVICE_MAC_ADDRESS,
+                        ""
+                    ).isEmpty()
+                ) {
+                    prefHelper.setStringValue(DEVICE_MAC_ADDRESS, deviceMacAddress)
                     if (isInternetConnected()) {
-                        val topicA = getTopicAtoB(deviceMacAddress)
-                        val topicB = getTopicBtoA(deviceMacAddress)
-                        mqttViewModel.subscribeTopic(topicA)
-                        mqttViewModel.subscribeTopic(topicB)
+                        mqttViewModel.subscribeTopic(getTopicAtoB(deviceMacAddress))
+                        mqttViewModel.subscribeTopic(getTopicBtoA(deviceMacAddress))
                     }
                 }
             }
