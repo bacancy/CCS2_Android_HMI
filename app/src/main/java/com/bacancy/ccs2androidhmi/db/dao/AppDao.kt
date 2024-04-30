@@ -5,15 +5,15 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.bacancy.ccs2androidhmi.db.entity.TbChargingHistory
 import com.bacancy.ccs2androidhmi.db.entity.TbAcMeterInfo
+import com.bacancy.ccs2androidhmi.db.entity.TbChargingHistory
 import com.bacancy.ccs2androidhmi.db.entity.TbErrorCodes
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsDcMeterInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsLastChargingSummary
 import com.bacancy.ccs2androidhmi.db.entity.TbMiscInfo
+import com.bacancy.ccs2androidhmi.db.entity.TbNotifications
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.StateFlow
 
 @Dao
 interface AppDao {
@@ -65,5 +65,11 @@ interface AppDao {
 
     @Query("SELECT * FROM tbErrorCodes")
     fun getAllErrorCodes(): LiveData<List<TbErrorCodes>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertNotifications(tbNotifications: TbNotifications): Long
+
+    @Query("SELECT * FROM tbNotifications ORDER BY notificationId DESC LIMIT 20")
+    fun getAllNotifications(): LiveData<List<TbNotifications>>
 
 }

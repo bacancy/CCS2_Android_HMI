@@ -61,7 +61,11 @@ object DialogUtils {
         alertDialog.show()
     }
 
-    fun Activity.showCustomDialog(message: String, onCloseClicked: () -> Unit) {
+    fun Activity.showCustomDialog(
+        message: String,
+        messageType: String = "info",
+        onCloseClicked: () -> Unit
+    ): Dialog {
         // Show custom dialog without creating a new class
         val dialog = Dialog(this, R.style.CustomAlertDialog)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -75,6 +79,19 @@ object DialogUtils {
         // Initialize your custom views and handle interactions here
         binding.apply {
             tvMessage.text = message
+            when (messageType) {
+                "info" -> {
+                    ivMessageType.visible()
+                    ivMessageType.setImageResource(R.drawable.ic_info)
+                }
+                "warning" -> {
+                    ivMessageType.visible()
+                    ivMessageType.setImageResource(R.drawable.ic_warning)
+                }
+                else -> {
+                    ivMessageType.invisible()
+                }
+            }
             btnClose.setOnClickListener {
                 dialog.dismiss()
                 onCloseClicked()
@@ -98,8 +115,7 @@ object DialogUtils {
             window.attributes = layoutParams
         }
 
-        // Show the dialog
-        dialog.show()
+        return dialog
     }
 
     fun Activity.showCustomDialogForAreYouSure(message: String, onYesClicked: () -> Unit, onNoClicked: () -> Unit) {

@@ -10,17 +10,21 @@ import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentGunsMoreInfoScreenBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
+import com.bacancy.ccs2androidhmi.mqtt.ServerConstants
 import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_PIN_AUTHORIZATION
+import com.bacancy.ccs2androidhmi.util.CommonUtils
 import com.bacancy.ccs2androidhmi.util.CommonUtils.AUTH_PIN_VALUE
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showPinAuthorizationDialog
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.SELECTED_GUN
+import com.bacancy.ccs2androidhmi.util.NetworkUtils.isInternetConnected
 import com.bacancy.ccs2androidhmi.util.PrefHelper
 import com.bacancy.ccs2androidhmi.util.ToastUtils.showCustomToast
 import com.bacancy.ccs2androidhmi.util.gone
 import com.bacancy.ccs2androidhmi.util.invisible
 import com.bacancy.ccs2androidhmi.util.visible
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
+import com.bacancy.ccs2androidhmi.viewmodel.MQTTViewModel
 import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
 import com.bacancy.ccs2androidhmi.views.listener.FragmentChangeListener
 import dagger.hilt.android.AndroidEntryPoint
@@ -38,7 +42,7 @@ class GunsMoreInformationFragment : BaseFragment() {
     private lateinit var faultInfoFragment: FaultInfoFragment
     private var fragmentChangeListener: FragmentChangeListener? = null
     private val appViewModel: AppViewModel by viewModels()
-
+    private val mqttViewModel: MQTTViewModel by viewModels()
 
     @Inject
     lateinit var prefHelper: PrefHelper
@@ -75,10 +79,26 @@ class GunsMoreInformationFragment : BaseFragment() {
         binding.apply {
             tbGunsChargingInfo.apply {
 
+                //Send GUN 1/2 Charging State
+                val chargerOutputs = prefHelper.getStringValue(CommonUtils.CHARGER_OUTPUTS, "")
+                if (selectedGunNumber == 1 || (selectedGunNumber == 2 && chargerOutputs == "2")) {
+                    if (requireContext().isInternetConnected() && prefHelper.getStringValue(
+                            CommonUtils.DEVICE_MAC_ADDRESS,
+                            ""
+                        ).isNotEmpty()
+                    ) {
+                        mqttViewModel.sendGunStatusToMqtt(
+                            prefHelper.getStringValue(
+                                CommonUtils.DEVICE_MAC_ADDRESS, ""
+                            ), selectedGunNumber, gunChargingState
+                        )
+                    }
+                }
+
                 when (gunChargingState) {
                     GunsChargingInfoUtils.PLUGGED_IN,
                     GunsChargingInfoUtils.CHARGING -> {
-                        if(SHOW_PIN_AUTHORIZATION){
+                        if (SHOW_PIN_AUTHORIZATION) {
                             ivPinAuthorization.visible()
                         }
                     }
@@ -151,9 +171,12 @@ class GunsMoreInformationFragment : BaseFragment() {
 
             ivPinAuthorization.setOnClickListener {
                 showPinAuthorizationDialog({
-                    prefHelper.setStringValue(AUTH_PIN_VALUE,it)
+                    prefHelper.setStringValue(AUTH_PIN_VALUE, it)
                 }, {
-                    requireContext().showCustomToast(getString(R.string.message_invalid_empty_pin), false)
+                    requireContext().showCustomToast(
+                        getString(R.string.message_invalid_empty_pin),
+                        false
+                    )
                 })
             }
 

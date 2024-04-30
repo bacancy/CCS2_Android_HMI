@@ -10,6 +10,8 @@ import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsDcMeterInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsLastChargingSummary
 import com.bacancy.ccs2androidhmi.db.entity.TbMiscInfo
+import com.bacancy.ccs2androidhmi.db.entity.TbNotifications
+import com.bacancy.ccs2androidhmi.models.ErrorCodes
 import com.bacancy.ccs2androidhmi.repository.MainRepository
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils
 import com.bacancy.ccs2androidhmi.util.LastChargingSummaryUtils
@@ -19,6 +21,8 @@ import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter
 import com.bacancy.ccs2androidhmi.util.StateAndModesUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -30,6 +34,14 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
     val latestMiscInfo: LiveData<TbMiscInfo> = mainRepository.getLatestMiscInfo()
 
     val allErrorCodes: LiveData<List<TbErrorCodes>> = mainRepository.getAllErrorCodes()
+    val allNotifications: LiveData<List<TbNotifications>> = mainRepository.getAllNotifications()
+
+    private val _deviceMacAddress = MutableStateFlow("")
+    val deviceMacAddress = _deviceMacAddress.asStateFlow()
+
+    fun updateDeviceMacAddress(macAddress: String){
+        _deviceMacAddress.value = macAddress
+    }
 
     fun getUpdatedGunsChargingInfo(gunNumber: Int): LiveData<TbGunsChargingInfo> =
         mainRepository.getGunsChargingInfoByGunNumber(gunNumber)
@@ -87,6 +99,12 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
     private fun insertErrorCode(tbErrorCodes: TbErrorCodes) {
         viewModelScope.launch {
             mainRepository.insertErrorCode(tbErrorCodes)
+        }
+    }
+
+    fun insertNotifications(tbNotifications: TbNotifications) {
+        viewModelScope.launch {
+            mainRepository.insertNotifications(tbNotifications)
         }
     }
 
@@ -322,5 +340,64 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
                 )
             )
         }
+    }
+
+    fun getAbnormalErrorCodesList(
+        errorCodeString: String,
+        type: Int
+    ): MutableList<ErrorCodes> {
+
+        // Reverse the string so that the LSB (Least Significant Bit) corresponds to the first index
+        val reversedString = errorCodeString.reversed()
+
+        val abnormalErrors = mutableListOf<StateAndModesUtils.GunsErrorCode>()
+        val normalErrors = mutableListOf<StateAndModesUtils.GunsErrorCode>()
+
+        for (index in StateAndModesUtils.GunsErrorCode.values().indices) {
+            val char = if (index < reversedString.length) reversedString[index] else '0'
+            val errorCode = StateAndModesUtils.GunsErrorCode.values()[index]
+            if (char == '1') {
+                abnormalErrors.add(errorCode)
+            } else {
+                normalErrors.add(errorCode)
+            }
+        }
+
+        val newErrorCodesList = mutableListOf<ErrorCodes>()
+        abnormalErrors.forEachIndexed { index, gunsErrorCode ->
+            when (type) {
+                0 -> {
+                    newErrorCodesList.add(
+                        ErrorCodes(
+                            gunsErrorCode.value,
+                            gunsErrorCode.name,
+                            "Charger"
+                        )
+                    )
+                }
+
+                1 -> {
+                    newErrorCodesList.add(
+                        ErrorCodes(
+                            gunsErrorCode.value,
+                            gunsErrorCode.name,
+                            "Gun 1"
+                        )
+                    )
+                }
+
+                2 -> {
+                    newErrorCodesList.add(
+                        ErrorCodes(
+                            gunsErrorCode.value,
+                            gunsErrorCode.name,
+                            "Gun 2"
+                        )
+                    )
+                }
+            }
+        }
+
+        return newErrorCodesList
     }
 }

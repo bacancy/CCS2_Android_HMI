@@ -1,5 +1,7 @@
 package com.bacancy.ccs2androidhmi.util
 
+import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.ByteRanges.AMBIENT_TEMPERATURE_BITS
+import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.ByteRanges.BLUETOOTH_MAC_ADDRESS
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.ByteRanges.COMMUNICATION_ERROR_CODES
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.ByteRanges.DEVICE_PHYSICAL_CONNECTION_STATUS
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.ByteRanges.EMERGENCY_BUTTON_STATUS
@@ -44,10 +46,12 @@ object MiscInfoUtils {
         val VENDOR_ERROR_CODE_INFORMATION = 91..98
         val RFID_TAG_STATE = 73..74
         val NETWORK_STATUS_DATA = 3..4
+        val AMBIENT_TEMPERATURE_BITS = 5..8
         val WIFI_STATUS_BITS = 0..2
         val GSM_STATUS_BITS = 3..6
         val ETHERNET_STATUS_BITS = 7..7
         val SERVER_STATUS_BITS = 8..10
+        val BLUETOOTH_MAC_ADDRESS = 135..140
     }
 
     object FirmwareIndices {
@@ -67,6 +71,15 @@ object MiscInfoUtils {
     private const val TOKEN_ID_SUBMITTED = "Token ID Submitted"
     private const val TOKEN_ID_VALID = "Token ID Valid"
     private const val TOKEN_ID_INVALID = "Token ID Invalid"
+
+    fun getAmbientTemperature(response: ByteArray): Float {
+        return ModbusTypeConverter.byteArrayToFloat(response.getRangedArray(AMBIENT_TEMPERATURE_BITS))
+    }
+
+    fun getBluetoothMacAddress(response: ByteArray): String {
+        val macAddressArray = response.getRangedArray(BLUETOOTH_MAC_ADDRESS)
+        return CommonUtils.getSwappedMacAddress(macAddressArray, ":")
+    }
 
     private fun getFirmwareVersion(response: ByteArray, startIndex: Int): String {
         val reg3MSB = response[startIndex].getIntValueFromByte()
