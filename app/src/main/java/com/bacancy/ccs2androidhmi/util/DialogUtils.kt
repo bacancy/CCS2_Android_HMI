@@ -3,11 +3,18 @@ package com.bacancy.ccs2androidhmi.util
 import android.app.Activity
 import android.app.Dialog
 import android.content.Context
+import android.os.Build
+import android.text.Editable
+import android.text.InputFilter
+import android.text.InputType
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.Window
+import android.view.WindowInsets
+import android.view.WindowInsetsController
 import android.view.WindowManager
+import android.widget.RadioButton
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.bacancy.ccs2androidhmi.R
@@ -16,6 +23,7 @@ import com.bacancy.ccs2androidhmi.databinding.CustomDialogBinding
 import com.bacancy.ccs2androidhmi.databinding.DialogGunsChargingSummaryBinding
 import com.bacancy.ccs2androidhmi.databinding.DialogPasswordPromptBinding
 import com.bacancy.ccs2androidhmi.databinding.DialogPinAuthorizationBinding
+import com.bacancy.ccs2androidhmi.databinding.DialogSessionModeSelectionBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsLastChargingSummary
 import com.bacancy.ccs2androidhmi.util.CommonUtils.LOCAL_START_STOP_PIN
 
@@ -41,22 +49,7 @@ object DialogUtils {
 
         val alertDialog = builder.create()
 
-        val uiFlags = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
-                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
-                View.SYSTEM_UI_FLAG_FULLSCREEN or
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
-                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-
-        alertDialog.window?.let { window ->
-            window.decorView.systemUiVisibility = uiFlags
-
-            val layoutParams = window.attributes
-            layoutParams.flags = layoutParams.flags or
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                    WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
-            window.attributes = layoutParams
-        }
+        alertDialog.configureWindow()
 
         alertDialog.show()
     }
@@ -84,10 +77,12 @@ object DialogUtils {
                     ivMessageType.visible()
                     ivMessageType.setImageResource(R.drawable.ic_info)
                 }
+
                 "warning" -> {
                     ivMessageType.visible()
                     ivMessageType.setImageResource(R.drawable.ic_warning)
                 }
+
                 else -> {
                     ivMessageType.invisible()
                 }
@@ -98,27 +93,16 @@ object DialogUtils {
             }
         }
 
-        val uiFlags = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
-                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
-                View.SYSTEM_UI_FLAG_FULLSCREEN or
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
-                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-
-        dialog.window?.let { window ->
-            window.decorView.systemUiVisibility = uiFlags
-
-            val layoutParams = window.attributes
-            layoutParams.flags = layoutParams.flags or
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                    WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
-            window.attributes = layoutParams
-        }
+        dialog.configureWindow(true)
 
         return dialog
     }
 
-    fun Activity.showCustomDialogForAreYouSure(message: String, onYesClicked: () -> Unit, onNoClicked: () -> Unit) {
+    fun Activity.showCustomDialogForAreYouSure(
+        message: String,
+        onYesClicked: () -> Unit,
+        onNoClicked: () -> Unit
+    ) {
         // Show custom dialog without creating a new class
         val dialog = Dialog(this, R.style.CustomAlertDialog)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -142,22 +126,7 @@ object DialogUtils {
             }
         }
 
-        val uiFlags = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
-                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
-                View.SYSTEM_UI_FLAG_FULLSCREEN or
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
-                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-
-        dialog.window?.let { window ->
-            window.decorView.systemUiVisibility = uiFlags
-
-            val layoutParams = window.attributes
-            layoutParams.flags = layoutParams.flags or
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                    WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
-            window.attributes = layoutParams
-        }
+        dialog.configureWindow(true)
 
         // Show the dialog
         dialog.show()
@@ -240,26 +209,7 @@ object DialogUtils {
             }
         }
 
-        val uiFlags = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
-                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
-                View.SYSTEM_UI_FLAG_FULLSCREEN or
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
-                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-
-        dialog.window?.let { window ->
-            window.decorView.systemUiVisibility = uiFlags
-
-            val layoutParams = window.attributes
-            layoutParams.flags = layoutParams.flags or
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                    WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
-            window.setLayout(
-                WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.WRAP_CONTENT
-            )
-            window.attributes = layoutParams
-        }
+        dialog.configureWindow(true)
 
         dialog.show()
     }
@@ -285,26 +235,7 @@ object DialogUtils {
             }
         }
 
-        val uiFlags = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
-                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
-                View.SYSTEM_UI_FLAG_FULLSCREEN or
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
-                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-
-        dialog.window?.let { window ->
-            window.decorView.systemUiVisibility = uiFlags
-
-            val layoutParams = window.attributes
-            /*layoutParams.flags = layoutParams.flags or
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                    WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL*/
-            window.setLayout(
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.WRAP_CONTENT
-            )
-            window.attributes = layoutParams
-        }
+        dialog.configureWindow()
 
         dialog.show()
     }
@@ -334,25 +265,229 @@ object DialogUtils {
             }
         }
 
-        val uiFlags = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
-                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
-                View.SYSTEM_UI_FLAG_FULLSCREEN or
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
-                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+        dialog.configureWindow()
 
-        dialog.window?.let { window ->
-            window.decorView.systemUiVisibility = uiFlags
+        dialog.show()
+    }
+
+    fun Activity.showSessionModeDialog(
+        onSuccess: (String, String) -> Unit,
+    ) {
+        val dialog = Dialog(this, R.style.CustomAlertDialog)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        val binding = DialogSessionModeSelectionBinding.inflate(layoutInflater)
+        dialog.setContentView(binding.root)
+        dialog.setCanceledOnTouchOutside(false)
+
+        binding.apply {
+            btnSubmit.setOnClickListener {
+                if (!radioByAuto.isChecked && edtSessionModeValue.text.isEmpty()) {
+                    edtSessionModeValue.error = "Please enter value"
+                    return@setOnClickListener
+                } else if(!validateSelectedValueRange()){
+                    edtSessionModeValue.error = "Value must be in range"
+                    return@setOnClickListener
+                }
+
+                val sessionModeValue =
+                    if (radioByAuto.isChecked) "100" else edtSessionModeValue.text.toString()
+
+                val radioButtonMap = mapOf(
+                    radioByAuto to "Auto",
+                    radioByTime to "Time",
+                    radioByEnergy to "Energy",
+                    radioBySoc to "SOC"
+                )
+
+                val selectedRadioButton =
+                    radioButtonMap.entries.find { it.key.isChecked }?.value ?: ""
+                onSuccess(selectedRadioButton, sessionModeValue)
+                dialog.dismiss()
+            }
+            btnClose.setOnClickListener {
+                dialog.dismiss()
+            }
+
+            radioByAuto.isChecked = true
+
+            radioByAuto.setOnCheckedChangeListener { _, isClicked ->
+                if (isClicked) {
+                    handleRadioButtonSelection(radioByAuto)
+                }
+            }
+
+            radioByTime.setOnCheckedChangeListener { _, isClicked ->
+                if (isClicked) {
+                    handleRadioButtonSelection(radioByTime)
+                }
+            }
+
+            radioByEnergy.setOnCheckedChangeListener { _, isClicked ->
+                if (isClicked) {
+                    handleRadioButtonSelection(radioByEnergy)
+                }
+            }
+
+            radioBySoc.setOnCheckedChangeListener { _, isClicked ->
+                if (isClicked) {
+                    handleRadioButtonSelection(radioBySoc)
+                }
+            }
+        }
+
+        dialog.configureWindow()
+
+        dialog.show()
+    }
+
+    private fun DialogSessionModeSelectionBinding.checkValueInRange(minValue: Number, maxValue: Number): Boolean {
+        val value = edtSessionModeValue.text.toString().toDoubleOrNull()
+        return value != null && (value >= minValue.toDouble() && value <= maxValue.toDouble())
+    }
+
+    private fun DialogSessionModeSelectionBinding.validateSelectedValueRange(): Boolean {
+        return when {
+            radioByTime.isChecked -> checkValueInRange(1, 999)
+            radioByEnergy.isChecked -> checkValueInRange(0.01, 999.99)
+            radioBySoc.isChecked -> checkValueInRange(1, 100)
+            else -> true
+        }
+    }
+
+    private var timeTextWatcher: TextWatcher? = null
+    private var energyTextWatcher: TextWatcher? = null
+    private var socTextWatcher: TextWatcher? = null
+
+    private fun DialogSessionModeSelectionBinding.handleRadioButtonSelection(selectedRadioButton: RadioButton) {
+        // List of all radio buttons
+        val radioButtons = listOf(radioByAuto, radioByTime, radioByEnergy, radioBySoc)
+
+        // Uncheck all radio buttons except the selected one
+        radioButtons.forEach { radioButton ->
+            radioButton.isChecked = (radioButton == selectedRadioButton)
+        }
+
+        // Remove any existing TextWatchers
+        clearTextWatchers()
+
+        // Based on the selected radio button, perform the necessary actions
+        when (selectedRadioButton) {
+            radioByAuto -> {
+                handleEditTextVisibility(false)
+            }
+
+            radioByTime -> {
+                handleEditTextVisibility(
+                    true,
+                    "Enter Time in Minutes (1-999)",
+                    InputType.TYPE_CLASS_NUMBER,
+                    InputFilter.LengthFilter(3)
+                ) { text ->
+                    validateTextValue(text, 1, 999)
+                }
+            }
+
+            radioByEnergy -> {
+                handleEditTextVisibility(
+                    true,
+                    "Enter Energy in kWh (0.01-999.99)",
+                    InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL,
+                    InputFilter.LengthFilter(6)
+                ) { text ->
+                    validateTextValue(text, 0.01, 999.99)
+                }
+            }
+
+            radioBySoc -> {
+                handleEditTextVisibility(
+                    true,
+                    "Enter SOC in % (1-100)",
+                    InputType.TYPE_CLASS_NUMBER,
+                    InputFilter.LengthFilter(3)
+                ) { text ->
+                    validateTextValue(text, 1, 100)
+                }
+            }
+        }
+    }
+
+    private fun DialogSessionModeSelectionBinding.clearTextWatchers() {
+        edtSessionModeValue.apply {
+            removeTextChangedListener(timeTextWatcher)
+            removeTextChangedListener(energyTextWatcher)
+            removeTextChangedListener(socTextWatcher)
+            text.clear()
+            error = null
+        }
+    }
+
+    private fun DialogSessionModeSelectionBinding.handleEditTextVisibility(
+        isVisible: Boolean,
+        hint: String? = null,
+        inputType: Int? = null,
+        vararg filters: InputFilter,
+        textWatcher: (CharSequence?) -> Unit = {}
+    ) {
+        edtSessionModeValue.apply {
+            if (isVisible) {
+                visible()
+                this.hint = hint
+                this.inputType = inputType ?: InputType.TYPE_CLASS_TEXT
+                this.filters = filters
+                timeTextWatcher = createTextWatcher(textWatcher)
+                addTextChangedListener(timeTextWatcher)
+            } else {
+                gone()
+            }
+        }
+    }
+
+    private fun createTextWatcher(textWatcher: (CharSequence?) -> Unit): TextWatcher {
+        return object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {}
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                textWatcher(s)
+            }
+        }
+    }
+
+    private fun DialogSessionModeSelectionBinding.validateTextValue(
+        text: CharSequence?,
+        minValue: Number,
+        maxValue: Number
+    ) {
+        val value = text?.toString()?.toDoubleOrNull()
+        if (value != null && (value < minValue.toDouble() || value > maxValue.toDouble())) {
+            edtSessionModeValue.error = "Value must be between $minValue and $maxValue"
+        } else {
+            edtSessionModeValue.error = null
+        }
+    }
+
+    private fun Dialog.configureWindow(shouldAvoidUserInteractions: Boolean = false) {
+        this.window?.let { window ->
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                window.setDecorFitsSystemWindows(false)
+                window.insetsController?.let { controller ->
+                    controller.hide(WindowInsets.Type.navigationBars() or WindowInsets.Type.statusBars())
+                    controller.systemBarsBehavior =
+                        WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                }
+            }
 
             val layoutParams = window.attributes
             window.setLayout(
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT
             )
+            if (shouldAvoidUserInteractions) {
+                layoutParams.flags = layoutParams.flags or
+                        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                        WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+            }
+
             window.attributes = layoutParams
         }
-
-        dialog.show()
     }
-
 }

@@ -170,5 +170,13 @@
     <string name="msg_charger_is_inoperative">Charger is inoperative.</string>
     <string name="lbl_no_notifications_found">No Notifications Found.</string>
     <string name="lbl_notifications">Notifications</string>
-
+    <string name="lbl_charging_mode_selection">Select Charging Mode</string>
+    <string name="lbl_standalone_mode">Standalone Mode (each gun runs on its own)</string>
+    <string name="lbl_dual_socket_mode">Dual Socket Mode (Two guns gets inserted into one EV)</string>
+    <string name="lbl_select_session_mode">Select Session Mode By</string>
+    <string name="lbl_by_soc">SoC</string>
+    <string name="lbl_by_time">Time</string>
+    <string name="lbl_by_energy">Energy</string>
+    <string name="lbl_by_auto">Auto</string>
+    <string name="hint_enter_value">Enter value</string>
 </resources>
