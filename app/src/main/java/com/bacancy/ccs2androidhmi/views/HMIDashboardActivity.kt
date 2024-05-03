@@ -217,11 +217,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
     private fun observeDeviceMacAddress() {
         lifecycleScope.launch {
             appViewModel.deviceMacAddress.collect { deviceMacAddress ->
-                if (deviceMacAddress.isNotEmpty() && prefHelper.getStringValue(
-                        DEVICE_MAC_ADDRESS,
-                        ""
-                    ).isEmpty()
-                ) {
+                if (deviceMacAddress.isNotEmpty()) {
                     prefHelper.setStringValue(DEVICE_MAC_ADDRESS, deviceMacAddress)
                     if (isInternetConnected()) {
                         mqttViewModel.subscribeTopic(getTopicAtoB(deviceMacAddress))

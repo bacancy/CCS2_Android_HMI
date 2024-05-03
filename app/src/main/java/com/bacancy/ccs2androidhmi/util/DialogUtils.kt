@@ -62,10 +62,6 @@ object DialogUtils {
         // Show custom dialog without creating a new class
         val dialog = Dialog(this, R.style.CustomAlertDialog)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        dialog.window?.setLayout(
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.WRAP_CONTENT
-        )
         val binding = CustomDialogBinding.inflate(layoutInflater)
         dialog.setContentView(binding.root)
 
@@ -93,7 +89,7 @@ object DialogUtils {
             }
         }
 
-        dialog.configureWindow(true)
+        dialog.configureWindow(shouldAvoidUserInteractions = true, shouldKeepWidthMatchParent = false)
 
         return dialog
     }
@@ -106,10 +102,6 @@ object DialogUtils {
         // Show custom dialog without creating a new class
         val dialog = Dialog(this, R.style.CustomAlertDialog)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        dialog.window?.setLayout(
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.WRAP_CONTENT
-        )
         val binding = CustomDialogAreYouSureBinding.inflate(layoutInflater)
         dialog.setContentView(binding.root)
 
@@ -126,7 +118,7 @@ object DialogUtils {
             }
         }
 
-        dialog.configureWindow(true)
+        dialog.configureWindow(shouldAvoidUserInteractions = true, shouldKeepWidthMatchParent = true)
 
         // Show the dialog
         dialog.show()
@@ -209,7 +201,7 @@ object DialogUtils {
             }
         }
 
-        dialog.configureWindow(true)
+        dialog.configureWindow(shouldAvoidUserInteractions = true, shouldKeepWidthMatchParent = true)
 
         dialog.show()
     }
@@ -465,7 +457,7 @@ object DialogUtils {
         }
     }
 
-    private fun Dialog.configureWindow(shouldAvoidUserInteractions: Boolean = false) {
+    private fun Dialog.configureWindow(shouldAvoidUserInteractions: Boolean = false, shouldKeepWidthMatchParent: Boolean = false) {
         this.window?.let { window ->
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 window.setDecorFitsSystemWindows(false)
@@ -478,7 +470,7 @@ object DialogUtils {
 
             val layoutParams = window.attributes
             window.setLayout(
-                WindowManager.LayoutParams.WRAP_CONTENT,
+                if(shouldKeepWidthMatchParent) WindowManager.LayoutParams.MATCH_PARENT else WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT
             )
             if (shouldAvoidUserInteractions) {
