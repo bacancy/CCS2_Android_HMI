@@ -10,5 +10,7 @@ data class ShowPopupMessageBody(
     val senderFirstName: String,
     val senderLastName: String,
     val senderId: String,
-    val id: String = SHOW_POPUP_ID
+    val id: String = SHOW_POPUP_ID,
+    val ackId: String = "",
+    val dialogStatus: String = ""
 )

@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.view.KeyEvent
 import android.view.WindowManager
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
@@ -66,10 +67,8 @@ import com.bacancy.ccs2androidhmi.views.fragment.TestModeHomeFragment
 import com.bacancy.ccs2androidhmi.views.listener.FragmentChangeListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -116,7 +115,15 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         observeChargerActiveDeactiveStates()
 
         //requestDeviceAdminPermissions()
+    }
 
+    override fun onKeyLongPress(keyCode: Int, event: KeyEvent?): Boolean {
+        return if (keyCode == KeyEvent.KEYCODE_APP_SWITCH) {
+            // Consume the long press event to prevent the OVERVIEW screen from showing up
+            true
+        } else {
+            super.onKeyLongPress(keyCode, event)
+        }
     }
 
     private fun observeChargerActiveDeactiveStates() {
@@ -210,11 +217,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
     private fun observeDeviceMacAddress() {
         lifecycleScope.launch {
             appViewModel.deviceMacAddress.collect { deviceMacAddress ->
-                if (deviceMacAddress.isNotEmpty() && prefHelper.getStringValue(
-                        DEVICE_MAC_ADDRESS,
-                        ""
-                    ).isEmpty()
-                ) {
+                if (deviceMacAddress.isNotEmpty()) {
                     prefHelper.setStringValue(DEVICE_MAC_ADDRESS, deviceMacAddress)
                     if (isInternetConnected()) {
                         mqttViewModel.subscribeTopic(getTopicAtoB(deviceMacAddress))
@@ -307,6 +310,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
                                                                     .convertToUtc().orEmpty()
                                                             )
                                                         )
+                                                        sendPopupAcknowledgementToServer(messageBody)
                                                     }
                                                     withContext(Dispatchers.Main){
                                                         serverPopup =
@@ -317,7 +321,9 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
                                                             }
                                                         serverPopup.show()
                                                         if (messageBody.dialogDuration.isNotEmpty() && messageBody.dialogDuration.toInt() > 0) {
-                                                            hideServerPopupAfterGivenSeconds(messageBody.dialogDuration.toInt())
+                                                            hideServerPopupAfterGivenSeconds(
+                                                                messageBody.dialogDuration.toInt()
+                                                            )
                                                         }
                                                     }
                                                 }
@@ -337,6 +343,14 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
                     }
                 }
             }
+        }
+    }
+
+    private fun sendPopupAcknowledgementToServer(messageBody: ShowPopupMessageBody) {
+        val ackMessage = messageBody.copy(dialogStatus = "RECEIVED")
+        val deviceMacAddress = prefHelper.getStringValue(DEVICE_MAC_ADDRESS, "")
+        if (deviceMacAddress.isNotEmpty()) {
+            mqttViewModel.publishMessageToTopic(getTopicAtoB(deviceMacAddress), ackMessage.toJsonString())
         }
     }
 

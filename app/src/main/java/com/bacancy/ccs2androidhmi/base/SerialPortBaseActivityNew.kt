@@ -157,7 +157,8 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 )
                 writeForChargerActiveDeactive()
             } else {
-                readChargerActiveDeactiveState()
+                //readChargerActiveDeactiveState()
+                readMiscInfo()
             }
         }
     }
@@ -174,7 +175,8 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                     Log.d(TAG, "writeForChargerActiveDeactive: Response Got")
                     sendChargerStatusConfirmation(isChargerActive)
                     lifecycleScope.launch {
-                        readChargerActiveDeactiveState()
+                        //readChargerActiveDeactiveState()
+                        readMiscInfo()
                     }
                 }, {})
         }
