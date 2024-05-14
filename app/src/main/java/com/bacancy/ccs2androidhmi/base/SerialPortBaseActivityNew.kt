@@ -123,6 +123,10 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        setupPortsAndStartReading()
+    }
+
+    private fun setupPortsAndStartReading() {
         setupSerialPort()
         startReading()
     }
@@ -136,11 +140,21 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
         }
     }
 
+    override fun onPause() {
+        resetPorts()
+        super.onPause()
+    }
+
     override fun onDestroy() {
-        Log.e(TAG, "onDestroy: CALLED")
+        resetPorts()
+        super.onDestroy()
+    }
+
+    private fun resetPorts() {
         mApplication!!.closeSerialPort()
         mSerialPort = null
-        super.onDestroy()
+        mOutputStream = null
+        mInputStream = null
     }
 
     private fun startReading() {
@@ -157,7 +171,8 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 )
                 writeForChargerActiveDeactive()
             } else {
-                readChargerActiveDeactiveState()
+                //readChargerActiveDeactiveState()
+                readMiscInfo()
             }
         }
     }
@@ -174,7 +189,8 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                     Log.d(TAG, "writeForChargerActiveDeactive: Response Got")
                     sendChargerStatusConfirmation(isChargerActive)
                     lifecycleScope.launch {
-                        readChargerActiveDeactiveState()
+                        //readChargerActiveDeactiveState()
+                        readMiscInfo()
                     }
                 }, {})
         }
