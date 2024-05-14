@@ -78,8 +78,9 @@ dependencies {
     implementation("com.intuit.sdp:sdp-android:$sdpVersion")
     implementation("com.intuit.ssp:ssp-android:$sspVersion")
 
-    implementation("org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.4")
-    implementation("org.eclipse.paho:org.eclipse.paho.android.service:1.1.1")
+    /*implementation("org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.4")
+    implementation("org.eclipse.paho:org.eclipse.paho.android.service:1.1.1")*/
+    implementation("com.github.hannesa2:paho.mqtt.android:3.6.4")
     implementation("androidx.hilt:hilt-work:$hiltCompilerVersion")
 
     implementation("androidx.fragment:fragment-ktx:1.6.2")

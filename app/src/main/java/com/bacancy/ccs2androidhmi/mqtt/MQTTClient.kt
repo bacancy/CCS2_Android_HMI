@@ -2,7 +2,7 @@ package com.bacancy.ccs2androidhmi.mqtt
 
 import android.content.Context
 import android.util.Log
-import org.eclipse.paho.android.service.MqttAndroidClient
+import info.mqtt.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.IMqttActionListener
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken
 import org.eclipse.paho.client.mqttv3.IMqttToken
@@ -16,7 +16,7 @@ class MQTTClient(
     serverURI: String,
     clientID: String = ""
 ) {
-    private var mqttClient = MqttAndroidClient(context, serverURI, clientID)
+    private var mqttClient = MqttAndroidClient(context!!, serverURI, clientID)
     private val defaultCbConnect = object : IMqttActionListener {
         override fun onSuccess(asyncActionToken: IMqttToken?) {
             Log.d(this.javaClass.name, "(Default) Connection success")

@@ -145,6 +145,11 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
         super.onPause()
     }
 
+    override fun onDestroy() {
+        resetPorts()
+        super.onDestroy()
+    }
+
     private fun resetPorts() {
         mApplication!!.closeSerialPort()
         mSerialPort = null
