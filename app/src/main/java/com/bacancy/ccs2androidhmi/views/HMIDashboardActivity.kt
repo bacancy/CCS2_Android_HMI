@@ -1,11 +1,17 @@
 package com.bacancy.ccs2androidhmi.views
 
+import android.Manifest
 import android.app.Activity
 import android.app.Dialog
 import android.app.UiModeManager
 import android.app.admin.DevicePolicyManager
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkRequest
@@ -21,6 +27,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
@@ -36,6 +43,7 @@ import com.bacancy.ccs2androidhmi.mqtt.ServerConstants.getTopicAtoB
 import com.bacancy.ccs2androidhmi.mqtt.ServerConstants.getTopicBtoA
 import com.bacancy.ccs2androidhmi.mqtt.models.ActiveDeactiveChargerMessageBody
 import com.bacancy.ccs2androidhmi.mqtt.models.ShowPopupMessageBody
+import com.bacancy.ccs2androidhmi.receiver.FoundDeviceReceiver
 import com.bacancy.ccs2androidhmi.receiver.MyDeviceAdminReceiver
 import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_LOCAL_START_STOP
 import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_TEST_MODE
@@ -89,6 +97,16 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
     private val mqttViewModel: MQTTViewModel by viewModels()
     private val TAG = "HMIDashboardActivity"
 
+    private val bluetoothManager by lazy {
+        applicationContext.getSystemService(BluetoothManager::class.java)
+    }
+    private val bluetoothAdapter by lazy {
+        bluetoothManager?.adapter
+    }
+
+    private val isBluetoothEnabled: Boolean
+        get() = bluetoothAdapter?.isEnabled == true
+
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -119,15 +137,132 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
         observeChargerActiveDeactiveStates()
 
-        if (!prefHelper.getBoolean("IS_APP_PINNED", false)) {
+        /*if (!prefHelper.getBoolean("IS_APP_PINNED", false)) {
             requestDeviceAdminPermissions()
         } else {
             startLockTask()
-        }
+        }*/
 
+        setupBluetooth()
     }
 
-    private fun observeDeviceInternetStates(){
+    private val enableBluetoothLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            Log.d(TAG, "Bluetooth enabled")
+            registerFoundDeviceReceiverAndStartDiscovery()
+        } else {
+            Log.d(TAG, "Bluetooth not enabled")
+        }
+    }
+
+    private val permissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { perms ->
+        val canEnableBluetooth = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            perms[Manifest.permission.BLUETOOTH_CONNECT] == true
+        } else {
+            perms[Manifest.permission.BLUETOOTH] == true &&
+                    perms[Manifest.permission.BLUETOOTH_ADMIN] == true
+        }
+
+        if (canEnableBluetooth && !isBluetoothEnabled) {
+            Log.d(TAG, "Enabling Bluetooth")
+            enableBluetoothLauncher.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
+        } else {
+            Log.d(TAG, "Bluetooth already enabled")
+            registerFoundDeviceReceiverAndStartDiscovery()
+        }
+    }
+
+    private fun setupBluetooth() {
+        val permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            arrayOf(
+                Manifest.permission.BLUETOOTH_SCAN,
+                Manifest.permission.BLUETOOTH_CONNECT
+            )
+        } else {
+            arrayOf(
+                Manifest.permission.BLUETOOTH,
+                Manifest.permission.BLUETOOTH_ADMIN
+            )
+        }
+
+        permissionLauncher.launch(permissions)
+    }
+
+    private fun registerFoundDeviceReceiverAndStartDiscovery() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.BLUETOOTH_SCAN
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                requestPermissions(
+                    arrayOf(Manifest.permission.BLUETOOTH_SCAN),
+                    1
+                )
+            } else {
+                Log.d(TAG, "setupBluetooth: Registering FoundDeviceReceiver")
+                lifecycleScope.launch(Dispatchers.IO) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        this@HMIDashboardActivity.registerReceiver(
+                            foundDeviceReceiver,
+                            IntentFilter(BluetoothDevice.ACTION_FOUND), RECEIVER_EXPORTED
+                        )
+                    }
+                    bluetoothAdapter?.startDiscovery()
+                }
+            }
+        } else {
+            if (ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                Log.d(TAG, "setupBluetooth: Requesting Bluetooth Scan permission")
+                requestPermissions(
+                    arrayOf(
+                        Manifest.permission.ACCESS_COARSE_LOCATION,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    ),
+                    1
+                )
+            } else {
+                Log.d(TAG, "setupBluetooth: Starting Bluetooth discovery")
+                if (ActivityCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.BLUETOOTH_ADMIN
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    Log.d(TAG, "setupBluetooth: Requesting Bluetooth Admin permission")
+                    requestPermissions(
+                        arrayOf(Manifest.permission.BLUETOOTH_ADMIN),
+                        1
+                    )
+                } else {
+                    Log.d(TAG, "setupBluetooth: Registering FoundDeviceReceiver")
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            this@HMIDashboardActivity.registerReceiver(
+                                foundDeviceReceiver,
+                                IntentFilter(BluetoothDevice.ACTION_FOUND), RECEIVER_EXPORTED
+                            )
+                        }
+                        bluetoothAdapter?.startDiscovery()
+                    }
+                }
+            }
+        }
+    }
+
+    private val foundDeviceReceiver = FoundDeviceReceiver { device -> }
+
+    private fun observeDeviceInternetStates() {
         connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         networkCallback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
@@ -135,6 +270,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
                 Log.i(TAG, "###Network onAvailable: Called")
                 startMQTTConnection()
             }
+
             override fun onLost(network: Network) {
                 super.onLost(network)
                 Log.i(TAG, "###Network onLost: Called")
@@ -145,7 +281,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
     private fun registerNetworkCallback() {
         val networkRequest = NetworkRequest.Builder().build()
-        connectivityManager.registerNetworkCallback(networkRequest,networkCallback)
+        connectivityManager.registerNetworkCallback(networkRequest, networkCallback)
     }
 
     private fun unregisterNetworkCallback() {

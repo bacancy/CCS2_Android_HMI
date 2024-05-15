@@ -128,7 +128,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
 
     private fun setupPortsAndStartReading() {
         setupSerialPort()
-        startReading()
+        //startReading()
     }
 
     private fun makeFullScreen() {
