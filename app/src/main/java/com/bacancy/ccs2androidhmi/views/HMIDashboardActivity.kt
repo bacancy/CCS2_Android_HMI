@@ -6,6 +6,9 @@ import android.app.UiModeManager
 import android.app.admin.DevicePolicyManager
 import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkRequest
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -76,6 +79,8 @@ import java.util.Locale
 @AndroidEntryPoint
 class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener {
 
+    private lateinit var networkCallback: ConnectivityManager.NetworkCallback
+    private lateinit var connectivityManager: ConnectivityManager
     private lateinit var serverPopup: Dialog
     private lateinit var gunsHomeScreenFragment: GunsHomeScreenFragment
     private lateinit var binding: ActivityHmiDashboardBinding
@@ -114,7 +119,37 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
         observeChargerActiveDeactiveStates()
 
-        //requestDeviceAdminPermissions()
+        if (!prefHelper.getBoolean("IS_APP_PINNED", false)) {
+            requestDeviceAdminPermissions()
+        } else {
+            startLockTask()
+        }
+
+    }
+
+    private fun observeDeviceInternetStates(){
+        connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        networkCallback = object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) {
+                super.onAvailable(network)
+                Log.i(TAG, "###Network onAvailable: Called")
+                startMQTTConnection()
+            }
+            override fun onLost(network: Network) {
+                super.onLost(network)
+                Log.i(TAG, "###Network onLost: Called")
+            }
+        }
+        registerNetworkCallback()
+    }
+
+    private fun registerNetworkCallback() {
+        val networkRequest = NetworkRequest.Builder().build()
+        connectivityManager.registerNetworkCallback(networkRequest,networkCallback)
+    }
+
+    private fun unregisterNetworkCallback() {
+        connectivityManager.unregisterNetworkCallback(networkCallback)
     }
 
     override fun onKeyLongPress(keyCode: Int, event: KeyEvent?): Boolean {
@@ -156,6 +191,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
     override fun onResume() {
         super.onResume()
+        observeDeviceInternetStates()
         startClockTimer()
     }
 
@@ -170,8 +206,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
             ActivityResultContracts.StartActivityForResult()
         ) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                Log.d(TAG, "requestDeviceAdminPermissions: isActiveAdmin = ${isActiveAdmin()}")
-                getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
+                prefHelper.setBoolean("IS_APP_PINNED", true)
                 startLockTask()
             }
         }
@@ -533,6 +568,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         }
 
         binding.incToolbar.ivLogo.setOnClickListener {
+            prefHelper.setBoolean("IS_APP_PINNED", false)
             stopLockTask()
         }
     }
@@ -674,6 +710,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         super.onPause()
         mApplication!!.closeSerialPort()
         handler.removeCallbacks(runnable)
+        unregisterNetworkCallback()
     }
 
     override fun onStop() {

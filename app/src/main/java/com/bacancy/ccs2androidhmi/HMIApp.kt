@@ -28,7 +28,7 @@ class HMIApp: Application() {
 
     fun closeSerialPort() {
         if (mSerialPort != null) {
-            mSerialPort!!.close()
+            mSerialPort?.close()
             mSerialPort = null
         }
     }
