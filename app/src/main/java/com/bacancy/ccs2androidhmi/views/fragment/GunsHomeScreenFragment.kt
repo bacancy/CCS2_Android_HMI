@@ -6,7 +6,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.bacancy.ccs2androidhmi.R
@@ -68,7 +67,7 @@ class GunsHomeScreenFragment : BaseFragment() {
     @Inject
     lateinit var prefHelper: PrefHelper
 
-    private val mqttViewModel: MQTTViewModel by activityViewModels()
+    private val mqttViewModel: MQTTViewModel by viewModels()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)

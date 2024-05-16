@@ -1,12 +1,16 @@
 package com.bacancy.ccs2androidhmi.views
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
 import android.app.UiModeManager
 import android.app.admin.DevicePolicyManager
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothGatt
+import android.bluetooth.BluetoothGattCallback
+import android.bluetooth.BluetoothGattCharacteristic
 import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.Intent
@@ -83,10 +87,13 @@ import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import java.util.UUID
 
 @AndroidEntryPoint
 class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener {
 
+    private lateinit var CHARACTERISTIC_UUID: String
+    private lateinit var SERVICE_UUID: String
     private lateinit var networkCallback: ConnectivityManager.NetworkCallback
     private lateinit var connectivityManager: ConnectivityManager
     private lateinit var serverPopup: Dialog
@@ -260,7 +267,210 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         }
     }
 
-    private val foundDeviceReceiver = FoundDeviceReceiver { device -> }
+    @SuppressLint("MissingPermission")
+    private val foundDeviceReceiver = FoundDeviceReceiver { device ->
+        Log.d(TAG, "setupBluetooth foundDeviceReceiver: Called")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.BLUETOOTH_CONNECT
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                Log.d(TAG, "setupBluetooth foundDeviceReceiver1: Permission not granted")
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                requestPermissions(
+                    arrayOf(Manifest.permission.BLUETOOTH_CONNECT),
+                    1
+                )
+            } else {
+                Log.d(
+                    TAG,
+                    "setupBluetooth foundDeviceReceiver1: Device found: ${device.name}, ${device.address}"
+                )
+            }
+        } else {
+            if (ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                Log.d(TAG, "setupBluetooth foundDeviceReceiver2: Permission not granted")
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                requestPermissions(
+                    arrayOf(
+                        Manifest.permission.ACCESS_COARSE_LOCATION,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    ),
+                    1
+                )
+            } else {
+                Log.d(
+                    TAG,
+                    "setupBluetooth foundDeviceReceiver2: Device found: ${device.name}, ${device.address}"
+                )
+                if (device.name?.startsWith("CCS2_") == true || device.name?.startsWith("BAC_") == true) {
+                    Log.d(TAG, "setupBluetooth foundDeviceReceiver2: CCS2 DEVICE FOUND FINALLY")
+                    connectToDevice(device.address)
+                }
+            }
+        }
+    }
+
+    private lateinit var gatt: BluetoothGatt
+
+    @SuppressLint("MissingPermission")
+    private fun connectToDevice(deviceMacAddress: String?) {
+        val device: BluetoothDevice = bluetoothAdapter!!.getRemoteDevice(deviceMacAddress)
+        SERVICE_UUID = "000000ff-0000-1000-8000-00805f9b34fb"
+        CHARACTERISTIC_UUID = "0000ff01-0000-1000-8000-00805f9b34fb"
+        if (hasPermission(Manifest.permission.BLUETOOTH_CONNECT) || hasPermission(Manifest.permission.ACCESS_COARSE_LOCATION) || hasPermission(
+                Manifest.permission.ACCESS_FINE_LOCATION
+            )
+        ) {
+            gatt = device.connectGatt(this, false, object : BluetoothGattCallback() {
+                override fun onConnectionStateChange(
+                    gatt: BluetoothGatt,
+                    status: Int,
+                    newState: Int
+                ) {
+                    super.onConnectionStateChange(gatt, status, newState)
+                    if (newState == BluetoothGatt.STATE_CONNECTED) {
+                        Log.d("THU_TAG", "connectToDevice: Connected to device")
+                        gatt.discoverServices()
+                        //writeCharacteristic("Hello".toByteArray())
+                    } else {
+                        Log.d("THU_TAG", "connectToDevice: Disconnected from device")
+                    }
+                }
+
+                @SuppressLint("NewApi")
+                override fun onServicesDiscovered(gatt: BluetoothGatt?, status: Int) {
+                    super.onServicesDiscovered(gatt, status)
+                    Log.d("THU_TAG", "connectToDevice: Services discovered")
+                    /*gatt?.services?.forEach { service ->
+                        Log.d("THU_TAG", "connectToDevice: Service - $service")
+                        Log.d("THU_TAG", "connectToDevice: Service UUID - ${service.uuid}")
+                        service.characteristics.forEach { characteristic ->
+                            Log.d("THU_TAG", "connectToDevice: Characteristic - $characteristic")
+                            Log.d("THU_TAG", "connectToDevice: Characteristic UUID - ${characteristic.uuid}")
+                        }
+                    }*/
+
+                    val service = gatt?.getService(UUID.fromString(SERVICE_UUID))
+                    val characteristic = service?.getCharacteristic(UUID.fromString(CHARACTERISTIC_UUID))
+
+
+                    characteristic?.value = "{\"md\":1,\"data\":{\"ssid\":\"\",\"pwd\":\"\",\"security\":\"0\",\"app_mode\":\"0\",\"apn\":\"cmnet\",\"Ethernet_Mode\":0,\"static_ip\":\"\",\"gateway_ip\":\"\",\"subnet_mask\":\"\"}}".toByteArray()
+                    gatt?.writeCharacteristic(characteristic!!)
+
+                    gatt?.readCharacteristic(characteristic)
+                }
+
+                override fun onCharacteristicRead(
+                    gatt: BluetoothGatt,
+                    characteristic: BluetoothGattCharacteristic,
+                    value: ByteArray,
+                    status: Int
+                ) {
+                    super.onCharacteristicRead(gatt, characteristic, value, status)
+                    Log.d("THU_TAG", "connectToDevice: Characteristic read")
+                    if (status == BluetoothGatt.GATT_SUCCESS) {
+                        val value = characteristic.value // Read value here
+                        // Handle the received value
+                        Log.d("THU_TAG", "connectToDevice: Characteristic read value - ${String(value)}")
+                    } else {
+                        // Handle read failure
+                        Log.d("THU_TAG", "connectToDevice: Characteristic read failed")
+                    }
+                }
+
+                override fun onCharacteristicWrite(
+                    gatt: BluetoothGatt?,
+                    characteristic: BluetoothGattCharacteristic?,
+                    status: Int
+                ) {
+                    super.onCharacteristicWrite(gatt, characteristic, status)
+                    Log.d("THU_TAG", "connectToDevice: Characteristic write")
+                    if (status == BluetoothGatt.GATT_SUCCESS) {
+                        // Characteristic write successful
+                        Log.d("THU_TAG", "connectToDevice: Characteristic write successful - ${
+                            java.lang.String(
+                                characteristic?.value
+                            )
+                        }")
+                    } else {
+                        // Handle write failure
+                        Log.d("THU_TAG", "connectToDevice: Characteristic write failed")
+                    }
+                }
+            })
+        } else {
+            requestPermissions(
+                arrayOf(
+                    Manifest.permission.BLUETOOTH_CONNECT,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ),
+                1
+            )
+        }
+    }
+
+    @SuppressLint("NewApi")
+    fun writeCharacteristic(data: ByteArray) {
+        val uuid: UUID =
+            UUID.fromString("00001101-0000-1000-8000-00805F9B34FB") // Standard SerialPortService ID
+        val characteristic = gatt.getService(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"))?.getCharacteristic(uuid)
+        if (characteristic != null) {
+            Log.d("THU_TAG", "writeCharacteristic: Characteristic found")
+            if (ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.BLUETOOTH_CONNECT
+                ) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                requestPermissions(
+                    arrayOf(
+                        Manifest.permission.BLUETOOTH_CONNECT,
+                        Manifest.permission.ACCESS_COARSE_LOCATION,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    ),
+                    1
+                )
+            }
+            gatt.writeCharacteristic(characteristic, data, BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT)
+        } else {
+            Log.d("THU_TAG", "writeCharacteristic: Characteristic not found for writing!")
+        }
+    }
+
+    //create a hasPermission method to check if the app has the required permissions
+    private fun hasPermission(permission: String): Boolean {
+        return ActivityCompat.checkSelfPermission(
+            this,
+            permission
+        ) == PackageManager.PERMISSION_GRANTED
+    }
 
     private fun observeDeviceInternetStates() {
         connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -483,9 +693,12 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
                                                         )
                                                         sendPopupAcknowledgementToServer(messageBody)
                                                     }
-                                                    withContext(Dispatchers.Main){
+                                                    withContext(Dispatchers.Main) {
                                                         serverPopup =
-                                                            showCustomDialog(messageBody.dialogMessage, messageBody.dialogType.lowercase()) {
+                                                            showCustomDialog(
+                                                                messageBody.dialogMessage,
+                                                                messageBody.dialogType.lowercase()
+                                                            ) {
                                                                 popupHandler.removeCallbacks(
                                                                     dismissDialogRunnable
                                                                 )
@@ -521,7 +734,10 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         val ackMessage = messageBody.copy(dialogStatus = "RECEIVED")
         val deviceMacAddress = prefHelper.getStringValue(DEVICE_MAC_ADDRESS, "")
         if (deviceMacAddress.isNotEmpty()) {
-            mqttViewModel.publishMessageToTopic(getTopicAtoB(deviceMacAddress), ackMessage.toJsonString())
+            mqttViewModel.publishMessageToTopic(
+                getTopicAtoB(deviceMacAddress),
+                ackMessage.toJsonString()
+            )
         }
     }
 

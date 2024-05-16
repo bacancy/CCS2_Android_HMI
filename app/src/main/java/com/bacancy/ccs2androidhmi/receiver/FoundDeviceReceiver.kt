@@ -9,7 +9,8 @@ import android.content.pm.PackageManager
 import android.util.Log
 import androidx.core.app.ActivityCompat
 
-class FoundDeviceReceiver(private val onDeviceFound: (BluetoothDevice) -> Unit) : BroadcastReceiver() {
+class FoundDeviceReceiver(private val onDeviceFound: (BluetoothDevice) -> Unit) :
+    BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         Log.d("FoundDeviceReceiver", "onReceive")
         when (intent?.action) {
@@ -25,19 +26,21 @@ class FoundDeviceReceiver(private val onDeviceFound: (BluetoothDevice) -> Unit) 
                             intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
                         val deviceName = device?.name
                         val deviceAddress = device?.address
-                        val deviceRssi = intent.getShortExtra(BluetoothDevice.EXTRA_RSSI, Short.MIN_VALUE)
+                        val deviceRssi =
+                            intent.getShortExtra(BluetoothDevice.EXTRA_RSSI, Short.MIN_VALUE)
                         val deviceClass = device?.bluetoothClass?.majorDeviceClass
                         Log.d(
                             "FoundDeviceReceiver",
                             "Device found: $deviceName, $deviceAddress, $deviceRssi, $deviceClass"
                         )
-                        device?.let {onDeviceFound(it)}
+                        device?.let { onDeviceFound(it) }
                     }
+
                     ActivityCompat.checkSelfPermission(
-                        context!!,
+                        context,
                         Manifest.permission.ACCESS_FINE_LOCATION
-                    ),ActivityCompat.checkSelfPermission(
-                        context!!,
+                    ), ActivityCompat.checkSelfPermission(
+                        context,
                         Manifest.permission.ACCESS_COARSE_LOCATION
                     ) -> {
                         Log.d("FoundDeviceReceiver", "Permission granted")
@@ -45,14 +48,16 @@ class FoundDeviceReceiver(private val onDeviceFound: (BluetoothDevice) -> Unit) 
                             intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
                         val deviceName = device?.name
                         val deviceAddress = device?.address
-                        val deviceRssi = intent.getShortExtra(BluetoothDevice.EXTRA_RSSI, Short.MIN_VALUE)
+                        val deviceRssi =
+                            intent.getShortExtra(BluetoothDevice.EXTRA_RSSI, Short.MIN_VALUE)
                         val deviceClass = device?.bluetoothClass?.majorDeviceClass
                         Log.d(
                             "FoundDeviceReceiver",
                             "Device found: $deviceName, $deviceAddress, $deviceRssi, $deviceClass"
                         )
-                        device?.let {onDeviceFound(it)}
+                        device?.let { onDeviceFound(it) }
                     }
+
                     else -> {
                         Log.d("FoundDeviceReceiver", "Permission not granted")
                     }
