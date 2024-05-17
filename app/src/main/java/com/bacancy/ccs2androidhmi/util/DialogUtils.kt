@@ -265,6 +265,7 @@ object DialogUtils {
     }
 
     fun Activity.showPasswordPromptDialog(
+        popupTitle: String = "Authorize",
         onSuccess: () -> Unit,
         onFailed: () -> Unit
     ) {
@@ -274,6 +275,7 @@ object DialogUtils {
         dialog.setContentView(binding.root)
 
         binding.apply {
+            tvPopupTitle.text = popupTitle
             btnSubmit.setOnClickListener {
                 dialog.dismiss()
                 val enteredPassword = edtPassword.text.toString()

@@ -231,7 +231,7 @@ class GunsMoreInformationFragment : BaseFragment() {
             incDuration.tvValueUnit.invisible()
 
             incEnergyConsumption.tvLabel.text = getString(R.string.lbl_energy_consumption)
-            incEnergyConsumption.tvValueUnit.text = getString(R.string.lbl_kw)
+            incEnergyConsumption.tvValueUnit.text = getString(R.string.lbl_kwh)
 
             incGunTemperatureDCPositive.tvLabel.text = getString(R.string.lbl_gun_temp_dc_positive)
             incGunTemperatureDCPositive.tvValueUnit.text = getString(R.string.lbl_celsius)

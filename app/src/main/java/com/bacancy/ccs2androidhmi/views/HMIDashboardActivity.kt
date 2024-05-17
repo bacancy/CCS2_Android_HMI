@@ -42,6 +42,9 @@ import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_TEST_MODE
 import com.bacancy.ccs2androidhmi.util.CommonUtils
 import com.bacancy.ccs2androidhmi.util.CommonUtils.CHARGER_ACTIVE_DEACTIVE_MESSAGE_RECD
 import com.bacancy.ccs2androidhmi.util.CommonUtils.DEVICE_MAC_ADDRESS
+import com.bacancy.ccs2androidhmi.util.CommonUtils.EVSE_APP_PACKAGE_NAME
+import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_APP_PINNED
+import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_APP_RESTARTED
 import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_CHARGER_ACTIVE
 import com.bacancy.ccs2androidhmi.util.CommonUtils.fromJson
 import com.bacancy.ccs2androidhmi.util.CommonUtils.getUniqueItems
@@ -59,6 +62,7 @@ import com.bacancy.ccs2androidhmi.util.Resource
 import com.bacancy.ccs2androidhmi.util.ToastUtils.showCustomToast
 import com.bacancy.ccs2androidhmi.util.gone
 import com.bacancy.ccs2androidhmi.util.invisible
+import com.bacancy.ccs2androidhmi.util.showToast
 import com.bacancy.ccs2androidhmi.util.visible
 import com.bacancy.ccs2androidhmi.viewmodel.MQTTViewModel
 import com.bacancy.ccs2androidhmi.views.fragment.AppNotificationsFragment
@@ -95,7 +99,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         super.onCreate(savedInstanceState)
         binding = ActivityHmiDashboardBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        prefHelper.setBoolean(IS_APP_RESTARTED, true)
         gunsHomeScreenFragment = GunsHomeScreenFragment()
         addNewFragment(gunsHomeScreenFragment)
 
@@ -118,13 +122,44 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         observeAllErrorCodes()
 
         observeChargerActiveDeactiveStates()
+    }
 
-        if (!prefHelper.getBoolean("IS_APP_PINNED", false)) {
+    override fun onResume() {
+        super.onResume()
+        observeDeviceInternetStates()
+        startClockTimer()
+        manageKioskMode()
+    }
+
+    private fun manageKioskMode() {
+        if (!prefHelper.getBoolean(IS_APP_PINNED, false)) {
             requestDeviceAdminPermissions()
         } else {
             startLockTask()
         }
+    }
 
+    private fun requestDeviceAdminPermissions() {
+        val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN).apply {
+            putExtra(
+                DevicePolicyManager.EXTRA_DEVICE_ADMIN,
+                MyDeviceAdminReceiver.getComponentName(this@HMIDashboardActivity)
+            )
+            putExtra(
+                DevicePolicyManager.EXTRA_ADD_EXPLANATION,
+                "Need to make this app as Device Admin to provide better experience."
+            )
+        }
+        deviceAdminLauncher.launch(intent)
+    }
+
+    private val deviceAdminLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            prefHelper.setBoolean(IS_APP_PINNED, true)
+            startLockTask()
+        }
     }
 
     private fun observeDeviceInternetStates(){
@@ -187,41 +222,6 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         binding.apply {
             lnrChargerInoperative.gone()
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        observeDeviceInternetStates()
-        startClockTimer()
-    }
-
-    private fun isActiveAdmin(): Boolean {
-        val devicePolicyManager = getSystemService(Context.DEVICE_POLICY_SERVICE)
-                as DevicePolicyManager
-        return devicePolicyManager.isDeviceOwnerApp(packageName)
-    }
-
-    private fun requestDeviceAdminPermissions() {
-        val launcher = registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult()
-        ) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                prefHelper.setBoolean("IS_APP_PINNED", true)
-                startLockTask()
-            }
-        }
-
-        val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN).apply {
-            putExtra(
-                DevicePolicyManager.EXTRA_DEVICE_ADMIN,
-                MyDeviceAdminReceiver.getComponentName(this@HMIDashboardActivity)
-            )
-            putExtra(
-                DevicePolicyManager.EXTRA_ADD_EXPLANATION,
-                "Need to make this app as Device Admin to provide better experience."
-            )
-        }
-        launcher.launch(intent)
     }
 
     private fun observeAllErrorCodes() {
@@ -548,7 +548,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         }
 
         binding.incToolbar.ivLocalStartStop.setOnClickListener {
-            showPasswordPromptDialog({
+            showPasswordPromptDialog(getString(R.string.title_authorize_for_local_start_stop),{
                 addNewFragment(LocalStartStopFragment())
             }, {
                 showCustomToast(getString(R.string.msg_invalid_password), false)
@@ -556,7 +556,11 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         }
 
         binding.incToolbar.ivTestMode.setOnClickListener {
-            addNewFragment(TestModeHomeFragment())
+            showPasswordPromptDialog(getString(R.string.title_authorize_for_test_mode),{
+                addNewFragment(TestModeHomeFragment())
+            }, {
+                showCustomToast(getString(R.string.msg_invalid_password), false)
+            })
         }
 
         binding.incToolbar.ivFaultInfo.setOnClickListener {
@@ -568,8 +572,24 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         }
 
         binding.incToolbar.ivLogo.setOnClickListener {
-            prefHelper.setBoolean("IS_APP_PINNED", false)
+            prefHelper.setBoolean(IS_APP_PINNED, false)
             stopLockTask()
+            openEVSEApp()
+        }
+    }
+
+    private fun openEVSEApp() {
+        try {
+            val launchIntent: Intent? =
+                packageManager.getLaunchIntentForPackage(EVSE_APP_PACKAGE_NAME)
+            if (launchIntent != null) {
+                startActivity(launchIntent, null)
+            }else{
+                showToast(getString(R.string.msg_evseready_app_not_installed))
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            showToast(getString(R.string.msg_evseready_app_not_installed))
         }
     }
 

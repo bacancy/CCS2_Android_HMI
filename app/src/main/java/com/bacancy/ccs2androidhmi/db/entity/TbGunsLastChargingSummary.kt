@@ -14,5 +14,6 @@ data class TbGunsLastChargingSummary(
     var startSoc: String,
     var endSoc: String,
     var energyConsumption: String,
-    var sessionEndReason: String
+    var sessionEndReason: String,
+    var totalCost: String
 )

@@ -17,7 +17,7 @@
         layout="@layout/common_summary_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_10sdp" />
+        android:layout_marginTop="@dimen/_3sdp" />
 
     <include
         android:id="@+id/incChargingDuration"
@@ -57,6 +57,12 @@
 
     <include
         android:id="@+id/incSessionEndReason"
+        layout="@layout/common_summary_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <include
+        android:id="@+id/incTotalCost"
         layout="@layout/common_summary_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

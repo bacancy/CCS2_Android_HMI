@@ -5,9 +5,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.databinding.RowItemChargingHistoryBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbChargingHistory
-import com.bacancy.ccs2androidhmi.util.visible
 
 class ChargingHistoryListAdapter(var onItemClick: (TbChargingHistory) -> Unit) :
     ListAdapter<TbChargingHistory, ChargingHistoryListAdapter.SampleViewHolder>(
@@ -54,6 +54,7 @@ class ChargingHistoryListAdapter(var onItemClick: (TbChargingHistory) -> Unit) :
                 tvEndSoC.text = sampleModel.endSoc + "%"
                 tvEnergyConsumption.text = sampleModel.energyConsumption + " kwh"
                 tvSessionEndReason.text = sampleModel.sessionEndReason
+                tvTotalCost.text = itemView.context.getString(R.string.lbl_gun_total_cost_in_rs, if(sampleModel.totalCost.isEmpty()) 0.0F else sampleModel.totalCost.toFloat())
             }
         }
     }

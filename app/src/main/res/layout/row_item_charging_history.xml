@@ -25,7 +25,7 @@
             style="@style/HistoryTableColumnsTheme"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="0.60"
+            android:layout_weight="0.70"
             android:text="@string/lbl_sample_ev_mac_address" />
 
         <TextView
@@ -75,6 +75,14 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="@string/lbl_sample_ev_mac_address" />
+
+        <TextView
+            android:id="@+id/tvTotalCost"
+            style="@style/HistoryTableColumnsTheme"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.80"
+            android:text="@string/lbl_gun_total_cost_in_rs" />
 
     </LinearLayout>
 

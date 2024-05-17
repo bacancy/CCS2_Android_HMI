@@ -223,7 +223,8 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
                 ),
                 sessionEndReason = LastChargingSummaryUtils.getSessionEndReason(
                     it
-                )
+                ),
+                totalCost = LastChargingSummaryUtils.getTotalCost(it)
             )
         )
     }
@@ -317,7 +318,8 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
                 ),
                 sessionEndReason = LastChargingSummaryUtils.getSessionEndReason(
                     it
-                )
+                ),
+                totalCost = LastChargingSummaryUtils.getTotalCost(it)
             )
         )
     }
