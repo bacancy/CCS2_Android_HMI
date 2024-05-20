@@ -1,6 +1,7 @@
 package com.bacancy.ccs2androidhmi.views.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +13,6 @@ import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentNewFaultInformationBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbErrorCodes
 import com.bacancy.ccs2androidhmi.models.ErrorCodes
-import com.bacancy.ccs2androidhmi.util.StateAndModesUtils
 import com.bacancy.ccs2androidhmi.util.gone
 import com.bacancy.ccs2androidhmi.util.visible
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
@@ -44,6 +44,7 @@ class NewFaultInfoFragment : BaseFragment() {
     private fun observeAllErrorCodes() {
         appViewModel.allErrorCodes.observe(requireActivity()) { errorCodes ->
             if (errorCodes != null) {
+                Log.d("ErrorCodes", "ErrorCodes: $errorCodes")
                 createCommonAbnormalErrorsList(errorCodes)
             }
         }
@@ -56,7 +57,8 @@ class NewFaultInfoFragment : BaseFragment() {
                 updatedErrorCodesList.addAll(
                     appViewModel.getAbnormalErrorCodesList(
                         tbErrorCodes.sourceErrorCodes,
-                        tbErrorCodes.sourceId
+                        tbErrorCodes.sourceId,
+                        tbErrorCodes.sourceErrorDateTime
                     )
                 )
             }

@@ -7,7 +7,9 @@ import java.util.Locale
 
 object DateTimeUtils {
 
-    private const val DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX"
+    const val DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX"
+    const val DATE_TIME_FORMAT_FOR_UI = "dd-MM-yyyy HH:mm:ss"
+    const val DATE_TIME_FORMAT_FROM_CHARGER = "dd/MM/yyyy HH:mm:ss"
 
     fun getCurrentDateTime(dateTimeFormat: String = DATE_TIME_FORMAT): String {
         val now = System.currentTimeMillis()
@@ -15,10 +17,10 @@ object DateTimeUtils {
         return formatter.format(now)
     }
 
-    fun String.convertDateFormat(): String {
+    fun String.convertDateFormatToDesiredFormat(currentFormat: String, desiredFormat: String): String {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val originalFormatter = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
-            val targetFormatter = SimpleDateFormat(DATE_TIME_FORMAT, Locale.getDefault())
+            val originalFormatter = SimpleDateFormat(currentFormat, Locale.getDefault())
+            val targetFormatter = SimpleDateFormat(desiredFormat, Locale.getDefault())
 
             // Parse the original date string
             val date = originalFormatter.parse(this)

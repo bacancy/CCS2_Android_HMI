@@ -6,6 +6,7 @@ import android.app.UiModeManager
 import android.app.admin.DevicePolicyManager
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkRequest
@@ -74,6 +75,7 @@ import com.bacancy.ccs2androidhmi.views.fragment.TestModeHomeFragment
 import com.bacancy.ccs2androidhmi.views.listener.FragmentChangeListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
@@ -128,7 +130,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         super.onResume()
         observeDeviceInternetStates()
         startClockTimer()
-        manageKioskMode()
+        //manageKioskMode()
     }
 
     private fun manageKioskMode() {
@@ -232,7 +234,8 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
                 val abnormalErrorsList = codes.flatMap { tbErrorCodes ->
                     appViewModel.getAbnormalErrorCodesList(
                         tbErrorCodes.sourceErrorCodes,
-                        tbErrorCodes.sourceId
+                        tbErrorCodes.sourceId,
+                        tbErrorCodes.sourceErrorDateTime
                     )
                 }.toMutableList()
 
@@ -525,6 +528,16 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
             AppCompatDelegate.setDefaultNightMode(newNightMode)
         }
         prefHelper.setBoolean(IS_DARK_THEME, !prefHelper.getBoolean(IS_DARK_THEME, false))
+    }
+
+    override fun onNightModeChanged(mode: Int) {
+        super.onNightModeChanged(mode)
+        Log.d(TAG, "onNightModeChanged: Called")
+        lifecycleScope.launch {
+            resetPorts()
+            delay(1000)
+            setupPortsAndStartReading()
+        }
     }
 
     private fun handleClicks() {

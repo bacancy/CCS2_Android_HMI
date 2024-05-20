@@ -1,5 +1,6 @@
 package com.bacancy.ccs2androidhmi.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,6 +14,10 @@ import com.bacancy.ccs2androidhmi.db.entity.TbMiscInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbNotifications
 import com.bacancy.ccs2androidhmi.models.ErrorCodes
 import com.bacancy.ccs2androidhmi.repository.MainRepository
+import com.bacancy.ccs2androidhmi.util.DateTimeUtils
+import com.bacancy.ccs2androidhmi.util.DateTimeUtils.DATE_TIME_FORMAT
+import com.bacancy.ccs2androidhmi.util.DateTimeUtils.DATE_TIME_FORMAT_FOR_UI
+import com.bacancy.ccs2androidhmi.util.DateTimeUtils.convertDateFormatToDesiredFormat
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils
 import com.bacancy.ccs2androidhmi.util.LastChargingSummaryUtils
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils
@@ -146,11 +151,19 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
             )
         )
 
+        Log.d("Gun0ErrorCode", "Raw 1 = "+GunsChargingInfoUtils.getGunSpecificErrorCodeInformation(it))
+        Log.d("Gun0ErrorCode", "Raw 2 = "+ModbusTypeConverter.hexToBinary(
+            GunsChargingInfoUtils.getGunSpecificErrorCodeInformation(
+                it
+            )
+        ))
+
         insertErrorCode(
             TbErrorCodes(
                 0,
-                ModbusTypeConverter.hexToBinary(MiscInfoUtils.getVendorErrorCodeInformation(it))
-            )
+                ModbusTypeConverter.hexToBinary(MiscInfoUtils.getVendorErrorCodeInformation(it)),
+                DateTimeUtils.getCurrentDateTime().convertDateFormatToDesiredFormat(currentFormat = DATE_TIME_FORMAT,desiredFormat = DATE_TIME_FORMAT_FOR_UI)
+            ),
         )
     }
 
@@ -173,6 +186,13 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
             )
         )
 
+        Log.d("Gun1ErrorCode", "Raw 1 = "+GunsChargingInfoUtils.getGunSpecificErrorCodeInformation(it))
+        Log.d("Gun1ErrorCode", "Raw 2 = "+ModbusTypeConverter.hexToBinary(
+            GunsChargingInfoUtils.getGunSpecificErrorCodeInformation(
+                it
+            )
+        ))
+
         insertErrorCode(
             TbErrorCodes(
                 1,
@@ -180,7 +200,8 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
                     GunsChargingInfoUtils.getGunSpecificErrorCodeInformation(
                         it
                     )
-                )
+                ),
+                DateTimeUtils.getCurrentDateTime().convertDateFormatToDesiredFormat(currentFormat = DATE_TIME_FORMAT,desiredFormat = DATE_TIME_FORMAT_FOR_UI)
             )
         )
     }
@@ -268,6 +289,13 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
             )
         )
 
+        Log.d("Gun2ErrorCode", "Raw 1 = "+GunsChargingInfoUtils.getGunSpecificErrorCodeInformation(it))
+        Log.d("Gun2ErrorCode", "Raw 2 = "+ModbusTypeConverter.hexToBinary(
+            GunsChargingInfoUtils.getGunSpecificErrorCodeInformation(
+                it
+            )
+        ))
+
         insertErrorCode(
             TbErrorCodes(
                 2,
@@ -275,7 +303,8 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
                     GunsChargingInfoUtils.getGunSpecificErrorCodeInformation(
                         it
                     )
-                )
+                ),
+                DateTimeUtils.getCurrentDateTime().convertDateFormatToDesiredFormat(currentFormat = DATE_TIME_FORMAT,desiredFormat = DATE_TIME_FORMAT_FOR_UI)
             )
         )
     }
@@ -346,60 +375,34 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
 
     fun getAbnormalErrorCodesList(
         errorCodeString: String,
-        type: Int
+        type: Int,
+        errorDateTime: String
     ): MutableList<ErrorCodes> {
 
         // Reverse the string so that the LSB (Least Significant Bit) corresponds to the first index
         val reversedString = errorCodeString.reversed()
+        val errorCodesList = mutableListOf<ErrorCodes>()
 
-        val abnormalErrors = mutableListOf<StateAndModesUtils.GunsErrorCode>()
-        val normalErrors = mutableListOf<StateAndModesUtils.GunsErrorCode>()
+        val errorSource = when (type) {
+            0 -> "Charger"
+            1 -> "Gun 1"
+            2 -> "Gun 2"
+            else -> "Unknown"
+        }
 
-        for (index in StateAndModesUtils.GunsErrorCode.values().indices) {
-            val char = if (index < reversedString.length) reversedString[index] else '0'
-            val errorCode = StateAndModesUtils.GunsErrorCode.values()[index]
-            if (char == '1') {
-                abnormalErrors.add(errorCode)
-            } else {
-                normalErrors.add(errorCode)
+        StateAndModesUtils.GunsErrorCode.values().forEachIndexed { index, gunsErrorCode ->
+            if (index < reversedString.length && reversedString[index] == '1') {
+                errorCodesList.add(
+                    ErrorCodes(
+                        gunsErrorCode.value,
+                        gunsErrorCode.name,
+                        errorSource,
+                        errorDateTime
+                    )
+                )
             }
         }
 
-        val newErrorCodesList = mutableListOf<ErrorCodes>()
-        abnormalErrors.forEachIndexed { index, gunsErrorCode ->
-            when (type) {
-                0 -> {
-                    newErrorCodesList.add(
-                        ErrorCodes(
-                            gunsErrorCode.value,
-                            gunsErrorCode.name,
-                            "Charger"
-                        )
-                    )
-                }
-
-                1 -> {
-                    newErrorCodesList.add(
-                        ErrorCodes(
-                            gunsErrorCode.value,
-                            gunsErrorCode.name,
-                            "Gun 1"
-                        )
-                    )
-                }
-
-                2 -> {
-                    newErrorCodesList.add(
-                        ErrorCodes(
-                            gunsErrorCode.value,
-                            gunsErrorCode.name,
-                            "Gun 2"
-                        )
-                    )
-                }
-            }
-        }
-
-        return newErrorCodesList
+        return errorCodesList
     }
 }

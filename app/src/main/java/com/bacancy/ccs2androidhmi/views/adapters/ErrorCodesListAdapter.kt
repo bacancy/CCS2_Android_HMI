@@ -45,7 +45,8 @@ class ErrorCodesListAdapter(var onItemClick: (ErrorCodes) -> Unit) :
 
         fun bind(sampleModel: ErrorCodes, position: Int) {
             binding.apply {
-                tvSerialNo.text = ""+sampleModel.id
+                tvSerialNo.text = (position+1).toString()
+                tvErrorDateTime.text = sampleModel.errorCodeDateTime
                 tvErrorCodeName.text = sampleModel.errorCodeName
                 tvErrorCodeStatus.text = sampleModel.errorCodeStatus
             }

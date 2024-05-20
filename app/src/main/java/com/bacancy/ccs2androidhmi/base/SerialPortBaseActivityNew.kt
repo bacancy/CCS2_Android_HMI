@@ -127,7 +127,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
         setupPortsAndStartReading()
     }
 
-    private fun setupPortsAndStartReading() {
+    fun setupPortsAndStartReading() {
         setupSerialPort()
         startReading()
     }
@@ -146,7 +146,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
         super.onPause()
     }
 
-    private fun resetPorts() {
+    fun resetPorts() {
         mApplication?.closeSerialPort()
         mSerialPort = null
         mOutputStream = null

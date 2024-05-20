@@ -222,6 +222,11 @@ object DialogUtils {
             incSessionEndReason.tvSummaryValue.text = ""
             incSessionEndReason.root.setBackgroundColor(resources.getColor(if (isDarkTheme) R.color.black else R.color.white))
 
+            incSessionTotalCost.tvSummaryLabel.text = getString(R.string.lbl_total_cost)
+            incSessionTotalCost.tvSummaryUnit.invisible()
+            incSessionTotalCost.tvSummaryValue.text = ""
+            incSessionTotalCost.root.setBackgroundColor(resources.getColor(R.color.light_trans_sky_blue))
+
             tvGunsHeader.text =
                 if (isGun1) "Gun - 1 Charging Summary" else "Gun - 2 Charging Summary"
             tbGunsLastChargingSummary.apply {
@@ -233,6 +238,7 @@ object DialogUtils {
                 incEndSOC.tvSummaryValue.text = endSoc
                 incEnergyConsumption.tvSummaryValue.text = energyConsumption
                 incSessionEndReason.tvSummaryValue.text = sessionEndReason
+                incSessionTotalCost.tvSummaryValue.text = getString(R.string.lbl_gun_total_cost_in_rs, if(totalCost.isEmpty()) 0.0F else totalCost.toFloat())
             }
             btnClose.setOnClickListener {
                 dialog.dismiss()

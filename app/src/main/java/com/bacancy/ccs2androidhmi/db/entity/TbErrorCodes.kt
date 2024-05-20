@@ -7,5 +7,6 @@ import androidx.room.PrimaryKey
 data class TbErrorCodes(
     @PrimaryKey
     var sourceId: Int,
-    var sourceErrorCodes: String
+    var sourceErrorCodes: String,
+    var sourceErrorDateTime: String,
 )
