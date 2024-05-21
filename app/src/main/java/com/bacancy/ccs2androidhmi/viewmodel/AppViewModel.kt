@@ -25,6 +25,7 @@ import com.bacancy.ccs2androidhmi.util.ModBusUtils
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter
 import com.bacancy.ccs2androidhmi.util.StateAndModesUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -107,6 +108,13 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
         }
     }
 
+    private fun getErrorCodeFromDB(
+        sourceId: Int,
+        sourceErrorCodes: String
+    ): List<TbErrorCodes> {
+        return mainRepository.getErrorCodeFromDB(sourceId, sourceErrorCodes)
+    }
+
     fun insertNotifications(tbNotifications: TbNotifications) {
         viewModelScope.launch {
             mainRepository.insertNotifications(tbNotifications)
@@ -151,20 +159,62 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
             )
         )
 
-        Log.d("Gun0ErrorCode", "Raw 1 = "+GunsChargingInfoUtils.getGunSpecificErrorCodeInformation(it))
-        Log.d("Gun0ErrorCode", "Raw 2 = "+ModbusTypeConverter.hexToBinary(
-            GunsChargingInfoUtils.getGunSpecificErrorCodeInformation(
-                it
-            )
-        ))
-
-        insertErrorCode(
-            TbErrorCodes(
-                0,
-                ModbusTypeConverter.hexToBinary(MiscInfoUtils.getVendorErrorCodeInformation(it)),
-                DateTimeUtils.getCurrentDateTime().convertDateFormatToDesiredFormat(currentFormat = DATE_TIME_FORMAT,desiredFormat = DATE_TIME_FORMAT_FOR_UI)
-            ),
+        processChargerErrorCodes(
+            0,
+            ModbusTypeConverter.hexToBinary(MiscInfoUtils.getVendorErrorCodeInformation(it))
         )
+    }
+
+    private fun processChargerErrorCodes(errorSource: Int, errorCodeString: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val reversedString = errorCodeString.reversed()
+            val errorCodesToAvoid = listOf(2, 6, 9, 11, 12, 14, 16, 19, 23, 24, 34, 35, 36)
+            StateAndModesUtils.GunsErrorCode.values().forEachIndexed { index, gunsErrorCode ->
+                if (index < reversedString.length) {
+                    val errorCodeList = getErrorCodeFromDB(errorSource, gunsErrorCode.name)
+                    if (gunsErrorCode.value in errorCodesToAvoid) {
+                        //If we get error code from the list of error codes to avoid, then we will directly insert them in the DB
+                        if (reversedString[index] == '1' && errorCodeList.isEmpty()) {
+                            insertErrorCodesWithValues(errorSource, gunsErrorCode.name, 1)
+                        }
+                    } else {
+                        //If we get error codes to not avoid then we will make the comparison and insert them in the DB
+                        if (reversedString[index] == '1') {
+                            if (errorCodeList.isEmpty()) {
+                                insertErrorCodesWithValues(errorSource, gunsErrorCode.name, 1)
+                            } else {
+                                if (errorCodeList[errorCodeList.size - 1].sourceErrorValue == 0) {
+                                    insertErrorCodesWithValues(errorSource, gunsErrorCode.name, 1)
+                                }
+                            }
+                        } else if (reversedString[index] == '0' && errorCodeList.isNotEmpty() && errorCodeList[errorCodeList.size - 1].sourceErrorValue == 1) {
+                            insertErrorCodesWithValues(errorSource, gunsErrorCode.name, 0)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun insertErrorCodesWithValues(
+        errorSource: Int,
+        errorCodeName: String,
+        errorCodeValue: Int
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            insertErrorCode(
+                TbErrorCodes(
+                    sourceId = errorSource,
+                    sourceErrorCodes = errorCodeName,
+                    sourceErrorValue = errorCodeValue,
+                    sourceErrorDateTime = DateTimeUtils.getCurrentDateTime()
+                        .convertDateFormatToDesiredFormat(
+                            currentFormat = DATE_TIME_FORMAT,
+                            desiredFormat = DATE_TIME_FORMAT_FOR_UI
+                        )
+                )
+            )
+        }
     }
 
     fun insertGun1InfoInDB(it: ByteArray) {
@@ -186,22 +236,10 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
             )
         )
 
-        Log.d("Gun1ErrorCode", "Raw 1 = "+GunsChargingInfoUtils.getGunSpecificErrorCodeInformation(it))
-        Log.d("Gun1ErrorCode", "Raw 2 = "+ModbusTypeConverter.hexToBinary(
-            GunsChargingInfoUtils.getGunSpecificErrorCodeInformation(
-                it
-            )
-        ))
-
-        insertErrorCode(
-            TbErrorCodes(
-                1,
-                ModbusTypeConverter.hexToBinary(
-                    GunsChargingInfoUtils.getGunSpecificErrorCodeInformation(
-                        it
-                    )
-                ),
-                DateTimeUtils.getCurrentDateTime().convertDateFormatToDesiredFormat(currentFormat = DATE_TIME_FORMAT,desiredFormat = DATE_TIME_FORMAT_FOR_UI)
+        processChargerErrorCodes(
+            1,
+            ModbusTypeConverter.hexToBinary(
+                GunsChargingInfoUtils.getGunSpecificErrorCodeInformation(it)
             )
         )
     }
@@ -289,22 +327,10 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
             )
         )
 
-        Log.d("Gun2ErrorCode", "Raw 1 = "+GunsChargingInfoUtils.getGunSpecificErrorCodeInformation(it))
-        Log.d("Gun2ErrorCode", "Raw 2 = "+ModbusTypeConverter.hexToBinary(
-            GunsChargingInfoUtils.getGunSpecificErrorCodeInformation(
-                it
-            )
-        ))
-
-        insertErrorCode(
-            TbErrorCodes(
-                2,
-                ModbusTypeConverter.hexToBinary(
-                    GunsChargingInfoUtils.getGunSpecificErrorCodeInformation(
-                        it
-                    )
-                ),
-                DateTimeUtils.getCurrentDateTime().convertDateFormatToDesiredFormat(currentFormat = DATE_TIME_FORMAT,desiredFormat = DATE_TIME_FORMAT_FOR_UI)
+        processChargerErrorCodes(
+            2,
+            ModbusTypeConverter.hexToBinary(
+                GunsChargingInfoUtils.getGunSpecificErrorCodeInformation(it)
             )
         )
     }
@@ -397,6 +423,7 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
                         gunsErrorCode.value,
                         gunsErrorCode.name,
                         errorSource,
+                        "", 1,
                         errorDateTime
                     )
                 )

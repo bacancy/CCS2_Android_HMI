@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.databinding.RowItemErrorCodesBinding
 import com.bacancy.ccs2androidhmi.models.ErrorCodes
 
@@ -45,10 +46,18 @@ class ErrorCodesListAdapter(var onItemClick: (ErrorCodes) -> Unit) :
 
         fun bind(sampleModel: ErrorCodes, position: Int) {
             binding.apply {
-                tvSerialNo.text = (position+1).toString()
+                tvSerialNo.text = (sampleModel.id).toString()
                 tvErrorDateTime.text = sampleModel.errorCodeDateTime
                 tvErrorCodeName.text = sampleModel.errorCodeName
-                tvErrorCodeStatus.text = sampleModel.errorCodeStatus
+
+                if (sampleModel.errorCodeValue == 1) {
+                    tvErrorCodeStatus.text = "Occurred"
+                    tvErrorCodeStatus.setBackgroundResource(R.drawable.bg_red_rect_with_white_border)
+                } else {
+                    tvErrorCodeStatus.text = "Resolved"
+                    tvErrorCodeStatus.setBackgroundResource(R.drawable.bg_green_rect_with_white_border)
+                }
+                tvErrorCodeSource.text = sampleModel.errorCodeSource
             }
         }
     }

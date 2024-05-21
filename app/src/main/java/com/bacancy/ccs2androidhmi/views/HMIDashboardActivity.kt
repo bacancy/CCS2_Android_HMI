@@ -130,7 +130,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         super.onResume()
         observeDeviceInternetStates()
         startClockTimer()
-        //manageKioskMode()
+        manageKioskMode()
     }
 
     private fun manageKioskMode() {
@@ -231,13 +231,20 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
             errorCodes?.let { codes ->
                 val savedMacAddress = prefHelper.getStringValue(DEVICE_MAC_ADDRESS, "")
 
-                val abnormalErrorsList = codes.flatMap { tbErrorCodes ->
-                    appViewModel.getAbnormalErrorCodesList(
-                        tbErrorCodes.sourceErrorCodes,
-                        tbErrorCodes.sourceId,
-                        tbErrorCodes.sourceErrorDateTime
+                val errorCodeDomainList = mutableListOf<ErrorCodes>()
+                codes.forEach {
+                    errorCodeDomainList.add(
+                        ErrorCodes(
+                            id = it.id,
+                            errorCodeStatus = "",
+                            errorCodeValue = it.sourceErrorValue,
+                            errorCodeName = it.sourceErrorCodes,
+                            errorCodeSource = getErrorSource(it.sourceId),
+                            errorCodeDateTime = it.sourceErrorDateTime
+                        )
                     )
-                }.toMutableList()
+                }
+                val abnormalErrorsList = errorCodeDomainList.filter { it.errorCodeValue == 1 }.toMutableList()
 
                 if (abnormalErrorsList.isEmpty()) {
                     sentErrorsList = mutableListOf()
@@ -249,6 +256,15 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
                     }
                 }
             }
+        }
+    }
+
+    private fun getErrorSource(sourceId: Int): String {
+        return when(sourceId){
+            0 -> "Charger"
+            1 -> "Gun 1"
+            2 -> "Gun 2"
+            else -> "Charger"
         }
     }
 

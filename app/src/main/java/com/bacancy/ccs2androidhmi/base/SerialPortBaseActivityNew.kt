@@ -1049,7 +1049,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 } else {
                     writeForGunsRectifier(
                         359,
-                        prefHelper.getIntValue("GUN1_OUTPUT_ON_OFF_VALUE", 0)
+                        prefHelper.getIntValue("GUN2_OUTPUT_ON_OFF_VALUE", 0)
                     )
                 }
             } else {

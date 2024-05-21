@@ -25,7 +25,7 @@
             style="@style/HistoryTableHeaderTheme"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="0.3"
+            android:layout_weight="0.2"
             android:text="@string/lbl_serial_number" />
 
         <TextView
@@ -39,14 +39,24 @@
             style="@style/HistoryTableHeaderTheme"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:layout_weight="0.8"
+            android:paddingStart="@dimen/_20sdp"
+            android:paddingEnd="@dimen/_20sdp"
+            android:gravity="start|center"
             android:text="@string/lbl_error_desc" />
 
         <TextView
             style="@style/HistoryTableHeaderTheme"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:layout_weight="0.5"
+            android:text="@string/lbl_error_status" />
+
+        <TextView
+            style="@style/HistoryTableHeaderTheme"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.5"
             android:text="@string/lbl_error_source" />
 
     </LinearLayout>

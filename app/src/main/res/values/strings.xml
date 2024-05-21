@@ -135,8 +135,8 @@
     <string name="message_device_communication_error">Device Communication Error</string>
     <string name="lbl_gun_2_loading">Gun - 2 (Loading…)</string>
     <string name="lbl_gun_1_loading">Gun - 1 (Loading…)</string>
-    <string name="lbl_serial_number">Serial No.</string>
-    <string name="lbl_error_status">Status</string>
+    <string name="lbl_serial_number">Sr. No.</string>
+    <string name="lbl_error_status">Error Status</string>
     <string name="lbl_error_desc">Error description</string>
     <string name="lbl_authorize_for_local_start_stop">Authorize for Local Start/Stop</string>
     <string name="hint_enter_your_6_digit_pin">Enter your 6-digit PIN</string>

@@ -285,7 +285,7 @@ class MQTTViewModel @Inject constructor(private val mqttClient: MQTTClient) : Vi
     ) {
         if(updatedErrorCodesList.isNotEmpty()){
             updatedErrorCodesList.forEach { error ->
-                val connectorId = when (error.errorCodeStatus) {
+                val connectorId = when (error.errorCodeSource) {
                     "Charger" -> 0
                     "Gun 1" -> 1
                     "Gun 2" -> 2
