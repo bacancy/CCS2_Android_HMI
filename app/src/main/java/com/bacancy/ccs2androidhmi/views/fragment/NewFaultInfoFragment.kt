@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
@@ -45,10 +46,11 @@ class NewFaultInfoFragment : BaseFragment() {
             if (errorCodes != null) {
                 Log.d("ErrorCodes", "ErrorCodes: $errorCodes")
                 val updatedErrorCodesList = mutableListOf<ErrorCodes>()
-                errorCodes.forEach { tbErrorCodes ->
+
+                errorCodes.forEachIndexed { index, tbErrorCodes ->
                     updatedErrorCodesList.add(
                         ErrorCodes(
-                            id = tbErrorCodes.id,
+                            id = index + 1,
                             errorCodeName = tbErrorCodes.sourceErrorCodes,
                             errorCodeStatus = "",
                             errorCodeSource = getErrorCodeSource(tbErrorCodes.sourceId),
@@ -57,11 +59,13 @@ class NewFaultInfoFragment : BaseFragment() {
                         )
                     )
                 }
+
                 lifecycleScope.launch(Dispatchers.Main) {
                     if (updatedErrorCodesList.isNotEmpty()) {
                         binding.tvNoDataFound.gone()
                         binding.rvVendorErrorCodeInfo.visible()
                         allErrorCodesListAdapter.submitList(updatedErrorCodesList)
+                        binding.rvVendorErrorCodeInfo.smoothScrollToPosition(0)
                     } else {
                         binding.tvNoDataFound.visible()
                         binding.rvVendorErrorCodeInfo.gone()
@@ -92,6 +96,7 @@ class NewFaultInfoFragment : BaseFragment() {
             rvVendorErrorCodeInfo.apply {
                 layoutManager = LinearLayoutManager(requireActivity())
                 adapter = allErrorCodesListAdapter
+                itemAnimator = DefaultItemAnimator()
             }
         }
     }

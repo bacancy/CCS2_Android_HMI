@@ -245,8 +245,9 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
                     )
                 }
                 val abnormalErrorsList = errorCodeDomainList.filter { it.errorCodeValue == 1 }.toMutableList()
+                val resolvedErrorsList = errorCodeDomainList.filter { it.errorCodeValue == 0 }.toMutableList()
 
-                if (abnormalErrorsList.isEmpty()) {
+                if (abnormalErrorsList.size == resolvedErrorsList.size || abnormalErrorsList.isEmpty()) {
                     sentErrorsList = mutableListOf()
                 } else {
                     val uniqueErrorsList = getUniqueItems(abnormalErrorsList, sentErrorsList)
