@@ -30,6 +30,7 @@ import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_LOCAL_START
 import com.bacancy.ccs2androidhmi.util.CommonUtils.INSIDE_LOCAL_START_STOP_SCREEN
 import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_APP_RESTARTED
 import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_CHARGER_ACTIVE
+import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_DUAL_SOCKET_MODE_SELECTED
 import com.bacancy.ccs2androidhmi.util.CommonUtils.UNIT_PRICE
 import com.bacancy.ccs2androidhmi.util.CommonUtils.addColonsToMacAddress
 import com.bacancy.ccs2androidhmi.util.CommonUtils.generateRandomNumber
@@ -168,7 +169,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 writeForChargerActiveDeactive()
             } else {
                 //readChargerActiveDeactiveState()
-                readMiscInfo()
+                writeForDualSocketMode(if(prefHelper.getBoolean(IS_DUAL_SOCKET_MODE_SELECTED, false)) 1 else 0)
             }
         }
     }
@@ -186,7 +187,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                     sendChargerStatusConfirmation(isChargerActive)
                     lifecycleScope.launch {
                         //readChargerActiveDeactiveState()
-                        readMiscInfo()
+                        writeForDualSocketMode(if(prefHelper.getBoolean(IS_DUAL_SOCKET_MODE_SELECTED, false)) 1 else 0)
                     }
                 }, {})
         }
@@ -952,6 +953,22 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                         } else {
                             startReading()
                         }
+                    }
+                }, {})
+        }
+    }
+
+    private fun writeForDualSocketMode(mode: Int) {
+        Log.i(TAG, "Gun $mode writeForDualSocketMode Request Started")
+        lifecycleScope.launch(Dispatchers.IO) {
+            ReadWriteUtil.writeToSingleHoldingRegisterNew(
+                mOutputStream,
+                mInputStream,
+                86,
+                mode, {
+                    Log.d(TAG, "writeForDualSocketMode: Response Got")
+                    lifecycleScope.launch {
+                        readMiscInfo()
                     }
                 }, {})
         }

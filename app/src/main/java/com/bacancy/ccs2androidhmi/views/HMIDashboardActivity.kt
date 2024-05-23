@@ -6,7 +6,6 @@ import android.app.UiModeManager
 import android.app.admin.DevicePolicyManager
 import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkRequest
@@ -47,13 +46,16 @@ import com.bacancy.ccs2androidhmi.util.CommonUtils.EVSE_APP_PACKAGE_NAME
 import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_APP_PINNED
 import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_APP_RESTARTED
 import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_CHARGER_ACTIVE
+import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_DUAL_SOCKET_MODE_SELECTED
 import com.bacancy.ccs2androidhmi.util.CommonUtils.fromJson
 import com.bacancy.ccs2androidhmi.util.CommonUtils.getUniqueItems
 import com.bacancy.ccs2androidhmi.util.CommonUtils.toJsonString
 import com.bacancy.ccs2androidhmi.util.DateTimeUtils
 import com.bacancy.ccs2androidhmi.util.DateTimeUtils.convertToUtc
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showCustomDialog
+import com.bacancy.ccs2androidhmi.util.DialogUtils.showCustomDialogForAreYouSure
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showPasswordPromptDialog
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils
 import com.bacancy.ccs2androidhmi.util.LogUtils
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.NO_STATE
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.TOKEN_ID_NONE
@@ -67,6 +69,7 @@ import com.bacancy.ccs2androidhmi.util.showToast
 import com.bacancy.ccs2androidhmi.util.visible
 import com.bacancy.ccs2androidhmi.viewmodel.MQTTViewModel
 import com.bacancy.ccs2androidhmi.views.fragment.AppNotificationsFragment
+import com.bacancy.ccs2androidhmi.views.fragment.DualSocketGunsMoreInformationFragment
 import com.bacancy.ccs2androidhmi.views.fragment.FirmwareVersionInfoFragment
 import com.bacancy.ccs2androidhmi.views.fragment.GunsHomeScreenFragment
 import com.bacancy.ccs2androidhmi.views.fragment.LocalStartStopFragment
@@ -117,6 +120,8 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
         showHideHomeIcon()
 
+        showHideDualSocketButton(true)
+
         startMQTTConnection()
 
         observeMqttOperations()
@@ -124,6 +129,9 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         observeAllErrorCodes()
 
         observeChargerActiveDeactiveStates()
+
+        manageDualSocketButtonUI(false)
+
     }
 
     override fun onResume() {
@@ -164,7 +172,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         }
     }
 
-    private fun observeDeviceInternetStates(){
+    private fun observeDeviceInternetStates() {
         connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         networkCallback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
@@ -172,6 +180,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
                 Log.i(TAG, "###Network onAvailable: Called")
                 startMQTTConnection()
             }
+
             override fun onLost(network: Network) {
                 super.onLost(network)
                 Log.i(TAG, "###Network onLost: Called")
@@ -182,7 +191,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
     private fun registerNetworkCallback() {
         val networkRequest = NetworkRequest.Builder().build()
-        connectivityManager.registerNetworkCallback(networkRequest,networkCallback)
+        connectivityManager.registerNetworkCallback(networkRequest, networkCallback)
     }
 
     private fun unregisterNetworkCallback() {
@@ -244,8 +253,10 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
                         )
                     )
                 }
-                val abnormalErrorsList = errorCodeDomainList.filter { it.errorCodeValue == 1 }.toMutableList()
-                val resolvedErrorsList = errorCodeDomainList.filter { it.errorCodeValue == 0 }.toMutableList()
+                val abnormalErrorsList =
+                    errorCodeDomainList.filter { it.errorCodeValue == 1 }.toMutableList()
+                val resolvedErrorsList =
+                    errorCodeDomainList.filter { it.errorCodeValue == 0 }.toMutableList()
 
                 if (abnormalErrorsList.size == resolvedErrorsList.size || abnormalErrorsList.isEmpty()) {
                     sentErrorsList = mutableListOf()
@@ -261,7 +272,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
     }
 
     private fun getErrorSource(sourceId: Int): String {
-        return when(sourceId){
+        return when (sourceId) {
             0 -> "Charger"
             1 -> "Gun 1"
             2 -> "Gun 2"
@@ -367,9 +378,12 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
                                                         )
                                                         sendPopupAcknowledgementToServer(messageBody)
                                                     }
-                                                    withContext(Dispatchers.Main){
+                                                    withContext(Dispatchers.Main) {
                                                         serverPopup =
-                                                            showCustomDialog(messageBody.dialogMessage, messageBody.dialogType.lowercase()) {
+                                                            showCustomDialog(
+                                                                messageBody.dialogMessage,
+                                                                messageBody.dialogType.lowercase()
+                                                            ) {
                                                                 popupHandler.removeCallbacks(
                                                                     dismissDialogRunnable
                                                                 )
@@ -405,7 +419,10 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         val ackMessage = messageBody.copy(dialogStatus = "RECEIVED")
         val deviceMacAddress = prefHelper.getStringValue(DEVICE_MAC_ADDRESS, "")
         if (deviceMacAddress.isNotEmpty()) {
-            mqttViewModel.publishMessageToTopic(getTopicAtoB(deviceMacAddress), ackMessage.toJsonString())
+            mqttViewModel.publishMessageToTopic(
+                getTopicAtoB(deviceMacAddress),
+                ackMessage.toJsonString()
+            )
         }
     }
 
@@ -559,6 +576,25 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
     private fun handleClicks() {
 
+        binding.tvDualSocket.setOnClickListener {
+            if (binding.tvDualSocket.text == "Dual Socket") {
+                showCustomDialogForAreYouSure(
+                    "Are you sure you want to switch to dual socket mode?",
+                    {
+                        prefHelper.setBoolean(IS_DUAL_SOCKET_MODE_SELECTED, true)
+                        addNewFragment(DualSocketGunsMoreInformationFragment())
+                    }, {})
+            } else if (binding.tvDualSocket.text == "Single Socket") {
+                showCustomDialogForAreYouSure(
+                    "Are you sure you want to switch to single socket mode?",
+                    {
+                        prefHelper.setBoolean(IS_DUAL_SOCKET_MODE_SELECTED, false)
+                        goBack()
+                    }, {})
+            }
+
+        }
+
         binding.lnrChargerInoperative.setOnClickListener {}
 
         binding.incToolbar.ivSwitchDarkMode.setOnClickListener {
@@ -578,7 +614,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         }
 
         binding.incToolbar.ivLocalStartStop.setOnClickListener {
-            showPasswordPromptDialog(getString(R.string.title_authorize_for_local_start_stop),{
+            showPasswordPromptDialog(getString(R.string.title_authorize_for_local_start_stop), {
                 addNewFragment(LocalStartStopFragment())
             }, {
                 showCustomToast(getString(R.string.msg_invalid_password), false)
@@ -586,7 +622,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         }
 
         binding.incToolbar.ivTestMode.setOnClickListener {
-            showPasswordPromptDialog(getString(R.string.title_authorize_for_test_mode),{
+            showPasswordPromptDialog(getString(R.string.title_authorize_for_test_mode), {
                 addNewFragment(TestModeHomeFragment())
             }, {
                 showCustomToast(getString(R.string.msg_invalid_password), false)
@@ -614,7 +650,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
                 packageManager.getLaunchIntentForPackage(EVSE_APP_PACKAGE_NAME)
             if (launchIntent != null) {
                 startActivity(launchIntent, null)
-            }else{
+            } else {
                 showToast(getString(R.string.msg_evseready_app_not_installed))
             }
         } catch (e: Exception) {
@@ -649,6 +685,28 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
             binding.incToolbar.imgHome.visible()
         } else {
             binding.incToolbar.imgHome.invisible()
+        }
+    }
+
+    fun showHideDualSocketButton(showDualSocket: Boolean = false) {
+        if (showDualSocket) {
+            binding.tvDualSocket.visible()
+        } else {
+            binding.tvDualSocket.invisible()
+        }
+    }
+
+    fun updateDualSocketText(updatedLabel: String = "Dual Socket") {
+        binding.tvDualSocket.text = updatedLabel
+    }
+
+    fun manageDualSocketButtonUI(isBothGunsPluggedIn: Boolean) {
+        if (isBothGunsPluggedIn) {
+            binding.tvDualSocket.isEnabled = true
+            binding.tvDualSocket.setBackgroundResource(R.drawable.bg_rect_half_rounded)
+        } else {
+            binding.tvDualSocket.isEnabled = false
+            binding.tvDualSocket.setBackgroundResource(R.drawable.bg_rect_half_rounded_disabled)
         }
     }
 

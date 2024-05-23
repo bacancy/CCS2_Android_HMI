@@ -15,6 +15,7 @@ import com.bacancy.ccs2androidhmi.databinding.FragmentGunsHomeScreenBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
 import com.bacancy.ccs2androidhmi.util.CommonUtils
 import com.bacancy.ccs2androidhmi.util.CommonUtils.INSIDE_LOCAL_START_STOP_SCREEN
+import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_DUAL_SOCKET_MODE_SELECTED
 import com.bacancy.ccs2androidhmi.util.CommonUtils.UNIT_PRICE
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showChargingSummaryDialog
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_DENIED
@@ -57,6 +58,8 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class GunsHomeScreenFragment : BaseFragment() {
 
+    private var isGun1PluggedIn: Boolean = false
+    private var isGun2PluggedIn: Boolean = false
     private var isGun1ChargingStarted: Boolean = false
     private var isGun2ChargingStarted: Boolean = false
     private var shouldShowGun1SummaryDialog: Boolean = false
@@ -98,6 +101,7 @@ class GunsHomeScreenFragment : BaseFragment() {
 
     override fun onResume() {
         super.onResume()
+        (requireActivity() as HMIDashboardActivity).updateDualSocketText("Dual Socket")
         prefHelper.setBoolean(INSIDE_LOCAL_START_STOP_SCREEN, false)
         prefHelper.setBoolean("IS_IN_TEST_MODE", false)
         prefHelper.setBoolean("IS_OUTPUT_ON_OFF_VALUE_CHANGED", false)
@@ -155,6 +159,7 @@ class GunsHomeScreenFragment : BaseFragment() {
         }
         when (tbGunsChargingInfo.gunChargingState) {
             UNPLUGGED -> {
+                isGun1PluggedIn = false
                 hideGunsChargingStatusUI(true)
                 binding.tvGun1State.removeBlinking()
                 shouldShowGun1SummaryDialog = false
@@ -162,6 +167,7 @@ class GunsHomeScreenFragment : BaseFragment() {
             }
 
             PLUGGED_IN -> {
+                isGun1PluggedIn = true
                 hideGunsChargingStatusUI(true)
                 binding.tvGun1State.removeBlinking()
                 shouldShowGun1SummaryDialog = false
@@ -170,6 +176,7 @@ class GunsHomeScreenFragment : BaseFragment() {
             }
 
             CHARGING -> {
+                isGun1PluggedIn = false
                 binding.tvGun1State.removeBlinking()
                 isGun1ChargingStarted = true
                 shouldShowGun1SummaryDialog = false
@@ -178,6 +185,7 @@ class GunsHomeScreenFragment : BaseFragment() {
             }
 
             PREPARING_FOR_CHARGING -> {
+                isGun1PluggedIn = false
                 hideGunsChargingStatusUI(true)
                 binding.tvGun1State.removeBlinking()
                 shouldShowGun1SummaryDialog = false
@@ -185,6 +193,7 @@ class GunsHomeScreenFragment : BaseFragment() {
             }
 
             COMPLETE -> {
+                isGun1PluggedIn = false
                 binding.tvGun1State.removeBlinking()
                 binding.ivGun1Half.setImageResource(R.drawable.img_gun1_charging)
                 hideGunsChargingStatusUI(true)
@@ -196,22 +205,27 @@ class GunsHomeScreenFragment : BaseFragment() {
             SPD_FAULT,
             SMOKE_FAULT,
             TAMPER_FAULT -> {
+                isGun1PluggedIn = false
                 binding.tvGun1State.startBlinking(requireContext())
                 binding.ivGun1Half.setImageResource(R.drawable.img_gun1_fault)
                 hideGunsChargingStatusUI(true)
             }
 
             EMERGENCY_STOP -> {
+                isGun1PluggedIn = false
                 binding.tvGun1State.startBlinking(requireContext())
                 hideGunsChargingStatusUI(true)
             }
 
             else -> {
+                isGun1PluggedIn = false
                 binding.tvGun1State.startBlinking(requireContext())
                 binding.tvGun1State.text = "(${tbGunsChargingInfo.gunChargingState})"
                 hideGunsChargingStatusUI(true)
             }
         }
+
+        handleDualSocketButtonVisibility()
 
         when (tbGunsChargingInfo.gunChargingState) {
             COMPLETE,
@@ -269,6 +283,7 @@ class GunsHomeScreenFragment : BaseFragment() {
         }
         when (tbGunsChargingInfo.gunChargingState) {
             UNPLUGGED -> {
+                isGun2PluggedIn = false
                 hideGunsChargingStatusUI(false)
                 binding.tvGun2State.removeBlinking()
                 shouldShowGun2SummaryDialog = false
@@ -276,6 +291,7 @@ class GunsHomeScreenFragment : BaseFragment() {
             }
 
             PLUGGED_IN -> {
+                isGun2PluggedIn = true
                 hideGunsChargingStatusUI(false)
                 binding.tvGun2State.removeBlinking()
                 shouldShowGun2SummaryDialog = false
@@ -284,6 +300,7 @@ class GunsHomeScreenFragment : BaseFragment() {
             }
 
             CHARGING -> {
+                isGun2PluggedIn = false
                 binding.tvGun2State.removeBlinking()
                 isGun2ChargingStarted = true
                 shouldShowGun2SummaryDialog = false
@@ -292,6 +309,7 @@ class GunsHomeScreenFragment : BaseFragment() {
             }
 
             PREPARING_FOR_CHARGING -> {
+                isGun2PluggedIn = false
                 hideGunsChargingStatusUI(false)
                 binding.tvGun2State.removeBlinking()
                 shouldShowGun2SummaryDialog = false
@@ -299,6 +317,7 @@ class GunsHomeScreenFragment : BaseFragment() {
             }
 
             COMPLETE -> {
+                isGun2PluggedIn = false
                 binding.tvGun2State.removeBlinking()
                 binding.ivGun2Half.setImageResource(R.drawable.img_gun2_charging)
                 hideGunsChargingStatusUI(false)
@@ -310,22 +329,27 @@ class GunsHomeScreenFragment : BaseFragment() {
             SPD_FAULT,
             SMOKE_FAULT,
             TAMPER_FAULT -> {
+                isGun2PluggedIn = false
                 binding.tvGun2State.startBlinking(requireContext())
                 binding.ivGun2Half.setImageResource(R.drawable.img_gun2_fault)
                 hideGunsChargingStatusUI(false)
             }
 
             EMERGENCY_STOP -> {
+                isGun2PluggedIn = false
                 binding.tvGun2State.startBlinking(requireContext())
                 hideGunsChargingStatusUI(false)
             }
 
             else -> {
+                isGun2PluggedIn = false
                 binding.tvGun2State.startBlinking(requireContext())
                 binding.tvGun2State.text = "(${tbGunsChargingInfo.gunChargingState})"
                 hideGunsChargingStatusUI(false)
             }
         }
+
+        handleDualSocketButtonVisibility()
 
         when (tbGunsChargingInfo.gunChargingState) {
             COMPLETE,
@@ -345,7 +369,7 @@ class GunsHomeScreenFragment : BaseFragment() {
             RESERVED,
             EMERGENCY_STOP,
             -> {
-                if (!shouldShowGun2SummaryDialog && isGun2ChargingStarted) {
+                if (!shouldShowGun2SummaryDialog && isGun2ChargingStarted && !prefHelper.getBoolean(IS_DUAL_SOCKET_MODE_SELECTED, false)) {
                     isGun2ChargingStarted = false
                     shouldShowGun2SummaryDialog = true
                     observeGunsLastChargingSummary(false)
@@ -354,6 +378,14 @@ class GunsHomeScreenFragment : BaseFragment() {
             }
         }
 
+    }
+
+    private fun isBothGunsPluggedIn(): Boolean {
+        return isGun1PluggedIn && isGun2PluggedIn
+    }
+
+    private fun handleDualSocketButtonVisibility() {
+        (requireActivity() as HMIDashboardActivity).manageDualSocketButtonUI(isBothGunsPluggedIn())
     }
 
     private fun showGunsChargingStatusUI(isGun1: Boolean, tbGunsChargingInfo: TbGunsChargingInfo) {

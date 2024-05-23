@@ -37,6 +37,7 @@ object CommonUtils {
     const val CHARGER_ACTIVE_DEACTIVE_MESSAGE_RECD = "CHARGER_MSG_RECD"
     const val IS_APP_PINNED = "IS_APP_PINNED"
     const val EVSE_APP_PACKAGE_NAME="com.EVSEReady.charger_helper"
+    const val IS_DUAL_SOCKET_MODE_SELECTED="IS_DUAL_SOCKET_MODE_SELECTED"
 
     private fun swapAdjacentElements(array: MutableList<Int>): MutableList<Int> {
         for (i in 0 until array.size - 1 step 2) {
