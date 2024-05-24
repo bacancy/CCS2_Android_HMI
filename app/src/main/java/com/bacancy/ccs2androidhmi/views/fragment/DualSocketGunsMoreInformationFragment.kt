@@ -52,8 +52,8 @@ class DualSocketGunsMoreInformationFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentDualSocketGunsMoreInfoScreenBinding.inflate(layoutInflater)
-        (requireActivity() as HMIDashboardActivity).showHideBackIcon()
-        (requireActivity() as HMIDashboardActivity).showHideHomeIcon()
+        (requireActivity() as HMIDashboardActivity).showHideBackIcon(false)
+        (requireActivity() as HMIDashboardActivity).showHideHomeIcon(false)
         (requireActivity() as HMIDashboardActivity).showHideSettingOptions()
         (requireActivity() as HMIDashboardActivity).updateDualSocketText("Single Socket")
         return binding.root

@@ -55,7 +55,6 @@ import com.bacancy.ccs2androidhmi.util.DateTimeUtils.convertToUtc
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showCustomDialog
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showCustomDialogForAreYouSure
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showPasswordPromptDialog
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils
 import com.bacancy.ccs2androidhmi.util.LogUtils
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.NO_STATE
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.TOKEN_ID_NONE
@@ -131,6 +130,8 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         observeChargerActiveDeactiveStates()
 
         manageDualSocketButtonUI(false)
+
+        prefHelper.setBoolean(IS_DUAL_SOCKET_MODE_SELECTED, false)
 
     }
 
@@ -577,20 +578,27 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
     private fun handleClicks() {
 
         binding.tvDualSocket.setOnClickListener {
-            if (binding.tvDualSocket.text == "Dual Socket") {
-                showCustomDialogForAreYouSure(
-                    "Are you sure you want to switch to dual socket mode?",
-                    {
-                        prefHelper.setBoolean(IS_DUAL_SOCKET_MODE_SELECTED, true)
-                        addNewFragment(DualSocketGunsMoreInformationFragment())
-                    }, {})
-            } else if (binding.tvDualSocket.text == "Single Socket") {
-                showCustomDialogForAreYouSure(
-                    "Are you sure you want to switch to single socket mode?",
-                    {
-                        prefHelper.setBoolean(IS_DUAL_SOCKET_MODE_SELECTED, false)
-                        goBack()
-                    }, {})
+            if(binding.tvDualSocket.tag == "DISABLED"){
+                showCustomDialog(
+                    getString(R.string.msg_to_inform_about_dual_socket),
+                    "info"
+                ) {}.show()
+            }else{
+                if (binding.tvDualSocket.text == "Dual Socket") {
+                    showCustomDialogForAreYouSure(
+                        getString(R.string.msg_to_confirm_to_switch_to_dual_socket),
+                        {
+                            prefHelper.setBoolean(IS_DUAL_SOCKET_MODE_SELECTED, true)
+                            addNewFragment(DualSocketGunsMoreInformationFragment())
+                        }, {})
+                } else if (binding.tvDualSocket.text == "Single Socket") {
+                    showCustomDialogForAreYouSure(
+                        getString(R.string.msg_to_confirm_to_switch_to_single_socket),
+                        {
+                            prefHelper.setBoolean(IS_DUAL_SOCKET_MODE_SELECTED, false)
+                            goBack()
+                        }, {})
+                }
             }
 
         }
@@ -702,10 +710,10 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
     fun manageDualSocketButtonUI(isBothGunsPluggedIn: Boolean) {
         if (isBothGunsPluggedIn) {
-            binding.tvDualSocket.isEnabled = true
+            binding.tvDualSocket.tag = "ENABLED"
             binding.tvDualSocket.setBackgroundResource(R.drawable.bg_rect_half_rounded)
         } else {
-            binding.tvDualSocket.isEnabled = false
+            binding.tvDualSocket.tag = "DISABLED"
             binding.tvDualSocket.setBackgroundResource(R.drawable.bg_rect_half_rounded_disabled)
         }
     }
@@ -718,6 +726,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
                 adjustGSMLevel(latestMiscInfo.gsmLevel)
                 adjustWifiLevel(latestMiscInfo.wifiLevel)
                 if (latestMiscInfo.rfidTagState.isNotEmpty() && latestMiscInfo.rfidTagState != TOKEN_ID_NONE && latestMiscInfo.rfidTagState != NO_STATE) {
+                    Log.d(TAG, "observeLatestMiscInfo: RFID Tag State - ${latestMiscInfo.rfidTagState}")
                     if (latestMiscInfo.rfidTagState.endsWith("Invalid")) {
                         showCustomToast(latestMiscInfo.rfidTagState, false)
                     } else {
