@@ -52,6 +52,7 @@ import com.bacancy.ccs2androidhmi.util.CommonUtils.getUniqueItems
 import com.bacancy.ccs2androidhmi.util.CommonUtils.toJsonString
 import com.bacancy.ccs2androidhmi.util.DateTimeUtils
 import com.bacancy.ccs2androidhmi.util.DateTimeUtils.convertToUtc
+import com.bacancy.ccs2androidhmi.util.DialogUtils.clearDialogFlags
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showCustomDialog
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showCustomDialogForAreYouSure
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showPasswordPromptDialog
@@ -383,13 +384,15 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
                                                         serverPopup =
                                                             showCustomDialog(
                                                                 messageBody.dialogMessage,
-                                                                messageBody.dialogType.lowercase()
+                                                                messageBody.dialogType.lowercase(),
+                                                                isCancelable = false
                                                             ) {
                                                                 popupHandler.removeCallbacks(
                                                                     dismissDialogRunnable
                                                                 )
                                                             }
                                                         serverPopup.show()
+                                                        clearDialogFlags(serverPopup)
                                                         if (messageBody.dialogDuration.isNotEmpty() && messageBody.dialogDuration.toInt() > 0) {
                                                             hideServerPopupAfterGivenSeconds(
                                                                 messageBody.dialogDuration.toInt()
@@ -579,21 +582,23 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
         binding.tvDualSocket.setOnClickListener {
             if(binding.tvDualSocket.tag == "DISABLED"){
-                showCustomDialog(
+                val dialog = showCustomDialog(
                     getString(R.string.msg_to_inform_about_dual_socket),
                     "info"
-                ) {}.show()
+                ) {}
+                dialog.show()
+                clearDialogFlags(dialog)
             }else{
                 if (binding.tvDualSocket.text == "Dual Socket") {
                     showCustomDialogForAreYouSure(
-                        getString(R.string.msg_to_confirm_to_switch_to_dual_socket),
+                        getString(R.string.msg_to_confirm_to_switch_to_dual_socket),isCancelable = false,
                         {
                             prefHelper.setBoolean(IS_DUAL_SOCKET_MODE_SELECTED, true)
                             addNewFragment(DualSocketGunsMoreInformationFragment())
                         }, {})
                 } else if (binding.tvDualSocket.text == "Single Socket") {
                     showCustomDialogForAreYouSure(
-                        getString(R.string.msg_to_confirm_to_switch_to_single_socket),
+                        getString(R.string.msg_to_confirm_to_switch_to_single_socket),isCancelable = false,
                         {
                             prefHelper.setBoolean(IS_DUAL_SOCKET_MODE_SELECTED, false)
                             goBack()
@@ -622,7 +627,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         }
 
         binding.incToolbar.ivLocalStartStop.setOnClickListener {
-            showPasswordPromptDialog(getString(R.string.title_authorize_for_local_start_stop), {
+            showPasswordPromptDialog(getString(R.string.title_authorize_for_local_start_stop),isCancelable = true, {
                 addNewFragment(LocalStartStopFragment())
             }, {
                 showCustomToast(getString(R.string.msg_invalid_password), false)
@@ -630,7 +635,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         }
 
         binding.incToolbar.ivTestMode.setOnClickListener {
-            showPasswordPromptDialog(getString(R.string.title_authorize_for_test_mode), {
+            showPasswordPromptDialog(getString(R.string.title_authorize_for_test_mode),isCancelable = true, {
                 addNewFragment(TestModeHomeFragment())
             }, {
                 showCustomToast(getString(R.string.msg_invalid_password), false)

@@ -385,7 +385,9 @@ class GunsHomeScreenFragment : BaseFragment() {
     }
 
     private fun handleDualSocketButtonVisibility() {
-        (requireActivity() as HMIDashboardActivity).manageDualSocketButtonUI(isBothGunsPluggedIn())
+        if(isAdded){
+            (requireActivity() as HMIDashboardActivity).manageDualSocketButtonUI(isBothGunsPluggedIn())
+        }
     }
 
     private fun showGunsChargingStatusUI(isGun1: Boolean, tbGunsChargingInfo: TbGunsChargingInfo) {

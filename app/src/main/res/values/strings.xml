@@ -179,5 +179,7 @@
     <string name="msg_to_inform_about_dual_socket">Please plug in both the guns to switch to dual socket mode.</string>
     <string name="msg_to_confirm_to_switch_to_dual_socket">Are you sure you want to switch to dual socket mode?</string>
     <string name="msg_to_confirm_to_switch_to_single_socket">Are you sure you want to switch to single socket mode?</string>
+    <string name="lbl_gun_1_charging_summary">Gun - 1 Charging Summary</string>
+    <string name="lbl_gun_2_charging_summary">Gun - 2 Charging Summary</string>
 
 </resources>

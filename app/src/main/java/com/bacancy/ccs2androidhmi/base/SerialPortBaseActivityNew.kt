@@ -38,6 +38,7 @@ import com.bacancy.ccs2androidhmi.util.CommonUtils.getCleanedMacAddress
 import com.bacancy.ccs2androidhmi.util.CommonUtils.toJsonString
 import com.bacancy.ccs2androidhmi.util.DateTimeUtils
 import com.bacancy.ccs2androidhmi.util.DateTimeUtils.convertToUtc
+import com.bacancy.ccs2androidhmi.util.DialogUtils.clearDialogFlags
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showCustomDialog
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_DENIED
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_SUCCESS
@@ -119,7 +120,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 mInputStream = it.inputStream
             }
         } catch (e: Exception) {
-            Log.d("TAG", "onCreate: Exception = ${e.toString()}")
+            Log.d("TAG", "onCreate: Exception = $e")
         }
     }
 
@@ -414,6 +415,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
             prefHelper.setStringValue(AUTH_PIN_VALUE, "")
             lifecycleScope.launch(Dispatchers.Main) {
                 dialog.show()
+                clearDialogFlags(dialog)
             }
             resetReadStopCount()
         } else {
