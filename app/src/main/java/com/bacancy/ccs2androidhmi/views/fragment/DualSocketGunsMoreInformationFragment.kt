@@ -196,6 +196,10 @@ class DualSocketGunsMoreInformationFragment : BaseFragment() {
         prefHelper.setSelectedGunNumber(SELECTED_GUN, 1)
         observeGunsChargingInfo()
         binding.apply {
+            incHeaderGun1.tvHeader.maxLines = 1
+            incHeaderGun2.tvHeader.maxLines = 1
+            incHeaderGun1.tvHeader.textSize = requireContext().resources.getDimension(com.intuit.ssp.R.dimen._10ssp)
+            incHeaderGun2.tvHeader.textSize = requireContext().resources.getDimension(com.intuit.ssp.R.dimen._10ssp)
             incHeaderGun1.tvHeader.text = getString(R.string.lbl_gun_1)
             incHeaderGun2.tvHeader.text = getString(R.string.lbl_gun_2)
         }
@@ -230,29 +234,29 @@ class DualSocketGunsMoreInformationFragment : BaseFragment() {
             incEnergyConsumption.tvValueUnit.text = getString(R.string.lbl_kwh)
 
             //For Gun2
-            incInitialSoc2.tvLabel.text = getString(R.string.lbl_initial_soc)
+            incInitialSoc2.tvLabel.invisible()
             incInitialSoc2.tvValueUnit.text = getString(R.string.lbl_percentage)
 
-            incDemandVoltage2.tvLabel.text = getString(R.string.lbl_demand_voltage)
+            incDemandVoltage2.tvLabel.invisible()
             incDemandVoltage2.tvValueUnit.text = getString(R.string.lbl_v)
 
-            incDemandCurrent2.tvLabel.text = getString(R.string.lbl_demand_current)
+            incDemandCurrent2.tvLabel.invisible()
             incDemandCurrent2.tvValueUnit.text = getString(R.string.lbl_a)
 
-            incChargingVoltage2.tvLabel.text = getString(R.string.lbl_charging_voltage)
+            incChargingVoltage2.tvLabel.invisible()
             incChargingVoltage2.tvValueUnit.text = getString(R.string.lbl_v)
 
-            incChargingCurrent2.tvLabel.text = getString(R.string.lbl_charging_current)
+            incChargingCurrent2.tvLabel.invisible()
             incChargingCurrent2.tvValueUnit.text = getString(R.string.lbl_a)
 
-            incChargingSoc2.tvLabel.text = getString(R.string.lbl_charging_soc)
+            incChargingSoc2.tvLabel.invisible()
             incChargingSoc2.tvValueUnit.text = getString(R.string.lbl_percentage)
 
-            incDuration2.tvLabel.text = getString(R.string.lbl_duration_hh_mm)
+            incDuration2.tvLabel.invisible()
             incDuration2.tvValue.text = getString(R.string.hint_00_00)
             incDuration2.tvValueUnit.invisible()
 
-            incEnergyConsumption2.tvLabel.text = getString(R.string.lbl_energy_consumption)
+            incEnergyConsumption2.tvLabel.invisible()
             incEnergyConsumption2.tvValueUnit.text = getString(R.string.lbl_kwh)
 
         }

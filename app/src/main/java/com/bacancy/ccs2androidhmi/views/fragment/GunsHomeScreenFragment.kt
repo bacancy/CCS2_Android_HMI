@@ -102,6 +102,7 @@ class GunsHomeScreenFragment : BaseFragment() {
     override fun onResume() {
         super.onResume()
         (requireActivity() as HMIDashboardActivity).updateDualSocketText("Dual Socket")
+        prefHelper.setBoolean(IS_DUAL_SOCKET_MODE_SELECTED, false)
         prefHelper.setBoolean(INSIDE_LOCAL_START_STOP_SCREEN, false)
         prefHelper.setBoolean("IS_IN_TEST_MODE", false)
         prefHelper.setBoolean("IS_OUTPUT_ON_OFF_VALUE_CHANGED", false)
@@ -475,7 +476,12 @@ class GunsHomeScreenFragment : BaseFragment() {
                                         true,
                                         it,
                                         isDarkTheme
-                                    ) {}
+                                    ) {
+                                        if(prefHelper.getBoolean(IS_DUAL_SOCKET_MODE_SELECTED, false)){
+                                            prefHelper.setBoolean(IS_DUAL_SOCKET_MODE_SELECTED, false)
+                                            (requireActivity() as HMIDashboardActivity).goBack()
+                                        }
+                                    }
                                 }
                             } else {
                                 if (shouldShowGun2SummaryDialog) {

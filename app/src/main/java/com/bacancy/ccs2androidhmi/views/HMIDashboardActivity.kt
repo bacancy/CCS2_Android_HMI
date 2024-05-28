@@ -132,8 +132,6 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
         manageDualSocketButtonUI(false)
 
-        prefHelper.setBoolean(IS_DUAL_SOCKET_MODE_SELECTED, false)
-
     }
 
     override fun onResume() {
@@ -600,7 +598,6 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
                     showCustomDialogForAreYouSure(
                         getString(R.string.msg_to_confirm_to_switch_to_single_socket),isCancelable = false,
                         {
-                            prefHelper.setBoolean(IS_DUAL_SOCKET_MODE_SELECTED, false)
                             goBack()
                         }, {})
                 }

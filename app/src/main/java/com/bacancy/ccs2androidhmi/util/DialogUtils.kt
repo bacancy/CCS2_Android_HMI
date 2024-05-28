@@ -30,10 +30,6 @@ object DialogUtils {
     ): Dialog {
         val dialog = Dialog(this, R.style.CustomAlertDialog)
         dialog.setupWithoutTitle()
-        dialog.window?.setLayout(
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.WRAP_CONTENT
-        )
         val binding = CustomDialogBinding.inflate(layoutInflater)
         dialog.setContentView(binding.root)
 
@@ -66,10 +62,6 @@ object DialogUtils {
     fun Activity.showCustomDialogForAreYouSure(message: String,isCancelable: Boolean = false, onYesClicked: () -> Unit, onNoClicked: () -> Unit) {
         val dialog = Dialog(this, R.style.CustomAlertDialog)
         dialog.setupWithoutTitle()
-        dialog.window?.setLayout(
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.WRAP_CONTENT
-        )
         val binding = CustomDialogAreYouSureBinding.inflate(layoutInflater)
         dialog.setContentView(binding.root)
 
@@ -98,10 +90,6 @@ object DialogUtils {
     ) {
         val dialog = Dialog(this, R.style.CustomAlertDialog)
         dialog.setupWithoutTitle()
-        dialog.window?.setLayout(
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.WRAP_CONTENT
-        )
         val binding = DialogGunsChargingSummaryBinding.inflate(LayoutInflater.from(this))
         dialog.setContentView(binding.root)
 
@@ -177,7 +165,7 @@ object DialogUtils {
         }
 
         dialog.setCancelable(true)
-        dialog.setupDialogFlags()
+        dialog.setupDialogFlags(true)
         dialog.show()
         clearDialogFlags(dialog)
     }
@@ -190,10 +178,6 @@ object DialogUtils {
     ) {
         val dialog = Dialog(this, R.style.CustomAlertDialog)
         dialog.setupWithoutTitle()
-        dialog.window?.setLayout(
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.WRAP_CONTENT
-        )
         val binding = DialogPasswordPromptBinding.inflate(layoutInflater)
         dialog.setContentView(binding.root)
 
@@ -222,10 +206,6 @@ object DialogUtils {
     ) {
         val dialog = Dialog(requireActivity(), R.style.CustomAlertDialog)
         dialog.setupWithoutTitle()
-        dialog.window?.setLayout(
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.WRAP_CONTENT
-        )
         val binding = DialogPinAuthorizationBinding.inflate(layoutInflater)
         dialog.setContentView(binding.root)
         dialog.setCanceledOnTouchOutside(false)
@@ -251,12 +231,16 @@ object DialogUtils {
         requireActivity().clearDialogFlags(dialog)
     }
 
-    private fun Dialog.setupDialogFlags() {
+    private fun Dialog.setupDialogFlags(isMatchParent: Boolean = false) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             this.window?.let { window ->
                 val controller = window.decorView.windowInsetsController
                 controller?.hide(WindowInsets.Type.navigationBars() or WindowInsets.Type.statusBars())
                 controller?.systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                window.setLayout(
+                    if(isMatchParent) WindowManager.LayoutParams.MATCH_PARENT else WindowManager.LayoutParams.WRAP_CONTENT,
+                    WindowManager.LayoutParams.WRAP_CONTENT
+                )
             }
         } else {
             @Suppress("DEPRECATION")

@@ -176,7 +176,7 @@
     <string name="title_authorize_for_test_mode">Authorize for Test Mode</string>
     <string name="msg_evseready_app_not_installed">EVSEReady App Not Installed</string>
     <string name="lbl_error_time">Error Time</string>
-    <string name="msg_to_inform_about_dual_socket">Please plug in both the guns to switch to dual socket mode.</string>
+    <string name="msg_to_inform_about_dual_socket">Both guns should be in PLUGGED IN to start dual socket mode.</string>
     <string name="msg_to_confirm_to_switch_to_dual_socket">Are you sure you want to switch to dual socket mode?</string>
     <string name="msg_to_confirm_to_switch_to_single_socket">Are you sure you want to switch to single socket mode?</string>
     <string name="lbl_gun_1_charging_summary">Gun - 1 Charging Summary</string>
