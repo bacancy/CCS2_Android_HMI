@@ -13,7 +13,9 @@ import com.bacancy.ccs2androidhmi.mqtt.models.FaultErrorsBody
 import com.bacancy.ccs2androidhmi.util.CommonUtils.addColonsToMacAddress
 import com.bacancy.ccs2androidhmi.util.CommonUtils.toJsonString
 import com.bacancy.ccs2androidhmi.util.DateTimeUtils
-import com.bacancy.ccs2androidhmi.util.DateTimeUtils.convertDateFormat
+import com.bacancy.ccs2androidhmi.util.DateTimeUtils.DATE_TIME_FORMAT
+import com.bacancy.ccs2androidhmi.util.DateTimeUtils.DATE_TIME_FORMAT_FROM_CHARGER
+import com.bacancy.ccs2androidhmi.util.DateTimeUtils.convertDateFormatToDesiredFormat
 import com.bacancy.ccs2androidhmi.util.DateTimeUtils.convertToUtc
 import com.bacancy.ccs2androidhmi.util.LastChargingSummaryUtils
 import com.bacancy.ccs2androidhmi.util.Resource
@@ -231,8 +233,8 @@ class MQTTViewModel @Inject constructor(private val mqttClient: MQTTClient) : Vi
             connectorId = connectorId,
             evMacAddress = LastChargingSummaryUtils.getEVMacAddress(it),
             chargingStartTime = LastChargingSummaryUtils.getChargingStartTime(it)
-                .convertDateFormat().convertToUtc().orEmpty(),
-            chargingEndTime = LastChargingSummaryUtils.getChargingEndTime(it).convertDateFormat().convertToUtc().orEmpty(),
+                .convertDateFormatToDesiredFormat(currentFormat = DATE_TIME_FORMAT_FROM_CHARGER, desiredFormat = DATE_TIME_FORMAT).convertToUtc().orEmpty(),
+            chargingEndTime = LastChargingSummaryUtils.getChargingEndTime(it).convertDateFormatToDesiredFormat(currentFormat = DATE_TIME_FORMAT_FROM_CHARGER, desiredFormat = DATE_TIME_FORMAT).convertToUtc().orEmpty(),
             totalChargingTime = LastChargingSummaryUtils.getTotalChargingTime(it),
             startSoc = LastChargingSummaryUtils.getStartSoc(it),
             endSoc = LastChargingSummaryUtils.getEndSoc(it),
@@ -283,7 +285,7 @@ class MQTTViewModel @Inject constructor(private val mqttClient: MQTTClient) : Vi
     ) {
         if(updatedErrorCodesList.isNotEmpty()){
             updatedErrorCodesList.forEach { error ->
-                val connectorId = when (error.errorCodeStatus) {
+                val connectorId = when (error.errorCodeSource) {
                     "Charger" -> 0
                     "Gun 1" -> 1
                     "Gun 2" -> 2

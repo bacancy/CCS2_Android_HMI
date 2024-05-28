@@ -74,6 +74,10 @@ class MainRepository @Inject constructor(private val appDatabase: AppDatabase) {
         appDatabase.appDao().insertErrorCode(tbErrorCodes)
     }
 
+    fun getErrorCodeFromDB(sourceId: Int, sourceErrorCodes: String): List<TbErrorCodes> {
+        return appDatabase.appDao().getErrorCodeFromDB(sourceId, sourceErrorCodes)
+    }
+
     fun getAllErrorCodes(): LiveData<List<TbErrorCodes>> {
         return appDatabase.appDao().getAllErrorCodes()
     }

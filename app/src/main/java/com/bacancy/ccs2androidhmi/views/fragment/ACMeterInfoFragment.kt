@@ -118,7 +118,7 @@ class ACMeterInfoFragment : BaseFragment() {
             incActivePower.tvLabel.text = getString(R.string.lbl_active_power)
             incActivePower.tvValueUnit.text = getString(R.string.lbl_kw)
 
-            incTotalPower.tvLabel.text = getString(R.string.lbl_total_power)
+            incTotalPower.tvLabel.text = getString(R.string.lbl_total_export_energy)
             incTotalPower.tvValueUnit.text = getString(R.string.lbl_kwh)
         }
 

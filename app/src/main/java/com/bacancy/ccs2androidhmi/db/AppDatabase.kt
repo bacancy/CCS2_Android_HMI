@@ -17,7 +17,7 @@ import com.bacancy.ccs2androidhmi.db.entity.TbNotifications
 @Database(
     entities = [TbChargingHistory::class, TbAcMeterInfo::class, TbMiscInfo::class, TbGunsDcMeterInfo::class, TbGunsChargingInfo::class, TbGunsLastChargingSummary::class,
                TbErrorCodes::class, TbNotifications::class],
-    version = 4
+    version = 5
 )
 abstract class AppDatabase : RoomDatabase() {
 
@@ -41,6 +41,12 @@ abstract class AppDatabase : RoomDatabase() {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("ALTER TABLE tbGunsChargingInfo ADD COLUMN gunTemperatureDCPositive REAL DEFAULT 0.0 NOT NULL")
                 db.execSQL("ALTER TABLE tbGunsChargingInfo ADD COLUMN gunTemperatureDCNegative REAL DEFAULT 0.0 NOT NULL")
+            }
+        }
+
+        val MIGRATION_4_5: Migration = object : Migration(4, 5) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE tbGunsLastChargingSummary ADD COLUMN totalCost TEXT DEFAULT '' NOT NULL")
             }
         }
 

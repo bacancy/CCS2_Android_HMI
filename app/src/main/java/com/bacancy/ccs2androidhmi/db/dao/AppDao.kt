@@ -63,7 +63,10 @@ interface AppDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertErrorCode(tbErrorCodes: TbErrorCodes): Long
 
-    @Query("SELECT * FROM tbErrorCodes")
+    @Query("SELECT * FROM tbErrorCodes WHERE sourceId = :sourceId AND sourceErrorCodes = :sourceErrorCodes")
+    fun getErrorCodeFromDB(sourceId: Int, sourceErrorCodes: String): List<TbErrorCodes>
+
+    @Query("SELECT * FROM tbErrorCodes ORDER BY id DESC")
     fun getAllErrorCodes(): LiveData<List<TbErrorCodes>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

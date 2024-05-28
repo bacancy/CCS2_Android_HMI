@@ -76,7 +76,6 @@
             android:maxLength="3"
             android:paddingHorizontal="@dimen/_25sdp"
             android:paddingVertical="@dimen/_10sdp"
-            android:textColor="@color/white"
             android:textColorHint="@color/light_grey"
             android:textSize="@dimen/_10ssp"
             app:layout_constraintEnd_toEndOf="@id/edtGunVoltage"

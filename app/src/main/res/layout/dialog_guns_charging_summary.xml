@@ -68,12 +68,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
+        <include
+            android:id="@+id/incSessionTotalCost"
+            layout="@layout/common_charging_summary_dialog_item"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
         <Button
             android:id="@+id/btnClose"
             style="@style/CommonButtonTheme"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/_20sdp"
-            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_5sdp"
             android:paddingHorizontal="@dimen/_10sdp"
             android:text="@string/lbl_close"
             android:textSize="@dimen/_8ssp" />

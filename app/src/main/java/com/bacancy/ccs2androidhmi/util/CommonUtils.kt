@@ -31,10 +31,12 @@ object CommonUtils {
     const val DEVICE_MAC_ADDRESS = "DEVICE_MAC_ADDRESS"
     const val CHARGER_RATINGS = "CHARGER_RATINGS"
     const val CHARGER_OUTPUTS = "CHARGER_OUTPUTS"
-    const val IS_INITIAL_CHARGER_DETAILS_PUBLISHED = "IS_INITIAL_CHARGER_DETAILS_PUBLISHED"
+    const val IS_APP_RESTARTED = "IS_APP_RESTARTED"
     const val UNIT_PRICE = "UNIT_PRICE"
     const val IS_CHARGER_ACTIVE="IS_CHARGER_ACTIVE"
     const val CHARGER_ACTIVE_DEACTIVE_MESSAGE_RECD = "CHARGER_MSG_RECD"
+    const val IS_APP_PINNED = "IS_APP_PINNED"
+    const val EVSE_APP_PACKAGE_NAME="com.EVSEReady.charger_helper"
 
     private fun swapAdjacentElements(array: MutableList<Int>): MutableList<Int> {
         for (i in 0 until array.size - 1 step 2) {

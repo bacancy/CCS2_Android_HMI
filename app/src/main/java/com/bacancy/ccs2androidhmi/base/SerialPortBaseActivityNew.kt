@@ -28,8 +28,8 @@ import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_DC_METER_FRAG
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_LAST_CHARGING_SUMMARY_FRAG
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_LOCAL_START
 import com.bacancy.ccs2androidhmi.util.CommonUtils.INSIDE_LOCAL_START_STOP_SCREEN
+import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_APP_RESTARTED
 import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_CHARGER_ACTIVE
-import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_INITIAL_CHARGER_DETAILS_PUBLISHED
 import com.bacancy.ccs2androidhmi.util.CommonUtils.UNIT_PRICE
 import com.bacancy.ccs2androidhmi.util.CommonUtils.addColonsToMacAddress
 import com.bacancy.ccs2androidhmi.util.CommonUtils.generateRandomNumber
@@ -65,6 +65,7 @@ import com.bacancy.ccs2androidhmi.util.ModBusUtils
 import com.bacancy.ccs2androidhmi.util.ModbusRequestFrames
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.toHex
+import com.bacancy.ccs2androidhmi.util.NetworkUtils.isInternetConnected
 import com.bacancy.ccs2androidhmi.util.PrefHelper
 import com.bacancy.ccs2androidhmi.util.ReadWriteUtil
 import com.bacancy.ccs2androidhmi.util.ResponseSizes
@@ -126,7 +127,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
         setupPortsAndStartReading()
     }
 
-    private fun setupPortsAndStartReading() {
+    fun setupPortsAndStartReading() {
         setupSerialPort()
         startReading()
     }
@@ -145,7 +146,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
         super.onPause()
     }
 
-    private fun resetPorts() {
+    fun resetPorts() {
         mApplication?.closeSerialPort()
         mSerialPort = null
         mOutputStream = null
@@ -382,25 +383,27 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
     }
 
     private fun sendInitialChargerDetailsToServer() {
-        if (prefHelper.getBoolean(IS_INITIAL_CHARGER_DETAILS_PUBLISHED, false)) return
+        if (prefHelper.getBoolean(IS_APP_RESTARTED, false)) {
+            val deviceMacAddress = prefHelper.getStringValue(DEVICE_MAC_ADDRESS, "")
+            val chargerRatings = prefHelper.getStringValue(CHARGER_RATINGS, "")
+            val chargerOutputs = prefHelper.getStringValue(CHARGER_OUTPUTS, "")
+            val unitPrice = prefHelper.getStringValue(UNIT_PRICE, "")
 
-        val deviceMacAddress = prefHelper.getStringValue(DEVICE_MAC_ADDRESS, "")
-        val chargerRatings = prefHelper.getStringValue(CHARGER_RATINGS, "")
-        val chargerOutputs = prefHelper.getStringValue(CHARGER_OUTPUTS, "")
-        val unitPrice = prefHelper.getStringValue(UNIT_PRICE, "")
-
-        if (deviceMacAddress.isNotEmpty() && chargerRatings.isNotEmpty() && chargerOutputs.isNotEmpty()) {
-            val initialChargerDetails = mqttViewModel.getInitialChargerDetails(
-                deviceMacAddress,
-                chargerRatings,
-                chargerOutputs,
-                unitPrice
-            )
-            mqttViewModel.publishMessageToTopic(
-                initialChargerDetails.first,
-                initialChargerDetails.second
-            )
-            prefHelper.setBoolean(IS_INITIAL_CHARGER_DETAILS_PUBLISHED, true)
+            if (deviceMacAddress.isNotEmpty() && chargerRatings.isNotEmpty() && chargerOutputs.isNotEmpty()) {
+                val initialChargerDetails = mqttViewModel.getInitialChargerDetails(
+                    deviceMacAddress,
+                    chargerRatings,
+                    chargerOutputs,
+                    unitPrice
+                )
+                if(isInternetConnected()){
+                    mqttViewModel.publishMessageToTopic(
+                        initialChargerDetails.first,
+                        initialChargerDetails.second
+                    )
+                    prefHelper.setBoolean(IS_APP_RESTARTED, false)
+                }
+            }
         }
     }
 
@@ -1046,7 +1049,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 } else {
                     writeForGunsRectifier(
                         359,
-                        prefHelper.getIntValue("GUN1_OUTPUT_ON_OFF_VALUE", 0)
+                        prefHelper.getIntValue("GUN2_OUTPUT_ON_OFF_VALUE", 0)
                     )
                 }
             } else {

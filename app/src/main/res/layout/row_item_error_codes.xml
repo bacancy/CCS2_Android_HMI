@@ -10,15 +10,25 @@
         style="@style/HistoryTableColumnsTheme"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="0.3"
+        android:layout_weight="0.2"
         tools:text="1" />
+
+    <TextView
+        android:id="@+id/tvErrorDateTime"
+        style="@style/HistoryTableColumnsTheme"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.5"
+        tools:text="20-05-2024 10:49:15" />
 
     <TextView
         android:id="@+id/tvErrorCodeName"
         style="@style/HistoryTableColumnsTheme"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"
+        android:layout_weight="0.8"
+        android:gravity="start|center"
+        android:paddingStart="@dimen/_20sdp"
         tools:text="HIGH_NEUTRAL_TO_EARTH_VOLTAGE" />
 
     <TextView
@@ -26,7 +36,15 @@
         style="@style/HistoryTableColumnsTheme"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        tools:text="Abnormal" />
+        android:layout_weight="0.5"
+        tools:text="Resolved" />
+
+    <TextView
+        android:id="@+id/tvErrorCodeSource"
+        style="@style/HistoryTableColumnsTheme"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.5"
+        tools:text="Charger" />
 
 </LinearLayout>

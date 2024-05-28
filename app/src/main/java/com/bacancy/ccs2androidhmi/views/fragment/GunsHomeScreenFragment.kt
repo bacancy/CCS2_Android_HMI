@@ -155,12 +155,14 @@ class GunsHomeScreenFragment : BaseFragment() {
         }
         when (tbGunsChargingInfo.gunChargingState) {
             UNPLUGGED -> {
+                hideGunsChargingStatusUI(true)
                 binding.tvGun1State.removeBlinking()
                 shouldShowGun1SummaryDialog = false
                 binding.ivGun1Half.setImageResource(R.drawable.img_gun1_unplugged)
             }
 
             PLUGGED_IN -> {
+                hideGunsChargingStatusUI(true)
                 binding.tvGun1State.removeBlinking()
                 shouldShowGun1SummaryDialog = false
                 binding.ivGun1Half.setImageResource(R.drawable.img_gun1_plugged)
@@ -176,6 +178,7 @@ class GunsHomeScreenFragment : BaseFragment() {
             }
 
             PREPARING_FOR_CHARGING -> {
+                hideGunsChargingStatusUI(true)
                 binding.tvGun1State.removeBlinking()
                 shouldShowGun1SummaryDialog = false
                 binding.ivGun1Half.setImageResource(R.drawable.img_gun1_charging_completed)
@@ -266,12 +269,14 @@ class GunsHomeScreenFragment : BaseFragment() {
         }
         when (tbGunsChargingInfo.gunChargingState) {
             UNPLUGGED -> {
+                hideGunsChargingStatusUI(false)
                 binding.tvGun2State.removeBlinking()
                 shouldShowGun2SummaryDialog = false
                 binding.ivGun2Half.setImageResource(R.drawable.img_gun2_unplugged)
             }
 
             PLUGGED_IN -> {
+                hideGunsChargingStatusUI(false)
                 binding.tvGun2State.removeBlinking()
                 shouldShowGun2SummaryDialog = false
                 binding.ivGun2Half.setImageResource(R.drawable.img_gun2_plugged)
@@ -287,6 +292,7 @@ class GunsHomeScreenFragment : BaseFragment() {
             }
 
             PREPARING_FOR_CHARGING -> {
+                hideGunsChargingStatusUI(false)
                 binding.tvGun2State.removeBlinking()
                 shouldShowGun2SummaryDialog = false
                 binding.ivGun2Half.setImageResource(R.drawable.img_gun2_charging_completed)

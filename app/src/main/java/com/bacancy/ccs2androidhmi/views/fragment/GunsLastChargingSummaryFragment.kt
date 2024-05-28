@@ -58,6 +58,7 @@ class GunsLastChargingSummaryFragment : BaseFragment() {
                 incEndSOC.tvSummaryValue.text = endSoc
                 incEnergyConsumption.tvSummaryValue.text = energyConsumption
                 incSessionEndReason.tvSummaryValue.text = sessionEndReason
+                incTotalCost.tvSummaryValue.text = getString(R.string.lbl_gun_total_cost_in_rs, if(totalCost.isEmpty()) 0.0F else totalCost.toFloat())
             }
         }
     }
@@ -140,7 +141,10 @@ class GunsLastChargingSummaryFragment : BaseFragment() {
             incSessionEndReason.tvSummaryValue.text = ""
             incSessionEndReason.root.setBackgroundColorBasedOnTheme()
 
-
+            incTotalCost.tvSummaryLabel.text = getString(R.string.lbl_total_cost)
+            incTotalCost.tvSummaryUnit.invisible()
+            incTotalCost.tvSummaryValue.text = ""
+            incTotalCost.root.setBackgroundColor(resources.getColor(R.color.light_trans_sky_blue))
         }
     }
 

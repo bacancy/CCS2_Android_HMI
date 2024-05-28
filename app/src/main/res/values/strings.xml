@@ -86,6 +86,7 @@
     <string name="lbl_frequency_hz">Frequency (Hz)</string>
     <string name="lbl_active_power">Active Power</string>
     <string name="lbl_total_power">Total Power</string>
+    <string name="lbl_total_export_energy">Total Export Energy</string>
     <string name="lbl_gun_1">GUN - 1</string>
     <string name="lbl_gun_2">GUN - 2</string>
     <string name="lbl_percentage">%</string>
@@ -134,8 +135,8 @@
     <string name="message_device_communication_error">Device Communication Error</string>
     <string name="lbl_gun_2_loading">Gun - 2 (Loading…)</string>
     <string name="lbl_gun_1_loading">Gun - 1 (Loading…)</string>
-    <string name="lbl_serial_number">Serial No.</string>
-    <string name="lbl_error_status">Status</string>
+    <string name="lbl_serial_number">Sr. No.</string>
+    <string name="lbl_error_status">Error Status</string>
     <string name="lbl_error_desc">Error description</string>
     <string name="lbl_authorize_for_local_start_stop">Authorize for Local Start/Stop</string>
     <string name="hint_enter_your_6_digit_pin">Enter your 6-digit PIN</string>
@@ -170,5 +171,10 @@
     <string name="msg_charger_is_inoperative">Charger is inoperative.</string>
     <string name="lbl_no_notifications_found">No Notifications Found.</string>
     <string name="lbl_notifications">Notifications</string>
+    <string name="lbl_total_cost">Total Cost</string>
+    <string name="title_authorize_for_local_start_stop">Authorize for Local Start/Stop</string>
+    <string name="title_authorize_for_test_mode">Authorize for Test Mode</string>
+    <string name="msg_evseready_app_not_installed">EVSEReady App Not Installed</string>
+    <string name="lbl_error_time">Error Time</string>
 
 </resources>
