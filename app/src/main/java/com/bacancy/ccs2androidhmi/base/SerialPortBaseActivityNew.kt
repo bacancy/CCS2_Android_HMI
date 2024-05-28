@@ -627,14 +627,18 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                         appViewModel.insertGun1LastChargingSummaryInDB(it)
                         appViewModel.insertGun1ChargingHistoryInDB(it)
                         if (mqttViewModel.isMqttConnected.value) {
-                            mqttViewModel.sendPublishMessageRequest(
-                                mqttViewModel.convertByteArrayToPublishRequest(
+                            mqttViewModel.publishMessageToTopic(
+                                ServerConstants.getTopicAtoB(
+                                    prefHelper.getStringValue(
+                                        DEVICE_MAC_ADDRESS, ""
+                                    )
+                                ), mqttViewModel.convertByteArrayToPublishRequest(
                                     prefHelper.getStringValue(
                                         DEVICE_MAC_ADDRESS, ""
                                     ),
                                     1,
                                     it
-                                )
+                                ).second, isChargingHistory = true
                             )
                         }
                     }
@@ -851,14 +855,18 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                         appViewModel.insertGun2LastChargingSummaryInDB(it)
                         appViewModel.insertGun2ChargingHistoryInDB(it)
                         if (mqttViewModel.isMqttConnected.value) {
-                            mqttViewModel.sendPublishMessageRequest(
-                                mqttViewModel.convertByteArrayToPublishRequest(
+                            mqttViewModel.publishMessageToTopic(
+                                ServerConstants.getTopicAtoB(
+                                    prefHelper.getStringValue(
+                                        DEVICE_MAC_ADDRESS, ""
+                                    )
+                                ), mqttViewModel.convertByteArrayToPublishRequest(
                                     prefHelper.getStringValue(
                                         DEVICE_MAC_ADDRESS, ""
                                     ),
                                     2,
                                     it
-                                )
+                                ).second, isChargingHistory = true
                             )
                         }
                     }
