@@ -130,7 +130,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         super.onResume()
         observeDeviceInternetStates()
         startClockTimer()
-        manageKioskMode()
+        //manageKioskMode()
     }
 
     private fun manageKioskMode() {
