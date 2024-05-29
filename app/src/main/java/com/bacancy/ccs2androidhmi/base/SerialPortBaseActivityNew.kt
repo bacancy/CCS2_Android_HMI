@@ -170,7 +170,13 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 writeForChargerActiveDeactive()
             } else {
                 //readChargerActiveDeactiveState()
-                writeForDualSocketMode(if(prefHelper.getBoolean(IS_DUAL_SOCKET_MODE_SELECTED, false)) 1 else 0)
+                writeForDualSocketMode(
+                    if (prefHelper.getBoolean(
+                            IS_DUAL_SOCKET_MODE_SELECTED,
+                            false
+                        )
+                    ) 1 else 0
+                )
             }
         }
     }
@@ -188,7 +194,13 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                     sendChargerStatusConfirmation(isChargerActive)
                     lifecycleScope.launch {
                         //readChargerActiveDeactiveState()
-                        writeForDualSocketMode(if(prefHelper.getBoolean(IS_DUAL_SOCKET_MODE_SELECTED, false)) 1 else 0)
+                        writeForDualSocketMode(
+                            if (prefHelper.getBoolean(
+                                    IS_DUAL_SOCKET_MODE_SELECTED,
+                                    false
+                                )
+                            ) 1 else 0
+                        )
                     }
                 }, {})
         }
@@ -398,7 +410,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                     chargerOutputs,
                     unitPrice
                 )
-                if(isInternetConnected()){
+                if (isInternetConnected()) {
                     mqttViewModel.publishMessageToTopic(
                         initialChargerDetails.first,
                         initialChargerDetails.second
@@ -950,7 +962,31 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 gunNumber, {
                     Log.d(TAG, "authenticateGun: Response Got")
                     lifecycleScope.launch {
-                        if (prefHelper.getStringValue(AUTH_PIN_VALUE, "").isNotEmpty()) {
+                        if (prefHelper.getBoolean(
+                                CommonUtils.IS_GUN_1_SESSION_MODE_SELECTED,
+                                false
+                            )
+                        ) {
+                            Log.d("TAG","Gun 1 Session Mode Selected")
+                            writeForSelectedSessionMode(
+                                prefHelper.getIntValue(
+                                    CommonUtils.GUN_1_SELECTED_SESSION_MODE,
+                                    0
+                                ), true
+                            )
+                        } else if (prefHelper.getBoolean(
+                                CommonUtils.IS_GUN_2_SESSION_MODE_SELECTED,
+                                false
+                            )
+                        ) {
+                            Log.d("TAG","Gun 2 Session Mode Selected")
+                            writeForSelectedSessionMode(
+                                prefHelper.getIntValue(
+                                    CommonUtils.GUN_2_SELECTED_SESSION_MODE,
+                                    0
+                                ), false
+                            )
+                        } else if (prefHelper.getStringValue(AUTH_PIN_VALUE, "").isNotEmpty()) {
                             writeForPinAuthorization(prefHelper.getStringValue(AUTH_PIN_VALUE, ""))
                         } else {
                             startReading()
@@ -970,6 +1006,72 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 mode, {
                     Log.d(TAG, "writeForDualSocketMode: Response Got")
                     lifecycleScope.launch {
+                        readMiscInfo()
+                    }
+                }, {})
+        }
+    }
+
+    private fun writeForSelectedSessionMode(selectedSessionMode: Int, isGun1: Boolean) {
+        Log.i(TAG, "Gun $selectedSessionMode writeForSelectedSessionMode Request Started")
+        lifecycleScope.launch(Dispatchers.IO) {
+            ReadWriteUtil.writeToSingleHoldingRegisterNew(
+                mOutputStream,
+                mInputStream,
+                if (isGun1) 122 else 222,
+                selectedSessionMode, {
+                    Log.d(TAG, "writeForSelectedSessionMode: Response Got")
+                    lifecycleScope.launch {
+                        if (isGun1) {
+                            Log.d("TAG", "Writing selected session mode value in Gun 1")
+                            writeForSelectedSessionModeValue(
+                                prefHelper.getStringValue(
+                                    CommonUtils.GUN_1_SELECTED_SESSION_MODE_VALUE,
+                                    ""
+                                ), true
+                            )
+                        } else {
+                            Log.d("TAG", "Writing selected session mode value in Gun 2")
+                            writeForSelectedSessionModeValue(
+                                prefHelper.getStringValue(
+                                    CommonUtils.GUN_2_SELECTED_SESSION_MODE_VALUE,
+                                    ""
+                                ), false
+                            )
+                        }
+                    }
+                }, {})
+        }
+    }
+
+    private fun writeForSelectedSessionModeValue(
+        selectedSessionModeValue: String,
+        isGun1: Boolean
+    ) {
+        Log.i(TAG, "Gun $selectedSessionModeValue writeForSelectedSessionModeValue Request Started")
+        lifecycleScope.launch(Dispatchers.IO) {
+            ReadWriteUtil.writeToMultipleHoldingRegister(
+                mOutputStream,
+                mInputStream,
+                if (isGun1) 123 else 223,
+                selectedSessionModeValue, {
+                    Log.d(TAG, "writeForSelectedSessionModeValue: Response Got")
+                    lifecycleScope.launch {
+                        if (isGun1) {
+                            prefHelper.setBoolean(CommonUtils.IS_GUN_1_SESSION_MODE_SELECTED, false)
+                            prefHelper.setIntValue(CommonUtils.GUN_1_SELECTED_SESSION_MODE, 0)
+                            prefHelper.setStringValue(
+                                CommonUtils.GUN_1_SELECTED_SESSION_MODE_VALUE,
+                                ""
+                            )
+                        } else {
+                            prefHelper.setBoolean(CommonUtils.IS_GUN_2_SESSION_MODE_SELECTED, false)
+                            prefHelper.setIntValue(CommonUtils.GUN_2_SELECTED_SESSION_MODE, 0)
+                            prefHelper.setStringValue(
+                                CommonUtils.GUN_2_SELECTED_SESSION_MODE_VALUE,
+                                ""
+                            )
+                        }
                         readMiscInfo()
                     }
                 }, {})

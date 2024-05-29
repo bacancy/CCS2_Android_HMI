@@ -75,10 +75,10 @@ object ModBusUtils {
      * */
     fun createWriteMultipleRegistersRequest(
         startAddress: Int,
-        data: IntArray,
+        data: String,
         slaveAddress: Int = 1
     ): ByteArray {
-        val quantity = data.size
+        val quantity = data.length
         val byteCount = quantity * 2 // Each register is 2 bytes
         val frame = ByteArray(9 + byteCount)
         frame[0] = slaveAddress.toByte()
@@ -91,8 +91,8 @@ object ModBusUtils {
         for (i in data.indices) {
             val value = data[i]
             val valueIndex = 7 + 2 * i
-            frame[valueIndex] = (value.toInt() shr 8).toByte() // High byte of register value
-            frame[valueIndex + 1] = value.toByte() // Low byte of register value
+            frame[valueIndex] = (value.code shr 8).toByte() // High byte of register value
+            frame[valueIndex + 1] = value.code.toByte() // Low byte of register value
         }
 
         val newCRC = calculateCRC(frame.dropLast(2).toByteArray())

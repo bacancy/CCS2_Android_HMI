@@ -4,12 +4,17 @@ import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.os.Build
+import android.text.Editable
+import android.text.InputFilter
+import android.text.InputType
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.Window
 import android.view.WindowInsets
 import android.view.WindowInsetsController
 import android.view.WindowManager
+import android.widget.RadioButton
 import androidx.fragment.app.Fragment
 import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.databinding.CustomDialogAreYouSureBinding
@@ -17,8 +22,10 @@ import com.bacancy.ccs2androidhmi.databinding.CustomDialogBinding
 import com.bacancy.ccs2androidhmi.databinding.DialogGunsChargingSummaryBinding
 import com.bacancy.ccs2androidhmi.databinding.DialogPasswordPromptBinding
 import com.bacancy.ccs2androidhmi.databinding.DialogPinAuthorizationBinding
+import com.bacancy.ccs2androidhmi.databinding.DialogSessionModeSelectionBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsLastChargingSummary
 import com.bacancy.ccs2androidhmi.util.CommonUtils.LOCAL_START_STOP_PIN
+import com.bacancy.ccs2androidhmi.util.DialogUtils.clearDialogFlags
 
 object DialogUtils {
 
@@ -265,4 +272,198 @@ object DialogUtils {
         this.requestWindowFeature(Window.FEATURE_NO_TITLE)
     }
 
+    fun Activity.showSessionModeDialog(
+        onSuccess: (Int, String) -> Unit,
+    ): Dialog {
+        val dialog = Dialog(this, R.style.CustomAlertDialog)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        val binding = DialogSessionModeSelectionBinding.inflate(layoutInflater)
+        dialog.setContentView(binding.root)
+        dialog.setCanceledOnTouchOutside(false)
+
+        binding.apply {
+            edtSessionModeValue.gone()
+            btnSubmit.setOnClickListener {
+                if (!radioByAuto.isChecked && edtSessionModeValue.text.isEmpty()) {
+                    edtSessionModeValue.error = "Please enter value"
+                    return@setOnClickListener
+                } else if(!validateSelectedValueRange()){
+                    edtSessionModeValue.error = "Value must be in range"
+                    return@setOnClickListener
+                }
+
+                val sessionModeValue =
+                    if (radioByAuto.isChecked) "100" else edtSessionModeValue.text.toString()
+
+                val radioButtonMap = mapOf(
+                    radioByAuto to 0,
+                    radioByTime to 1,
+                    radioByEnergy to 2,
+                    radioBySoc to 3
+                )
+
+                val selectedRadioButton = radioButtonMap.entries.find { it.key.isChecked }?.value ?: 0
+                onSuccess(selectedRadioButton, sessionModeValue)
+                dialog.dismiss()
+            }
+            btnClose.setOnClickListener {
+                dialog.dismiss()
+            }
+
+            radioByAuto.isChecked = true
+
+            radioByAuto.setOnCheckedChangeListener { _, isClicked ->
+                if (isClicked) {
+                    handleRadioButtonSelection(radioByAuto)
+                }
+            }
+
+            radioByTime.setOnCheckedChangeListener { _, isClicked ->
+                if (isClicked) {
+                    handleRadioButtonSelection(radioByTime)
+                }
+            }
+
+            radioByEnergy.setOnCheckedChangeListener { _, isClicked ->
+                if (isClicked) {
+                    handleRadioButtonSelection(radioByEnergy)
+                }
+            }
+
+            radioBySoc.setOnCheckedChangeListener { _, isClicked ->
+                if (isClicked) {
+                    handleRadioButtonSelection(radioBySoc)
+                }
+            }
+        }
+
+        dialog.setupDialogFlags()
+
+        return dialog
+    }
+
+    private fun DialogSessionModeSelectionBinding.checkValueInRange(minValue: Number, maxValue: Number): Boolean {
+        val value = edtSessionModeValue.text.toString().toDoubleOrNull()
+        return value != null && (value >= minValue.toDouble() && value <= maxValue.toDouble())
+    }
+
+    private fun DialogSessionModeSelectionBinding.validateSelectedValueRange(): Boolean {
+        return when {
+            radioByTime.isChecked -> checkValueInRange(1, 999)
+            radioByEnergy.isChecked -> checkValueInRange(0.01, 999.99)
+            radioBySoc.isChecked -> checkValueInRange(1, 100)
+            else -> true
+        }
+    }
+
+    private var timeTextWatcher: TextWatcher? = null
+    private var energyTextWatcher: TextWatcher? = null
+    private var socTextWatcher: TextWatcher? = null
+
+    private fun DialogSessionModeSelectionBinding.handleRadioButtonSelection(selectedRadioButton: RadioButton) {
+        // List of all radio buttons
+        val radioButtons = listOf(radioByAuto, radioByTime, radioByEnergy, radioBySoc)
+
+        // Uncheck all radio buttons except the selected one
+        radioButtons.forEach { radioButton ->
+            radioButton.isChecked = (radioButton == selectedRadioButton)
+        }
+
+        // Remove any existing TextWatchers
+        clearTextWatchers()
+
+        // Based on the selected radio button, perform the necessary actions
+        when (selectedRadioButton) {
+            radioByAuto -> {
+                handleEditTextVisibility(false)
+            }
+
+            radioByTime -> {
+                handleEditTextVisibility(
+                    true,
+                    "Enter Time in Minutes (1-999)",
+                    InputType.TYPE_CLASS_NUMBER,
+                    InputFilter.LengthFilter(3)
+                ) { text ->
+                    validateTextValue(text, 1, 999)
+                }
+            }
+
+            radioByEnergy -> {
+                handleEditTextVisibility(
+                    true,
+                    "Enter Energy in kWh (0.01-999.99)",
+                    InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL,
+                    InputFilter.LengthFilter(6)
+                ) { text ->
+                    validateTextValue(text, 0.01, 999.99)
+                }
+            }
+
+            radioBySoc -> {
+                handleEditTextVisibility(
+                    true,
+                    "Enter SOC in % (1-100)",
+                    InputType.TYPE_CLASS_NUMBER,
+                    InputFilter.LengthFilter(3)
+                ) { text ->
+                    validateTextValue(text, 1, 100)
+                }
+            }
+        }
+    }
+
+    private fun DialogSessionModeSelectionBinding.clearTextWatchers() {
+        edtSessionModeValue.apply {
+            removeTextChangedListener(timeTextWatcher)
+            removeTextChangedListener(energyTextWatcher)
+            removeTextChangedListener(socTextWatcher)
+            text.clear()
+            error = null
+        }
+    }
+
+    private fun DialogSessionModeSelectionBinding.handleEditTextVisibility(
+        isVisible: Boolean,
+        hint: String? = null,
+        inputType: Int? = null,
+        vararg filters: InputFilter,
+        textWatcher: (CharSequence?) -> Unit = {}
+    ) {
+        edtSessionModeValue.apply {
+            if (isVisible) {
+                visible()
+                this.hint = hint
+                this.inputType = inputType ?: InputType.TYPE_CLASS_TEXT
+                this.filters = filters
+                timeTextWatcher = createTextWatcher(textWatcher)
+                addTextChangedListener(timeTextWatcher)
+            } else {
+                gone()
+            }
+        }
+    }
+
+    private fun createTextWatcher(textWatcher: (CharSequence?) -> Unit): TextWatcher {
+        return object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {}
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                textWatcher(s)
+            }
+        }
+    }
+
+    private fun DialogSessionModeSelectionBinding.validateTextValue(
+        text: CharSequence?,
+        minValue: Number,
+        maxValue: Number
+    ) {
+        val value = text?.toString()?.toDoubleOrNull()
+        if (value != null && (value < minValue.toDouble() || value > maxValue.toDouble())) {
+            edtSessionModeValue.error = "Value must be between $minValue and $maxValue"
+        } else {
+            edtSessionModeValue.error = null
+        }
+    }
 }

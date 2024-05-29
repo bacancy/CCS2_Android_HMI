@@ -181,5 +181,10 @@
     <string name="msg_to_confirm_to_switch_to_single_socket">Are you sure you want to switch to single socket mode?</string>
     <string name="lbl_gun_1_charging_summary">Gun - 1 Charging Summary</string>
     <string name="lbl_gun_2_charging_summary">Gun - 2 Charging Summary</string>
-
+    <string name="lbl_select_session_mode">Select Session Mode By</string>
+    <string name="lbl_by_soc">SoC</string>
+    <string name="lbl_by_time">Time</string>
+    <string name="lbl_by_energy">Energy</string>
+    <string name="lbl_by_auto">Auto</string>
+    <string name="hint_enter_value">Enter value</string>
 </resources>

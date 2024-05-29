@@ -1,7 +1,9 @@
 package com.bacancy.ccs2androidhmi.views.fragment
 
+import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,11 +12,18 @@ import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentGunsMoreInfoScreenBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
-import com.bacancy.ccs2androidhmi.mqtt.ServerConstants
 import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_PIN_AUTHORIZATION
 import com.bacancy.ccs2androidhmi.util.CommonUtils
 import com.bacancy.ccs2androidhmi.util.CommonUtils.AUTH_PIN_VALUE
+import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_SELECTED_SESSION_MODE
+import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_SELECTED_SESSION_MODE_VALUE
+import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_SELECTED_SESSION_MODE
+import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_SELECTED_SESSION_MODE_VALUE
+import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_GUN_1_SESSION_MODE_SELECTED
+import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_GUN_2_SESSION_MODE_SELECTED
+import com.bacancy.ccs2androidhmi.util.DialogUtils.clearDialogFlags
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showPinAuthorizationDialog
+import com.bacancy.ccs2androidhmi.util.DialogUtils.showSessionModeDialog
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.SELECTED_GUN
 import com.bacancy.ccs2androidhmi.util.NetworkUtils.isInternetConnected
@@ -33,6 +42,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class GunsMoreInformationFragment : BaseFragment() {
 
+    private lateinit var sessionModeDialog: Dialog
     private var selectedGunNumber: Int = 1
     private lateinit var binding: FragmentGunsMoreInfoScreenBinding
     private lateinit var acMeterInfoFragment: ACMeterInfoFragment
@@ -62,6 +72,20 @@ class GunsMoreInformationFragment : BaseFragment() {
         (requireActivity() as HMIDashboardActivity).showHideBackIcon()
         (requireActivity() as HMIDashboardActivity).showHideHomeIcon()
         (requireActivity() as HMIDashboardActivity).showHideSettingOptions()
+        sessionModeDialog =
+            requireActivity().showSessionModeDialog { selectedRadioButton, sessionModeValue ->
+                Log.d("TAG", "updateGunsChargingUI - selectedRadioButton: $selectedRadioButton")
+                Log.d("TAG", "updateGunsChargingUI - sessionModeValue: $sessionModeValue")
+                if (selectedGunNumber == 1) {
+                    prefHelper.setBoolean(IS_GUN_1_SESSION_MODE_SELECTED, true)
+                    prefHelper.setIntValue(GUN_1_SELECTED_SESSION_MODE, selectedRadioButton)
+                    prefHelper.setStringValue(GUN_1_SELECTED_SESSION_MODE_VALUE, sessionModeValue)
+                } else {
+                    prefHelper.setBoolean(IS_GUN_2_SESSION_MODE_SELECTED, true)
+                    prefHelper.setIntValue(GUN_2_SELECTED_SESSION_MODE, selectedRadioButton)
+                    prefHelper.setStringValue(GUN_2_SELECTED_SESSION_MODE_VALUE, sessionModeValue)
+                }
+            }
         return binding.root
     }
 
@@ -96,7 +120,16 @@ class GunsMoreInformationFragment : BaseFragment() {
                 }
 
                 when (gunChargingState) {
-                    GunsChargingInfoUtils.PLUGGED_IN,
+                    GunsChargingInfoUtils.PLUGGED_IN -> {
+                        if (sessionModeDialog.isShowing.not()) {
+                            sessionModeDialog.show()
+                            requireActivity().clearDialogFlags(sessionModeDialog)
+                        }
+                        if (SHOW_PIN_AUTHORIZATION) {
+                            ivPinAuthorization.visible()
+                        }
+                    }
+
                     GunsChargingInfoUtils.CHARGING -> {
                         if (SHOW_PIN_AUTHORIZATION) {
                             ivPinAuthorization.visible()

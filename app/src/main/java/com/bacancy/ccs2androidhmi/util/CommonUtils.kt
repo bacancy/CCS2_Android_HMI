@@ -38,6 +38,12 @@ object CommonUtils {
     const val IS_APP_PINNED = "IS_APP_PINNED"
     const val EVSE_APP_PACKAGE_NAME="com.EVSEReady.charger_helper"
     const val IS_DUAL_SOCKET_MODE_SELECTED="IS_DUAL_SOCKET_MODE_SELECTED"
+    const val GUN_1_SELECTED_SESSION_MODE = "GUN_1_SELECTED_SESSION_MODE"
+    const val GUN_1_SELECTED_SESSION_MODE_VALUE = "GUN_1_SELECTED_SESSION_MODE_VALUE"
+    const val GUN_2_SELECTED_SESSION_MODE = "GUN_2_SELECTED_SESSION_MODE"
+    const val GUN_2_SELECTED_SESSION_MODE_VALUE = "GUN_2_SELECTED_SESSION_MODE_VALUE"
+    const val IS_GUN_1_SESSION_MODE_SELECTED = "IS_GUN_1_SESSION_MODE_SELECTED"
+    const val IS_GUN_2_SESSION_MODE_SELECTED = "IS_GUN_2_SESSION_MODE_SELECTED"
 
     private fun swapAdjacentElements(array: MutableList<Int>): MutableList<Int> {
         for (i in 0 until array.size - 1 step 2) {
