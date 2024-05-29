@@ -79,6 +79,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.InputStream
 import java.io.OutputStream
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
 import javax.inject.Inject
 
 
@@ -561,6 +563,15 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                         -> {
                             if (isGun1PluggedIn) {
                                 isGun1PluggedIn = false
+                                /*prefHelper.setBoolean(
+                                    CommonUtils.IS_GUN_1_SESSION_MODE_SELECTED,
+                                    false
+                                )
+                                prefHelper.setIntValue(CommonUtils.GUN_1_SELECTED_SESSION_MODE, 0)
+                                prefHelper.setStringValue(
+                                    CommonUtils.GUN_1_SELECTED_SESSION_MODE_VALUE,
+                                    ""
+                                )*/
                                 openGun1LastChargingSummary(true)
                             } else {
                                 openGun1LastChargingSummary()
@@ -821,6 +832,15 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                         -> {
                             if (isGun2PluggedIn) {
                                 isGun2PluggedIn = false
+                               /* prefHelper.setBoolean(
+                                    CommonUtils.IS_GUN_2_SESSION_MODE_SELECTED,
+                                    false
+                                )
+                                prefHelper.setIntValue(CommonUtils.GUN_2_SELECTED_SESSION_MODE, 0)
+                                prefHelper.setStringValue(
+                                    CommonUtils.GUN_2_SELECTED_SESSION_MODE_VALUE,
+                                    ""
+                                )*/
                                 openGun2LastChargingSummary(true)
                             } else {
                                 openGun2LastChargingSummary()
@@ -967,7 +987,6 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                                 false
                             )
                         ) {
-                            Log.d("TAG","Gun 1 Session Mode Selected")
                             writeForSelectedSessionMode(
                                 prefHelper.getIntValue(
                                     CommonUtils.GUN_1_SELECTED_SESSION_MODE,
@@ -979,7 +998,6 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                                 false
                             )
                         ) {
-                            Log.d("TAG","Gun 2 Session Mode Selected")
                             writeForSelectedSessionMode(
                                 prefHelper.getIntValue(
                                     CommonUtils.GUN_2_SELECTED_SESSION_MODE,
@@ -1023,7 +1041,6 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                     Log.d(TAG, "writeForSelectedSessionMode: Response Got")
                     lifecycleScope.launch {
                         if (isGun1) {
-                            Log.d("TAG", "Writing selected session mode value in Gun 1")
                             writeForSelectedSessionModeValue(
                                 prefHelper.getStringValue(
                                     CommonUtils.GUN_1_SELECTED_SESSION_MODE_VALUE,
@@ -1031,7 +1048,6 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                                 ), true
                             )
                         } else {
-                            Log.d("TAG", "Writing selected session mode value in Gun 2")
                             writeForSelectedSessionModeValue(
                                 prefHelper.getStringValue(
                                     CommonUtils.GUN_2_SELECTED_SESSION_MODE_VALUE,
@@ -1048,13 +1064,15 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
         selectedSessionModeValue: String,
         isGun1: Boolean
     ) {
+        val floatBytes: ByteArray = ByteBuffer.allocate(4).order(ByteOrder.BIG_ENDIAN)
+            .putFloat(selectedSessionModeValue.toFloat()).array()
         Log.i(TAG, "Gun $selectedSessionModeValue writeForSelectedSessionModeValue Request Started")
         lifecycleScope.launch(Dispatchers.IO) {
-            ReadWriteUtil.writeToMultipleHoldingRegister(
+            ReadWriteUtil.writeToSingleHoldingRegisterNew(
                 mOutputStream,
                 mInputStream,
                 if (isGun1) 123 else 223,
-                selectedSessionModeValue, {
+                selectedSessionModeValue.toInt(), {
                     Log.d(TAG, "writeForSelectedSessionModeValue: Response Got")
                     lifecycleScope.launch {
                         if (isGun1) {

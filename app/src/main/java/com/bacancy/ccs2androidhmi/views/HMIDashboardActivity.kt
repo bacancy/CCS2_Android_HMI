@@ -59,6 +59,8 @@ import com.bacancy.ccs2androidhmi.util.DialogUtils.showPasswordPromptDialog
 import com.bacancy.ccs2androidhmi.util.LogUtils
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.NO_STATE
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.TOKEN_ID_NONE
+import com.bacancy.ccs2androidhmi.util.ModBusUtils
+import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.toHex
 import com.bacancy.ccs2androidhmi.util.NetworkUtils.isInternetConnected
 import com.bacancy.ccs2androidhmi.util.PrefHelper.Companion.IS_DARK_THEME
 import com.bacancy.ccs2androidhmi.util.Resource
@@ -81,6 +83,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -132,6 +136,46 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
         manageDualSocketButtonUI(false)
 
+        val floatBytes: ByteArray = ByteBuffer.allocate(4).order(ByteOrder.BIG_ENDIAN)
+            .putFloat(1.toFloat()).array()
+        //createWriteMultipleRegistersRequest(data = floatBytes.toString(Charsets.UTF_8))
+    }
+
+    fun createWriteMultipleRegistersRequest(
+        startAddress: Int = 123,
+        data: String = "999",
+        slaveAddress: Int = 1
+    ): ByteArray {
+        Log.d("TESTER","Data = $data")
+        val quantity = 2
+        Log.d("TESTER","Data Length = ${data.length}")
+        val byteCount =  quantity * 2 // Each register is 2 bytes
+        Log.d("TESTER", "ByteCount = $byteCount")
+        val frame = ByteArray(9 + byteCount)
+        Log.d("TESTER", "Frame size = ${frame.size}")
+        frame[0] = slaveAddress.toByte()
+        frame[1] = ModBusUtils.WRITE_MULTIPLE_REGISTERS_FUNCTION_CODE
+        frame[2] = (startAddress shr 8).toByte()
+        frame[3] = startAddress.toByte()
+        frame[4] = (quantity shr 8).toByte()
+        frame[5] = quantity.toByte()
+        frame[6] = byteCount.toByte()
+        for (i in 0..3 step 2) {
+            Log.d("TESTER","data[Indices] = ${data[i]}")
+            val value = data[i]
+            val valueSecond = data[i+1]
+            val j = if (i > 1) i - (i / 2) else 0
+            val valueIndex = 7 + 2 * j
+            frame[valueIndex] = value.code.toByte() // High byte of register value
+            frame[valueIndex + 1] = valueSecond.code.toByte() // Low byte of register value
+        }
+        Log.d("TESTER", "createWriteMultipleRegistersRequest: BEFORE CRC with HEX = ${frame.toHex()}")
+        val newCRC = ModBusUtils.calculateCRC(frame.dropLast(2).toByteArray())
+
+        frame[frame.size - 2] = newCRC[0]
+        frame[frame.size - 1] = newCRC[1]
+        Log.d("TESTER", "createWriteMultipleRegistersRequest: FINAL HEX = ${frame.toHex()}")
+        return frame
     }
 
     override fun onResume() {

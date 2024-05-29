@@ -122,8 +122,13 @@ class GunsMoreInformationFragment : BaseFragment() {
                 when (gunChargingState) {
                     GunsChargingInfoUtils.PLUGGED_IN -> {
                         if (sessionModeDialog.isShowing.not()) {
-                            sessionModeDialog.show()
-                            requireActivity().clearDialogFlags(sessionModeDialog)
+                            if(selectedGunNumber == 1 && prefHelper.getBoolean(IS_GUN_1_SESSION_MODE_SELECTED, false).not()){
+                                sessionModeDialog.show()
+                                requireActivity().clearDialogFlags(sessionModeDialog)
+                            } else if (selectedGunNumber == 2 && prefHelper.getBoolean(IS_GUN_2_SESSION_MODE_SELECTED, false).not()){
+                                sessionModeDialog.show()
+                                requireActivity().clearDialogFlags(sessionModeDialog)
+                            }
                         }
                         if (SHOW_PIN_AUTHORIZATION) {
                             ivPinAuthorization.visible()
