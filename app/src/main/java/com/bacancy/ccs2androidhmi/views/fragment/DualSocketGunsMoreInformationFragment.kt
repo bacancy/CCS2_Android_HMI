@@ -110,27 +110,33 @@ class DualSocketGunsMoreInformationFragment : BaseFragment() {
                 }
 
                 if (selectedGunNumber == 1) {
-                    incHeaderGun1.tvHeader.text =
-                        getString(R.string.lbl_gun_1) + " ($gunChargingState)"
-                    incInitialSoc.tvValue.text = initialSoc.toString()
-                    incDemandVoltage.tvValue.text = demandVoltage.toString()
-                    incDemandCurrent.tvValue.text = demandCurrent.toString()
-                    incChargingVoltage.tvValue.text = chargingVoltage.toString()
-                    incChargingCurrent.tvValue.text = chargingCurrent.toString()
-                    incChargingSoc.tvValue.text = chargingSoc.toString()
-                    incDuration.tvValue.text = duration
-                    incEnergyConsumption.tvValue.text = energyConsumption.toString()
+                    if(gunChargingState == GunsChargingInfoUtils.PLUGGED_IN) {
+                        incHeaderGun1.tvSubHeader.text = getString(R.string.lbl_plugged_in)
+                    } else {
+                        incHeaderGun1.tvSubHeader.text = "($gunChargingState)"
+                    }
+                    initialSoc1.tvValue.text = initialSoc.toString()
+                    demandVoltage1.tvValue.text = demandVoltage.toString()
+                    demandCurrent1.tvValue.text = demandCurrent.toString()
+                    chargingVoltage1.tvValue.text = chargingVoltage.toString()
+                    chargingCurrent1.tvValue.text = chargingCurrent.toString()
+                    chargingSoc1.tvValue.text = chargingSoc.toString()
+                    chargingDuration1.tvValue.text = duration
+                    energyConsumption1.tvValue.text = energyConsumption.toString()
                 } else {
-                    incHeaderGun2.tvHeader.text =
-                        getString(R.string.lbl_gun_2) + " ($gunChargingState)"
-                    incInitialSoc2.tvValue.text = initialSoc.toString()
-                    incDemandVoltage2.tvValue.text = demandVoltage.toString()
-                    incDemandCurrent2.tvValue.text = demandCurrent.toString()
-                    incChargingVoltage2.tvValue.text = chargingVoltage.toString()
-                    incChargingCurrent2.tvValue.text = chargingCurrent.toString()
-                    incChargingSoc2.tvValue.text = chargingSoc.toString()
-                    incDuration2.tvValue.text = duration
-                    incEnergyConsumption2.tvValue.text = energyConsumption.toString()
+                    if(gunChargingState == GunsChargingInfoUtils.PLUGGED_IN) {
+                        incHeaderGun2.tvSubHeader.text = getString(R.string.lbl_plugged_in)
+                    } else {
+                        incHeaderGun2.tvSubHeader.text = "($gunChargingState)"
+                    }
+                    initialSoc2.tvValue.text = initialSoc.toString()
+                    demandVoltage2.tvValue.text = demandVoltage.toString()
+                    demandCurrent2.tvValue.text = demandCurrent.toString()
+                    chargingVoltage2.tvValue.text = chargingVoltage.toString()
+                    chargingCurrent2.tvValue.text = chargingCurrent.toString()
+                    chargingSoc2.tvValue.text = chargingSoc.toString()
+                    chargingDuration2.tvValue.text = duration
+                    energyConsumption2.tvValue.text = energyConsumption.toString()
                 }
 
             }
@@ -196,10 +202,6 @@ class DualSocketGunsMoreInformationFragment : BaseFragment() {
         prefHelper.setSelectedGunNumber(SELECTED_GUN, 1)
         observeGunsChargingInfo()
         binding.apply {
-            incHeaderGun1.tvHeader.maxLines = 1
-            incHeaderGun2.tvHeader.maxLines = 1
-            incHeaderGun1.tvHeader.textSize = requireContext().resources.getDimension(com.intuit.ssp.R.dimen._10ssp)
-            incHeaderGun2.tvHeader.textSize = requireContext().resources.getDimension(com.intuit.ssp.R.dimen._10ssp)
             incHeaderGun1.tvHeader.text = getString(R.string.lbl_gun_1)
             incHeaderGun2.tvHeader.text = getString(R.string.lbl_gun_2)
         }
@@ -208,56 +210,40 @@ class DualSocketGunsMoreInformationFragment : BaseFragment() {
     override fun setupViews() {
         binding.apply {
             //For Gun1
-            incInitialSoc.tvLabel.text = getString(R.string.lbl_initial_soc)
-            incInitialSoc.tvValueUnit.text = getString(R.string.lbl_percentage)
+            initialSoc1.tvValueUnit.text = getString(R.string.lbl_percentage)
 
-            incDemandVoltage.tvLabel.text = getString(R.string.lbl_demand_voltage)
-            incDemandVoltage.tvValueUnit.text = getString(R.string.lbl_v)
+            demandVoltage1.tvValueUnit.text = getString(R.string.lbl_v)
 
-            incDemandCurrent.tvLabel.text = getString(R.string.lbl_demand_current)
-            incDemandCurrent.tvValueUnit.text = getString(R.string.lbl_a)
+            demandCurrent1.tvValueUnit.text = getString(R.string.lbl_a)
 
-            incChargingVoltage.tvLabel.text = getString(R.string.lbl_charging_voltage)
-            incChargingVoltage.tvValueUnit.text = getString(R.string.lbl_v)
+            chargingVoltage1.tvValueUnit.text = getString(R.string.lbl_v)
 
-            incChargingCurrent.tvLabel.text = getString(R.string.lbl_charging_current)
-            incChargingCurrent.tvValueUnit.text = getString(R.string.lbl_a)
+            chargingCurrent1.tvValueUnit.text = getString(R.string.lbl_a)
 
-            incChargingSoc.tvLabel.text = getString(R.string.lbl_charging_soc)
-            incChargingSoc.tvValueUnit.text = getString(R.string.lbl_percentage)
+            chargingSoc1.tvValueUnit.text = getString(R.string.lbl_percentage)
 
-            incDuration.tvLabel.text = getString(R.string.lbl_duration_hh_mm)
-            incDuration.tvValue.text = getString(R.string.hint_00_00)
-            incDuration.tvValueUnit.invisible()
+            chargingDuration1.tvValue.text = getString(R.string.hint_00_00)
+            chargingDuration1.tvValueUnit.invisible()
 
-            incEnergyConsumption.tvLabel.text = getString(R.string.lbl_energy_consumption)
-            incEnergyConsumption.tvValueUnit.text = getString(R.string.lbl_kwh)
+            energyConsumption1.tvValueUnit.text = getString(R.string.lbl_kwh)
 
             //For Gun2
-            incInitialSoc2.tvLabel.invisible()
-            incInitialSoc2.tvValueUnit.text = getString(R.string.lbl_percentage)
+            initialSoc2.tvValueUnit.text = getString(R.string.lbl_percentage)
 
-            incDemandVoltage2.tvLabel.invisible()
-            incDemandVoltage2.tvValueUnit.text = getString(R.string.lbl_v)
+            demandVoltage2.tvValueUnit.text = getString(R.string.lbl_v)
 
-            incDemandCurrent2.tvLabel.invisible()
-            incDemandCurrent2.tvValueUnit.text = getString(R.string.lbl_a)
+            demandCurrent2.tvValueUnit.text = getString(R.string.lbl_a)
 
-            incChargingVoltage2.tvLabel.invisible()
-            incChargingVoltage2.tvValueUnit.text = getString(R.string.lbl_v)
+            chargingVoltage2.tvValueUnit.text = getString(R.string.lbl_v)
 
-            incChargingCurrent2.tvLabel.invisible()
-            incChargingCurrent2.tvValueUnit.text = getString(R.string.lbl_a)
+            chargingCurrent2.tvValueUnit.text = getString(R.string.lbl_a)
 
-            incChargingSoc2.tvLabel.invisible()
-            incChargingSoc2.tvValueUnit.text = getString(R.string.lbl_percentage)
+            chargingSoc2.tvValueUnit.text = getString(R.string.lbl_percentage)
 
-            incDuration2.tvLabel.invisible()
-            incDuration2.tvValue.text = getString(R.string.hint_00_00)
-            incDuration2.tvValueUnit.invisible()
+            chargingDuration2.tvValue.text = getString(R.string.hint_00_00)
+            chargingDuration2.tvValueUnit.invisible()
 
-            incEnergyConsumption2.tvLabel.invisible()
-            incEnergyConsumption2.tvValueUnit.text = getString(R.string.lbl_kwh)
+            energyConsumption2.tvValueUnit.text = getString(R.string.lbl_kwh)
 
         }
     }

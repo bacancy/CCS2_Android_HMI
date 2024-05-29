@@ -12,144 +12,276 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_10sdp"
-        android:baselineAligned="false"
-        android:orientation="horizontal">
+        android:gravity="end">
 
-        <LinearLayout
+        <View
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:layout_weight="1" />
 
-            <include
-                android:id="@+id/incHeaderGun1"
-                layout="@layout/common_header" />
-
-            <include
-                android:id="@+id/incInitialSoc"
-                layout="@layout/common_label_and_value_dual_socket"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_5sdp" />
-
-            <include
-                android:id="@+id/incChargingSoc"
-                layout="@layout/common_label_and_value_dual_socket"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_2sdp" />
-
-            <include
-                android:id="@+id/incDemandVoltage"
-                layout="@layout/common_label_and_value_dual_socket"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_2sdp" />
-
-            <include
-                android:id="@+id/incDemandCurrent"
-                layout="@layout/common_label_and_value_dual_socket"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_2sdp" />
-
-            <include
-                android:id="@+id/incChargingVoltage"
-                layout="@layout/common_label_and_value_dual_socket"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_2sdp" />
-
-            <include
-                android:id="@+id/incChargingCurrent"
-                layout="@layout/common_label_and_value_dual_socket"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_2sdp" />
-
-            <include
-                android:id="@+id/incDuration"
-                layout="@layout/common_label_and_value_dual_socket"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_2sdp" />
-
-            <include
-                android:id="@+id/incEnergyConsumption"
-                layout="@layout/common_label_and_value_dual_socket"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_2sdp" />
-        </LinearLayout>
-
-        <LinearLayout
+        <include
+            android:id="@+id/incHeaderGun1"
+            layout="@layout/common_header_dual_socket"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <include
+            android:id="@+id/incHeaderGun2"
+            layout="@layout/common_header_dual_socket"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_2sdp"
+            android:layout_weight="1" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/tvInitialSoc"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="vertical">
+            android:ellipsize="end"
+            android:lines="1"
+            android:textSize="@dimen/_8ssp"
+            android:text="@string/lbl_initial_soc" />
 
-            <include
-                android:id="@+id/incHeaderGun2"
-                layout="@layout/common_header" />
+        <include
+            android:id="@+id/initialSoc1"
+            layout="@layout/common_label_and_value_dual_socket"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
 
-            <include
-                android:id="@+id/incInitialSoc2"
-                layout="@layout/common_label_and_value_dual_socket"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_5sdp" />
+        <include
+            android:id="@+id/initialSoc2"
+            layout="@layout/common_label_and_value_dual_socket"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
 
-            <include
-                android:id="@+id/incChargingSoc2"
-                layout="@layout/common_label_and_value_dual_socket"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_2sdp" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:gravity="center_vertical">
 
-            <include
-                android:id="@+id/incDemandVoltage2"
-                layout="@layout/common_label_and_value_dual_socket"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_2sdp" />
+        <TextView
+            android:id="@+id/tvChargingSoc"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:lines="1"
+            android:textSize="@dimen/_8ssp"
+            android:text="@string/lbl_charging_soc" />
 
-            <include
-                android:id="@+id/incDemandCurrent2"
-                layout="@layout/common_label_and_value_dual_socket"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_2sdp" />
+        <include
+            android:id="@+id/chargingSoc1"
+            layout="@layout/common_label_and_value_dual_socket"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
 
-            <include
-                android:id="@+id/incChargingVoltage2"
-                layout="@layout/common_label_and_value_dual_socket"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_2sdp" />
+        <include
+            android:id="@+id/chargingSoc2"
+            layout="@layout/common_label_and_value_dual_socket"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
 
-            <include
-                android:id="@+id/incChargingCurrent2"
-                layout="@layout/common_label_and_value_dual_socket"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_2sdp" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:gravity="center_vertical">
 
-            <include
-                android:id="@+id/incDuration2"
-                layout="@layout/common_label_and_value_dual_socket"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_2sdp" />
+        <TextView
+            android:id="@+id/tvDemandVoltage"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:lines="1"
+            android:textSize="@dimen/_8ssp"
+            android:text="@string/lbl_demand_voltage" />
 
-            <include
-                android:id="@+id/incEnergyConsumption2"
-                layout="@layout/common_label_and_value_dual_socket"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_2sdp" />
+        <include
+            android:id="@+id/demandVoltage1"
+            layout="@layout/common_label_and_value_dual_socket"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
 
-        </LinearLayout>
+        <include
+            android:id="@+id/demandVoltage2"
+            layout="@layout/common_label_and_value_dual_socket"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/tvDemandCurrent"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:lines="1"
+            android:textSize="@dimen/_8ssp"
+            android:text="@string/lbl_demand_current" />
+
+        <include
+            android:id="@+id/demandCurrent1"
+            layout="@layout/common_label_and_value_dual_socket"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <include
+            android:id="@+id/demandCurrent2"
+            layout="@layout/common_label_and_value_dual_socket"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/tvChargingVoltage"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:lines="1"
+            android:textSize="@dimen/_8ssp"
+            android:text="@string/lbl_charging_voltage" />
+
+        <include
+            android:id="@+id/chargingVoltage1"
+            layout="@layout/common_label_and_value_dual_socket"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <include
+            android:id="@+id/chargingVoltage2"
+            layout="@layout/common_label_and_value_dual_socket"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/tvChargingCurrent"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:lines="1"
+            android:textSize="@dimen/_8ssp"
+            android:text="@string/lbl_charging_current" />
+
+        <include
+            android:id="@+id/chargingCurrent1"
+            layout="@layout/common_label_and_value_dual_socket"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <include
+            android:id="@+id/chargingCurrent2"
+            layout="@layout/common_label_and_value_dual_socket"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/tvDuration"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:lines="1"
+            android:textSize="@dimen/_8ssp"
+            android:text="@string/lbl_duration_hh_mm" />
+
+        <include
+            android:id="@+id/chargingDuration1"
+            layout="@layout/common_label_and_value_dual_socket"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <include
+            android:id="@+id/chargingDuration2"
+            layout="@layout/common_label_and_value_dual_socket"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/tvEnergyConsumption"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:lines="1"
+            android:textSize="@dimen/_8ssp"
+            android:text="@string/lbl_energy_consumption" />
+
+        <include
+            android:id="@+id/energyConsumption1"
+            layout="@layout/common_label_and_value_dual_socket"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <include
+            android:id="@+id/energyConsumption2"
+            layout="@layout/common_label_and_value_dual_socket"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
     </LinearLayout>
 
     <LinearLayout

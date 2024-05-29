@@ -478,6 +478,7 @@ class GunsHomeScreenFragment : BaseFragment() {
                                         isDarkTheme
                                     ) {
                                         if(prefHelper.getBoolean(IS_DUAL_SOCKET_MODE_SELECTED, false)){
+                                            isGun2ChargingStarted = false //To avoid showing gun-2 charging summary dialog when charging stopped in Dual Socket mode
                                             prefHelper.setBoolean(IS_DUAL_SOCKET_MODE_SELECTED, false)
                                             (requireActivity() as HMIDashboardActivity).goBack()
                                         }

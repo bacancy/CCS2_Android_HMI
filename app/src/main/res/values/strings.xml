@@ -66,7 +66,7 @@
     <string name="lbl_hz">Hz</string>
     <string name="lbl_a">A</string>
     <string name="lbl_kw">kw</string>
-    <string name="lbl_kwh">kwh</string>
+    <string name="lbl_kwh">kWh</string>
     <string name="lbl_fault_indication">Fault Indication</string>
     <string name="lbl_charging_in_process">Charging in Process</string>
     <string name="lbl_gun_plugged">Gun plugged</string>
