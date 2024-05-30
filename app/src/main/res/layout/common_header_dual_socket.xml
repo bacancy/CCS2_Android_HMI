@@ -17,7 +17,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingHorizontal="@dimen/_10sdp"
-            android:text="Gun 1"
+            tools:text="Gun 1"
             android:textSize="@dimen/_10ssp" />
 
         <View
@@ -30,7 +30,7 @@
             android:gravity="center"
             android:lines="1"
             android:layout_height="wrap_content"
-            android:text="Plugged in and waiting for authorization "
+            tools:text="@string/lbl_plugged_in"
             android:textSize="@dimen/_9ssp"
             android:visibility="visible" />
     </LinearLayout>

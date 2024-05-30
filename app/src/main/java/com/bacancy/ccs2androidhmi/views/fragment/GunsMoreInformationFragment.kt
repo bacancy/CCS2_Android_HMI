@@ -22,6 +22,7 @@ import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_SELECTED_SESSION_MODE_V
 import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_GUN_1_SESSION_MODE_SELECTED
 import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_GUN_2_SESSION_MODE_SELECTED
 import com.bacancy.ccs2androidhmi.util.DialogUtils.clearDialogFlags
+import com.bacancy.ccs2androidhmi.util.DialogUtils.showCustomDialog
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showPinAuthorizationDialog
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showSessionModeDialog
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils
@@ -42,6 +43,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class GunsMoreInformationFragment : BaseFragment() {
 
+    private var isSessionModeDialogShownOnce: Boolean = false
     private lateinit var sessionModeDialog: Dialog
     private var selectedGunNumber: Int = 1
     private lateinit var binding: FragmentGunsMoreInfoScreenBinding
@@ -85,6 +87,9 @@ class GunsMoreInformationFragment : BaseFragment() {
                     prefHelper.setIntValue(GUN_2_SELECTED_SESSION_MODE, selectedRadioButton)
                     prefHelper.setStringValue(GUN_2_SELECTED_SESSION_MODE_VALUE, sessionModeValue)
                 }
+                val dialog = requireActivity().showCustomDialog(getString(R.string.msg_convey_user_to_start_charging_session)) {}
+                dialog.show()
+                requireActivity().clearDialogFlags(dialog)
             }
         return binding.root
     }
@@ -121,11 +126,16 @@ class GunsMoreInformationFragment : BaseFragment() {
 
                 when (gunChargingState) {
                     GunsChargingInfoUtils.PLUGGED_IN -> {
-                        if (sessionModeDialog.isShowing.not()) {
-                            if(selectedGunNumber == 1 && prefHelper.getBoolean(IS_GUN_1_SESSION_MODE_SELECTED, false).not()){
-                                sessionModeDialog.show()
-                                requireActivity().clearDialogFlags(sessionModeDialog)
-                            } else if (selectedGunNumber == 2 && prefHelper.getBoolean(IS_GUN_2_SESSION_MODE_SELECTED, false).not()){
+                        ivSessionMode.visible()
+                        if (!isSessionModeDialogShownOnce && !sessionModeDialog.isShowing) {
+                            val sessionModeKey = when (selectedGunNumber) {
+                                1 -> IS_GUN_1_SESSION_MODE_SELECTED
+                                2 -> IS_GUN_2_SESSION_MODE_SELECTED
+                                else -> null
+                            }
+
+                            if (sessionModeKey != null && !prefHelper.getBoolean(sessionModeKey, false)) {
+                                isSessionModeDialogShownOnce = true
                                 sessionModeDialog.show()
                                 requireActivity().clearDialogFlags(sessionModeDialog)
                             }
@@ -136,12 +146,16 @@ class GunsMoreInformationFragment : BaseFragment() {
                     }
 
                     GunsChargingInfoUtils.CHARGING -> {
+                        ivSessionMode.gone()
+                        isSessionModeDialogShownOnce = false
                         if (SHOW_PIN_AUTHORIZATION) {
                             ivPinAuthorization.visible()
                         }
                     }
 
                     else -> {
+                        ivSessionMode.gone()
+                        isSessionModeDialogShownOnce = false
                         ivPinAuthorization.gone()
                     }
                 }
@@ -216,6 +230,13 @@ class GunsMoreInformationFragment : BaseFragment() {
                         false
                     )
                 })
+            }
+
+            ivSessionMode.setOnClickListener {
+                if(sessionModeDialog.isShowing.not()){
+                    sessionModeDialog.show()
+                    requireActivity().clearDialogFlags(sessionModeDialog)
+                }
             }
 
         }

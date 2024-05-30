@@ -32,6 +32,15 @@
                 app:tint="?attr/viewThemeColor" />
 
             <ImageView
+                android:id="@+id/ivSessionMode"
+                android:layout_width="@dimen/_15sdp"
+                android:layout_height="@dimen/_15sdp"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:src="@drawable/ic_session_mode"
+                android:visibility="gone"
+                app:tint="?attr/viewThemeColor" />
+
+            <ImageView
                 android:id="@+id/ivGunStateInfo"
                 android:layout_width="@dimen/_15sdp"
                 android:layout_height="@dimen/_15sdp"
