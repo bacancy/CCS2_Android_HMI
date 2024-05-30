@@ -21,9 +21,13 @@ import com.bacancy.ccs2androidhmi.util.CommonUtils.AUTH_PIN_VALUE
 import com.bacancy.ccs2androidhmi.util.CommonUtils.CHARGER_OUTPUTS
 import com.bacancy.ccs2androidhmi.util.CommonUtils.CHARGER_RATINGS
 import com.bacancy.ccs2androidhmi.util.CommonUtils.DEVICE_MAC_ADDRESS
+import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_CHARGING_END_TIME
+import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_CHARGING_START_TIME
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_DC_METER_FRAG
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_LAST_CHARGING_SUMMARY_FRAG
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_LOCAL_START
+import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_CHARGING_END_TIME
+import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_CHARGING_START_TIME
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_DC_METER_FRAG
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_LAST_CHARGING_SUMMARY_FRAG
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_LOCAL_START
@@ -36,6 +40,9 @@ import com.bacancy.ccs2androidhmi.util.CommonUtils.generateRandomNumber
 import com.bacancy.ccs2androidhmi.util.CommonUtils.getCleanedMacAddress
 import com.bacancy.ccs2androidhmi.util.CommonUtils.toJsonString
 import com.bacancy.ccs2androidhmi.util.DateTimeUtils
+import com.bacancy.ccs2androidhmi.util.DateTimeUtils.DATE_TIME_FORMAT
+import com.bacancy.ccs2androidhmi.util.DateTimeUtils.DATE_TIME_FORMAT_FROM_CHARGER
+import com.bacancy.ccs2androidhmi.util.DateTimeUtils.convertDateFormatToDesiredFormat
 import com.bacancy.ccs2androidhmi.util.DateTimeUtils.convertToUtc
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showCustomDialog
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_DENIED
@@ -118,7 +125,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 mInputStream = it.inputStream
             }
         } catch (e: Exception) {
-            Log.d("TAG", "onCreate: Exception = ${e.toString()}")
+            Log.d("TAG", "onCreate: Exception = $e")
         }
     }
 
@@ -413,6 +420,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
             prefHelper.setStringValue(AUTH_PIN_VALUE, "")
             lifecycleScope.launch(Dispatchers.Main) {
                 dialog.show()
+                //clearDialogFlags(dialog)
             }
             resetReadStopCount()
         } else {
@@ -523,6 +531,9 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                         PLUGGED_IN,
                         AUTHENTICATION_SUCCESS,
                         CHARGING -> {
+                            prefHelper.setStringValue(GUN_1_CHARGING_END_TIME, "")
+                            prefHelper.setStringValue(GUN_1_CHARGING_START_TIME, DateTimeUtils.getCurrentDateTime().convertDateFormatToDesiredFormat(
+                                DATE_TIME_FORMAT, DATE_TIME_FORMAT_FROM_CHARGER))
                             isGun1PluggedIn = true
                             openGun1LastChargingSummary()
                         }
@@ -546,6 +557,8 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                         -> {
                             if (isGun1PluggedIn) {
                                 isGun1PluggedIn = false
+                                prefHelper.setStringValue(GUN_1_CHARGING_END_TIME, DateTimeUtils.getCurrentDateTime().convertDateFormatToDesiredFormat(
+                                    DATE_TIME_FORMAT, DATE_TIME_FORMAT_FROM_CHARGER))
                                 openGun1LastChargingSummary(true)
                             } else {
                                 openGun1LastChargingSummary()
@@ -783,6 +796,9 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                         PLUGGED_IN,
                         AUTHENTICATION_SUCCESS,
                         CHARGING -> {
+                            prefHelper.setStringValue(GUN_2_CHARGING_END_TIME, "")
+                            prefHelper.setStringValue(GUN_2_CHARGING_START_TIME, DateTimeUtils.getCurrentDateTime().convertDateFormatToDesiredFormat(
+                                DATE_TIME_FORMAT, DATE_TIME_FORMAT_FROM_CHARGER))
                             isGun2PluggedIn = true
                             openGun2LastChargingSummary()
                         }
@@ -805,6 +821,8 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                         EMERGENCY_STOP,
                         -> {
                             if (isGun2PluggedIn) {
+                                prefHelper.setStringValue(GUN_2_CHARGING_END_TIME, DateTimeUtils.getCurrentDateTime().convertDateFormatToDesiredFormat(
+                                    DATE_TIME_FORMAT, DATE_TIME_FORMAT_FROM_CHARGER))
                                 isGun2PluggedIn = false
                                 openGun2LastChargingSummary(true)
                             } else {

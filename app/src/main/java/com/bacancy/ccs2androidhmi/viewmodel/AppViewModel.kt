@@ -14,6 +14,10 @@ import com.bacancy.ccs2androidhmi.db.entity.TbMiscInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbNotifications
 import com.bacancy.ccs2androidhmi.models.ErrorCodes
 import com.bacancy.ccs2androidhmi.repository.MainRepository
+import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_CHARGING_END_TIME
+import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_CHARGING_START_TIME
+import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_CHARGING_END_TIME
+import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_CHARGING_START_TIME
 import com.bacancy.ccs2androidhmi.util.DateTimeUtils
 import com.bacancy.ccs2androidhmi.util.DateTimeUtils.DATE_TIME_FORMAT
 import com.bacancy.ccs2androidhmi.util.DateTimeUtils.DATE_TIME_FORMAT_FOR_UI
@@ -23,6 +27,7 @@ import com.bacancy.ccs2androidhmi.util.LastChargingSummaryUtils
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils
 import com.bacancy.ccs2androidhmi.util.ModBusUtils
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter
+import com.bacancy.ccs2androidhmi.util.PrefHelper
 import com.bacancy.ccs2androidhmi.util.StateAndModesUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -33,7 +38,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AppViewModel @Inject constructor(private val mainRepository: MainRepository) : ViewModel() {
+class AppViewModel @Inject constructor(private val mainRepository: MainRepository, private val prefHelper: PrefHelper) : ViewModel() {
 
     val latestAcMeterInfo: LiveData<TbAcMeterInfo> = mainRepository.getLatestAcMeterInfo()
 
@@ -248,8 +253,8 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
         val chargingSummary = TbChargingHistory(
             gunNumber = 1,
             evMacAddress = LastChargingSummaryUtils.getEVMacAddress(it),
-            chargingStartTime = LastChargingSummaryUtils.getChargingStartTime(it),
-            chargingEndTime = LastChargingSummaryUtils.getChargingEndTime(it),
+            chargingStartTime = prefHelper.getStringValue(GUN_1_CHARGING_START_TIME,""),
+            chargingEndTime = prefHelper.getStringValue(GUN_1_CHARGING_END_TIME,""),
             totalChargingTime = LastChargingSummaryUtils.getTotalChargingTime(it),
             startSoc = LastChargingSummaryUtils.getStartSoc(it),
             endSoc = LastChargingSummaryUtils.getEndSoc(it),
@@ -269,12 +274,8 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
                 chargingDuration = LastChargingSummaryUtils.getTotalChargingTime(
                     it
                 ),
-                chargingStartDateTime = LastChargingSummaryUtils.getChargingStartTime(
-                    it
-                ),
-                chargingEndDateTime = LastChargingSummaryUtils.getChargingEndTime(
-                    it
-                ),
+                chargingStartDateTime = prefHelper.getStringValue(GUN_1_CHARGING_START_TIME,""),
+                chargingEndDateTime = prefHelper.getStringValue(GUN_1_CHARGING_END_TIME,""),
                 startSoc = LastChargingSummaryUtils.getStartSoc(it),
                 endSoc = LastChargingSummaryUtils.getEndSoc(it),
                 energyConsumption = LastChargingSummaryUtils.getEnergyConsumption(
@@ -339,8 +340,8 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
         val chargingSummary = TbChargingHistory(
             gunNumber = 2,
             evMacAddress = LastChargingSummaryUtils.getEVMacAddress(it),
-            chargingStartTime = LastChargingSummaryUtils.getChargingStartTime(it),
-            chargingEndTime = LastChargingSummaryUtils.getChargingEndTime(it),
+            chargingStartTime = prefHelper.getStringValue(GUN_2_CHARGING_START_TIME,""),
+            chargingEndTime = prefHelper.getStringValue(GUN_2_CHARGING_END_TIME,""),
             totalChargingTime = LastChargingSummaryUtils.getTotalChargingTime(it),
             startSoc = LastChargingSummaryUtils.getStartSoc(it),
             endSoc = LastChargingSummaryUtils.getEndSoc(it),
@@ -360,12 +361,8 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
                 chargingDuration = LastChargingSummaryUtils.getTotalChargingTime(
                     it
                 ),
-                chargingStartDateTime = LastChargingSummaryUtils.getChargingStartTime(
-                    it
-                ),
-                chargingEndDateTime = LastChargingSummaryUtils.getChargingEndTime(
-                    it
-                ),
+                chargingStartDateTime = prefHelper.getStringValue(GUN_2_CHARGING_START_TIME,""),
+                chargingEndDateTime = prefHelper.getStringValue(GUN_2_CHARGING_END_TIME,""),
                 startSoc = LastChargingSummaryUtils.getStartSoc(it),
                 endSoc = LastChargingSummaryUtils.getEndSoc(it),
                 energyConsumption = LastChargingSummaryUtils.getEnergyConsumption(

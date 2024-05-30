@@ -37,6 +37,10 @@ object CommonUtils {
     const val CHARGER_ACTIVE_DEACTIVE_MESSAGE_RECD = "CHARGER_MSG_RECD"
     const val IS_APP_PINNED = "IS_APP_PINNED"
     const val EVSE_APP_PACKAGE_NAME="com.EVSEReady.charger_helper"
+    const val GUN_1_CHARGING_START_TIME="GUN_1_CHARGING_START_TIME"
+    const val GUN_1_CHARGING_END_TIME="GUN_1_CHARGING_END_TIME"
+    const val GUN_2_CHARGING_START_TIME="GUN_2_CHARGING_START_TIME"
+    const val GUN_2_CHARGING_END_TIME="GUN_2_CHARGING_END_TIME"
 
     private fun swapAdjacentElements(array: MutableList<Int>): MutableList<Int> {
         for (i in 0 until array.size - 1 step 2) {

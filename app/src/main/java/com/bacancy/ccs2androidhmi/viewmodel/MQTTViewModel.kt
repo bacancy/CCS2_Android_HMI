@@ -10,6 +10,10 @@ import com.bacancy.ccs2androidhmi.mqtt.models.ChargerDetailsBody
 import com.bacancy.ccs2androidhmi.mqtt.models.ChargingHistoryBody
 import com.bacancy.ccs2androidhmi.mqtt.models.ConnectorStatusBody
 import com.bacancy.ccs2androidhmi.mqtt.models.FaultErrorsBody
+import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_CHARGING_END_TIME
+import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_CHARGING_START_TIME
+import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_CHARGING_END_TIME
+import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_CHARGING_START_TIME
 import com.bacancy.ccs2androidhmi.util.CommonUtils.addColonsToMacAddress
 import com.bacancy.ccs2androidhmi.util.CommonUtils.toJsonString
 import com.bacancy.ccs2androidhmi.util.DateTimeUtils
@@ -18,6 +22,7 @@ import com.bacancy.ccs2androidhmi.util.DateTimeUtils.DATE_TIME_FORMAT_FROM_CHARG
 import com.bacancy.ccs2androidhmi.util.DateTimeUtils.convertDateFormatToDesiredFormat
 import com.bacancy.ccs2androidhmi.util.DateTimeUtils.convertToUtc
 import com.bacancy.ccs2androidhmi.util.LastChargingSummaryUtils
+import com.bacancy.ccs2androidhmi.util.PrefHelper
 import com.bacancy.ccs2androidhmi.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -33,7 +38,7 @@ import org.eclipse.paho.client.mqttv3.MqttMessage
 import javax.inject.Inject
 
 @HiltViewModel
-class MQTTViewModel @Inject constructor(private val mqttClient: MQTTClient) : ViewModel() {
+class MQTTViewModel @Inject constructor(private val mqttClient: MQTTClient,private val prefHelper: PrefHelper) : ViewModel() {
 
     private val _topicSubscriptionState = MutableStateFlow<Resource<Unit>>(Resource.Loading())
     val topicSubscriptionState: StateFlow<Resource<Unit>> = _topicSubscriptionState
@@ -232,9 +237,9 @@ class MQTTViewModel @Inject constructor(private val mqttClient: MQTTClient) : Vi
         val chargingHistoryBody = ChargingHistoryBody(
             connectorId = connectorId,
             evMacAddress = LastChargingSummaryUtils.getEVMacAddress(it),
-            chargingStartTime = LastChargingSummaryUtils.getChargingStartTime(it)
+            chargingStartTime = prefHelper.getStringValue( if(connectorId==1)GUN_1_CHARGING_START_TIME else GUN_2_CHARGING_START_TIME,"")
                 .convertDateFormatToDesiredFormat(currentFormat = DATE_TIME_FORMAT_FROM_CHARGER, desiredFormat = DATE_TIME_FORMAT).convertToUtc().orEmpty(),
-            chargingEndTime = LastChargingSummaryUtils.getChargingEndTime(it).convertDateFormatToDesiredFormat(currentFormat = DATE_TIME_FORMAT_FROM_CHARGER, desiredFormat = DATE_TIME_FORMAT).convertToUtc().orEmpty(),
+            chargingEndTime = prefHelper.getStringValue(if(connectorId==1)GUN_1_CHARGING_END_TIME else GUN_2_CHARGING_END_TIME,"").convertDateFormatToDesiredFormat(currentFormat = DATE_TIME_FORMAT_FROM_CHARGER, desiredFormat = DATE_TIME_FORMAT).convertToUtc().orEmpty(),
             totalChargingTime = LastChargingSummaryUtils.getTotalChargingTime(it),
             startSoc = LastChargingSummaryUtils.getStartSoc(it),
             endSoc = LastChargingSummaryUtils.getEndSoc(it),
