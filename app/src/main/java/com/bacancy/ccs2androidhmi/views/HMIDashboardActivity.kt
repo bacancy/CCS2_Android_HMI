@@ -6,7 +6,6 @@ import android.app.UiModeManager
 import android.app.admin.DevicePolicyManager
 import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkRequest
@@ -578,7 +577,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         }
 
         binding.incToolbar.ivLocalStartStop.setOnClickListener {
-            showPasswordPromptDialog(getString(R.string.title_authorize_for_local_start_stop),{
+            showPasswordPromptDialog(getString(R.string.title_authorize_for_local_start_stop),isCancelable = true,{
                 addNewFragment(LocalStartStopFragment())
             }, {
                 showCustomToast(getString(R.string.msg_invalid_password), false)
@@ -586,7 +585,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         }
 
         binding.incToolbar.ivTestMode.setOnClickListener {
-            showPasswordPromptDialog(getString(R.string.title_authorize_for_test_mode),{
+            showPasswordPromptDialog(getString(R.string.title_authorize_for_test_mode),isCancelable = true,{
                 addNewFragment(TestModeHomeFragment())
             }, {
                 showCustomToast(getString(R.string.msg_invalid_password), false)

@@ -3,13 +3,26 @@ package com.bacancy.ccs2androidhmi.util
 import android.icu.text.SimpleDateFormat
 import android.icu.util.TimeZone
 import android.os.Build
+import java.util.Date
 import java.util.Locale
+import java.util.concurrent.TimeUnit
 
 object DateTimeUtils {
 
     const val DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX"
     const val DATE_TIME_FORMAT_FOR_UI = "dd-MM-yyyy HH:mm:ss"
     const val DATE_TIME_FORMAT_FROM_CHARGER = "dd/MM/yyyy HH:mm:ss"
+
+    fun calculateDifferenceInMinutes(firstDateTime: String, secondDateTime: String): String {
+        val dateFormat = SimpleDateFormat(DATE_TIME_FORMAT_FROM_CHARGER, Locale.getDefault())
+
+        val firstDate: Date = dateFormat.parse(firstDateTime)
+        val secondDate: Date = dateFormat.parse(secondDateTime)
+
+        val differenceInMillis = secondDate.time - firstDate.time
+
+        return TimeUnit.MILLISECONDS.toMinutes(differenceInMillis).toString()
+    }
 
     fun getCurrentDateTime(dateTimeFormat: String = DATE_TIME_FORMAT): String {
         val now = System.currentTimeMillis()

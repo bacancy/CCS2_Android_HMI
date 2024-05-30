@@ -445,9 +445,10 @@ class GunsHomeScreenFragment : BaseFragment() {
                                         true,
                                         it,
                                         isDarkTheme
-                                    ) {}
-                                    prefHelper.setStringValue(GUN_1_CHARGING_START_TIME,"")
-                                    prefHelper.setStringValue(GUN_1_CHARGING_END_TIME,"")
+                                    ) {
+                                        prefHelper.setStringValue(GUN_1_CHARGING_START_TIME,"")
+                                        prefHelper.setStringValue(GUN_1_CHARGING_END_TIME,"")
+                                    }
                                 }
                             } else {
                                 if (shouldShowGun2SummaryDialog) {
@@ -456,9 +457,10 @@ class GunsHomeScreenFragment : BaseFragment() {
                                         false,
                                         it,
                                         isDarkTheme
-                                    ) {}
-                                    prefHelper.setStringValue(GUN_2_CHARGING_START_TIME,"")
-                                    prefHelper.setStringValue(GUN_2_CHARGING_END_TIME,"")
+                                    ) {
+                                        prefHelper.setStringValue(GUN_2_CHARGING_START_TIME,"")
+                                        prefHelper.setStringValue(GUN_2_CHARGING_END_TIME,"")
+                                    }
                                 }
                             }
                         }

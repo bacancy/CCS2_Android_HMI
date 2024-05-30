@@ -21,6 +21,7 @@ import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_CHARGING_START_TIME
 import com.bacancy.ccs2androidhmi.util.DateTimeUtils
 import com.bacancy.ccs2androidhmi.util.DateTimeUtils.DATE_TIME_FORMAT
 import com.bacancy.ccs2androidhmi.util.DateTimeUtils.DATE_TIME_FORMAT_FOR_UI
+import com.bacancy.ccs2androidhmi.util.DateTimeUtils.calculateDifferenceInMinutes
 import com.bacancy.ccs2androidhmi.util.DateTimeUtils.convertDateFormatToDesiredFormat
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils
 import com.bacancy.ccs2androidhmi.util.LastChargingSummaryUtils
@@ -255,7 +256,8 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
             evMacAddress = LastChargingSummaryUtils.getEVMacAddress(it),
             chargingStartTime = prefHelper.getStringValue(GUN_1_CHARGING_START_TIME,""),
             chargingEndTime = prefHelper.getStringValue(GUN_1_CHARGING_END_TIME,""),
-            totalChargingTime = LastChargingSummaryUtils.getTotalChargingTime(it),
+            totalChargingTime = calculateDifferenceInMinutes(prefHelper.getStringValue(GUN_1_CHARGING_START_TIME,""),
+                prefHelper.getStringValue(GUN_1_CHARGING_END_TIME,"")),
             startSoc = LastChargingSummaryUtils.getStartSoc(it),
             endSoc = LastChargingSummaryUtils.getEndSoc(it),
             energyConsumption = LastChargingSummaryUtils.getEnergyConsumption(it),
@@ -271,9 +273,8 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
             TbGunsLastChargingSummary(
                 gunId = 1,
                 evMacAddress = LastChargingSummaryUtils.getEVMacAddress(it),
-                chargingDuration = LastChargingSummaryUtils.getTotalChargingTime(
-                    it
-                ),
+                chargingDuration = calculateDifferenceInMinutes(prefHelper.getStringValue(GUN_1_CHARGING_START_TIME,""),
+                    prefHelper.getStringValue(GUN_1_CHARGING_END_TIME,"")),
                 chargingStartDateTime = prefHelper.getStringValue(GUN_1_CHARGING_START_TIME,""),
                 chargingEndDateTime = prefHelper.getStringValue(GUN_1_CHARGING_END_TIME,""),
                 startSoc = LastChargingSummaryUtils.getStartSoc(it),
@@ -342,7 +343,8 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
             evMacAddress = LastChargingSummaryUtils.getEVMacAddress(it),
             chargingStartTime = prefHelper.getStringValue(GUN_2_CHARGING_START_TIME,""),
             chargingEndTime = prefHelper.getStringValue(GUN_2_CHARGING_END_TIME,""),
-            totalChargingTime = LastChargingSummaryUtils.getTotalChargingTime(it),
+            totalChargingTime = calculateDifferenceInMinutes(prefHelper.getStringValue(GUN_2_CHARGING_START_TIME,""),
+                prefHelper.getStringValue(GUN_2_CHARGING_END_TIME,"")),
             startSoc = LastChargingSummaryUtils.getStartSoc(it),
             endSoc = LastChargingSummaryUtils.getEndSoc(it),
             energyConsumption = LastChargingSummaryUtils.getEnergyConsumption(it),
@@ -358,9 +360,8 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
             TbGunsLastChargingSummary(
                 gunId = 2,
                 evMacAddress = LastChargingSummaryUtils.getEVMacAddress(it),
-                chargingDuration = LastChargingSummaryUtils.getTotalChargingTime(
-                    it
-                ),
+                chargingDuration = calculateDifferenceInMinutes(prefHelper.getStringValue(GUN_2_CHARGING_START_TIME,""),
+                    prefHelper.getStringValue(GUN_2_CHARGING_END_TIME,"")),
                 chargingStartDateTime = prefHelper.getStringValue(GUN_2_CHARGING_START_TIME,""),
                 chargingEndDateTime = prefHelper.getStringValue(GUN_2_CHARGING_END_TIME,""),
                 startSoc = LastChargingSummaryUtils.getStartSoc(it),

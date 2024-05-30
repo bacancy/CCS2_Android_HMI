@@ -44,6 +44,7 @@ import com.bacancy.ccs2androidhmi.util.DateTimeUtils.DATE_TIME_FORMAT
 import com.bacancy.ccs2androidhmi.util.DateTimeUtils.DATE_TIME_FORMAT_FROM_CHARGER
 import com.bacancy.ccs2androidhmi.util.DateTimeUtils.convertDateFormatToDesiredFormat
 import com.bacancy.ccs2androidhmi.util.DateTimeUtils.convertToUtc
+import com.bacancy.ccs2androidhmi.util.DialogUtils.clearDialogFlags
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showCustomDialog
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_DENIED
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_SUCCESS
@@ -420,7 +421,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
             prefHelper.setStringValue(AUTH_PIN_VALUE, "")
             lifecycleScope.launch(Dispatchers.Main) {
                 dialog.show()
-                //clearDialogFlags(dialog)
+                clearDialogFlags(dialog)
             }
             resetReadStopCount()
         } else {
@@ -529,11 +530,17 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                         }
 
                         PLUGGED_IN,
-                        AUTHENTICATION_SUCCESS,
+                        AUTHENTICATION_SUCCESS -> {
+                            isGun1PluggedIn = true
+                            openGun1LastChargingSummary()
+                        }
+
                         CHARGING -> {
                             prefHelper.setStringValue(GUN_1_CHARGING_END_TIME, "")
-                            prefHelper.setStringValue(GUN_1_CHARGING_START_TIME, DateTimeUtils.getCurrentDateTime().convertDateFormatToDesiredFormat(
-                                DATE_TIME_FORMAT, DATE_TIME_FORMAT_FROM_CHARGER))
+                            if(prefHelper.getStringValue(GUN_1_CHARGING_START_TIME,"").isEmpty()){
+                                prefHelper.setStringValue(GUN_1_CHARGING_START_TIME, DateTimeUtils.getCurrentDateTime().convertDateFormatToDesiredFormat(
+                                    DATE_TIME_FORMAT, DATE_TIME_FORMAT_FROM_CHARGER))
+                            }
                             isGun1PluggedIn = true
                             openGun1LastChargingSummary()
                         }
@@ -557,8 +564,15 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                         -> {
                             if (isGun1PluggedIn) {
                                 isGun1PluggedIn = false
-                                prefHelper.setStringValue(GUN_1_CHARGING_END_TIME, DateTimeUtils.getCurrentDateTime().convertDateFormatToDesiredFormat(
-                                    DATE_TIME_FORMAT, DATE_TIME_FORMAT_FROM_CHARGER))
+                                if(prefHelper.getStringValue(GUN_1_CHARGING_END_TIME,"").isEmpty()) {
+                                    prefHelper.setStringValue(
+                                        GUN_1_CHARGING_END_TIME,
+                                        DateTimeUtils.getCurrentDateTime()
+                                            .convertDateFormatToDesiredFormat(
+                                                DATE_TIME_FORMAT, DATE_TIME_FORMAT_FROM_CHARGER
+                                            )
+                                    )
+                                }
                                 openGun1LastChargingSummary(true)
                             } else {
                                 openGun1LastChargingSummary()
@@ -794,11 +808,22 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                         }
 
                         PLUGGED_IN,
-                        AUTHENTICATION_SUCCESS,
+                        AUTHENTICATION_SUCCESS -> {
+                            isGun2PluggedIn = true
+                            openGun2LastChargingSummary()
+                        }
+
                         CHARGING -> {
                             prefHelper.setStringValue(GUN_2_CHARGING_END_TIME, "")
-                            prefHelper.setStringValue(GUN_2_CHARGING_START_TIME, DateTimeUtils.getCurrentDateTime().convertDateFormatToDesiredFormat(
-                                DATE_TIME_FORMAT, DATE_TIME_FORMAT_FROM_CHARGER))
+                            if(prefHelper.getStringValue(GUN_2_CHARGING_START_TIME,"").isEmpty()) {
+                                prefHelper.setStringValue(
+                                    GUN_2_CHARGING_START_TIME,
+                                    DateTimeUtils.getCurrentDateTime()
+                                        .convertDateFormatToDesiredFormat(
+                                            DATE_TIME_FORMAT, DATE_TIME_FORMAT_FROM_CHARGER
+                                        )
+                                )
+                            }
                             isGun2PluggedIn = true
                             openGun2LastChargingSummary()
                         }
@@ -821,8 +846,15 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                         EMERGENCY_STOP,
                         -> {
                             if (isGun2PluggedIn) {
-                                prefHelper.setStringValue(GUN_2_CHARGING_END_TIME, DateTimeUtils.getCurrentDateTime().convertDateFormatToDesiredFormat(
-                                    DATE_TIME_FORMAT, DATE_TIME_FORMAT_FROM_CHARGER))
+                                if(prefHelper.getStringValue(GUN_2_CHARGING_END_TIME,"").isEmpty()) {
+                                    prefHelper.setStringValue(
+                                        GUN_2_CHARGING_END_TIME,
+                                        DateTimeUtils.getCurrentDateTime()
+                                            .convertDateFormatToDesiredFormat(
+                                                DATE_TIME_FORMAT, DATE_TIME_FORMAT_FROM_CHARGER
+                                            )
+                                    )
+                                }
                                 isGun2PluggedIn = false
                                 openGun2LastChargingSummary(true)
                             } else {

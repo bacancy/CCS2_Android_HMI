@@ -38,7 +38,10 @@ import org.eclipse.paho.client.mqttv3.MqttMessage
 import javax.inject.Inject
 
 @HiltViewModel
-class MQTTViewModel @Inject constructor(private val mqttClient: MQTTClient,private val prefHelper: PrefHelper) : ViewModel() {
+class MQTTViewModel @Inject constructor(
+    private val mqttClient: MQTTClient,
+    private val prefHelper: PrefHelper
+) : ViewModel() {
 
     private val _topicSubscriptionState = MutableStateFlow<Resource<Unit>>(Resource.Loading())
     val topicSubscriptionState: StateFlow<Resource<Unit>> = _topicSubscriptionState
@@ -234,13 +237,39 @@ class MQTTViewModel @Inject constructor(private val mqttClient: MQTTClient,priva
         connectorId: Int,
         it: ByteArray
     ): Pair<String, String> {
+        val startTime = if (connectorId == 1) {
+            prefHelper.getStringValue(GUN_1_CHARGING_START_TIME, "")
+        } else {
+            prefHelper.getStringValue(GUN_2_CHARGING_START_TIME, "")
+        }
+        val endTime = if (connectorId == 1) {
+            prefHelper.getStringValue(GUN_1_CHARGING_END_TIME, "")
+        } else {
+            prefHelper.getStringValue(GUN_2_CHARGING_END_TIME, "")
+        }
+        val totalChargingTime = if (connectorId == 1) {
+            DateTimeUtils.calculateDifferenceInMinutes(
+                prefHelper.getStringValue(GUN_1_CHARGING_START_TIME, ""),
+                prefHelper.getStringValue(GUN_1_CHARGING_END_TIME, "")
+            )
+        } else {
+            DateTimeUtils.calculateDifferenceInMinutes(
+                prefHelper.getStringValue(GUN_2_CHARGING_START_TIME, ""),
+                prefHelper.getStringValue(GUN_2_CHARGING_END_TIME, "")
+            )
+        }
         val chargingHistoryBody = ChargingHistoryBody(
             connectorId = connectorId,
             evMacAddress = LastChargingSummaryUtils.getEVMacAddress(it),
-            chargingStartTime = prefHelper.getStringValue( if(connectorId==1)GUN_1_CHARGING_START_TIME else GUN_2_CHARGING_START_TIME,"")
-                .convertDateFormatToDesiredFormat(currentFormat = DATE_TIME_FORMAT_FROM_CHARGER, desiredFormat = DATE_TIME_FORMAT).convertToUtc().orEmpty(),
-            chargingEndTime = prefHelper.getStringValue(if(connectorId==1)GUN_1_CHARGING_END_TIME else GUN_2_CHARGING_END_TIME,"").convertDateFormatToDesiredFormat(currentFormat = DATE_TIME_FORMAT_FROM_CHARGER, desiredFormat = DATE_TIME_FORMAT).convertToUtc().orEmpty(),
-            totalChargingTime = LastChargingSummaryUtils.getTotalChargingTime(it),
+            chargingStartTime = startTime.convertDateFormatToDesiredFormat(
+                currentFormat = DATE_TIME_FORMAT_FROM_CHARGER,
+                desiredFormat = DATE_TIME_FORMAT
+            ).convertToUtc().orEmpty(),
+            chargingEndTime = endTime.convertDateFormatToDesiredFormat(
+                currentFormat = DATE_TIME_FORMAT_FROM_CHARGER,
+                desiredFormat = DATE_TIME_FORMAT
+            ).convertToUtc().orEmpty(),
+            totalChargingTime = totalChargingTime,
             startSoc = LastChargingSummaryUtils.getStartSoc(it),
             endSoc = LastChargingSummaryUtils.getEndSoc(it),
             energyConsumption = LastChargingSummaryUtils.getEnergyConsumption(it),
@@ -288,7 +317,7 @@ class MQTTViewModel @Inject constructor(private val mqttClient: MQTTClient,priva
         deviceMacAddress: String,
         updatedErrorCodesList: MutableList<ErrorCodes>
     ) {
-        if(updatedErrorCodesList.isNotEmpty()){
+        if (updatedErrorCodesList.isNotEmpty()) {
             updatedErrorCodesList.forEach { error ->
                 val connectorId = when (error.errorCodeSource) {
                     "Charger" -> 0
@@ -299,7 +328,8 @@ class MQTTViewModel @Inject constructor(private val mqttClient: MQTTClient,priva
                 if (connectorId != -1) {
                     val faultErrorsBody = FaultErrorsBody(
                         connectorId = connectorId,
-                        configDateTime = DateTimeUtils.getCurrentDateTime().convertToUtc().orEmpty(),
+                        configDateTime = DateTimeUtils.getCurrentDateTime().convertToUtc()
+                            .orEmpty(),
                         errorMessage = error.errorCodeName,
                         deviceMacAddress = deviceMacAddress
                     )

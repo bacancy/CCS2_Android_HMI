@@ -131,7 +131,7 @@ class GunsChargingHistoryFragment : BaseFragment() {
                 ) { message ->
                     when (message) {
                         getString(R.string.msg_file_saved_successfully) -> {
-                            requireActivity().showCustomDialogForAreYouSure(getString(R.string.msg_are_you_sure_to_delete),
+                            requireActivity().showCustomDialogForAreYouSure(getString(R.string.msg_are_you_sure_to_delete),isCancelable = false,
                                 {
                                     //Yes - Delete charging history from local DB for selected gun
                                     appViewModel.deleteChargingHistoryByGunId(selectedGunNumber)
