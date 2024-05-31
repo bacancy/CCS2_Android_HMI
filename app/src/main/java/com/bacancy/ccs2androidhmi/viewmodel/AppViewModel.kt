@@ -1,5 +1,6 @@
 package com.bacancy.ccs2androidhmi.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,7 +11,13 @@ import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsDcMeterInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsLastChargingSummary
 import com.bacancy.ccs2androidhmi.db.entity.TbMiscInfo
+import com.bacancy.ccs2androidhmi.db.entity.TbNotifications
+import com.bacancy.ccs2androidhmi.models.ErrorCodes
 import com.bacancy.ccs2androidhmi.repository.MainRepository
+import com.bacancy.ccs2androidhmi.util.DateTimeUtils
+import com.bacancy.ccs2androidhmi.util.DateTimeUtils.DATE_TIME_FORMAT
+import com.bacancy.ccs2androidhmi.util.DateTimeUtils.DATE_TIME_FORMAT_FOR_UI
+import com.bacancy.ccs2androidhmi.util.DateTimeUtils.convertDateFormatToDesiredFormat
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils
 import com.bacancy.ccs2androidhmi.util.LastChargingSummaryUtils
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils
@@ -18,7 +25,10 @@ import com.bacancy.ccs2androidhmi.util.ModBusUtils
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter
 import com.bacancy.ccs2androidhmi.util.StateAndModesUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -30,6 +40,14 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
     val latestMiscInfo: LiveData<TbMiscInfo> = mainRepository.getLatestMiscInfo()
 
     val allErrorCodes: LiveData<List<TbErrorCodes>> = mainRepository.getAllErrorCodes()
+    val allNotifications: LiveData<List<TbNotifications>> = mainRepository.getAllNotifications()
+
+    private val _deviceMacAddress = MutableStateFlow("")
+    val deviceMacAddress = _deviceMacAddress.asStateFlow()
+
+    fun updateDeviceMacAddress(macAddress: String){
+        _deviceMacAddress.value = macAddress
+    }
 
     fun getUpdatedGunsChargingInfo(gunNumber: Int): LiveData<TbGunsChargingInfo> =
         mainRepository.getGunsChargingInfoByGunNumber(gunNumber)
@@ -90,6 +108,19 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
         }
     }
 
+    private fun getErrorCodeFromDB(
+        sourceId: Int,
+        sourceErrorCodes: String
+    ): List<TbErrorCodes> {
+        return mainRepository.getErrorCodeFromDB(sourceId, sourceErrorCodes)
+    }
+
+    fun insertNotifications(tbNotifications: TbNotifications) {
+        viewModelScope.launch {
+            mainRepository.insertNotifications(tbNotifications)
+        }
+    }
+
     fun insertMiscInfoInDB(it: ByteArray) {
         insertMiscInfo(
             TbMiscInfo(
@@ -128,12 +159,62 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
             )
         )
 
-        insertErrorCode(
-            TbErrorCodes(
-                0,
-                ModbusTypeConverter.hexToBinary(MiscInfoUtils.getVendorErrorCodeInformation(it))
-            )
+        processChargerErrorCodes(
+            0,
+            ModbusTypeConverter.hexToBinary(MiscInfoUtils.getVendorErrorCodeInformation(it))
         )
+    }
+
+    private fun processChargerErrorCodes(errorSource: Int, errorCodeString: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val reversedString = errorCodeString.reversed()
+            val errorCodesToAvoid = listOf(2, 6, 9, 11, 12, 14, 16, 19, 23, 24, 34, 35, 36)
+            StateAndModesUtils.GunsErrorCode.values().forEachIndexed { index, gunsErrorCode ->
+                if (index < reversedString.length) {
+                    val errorCodeList = getErrorCodeFromDB(errorSource, gunsErrorCode.name)
+                    if (gunsErrorCode.value in errorCodesToAvoid) {
+                        //If we get error code from the list of error codes to avoid, then we will directly insert them in the DB
+                        if (reversedString[index] == '1' && errorCodeList.isEmpty()) {
+                            insertErrorCodesWithValues(errorSource, gunsErrorCode.name, 1)
+                        }
+                    } else {
+                        //If we get error codes to not avoid then we will make the comparison and insert them in the DB
+                        if (reversedString[index] == '1') {
+                            if (errorCodeList.isEmpty()) {
+                                insertErrorCodesWithValues(errorSource, gunsErrorCode.name, 1)
+                            } else {
+                                if (errorCodeList[errorCodeList.size - 1].sourceErrorValue == 0) {
+                                    insertErrorCodesWithValues(errorSource, gunsErrorCode.name, 1)
+                                }
+                            }
+                        } else if (reversedString[index] == '0' && errorCodeList.isNotEmpty() && errorCodeList[errorCodeList.size - 1].sourceErrorValue == 1) {
+                            insertErrorCodesWithValues(errorSource, gunsErrorCode.name, 0)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun insertErrorCodesWithValues(
+        errorSource: Int,
+        errorCodeName: String,
+        errorCodeValue: Int
+    ) {
+        viewModelScope.launch(Dispatchers.IO) {
+            insertErrorCode(
+                TbErrorCodes(
+                    sourceId = errorSource,
+                    sourceErrorCodes = errorCodeName,
+                    sourceErrorValue = errorCodeValue,
+                    sourceErrorDateTime = DateTimeUtils.getCurrentDateTime()
+                        .convertDateFormatToDesiredFormat(
+                            currentFormat = DATE_TIME_FORMAT,
+                            desiredFormat = DATE_TIME_FORMAT_FOR_UI
+                        )
+                )
+            )
+        }
     }
 
     fun insertGun1InfoInDB(it: ByteArray) {
@@ -155,14 +236,10 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
             )
         )
 
-        insertErrorCode(
-            TbErrorCodes(
-                1,
-                ModbusTypeConverter.hexToBinary(
-                    GunsChargingInfoUtils.getGunSpecificErrorCodeInformation(
-                        it
-                    )
-                )
+        processChargerErrorCodes(
+            1,
+            ModbusTypeConverter.hexToBinary(
+                GunsChargingInfoUtils.getGunSpecificErrorCodeInformation(it)
             )
         )
     }
@@ -205,7 +282,8 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
                 ),
                 sessionEndReason = LastChargingSummaryUtils.getSessionEndReason(
                     it
-                )
+                ),
+                totalCost = LastChargingSummaryUtils.getTotalCost(it)
             )
         )
     }
@@ -249,14 +327,10 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
             )
         )
 
-        insertErrorCode(
-            TbErrorCodes(
-                2,
-                ModbusTypeConverter.hexToBinary(
-                    GunsChargingInfoUtils.getGunSpecificErrorCodeInformation(
-                        it
-                    )
-                )
+        processChargerErrorCodes(
+            2,
+            ModbusTypeConverter.hexToBinary(
+                GunsChargingInfoUtils.getGunSpecificErrorCodeInformation(it)
             )
         )
     }
@@ -299,7 +373,8 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
                 ),
                 sessionEndReason = LastChargingSummaryUtils.getSessionEndReason(
                     it
-                )
+                ),
+                totalCost = LastChargingSummaryUtils.getTotalCost(it)
             )
         )
     }
@@ -322,5 +397,39 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
                 )
             )
         }
+    }
+
+    fun getAbnormalErrorCodesList(
+        errorCodeString: String,
+        type: Int,
+        errorDateTime: String
+    ): MutableList<ErrorCodes> {
+
+        // Reverse the string so that the LSB (Least Significant Bit) corresponds to the first index
+        val reversedString = errorCodeString.reversed()
+        val errorCodesList = mutableListOf<ErrorCodes>()
+
+        val errorSource = when (type) {
+            0 -> "Charger"
+            1 -> "Gun 1"
+            2 -> "Gun 2"
+            else -> "Unknown"
+        }
+
+        StateAndModesUtils.GunsErrorCode.values().forEachIndexed { index, gunsErrorCode ->
+            if (index < reversedString.length && reversedString[index] == '1') {
+                errorCodesList.add(
+                    ErrorCodes(
+                        gunsErrorCode.value,
+                        gunsErrorCode.name,
+                        errorSource,
+                        "", 1,
+                        errorDateTime
+                    )
+                )
+            }
+        }
+
+        return errorCodesList
     }
 }

@@ -16,4 +16,5 @@
     <color name="light_trans_sky_blue">#306D95AF</color>
     <color name="inverse_color">#FFFFFF</color>
     <color name="mid_blue">#00aea7</color>
+    <color name="transparent_black_99">#99000000</color>
 </resources>

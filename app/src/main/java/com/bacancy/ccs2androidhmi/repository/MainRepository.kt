@@ -2,15 +2,15 @@ package com.bacancy.ccs2androidhmi.repository
 
 import androidx.lifecycle.LiveData
 import com.bacancy.ccs2androidhmi.db.AppDatabase
-import com.bacancy.ccs2androidhmi.db.entity.TbChargingHistory
 import com.bacancy.ccs2androidhmi.db.entity.TbAcMeterInfo
+import com.bacancy.ccs2androidhmi.db.entity.TbChargingHistory
 import com.bacancy.ccs2androidhmi.db.entity.TbErrorCodes
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsDcMeterInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsLastChargingSummary
 import com.bacancy.ccs2androidhmi.db.entity.TbMiscInfo
+import com.bacancy.ccs2androidhmi.db.entity.TbNotifications
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 class MainRepository @Inject constructor(private val appDatabase: AppDatabase) {
@@ -74,8 +74,20 @@ class MainRepository @Inject constructor(private val appDatabase: AppDatabase) {
         appDatabase.appDao().insertErrorCode(tbErrorCodes)
     }
 
+    fun getErrorCodeFromDB(sourceId: Int, sourceErrorCodes: String): List<TbErrorCodes> {
+        return appDatabase.appDao().getErrorCodeFromDB(sourceId, sourceErrorCodes)
+    }
+
     fun getAllErrorCodes(): LiveData<List<TbErrorCodes>> {
         return appDatabase.appDao().getAllErrorCodes()
+    }
+
+    suspend fun insertNotifications(tbNotifications: TbNotifications){
+        appDatabase.appDao().insertNotifications(tbNotifications)
+    }
+
+    fun getAllNotifications(): LiveData<List<TbNotifications>> {
+        return appDatabase.appDao().getAllNotifications()
     }
 
 }
