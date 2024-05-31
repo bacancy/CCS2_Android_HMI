@@ -1,7 +1,9 @@
 package com.bacancy.ccs2androidhmi.views.fragment
 
+import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,11 +14,19 @@ import com.bacancy.ccs2androidhmi.databinding.FragmentDualSocketGunsMoreInfoScre
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
 import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_PIN_AUTHORIZATION
 import com.bacancy.ccs2androidhmi.util.CommonUtils
+import com.bacancy.ccs2androidhmi.util.CommonUtils.AUTH_PIN_VALUE
+import com.bacancy.ccs2androidhmi.util.DialogUtils.clearDialogFlags
+import com.bacancy.ccs2androidhmi.util.DialogUtils.showCustomDialog
+import com.bacancy.ccs2androidhmi.util.DialogUtils.showPinAuthorizationDialog
+import com.bacancy.ccs2androidhmi.util.DialogUtils.showSessionModeDialog
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.SELECTED_GUN
 import com.bacancy.ccs2androidhmi.util.NetworkUtils.isInternetConnected
 import com.bacancy.ccs2androidhmi.util.PrefHelper
+import com.bacancy.ccs2androidhmi.util.ToastUtils.showCustomToast
+import com.bacancy.ccs2androidhmi.util.gone
 import com.bacancy.ccs2androidhmi.util.invisible
+import com.bacancy.ccs2androidhmi.util.visible
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
 import com.bacancy.ccs2androidhmi.viewmodel.MQTTViewModel
 import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
@@ -27,6 +37,8 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class DualSocketGunsMoreInformationFragment : BaseFragment() {
 
+    private var isSessionModeDialogShownOnce: Boolean = false
+    private lateinit var sessionModeDialog: Dialog
     private lateinit var binding: FragmentDualSocketGunsMoreInfoScreenBinding
     private lateinit var acMeterInfoFragment: ACMeterInfoFragment
     private lateinit var gunsDCOutputInfoFragment: GunsDCOutputInfoFragment
@@ -56,6 +68,17 @@ class DualSocketGunsMoreInformationFragment : BaseFragment() {
         (requireActivity() as HMIDashboardActivity).showHideHomeIcon(false)
         (requireActivity() as HMIDashboardActivity).showHideSettingOptions()
         (requireActivity() as HMIDashboardActivity).updateDualSocketText("Single Socket")
+        sessionModeDialog =
+            requireActivity().showSessionModeDialog { selectedRadioButton, sessionModeValue ->
+                Log.d("TAG", "updateGunsChargingUI - selectedRadioButton: $selectedRadioButton")
+                Log.d("TAG", "updateGunsChargingUI - sessionModeValue: $sessionModeValue")
+                prefHelper.setBoolean(CommonUtils.IS_GUN_1_SESSION_MODE_SELECTED, true)
+                prefHelper.setIntValue(CommonUtils.GUN_1_SELECTED_SESSION_MODE, selectedRadioButton)
+                prefHelper.setStringValue(CommonUtils.GUN_1_SELECTED_SESSION_MODE_VALUE, sessionModeValue)
+                val dialog = requireActivity().showCustomDialog(getString(R.string.msg_convey_user_to_start_charging_session)) {}
+                dialog.show()
+                requireActivity().clearDialogFlags(dialog)
+            }
         return binding.root
     }
 
@@ -97,15 +120,37 @@ class DualSocketGunsMoreInformationFragment : BaseFragment() {
                 }
 
                 when (gunChargingState) {
-                    GunsChargingInfoUtils.PLUGGED_IN,
-                    GunsChargingInfoUtils.CHARGING -> {
+                    GunsChargingInfoUtils.PLUGGED_IN -> {
+                        ivSessionMode.visible()
+                        if (!isSessionModeDialogShownOnce && !sessionModeDialog.isShowing) {
+                            val sessionModeKey = when (selectedGunNumber) {
+                                1 -> CommonUtils.IS_GUN_1_SESSION_MODE_SELECTED
+                                2 -> CommonUtils.IS_GUN_1_SESSION_MODE_SELECTED
+                                else -> null
+                            }
+
+                            if (sessionModeKey != null && !prefHelper.getBoolean(sessionModeKey, false)) {
+                                isSessionModeDialogShownOnce = true
+                                sessionModeDialog.show()
+                                requireActivity().clearDialogFlags(sessionModeDialog)
+                            }
+                        }
                         if (SHOW_PIN_AUTHORIZATION) {
-                            //ivPinAuthorization.visible()
+                            ivPinAuthorization.visible()
+                        }
+                    }
+                    GunsChargingInfoUtils.CHARGING -> {
+                        ivSessionMode.gone()
+                        isSessionModeDialogShownOnce = false
+                        if (SHOW_PIN_AUTHORIZATION) {
+                            ivPinAuthorization.visible()
                         }
                     }
 
                     else -> {
-                        //ivPinAuthorization.gone()
+                        ivSessionMode.gone()
+                        isSessionModeDialogShownOnce = false
+                        ivPinAuthorization.gone()
                     }
                 }
 
@@ -176,7 +221,7 @@ class DualSocketGunsMoreInformationFragment : BaseFragment() {
 
             /*ivGunStateInfo.setOnClickListener {
                 fragmentChangeListener?.replaceFragment(GunsStateInfoFragment())
-            }
+            }*/
 
             ivPinAuthorization.setOnClickListener {
                 showPinAuthorizationDialog({
@@ -187,8 +232,14 @@ class DualSocketGunsMoreInformationFragment : BaseFragment() {
                         false
                     )
                 })
-            }*/
+            }
 
+            ivSessionMode.setOnClickListener {
+                if(sessionModeDialog.isShowing.not()){
+                    sessionModeDialog.show()
+                    requireActivity().clearDialogFlags(sessionModeDialog)
+                }
+            }
         }
     }
 
