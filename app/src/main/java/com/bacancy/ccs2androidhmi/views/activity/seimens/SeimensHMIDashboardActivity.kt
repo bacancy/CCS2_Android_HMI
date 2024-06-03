@@ -1,6 +1,11 @@
 package com.bacancy.ccs2androidhmi.views.activity.seimens
 
+import android.app.Dialog
 import android.app.UiModeManager
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkRequest
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -8,6 +13,7 @@ import android.os.Looper
 import android.util.Log
 import android.view.WindowManager
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
@@ -20,18 +26,33 @@ import com.bacancy.ccs2androidhmi.base.SerialPortBaseActivityNew
 import com.bacancy.ccs2androidhmi.databinding.ActivityHmiDashboardBinding
 import com.bacancy.ccs2androidhmi.databinding.ActivitySeimensHmiDashboardBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbChargingHistory
+import com.bacancy.ccs2androidhmi.db.entity.TbNotifications
+import com.bacancy.ccs2androidhmi.models.ErrorCodes
+import com.bacancy.ccs2androidhmi.mqtt.MQTTUtils
+import com.bacancy.ccs2androidhmi.mqtt.ServerConstants
+import com.bacancy.ccs2androidhmi.mqtt.models.ActiveDeactiveChargerMessageBody
+import com.bacancy.ccs2androidhmi.mqtt.models.ShowPopupMessageBody
 import com.bacancy.ccs2androidhmi.util.AppConfig
 import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_LOCAL_START_STOP
 import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_TEST_MODE
 import com.bacancy.ccs2androidhmi.util.CommonUtils
+import com.bacancy.ccs2androidhmi.util.CommonUtils.fromJson
+import com.bacancy.ccs2androidhmi.util.CommonUtils.toJsonString
+import com.bacancy.ccs2androidhmi.util.DateTimeUtils
+import com.bacancy.ccs2androidhmi.util.DateTimeUtils.convertToUtc
+import com.bacancy.ccs2androidhmi.util.DialogUtils.showCustomDialog
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showPasswordPromptDialog
+import com.bacancy.ccs2androidhmi.util.LogUtils
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.NO_STATE
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.TOKEN_ID_NONE
+import com.bacancy.ccs2androidhmi.util.NetworkUtils.isInternetConnected
 import com.bacancy.ccs2androidhmi.util.PrefHelper.Companion.IS_DARK_THEME
+import com.bacancy.ccs2androidhmi.util.Resource
 import com.bacancy.ccs2androidhmi.util.ToastUtils.showCustomToast
 import com.bacancy.ccs2androidhmi.util.gone
 import com.bacancy.ccs2androidhmi.util.invisible
 import com.bacancy.ccs2androidhmi.util.visible
+import com.bacancy.ccs2androidhmi.viewmodel.MQTTViewModel
 import com.bacancy.ccs2androidhmi.views.fragment.FirmwareVersionInfoFragment
 import com.bacancy.ccs2androidhmi.views.fragment.GunsHomeScreenFragment
 import com.bacancy.ccs2androidhmi.views.fragment.LocalStartStopFragment
@@ -44,6 +65,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -52,9 +74,15 @@ import java.util.Locale
 class SeimensHMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener,
     DashboardActivityContract {
 
+    private lateinit var networkCallback: ConnectivityManager.NetworkCallback
+    private lateinit var connectivityManager: ConnectivityManager
     private lateinit var gunsHomeScreenFragment: SeimensGunsHomeScreenFragment
     private lateinit var binding: ActivitySeimensHmiDashboardBinding
     val handler = Handler(Looper.getMainLooper())
+    private val mqttViewModel: MQTTViewModel by viewModels()
+    private var sentErrorsList = mutableListOf<ErrorCodes>()
+    private val TAG = "SeimensHMIDashboardActivity"
+    private lateinit var serverPopup: Dialog
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -77,6 +105,329 @@ class SeimensHMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeL
         observeLatestMiscInfo()
 
         insertSampleChargingHistory()
+
+        startMQTTConnection()
+
+        observeMqttOperations()
+
+        observeAllErrorCodes()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        observeDeviceInternetStates()
+    }
+
+    private fun observeDeviceInternetStates(){
+        connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        networkCallback = object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) {
+                super.onAvailable(network)
+                Log.i(TAG, "###Network onAvailable: Called")
+                startMQTTConnection()
+            }
+            override fun onLost(network: Network) {
+                super.onLost(network)
+                Log.i(TAG, "###Network onLost: Called")
+            }
+        }
+        registerNetworkCallback()
+    }
+
+    private fun registerNetworkCallback() {
+        val networkRequest = NetworkRequest.Builder().build()
+        connectivityManager.registerNetworkCallback(networkRequest,networkCallback)
+    }
+
+    private fun unregisterNetworkCallback() {
+        connectivityManager.unregisterNetworkCallback(networkCallback)
+    }
+
+    private fun observeAllErrorCodes() {
+        appViewModel.allErrorCodes.observe(this) { errorCodes ->
+            errorCodes?.let { codes ->
+                val savedMacAddress = prefHelper.getStringValue(CommonUtils.DEVICE_MAC_ADDRESS, "")
+
+                val errorCodeDomainList = mutableListOf<ErrorCodes>()
+                codes.forEach {
+                    errorCodeDomainList.add(
+                        ErrorCodes(
+                            id = it.id,
+                            errorCodeStatus = "",
+                            errorCodeValue = it.sourceErrorValue,
+                            errorCodeName = it.sourceErrorCodes,
+                            errorCodeSource = getErrorSource(it.sourceId),
+                            errorCodeDateTime = it.sourceErrorDateTime
+                        )
+                    )
+                }
+                val abnormalErrorsList = errorCodeDomainList.filter { it.errorCodeValue == 1 }.toMutableList()
+                val resolvedErrorsList = errorCodeDomainList.filter { it.errorCodeValue == 0 }.toMutableList()
+
+                if (abnormalErrorsList.size == resolvedErrorsList.size || abnormalErrorsList.isEmpty()) {
+                    sentErrorsList = mutableListOf()
+                } else {
+                    val uniqueErrorsList =
+                        CommonUtils.getUniqueItems(abnormalErrorsList, sentErrorsList)
+                    if (uniqueErrorsList.isNotEmpty()) {
+                        mqttViewModel.sendErrorToServer(savedMacAddress, uniqueErrorsList)
+                        sentErrorsList.addAll(uniqueErrorsList)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun getErrorSource(sourceId: Int): String {
+        return when(sourceId){
+            0 -> "Charger"
+            1 -> "Gun 1"
+            2 -> "Gun 2"
+            else -> "Charger"
+        }
+    }
+
+    private fun observeDeviceMacAddress() {
+        lifecycleScope.launch {
+            appViewModel.deviceMacAddress.collect { deviceMacAddress ->
+                if (deviceMacAddress.isNotEmpty()) {
+                    prefHelper.setStringValue(CommonUtils.DEVICE_MAC_ADDRESS, deviceMacAddress)
+                    if (isInternetConnected()) {
+                        mqttViewModel.subscribeTopic(ServerConstants.getTopicAtoB(deviceMacAddress))
+                        mqttViewModel.subscribeTopic(ServerConstants.getTopicBtoA(deviceMacAddress))
+                    }
+                }
+            }
+        }
+    }
+
+    private fun startMQTTConnection() {
+        lifecycleScope.launch {
+            if (isInternetConnected()) {
+                Log.d(TAG, "startMQTTConnection: Internet Connected")
+                mqttViewModel.connectToMQTT()
+            }else{
+                Log.d(TAG, "startMQTTConnection: Internet Not Connected")
+            }
+        }
+    }
+
+    private fun observeMqttOperations() {
+        lifecycleScope.launch {
+
+            observeConnectState()
+            observeDisconnectState()
+            observeTopicSubscribeState()
+            observeTopicUnsubscribeState()
+            observePublishState()
+
+            mqttViewModel.publishMessageRequest.collect {
+                if (isInternetConnected()) {
+                    mqttViewModel.publishMessageToTopic(it.first, it.second)
+                }
+            }
+        }
+    }
+
+    private fun observeConnectState() {
+        lifecycleScope.launch {
+            mqttViewModel.mqttConnectState.collect {
+                when (it) {
+                    is Resource.Loading -> {}
+                    is Resource.Success -> {
+                        LogUtils.debugLog("MQTTWorker - Connect onSuccess")
+                        observeDeviceMacAddress()
+                    }
+
+                    is Resource.Error -> {
+                        LogUtils.errorLog(it.message)
+                    }
+
+                    is Resource.IncomingMessage -> {
+                        LogUtils.debugLog("MQTTWorker - Connect Data Arrived from Topic=${it.topic} Message=${it.message}")
+                        prefHelper.getStringValue(CommonUtils.DEVICE_MAC_ADDRESS, "").let { savedMacAddress ->
+                            when (it.topic) {
+                                ServerConstants.getTopicBtoA(savedMacAddress) -> {
+                                    val jsonMessage = it.message.toString()
+                                    when {
+                                        jsonMessage.contains(MQTTUtils.ACTIVE_DEACTIVE_CHARGER_ID) -> {
+                                            it.message.toString()
+                                                .fromJson<ActiveDeactiveChargerMessageBody>()
+                                                .let { messageBody ->
+                                                    Log.d(
+                                                        TAG,
+                                                        "observeConnectState: IncomingMessage - ACTIVE_DEACTIVE_CHARGER_ID - $messageBody"
+                                                    )
+                                                    prefHelper.setBoolean(
+                                                        CommonUtils.IS_CHARGER_ACTIVE,
+                                                        messageBody.message == "ACTIVE"
+                                                    )
+                                                    prefHelper.setBoolean(
+                                                        CommonUtils.CHARGER_ACTIVE_DEACTIVE_MESSAGE_RECD,
+                                                        true
+                                                    )
+                                                }
+                                        }
+
+                                        jsonMessage.contains(MQTTUtils.SHOW_POPUP_ID) -> {
+                                            it.message.toString()
+                                                .fromJson<ShowPopupMessageBody>()
+                                                .let { messageBody ->
+                                                    Log.d(
+                                                        TAG,
+                                                        "observeConnectState: IncomingMessage - SHOW_POPUP_ID - $messageBody"
+                                                    )
+                                                    withContext(Dispatchers.IO) {
+                                                        appViewModel.insertNotifications(
+                                                            TbNotifications(
+                                                                notificationMessage = messageBody.dialogMessage,
+                                                                notificationReceiveTime =
+                                                                DateTimeUtils.getCurrentDateTime()
+                                                                    .convertToUtc().orEmpty()
+                                                            )
+                                                        )
+                                                        sendPopupAcknowledgementToServer(messageBody)
+                                                    }
+                                                    withContext(Dispatchers.Main){
+                                                        serverPopup =
+                                                            showCustomDialog(messageBody.dialogMessage, messageBody.dialogType.lowercase()) {
+                                                                popupHandler.removeCallbacks(
+                                                                    dismissDialogRunnable
+                                                                )
+                                                            }
+                                                        serverPopup.show()
+                                                        if (messageBody.dialogDuration.isNotEmpty() && messageBody.dialogDuration.toInt() > 0) {
+                                                            hideServerPopupAfterGivenSeconds(
+                                                                messageBody.dialogDuration.toInt()
+                                                            )
+                                                        }
+                                                    }
+                                                }
+                                        }
+
+                                        else -> {}
+                                    }
+                                }
+
+                                else -> {}
+                            }
+                        }
+                    }
+
+                    is Resource.DeliveryComplete -> {
+                        LogUtils.debugLog("MQTTWorker - Connect Delivery Complete")
+                    }
+                }
+            }
+        }
+    }
+
+    private fun sendPopupAcknowledgementToServer(messageBody: ShowPopupMessageBody) {
+        val ackMessage = messageBody.copy(dialogStatus = "RECEIVED")
+        val deviceMacAddress = prefHelper.getStringValue(CommonUtils.DEVICE_MAC_ADDRESS, "")
+        if (deviceMacAddress.isNotEmpty()) {
+            mqttViewModel.publishMessageToTopic(ServerConstants.getTopicAtoB(deviceMacAddress), ackMessage.toJsonString())
+        }
+    }
+
+    private val popupHandler = Handler(Looper.getMainLooper())
+    private val dismissDialogRunnable = Runnable { serverPopup.dismiss() }
+
+    private fun hideServerPopupAfterGivenSeconds(seconds: Int) {
+        popupHandler.postDelayed(dismissDialogRunnable, seconds * 1000L)
+    }
+
+    private fun observeDisconnectState() {
+        lifecycleScope.launch {
+            mqttViewModel.mqttDisconnectState.collect {
+                when (it) {
+                    is Resource.Loading -> {}
+                    is Resource.Success -> {}
+                    is Resource.Error -> {
+                        LogUtils.errorLog(it.message)
+                    }
+
+                    is Resource.DeliveryComplete -> {}
+                    is Resource.IncomingMessage -> {}
+                }
+            }
+        }
+    }
+
+    private fun observePublishState() {
+        lifecycleScope.launch {
+            mqttViewModel.publishMessageState.collect {
+                when (it) {
+                    is Resource.Loading -> {
+                        Log.d(TAG, "observePublishState: Loading")
+                    }
+
+                    is Resource.Success -> {
+                        Log.d(TAG, "observePublishState: Success")
+                    }
+
+                    is Resource.Error -> {
+                        Log.d(TAG, "observePublishState: Error - $it.message")
+                        LogUtils.errorLog(it.message)
+                    }
+
+                    is Resource.DeliveryComplete -> {
+                        Log.d(TAG, "observePublishState: DeliveryComplete")
+                    }
+
+                    is Resource.IncomingMessage -> {
+                        Log.d(TAG, "observePublishState: IncomingMessage")
+                    }
+                }
+            }
+        }
+    }
+
+    private fun observeTopicSubscribeState() {
+        lifecycleScope.launch {
+            mqttViewModel.topicSubscriptionState.collect {
+                when (it) {
+                    is Resource.Loading -> {}
+                    is Resource.Success -> {
+                        Log.e(TAG, "topicSubscribeSuccess:  ${it.data.toJsonString()}")
+                    }
+
+                    is Resource.Error -> {
+                        Log.e(TAG, "topicSubscribeError:  ${it.message.toJsonString()}")
+                    }
+
+                    is Resource.DeliveryComplete -> {
+                        Log.e(TAG, "topicSubscribeDeliveryComplete:  ${it.data.toJsonString()}")
+                    }
+
+                    is Resource.IncomingMessage -> {
+                        Log.e(
+                            TAG,
+                            "topicSubscribeTopic:  ${it.topic?.toJsonString()}  topicSubscribeMqttMessage:${
+                                it.message?.toJsonString()
+                            }"
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun observeTopicUnsubscribeState() {
+        lifecycleScope.launch {
+            mqttViewModel.topicUnSubscriptionState.collect {
+                when (it) {
+                    is Resource.Loading -> {}
+                    is Resource.Success -> {}
+                    is Resource.Error -> {
+                        LogUtils.errorLog(it.message)
+                    }
+
+                    is Resource.DeliveryComplete -> {}
+                    is Resource.IncomingMessage -> {}
+                }
+            }
+        }
     }
 
     private fun insertSampleChargingHistory() {

@@ -1,6 +1,7 @@
 package com.bacancy.ccs2androidhmi.views.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -43,90 +44,44 @@ class NewFaultInfoFragment : BaseFragment() {
     private fun observeAllErrorCodes() {
         appViewModel.allErrorCodes.observe(requireActivity()) { errorCodes ->
             if (errorCodes != null) {
-                createCommonAbnormalErrorsList(errorCodes)
+                Log.d("ErrorCodes", "ErrorCodes: $errorCodes")
+                val updatedErrorCodesList = mutableListOf<ErrorCodes>()
+
+                errorCodes.forEachIndexed { index, tbErrorCodes ->
+                    updatedErrorCodesList.add(
+                        ErrorCodes(
+                            id = index + 1,
+                            errorCodeName = tbErrorCodes.sourceErrorCodes,
+                            errorCodeStatus = "",
+                            errorCodeSource = getErrorCodeSource(tbErrorCodes.sourceId),
+                            errorCodeValue = tbErrorCodes.sourceErrorValue,
+                            errorCodeDateTime = tbErrorCodes.sourceErrorDateTime
+                        )
+                    )
+                }
+
+                lifecycleScope.launch(Dispatchers.Main) {
+                    if (updatedErrorCodesList.isNotEmpty()) {
+                        binding.tvNoDataFound.gone()
+                        binding.rvVendorErrorCodeInfo.visible()
+                        allErrorCodesListAdapter.submitList(updatedErrorCodesList)
+                        binding.rvVendorErrorCodeInfo.smoothScrollToPosition(0)
+                    } else {
+                        binding.tvNoDataFound.visible()
+                        binding.rvVendorErrorCodeInfo.gone()
+                    }
+                }
             }
         }
     }
 
-    private fun createCommonAbnormalErrorsList(errorCodes: List<TbErrorCodes>) {
-        lifecycleScope.launch(Dispatchers.Main) {
-            val updatedErrorCodesList = mutableListOf<ErrorCodes>()
-            errorCodes.forEach { tbErrorCodes ->
-                updatedErrorCodesList.addAll(
-                    getAbnormalErrorCodesList(
-                        tbErrorCodes.sourceErrorCodes,
-                        tbErrorCodes.sourceId
-                    )
-                )
-            }
-            if (updatedErrorCodesList.isNotEmpty()) {
-                binding.tvNoDataFound.gone()
-                binding.rvVendorErrorCodeInfo.visible()
-                allErrorCodesListAdapter.submitList(updatedErrorCodesList)
-            } else {
-                binding.tvNoDataFound.visible()
-                binding.rvVendorErrorCodeInfo.gone()
-            }
+    private fun getErrorCodeSource(sourceId: Int): String {
+        return when (sourceId) {
+            0 -> return "Charger"
+            1 -> return "Gun 1"
+            2 -> return "Gun 2"
+            else -> "Unknown"
         }
-    }
-
-    private fun getAbnormalErrorCodesList(
-        errorCodeString: String,
-        type: Int
-    ): MutableList<ErrorCodes> {
-
-        // Reverse the string so that the LSB (Least Significant Bit) corresponds to the first index
-        val reversedString = errorCodeString.reversed()
-
-        val abnormalErrors = mutableListOf<StateAndModesUtils.GunsErrorCode>()
-        val normalErrors = mutableListOf<StateAndModesUtils.GunsErrorCode>()
-
-        for (index in StateAndModesUtils.GunsErrorCode.values().indices) {
-            val char = if (index < reversedString.length) reversedString[index] else '0'
-            val errorCode = StateAndModesUtils.GunsErrorCode.values()[index]
-            if (char == '1') {
-                abnormalErrors.add(errorCode)
-            } else {
-                normalErrors.add(errorCode)
-            }
-        }
-
-        val newErrorCodesList = mutableListOf<ErrorCodes>()
-        abnormalErrors.forEachIndexed { index, gunsErrorCode ->
-            when (type) {
-                0 -> {
-                    newErrorCodesList.add(
-                        ErrorCodes(
-                            gunsErrorCode.value,
-                            gunsErrorCode.name,
-                            "Charger"
-                        )
-                    )
-                }
-
-                1 -> {
-                    newErrorCodesList.add(
-                        ErrorCodes(
-                            gunsErrorCode.value,
-                            gunsErrorCode.name,
-                            "Gun 1"
-                        )
-                    )
-                }
-
-                2 -> {
-                    newErrorCodesList.add(
-                        ErrorCodes(
-                            gunsErrorCode.value,
-                            gunsErrorCode.name,
-                            "Gun 2"
-                        )
-                    )
-                }
-            }
-        }
-
-        return newErrorCodesList
     }
 
     override fun setScreenHeaderViews() {

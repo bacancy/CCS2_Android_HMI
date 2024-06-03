@@ -12,10 +12,11 @@ import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsDcMeterInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsLastChargingSummary
 import com.bacancy.ccs2androidhmi.db.entity.TbMiscInfo
+import com.bacancy.ccs2androidhmi.db.entity.TbNotifications
 
 @Database(
     entities = [TbChargingHistory::class, TbAcMeterInfo::class, TbMiscInfo::class, TbGunsDcMeterInfo::class, TbGunsChargingInfo::class, TbGunsLastChargingSummary::class,
-               TbErrorCodes::class],
+               TbErrorCodes::class, TbNotifications::class],
     version = 4
 )
 abstract class AppDatabase : RoomDatabase() {

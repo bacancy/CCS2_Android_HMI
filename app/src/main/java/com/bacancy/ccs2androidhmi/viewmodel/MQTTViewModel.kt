@@ -89,6 +89,7 @@ class MQTTViewModel @Inject constructor(private val mqttClient: MQTTClient) : Vi
                 ServerConstants.MQTT_USERNAME,
                 ServerConstants.MQTT_PWD, object : IMqttActionListener {
                     override fun onSuccess(asyncActionToken: IMqttToken?) {
+                        Log.d("MQTTWorker", "Connected to server")
                         _mqttConnectState.value = Resource.Success(Unit)
                         setIsMqttConnected(true)
                     }
@@ -97,6 +98,7 @@ class MQTTViewModel @Inject constructor(private val mqttClient: MQTTClient) : Vi
                         asyncActionToken: IMqttToken?,
                         exception: Throwable?
                     ) {
+                        Log.d("MQTTWorker", "Failed to connect to server")
                         setIsMqttConnected(false)
                         _mqttConnectState.value =
                             Resource.Error("MQTTWorker - Failed to connect to server")
@@ -104,6 +106,7 @@ class MQTTViewModel @Inject constructor(private val mqttClient: MQTTClient) : Vi
 
                 }, object : MqttCallback {
                     override fun connectionLost(cause: Throwable?) {
+                        Log.d("MQTTWorker", "Connection Lost")
                         setIsMqttConnected(false)
                         _mqttConnectState.value = Resource.Error("MQTTWorker - Connection Lost")
                     }
@@ -117,6 +120,7 @@ class MQTTViewModel @Inject constructor(private val mqttClient: MQTTClient) : Vi
                     }
 
                     override fun deliveryComplete(token: IMqttDeliveryToken?) {
+                        Log.d("MQTTWorker", "Delivery Complete")
                         _mqttConnectState.value = Resource.DeliveryComplete(Unit)
                     }
                 })

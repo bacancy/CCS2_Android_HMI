@@ -208,7 +208,10 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
     private fun startMQTTConnection() {
         lifecycleScope.launch {
             if (isInternetConnected()) {
+                Log.d(TAG, "startMQTTConnection: Internet Connected")
                 mqttViewModel.connectToMQTT()
+            }else{
+                Log.d(TAG, "startMQTTConnection: Internet Not Connected")
             }
         }
     }

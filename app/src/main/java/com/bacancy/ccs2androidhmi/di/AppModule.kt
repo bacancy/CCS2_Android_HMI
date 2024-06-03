@@ -2,6 +2,9 @@ package com.bacancy.ccs2androidhmi.di
 
 import android.content.Context
 import com.bacancy.ccs2androidhmi.db.AppDatabase
+import com.bacancy.ccs2androidhmi.mqtt.MQTTClient
+import com.bacancy.ccs2androidhmi.mqtt.ServerConstants.MQTT_CLIENT_ID
+import com.bacancy.ccs2androidhmi.mqtt.ServerConstants.MQTT_SERVER_URI
 import com.bacancy.ccs2androidhmi.repository.MainRepository
 import com.bacancy.ccs2androidhmi.util.PrefHelper
 import dagger.Module
@@ -27,4 +30,13 @@ object AppModule {
         return PrefHelper(context)
     }
 
+    @Provides
+    @Singleton
+    fun provideMqttClient(@ApplicationContext context: Context): MQTTClient {
+        return MQTTClient(
+            context,
+            MQTT_SERVER_URI,
+            MQTT_CLIENT_ID
+        )
+    }
 }
