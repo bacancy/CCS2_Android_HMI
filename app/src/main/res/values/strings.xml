@@ -172,4 +172,5 @@
     <string name="lbl_tap_to_charge">Tap to charge</string>
     <string name="lbl_charger_ninoperative">CHARGER\nINOPERATIVE</string>
     <string name="msg_charger_is_inoperative">Charger is inoperative.</string>
+    <string name="lbl_error_time">Error Time</string>
 </resources>

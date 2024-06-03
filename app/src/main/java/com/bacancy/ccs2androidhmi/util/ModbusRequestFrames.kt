@@ -65,4 +65,24 @@ object ModbusRequestFrames {
         return ModBusUtils.createReadHoldingRegistersRequest(startAddress, quantity)
     }
 
+    fun getChargerRatingsRequestFrame(
+        startAddress: Int = 403,
+        quantity: Int = 1
+    ): ByteArray {
+        return ModBusUtils.createReadHoldingRegistersRequest(startAddress, quantity)
+    }
+
+    fun getChargerOutputsRequestFrame(
+        startAddress: Int = 436,
+        quantity: Int = 1
+    ): ByteArray {
+        return ModBusUtils.createReadHoldingRegistersRequest(startAddress, quantity)
+    }
+
+    fun getChargerActiveDeactiveStateRequestFrame(
+        startAddress: Int = 442,
+        quantity: Int = 1
+    ): ByteArray {
+        return ModBusUtils.createReadHoldingRegistersRequest(startAddress, quantity)
+    }
 }

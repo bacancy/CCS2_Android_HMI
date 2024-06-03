@@ -54,6 +54,21 @@ object CommonUtils {
         )
     }
 
+    fun String.getCleanedMacAddress(): String {
+        return this.replace(":","")
+    }
+
+    fun String.addColonsToMacAddress(): String {
+        val formattedMacAddress = StringBuilder()
+        for (i in this.indices) {
+            formattedMacAddress.append(this[i])
+            if (i % 2 == 1 && i < this.length - 1) {
+                formattedMacAddress.append(':')
+            }
+        }
+        return formattedMacAddress.toString()
+    }
+
     fun getSimpleMacAddress(macAddressArray: ByteArray, separator: String = ":"): String {
         val mappedArray = macAddressArray.map { it.getIntValueFromByte() }
         return ModbusTypeConverter.decimalArrayToHexArray(mappedArray).joinToString(separator).uppercase(
@@ -79,17 +94,6 @@ object CommonUtils {
 
     fun generateRandomNumber(): Int {
         return Random.nextInt(1, 101)
-    }
-
-    fun String.addColonsToMacAddress(): String {
-        val formattedMacAddress = StringBuilder()
-        for (i in this.indices) {
-            formattedMacAddress.append(this[i])
-            if (i % 2 == 1 && i < this.length - 1) {
-                formattedMacAddress.append(':')
-            }
-        }
-        return formattedMacAddress.toString()
     }
 
     fun Any.toJsonString(): String {

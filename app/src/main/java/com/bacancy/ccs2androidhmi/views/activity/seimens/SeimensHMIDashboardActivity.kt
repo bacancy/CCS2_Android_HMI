@@ -111,6 +111,36 @@ class SeimensHMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeL
         observeMqttOperations()
 
         observeAllErrorCodes()
+
+        observeChargerActiveDeactiveStates()
+    }
+
+    private fun observeChargerActiveDeactiveStates() {
+        prefHelper.setBoolean(
+            CommonUtils.CHARGER_ACTIVE_DEACTIVE_MESSAGE_RECD,
+            true
+        )//Called initially to get active state of charger
+        lifecycleScope.launch {
+            mqttViewModel.isChargerActive.collect { isChargerActive ->
+                if (isChargerActive) {
+                    showUIForActiveCharger()
+                } else {
+                    showUIForDeactiveCharger()
+                }
+            }
+        }
+    }
+
+    private fun showUIForDeactiveCharger() {
+        binding.apply {
+            lnrChargerInoperative.visible()
+        }
+    }
+
+    private fun showUIForActiveCharger() {
+        binding.apply {
+            lnrChargerInoperative.gone()
+        }
     }
 
     override fun onResume() {

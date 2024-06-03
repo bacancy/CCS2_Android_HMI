@@ -7,13 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentNewFaultInformationBinding
-import com.bacancy.ccs2androidhmi.db.entity.TbErrorCodes
 import com.bacancy.ccs2androidhmi.models.ErrorCodes
-import com.bacancy.ccs2androidhmi.util.StateAndModesUtils
 import com.bacancy.ccs2androidhmi.util.gone
 import com.bacancy.ccs2androidhmi.util.visible
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
@@ -96,7 +95,7 @@ class NewFaultInfoFragment : BaseFragment() {
             rvVendorErrorCodeInfo.apply {
                 layoutManager = LinearLayoutManager(requireActivity())
                 adapter = allErrorCodesListAdapter
-                itemAnimator = null //To remove item insertion or removal animation of the list
+                itemAnimator = DefaultItemAnimator()
             }
         }
     }
