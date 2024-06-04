@@ -626,16 +626,24 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                         Log.w("SAVER", "INSERT LCS IN DB")
                         appViewModel.insertGun1LastChargingSummaryInDB(it)
                         appViewModel.insertGun1ChargingHistoryInDB(it)
-                        if (mqttViewModel.isMqttConnected.value) {
-                            mqttViewModel.sendPublishMessageRequest(
-                                mqttViewModel.convertByteArrayToPublishRequest(
-                                    prefHelper.getStringValue(
-                                        DEVICE_MAC_ADDRESS, ""
-                                    ),
-                                    1,
-                                    it
-                                )
+                        val topic = ServerConstants.getTopicAtoB(
+                            prefHelper.getStringValue(
+                                DEVICE_MAC_ADDRESS, ""
                             )
+                        )
+                        val history = mqttViewModel.convertByteArrayToPublishRequest(
+                            prefHelper.getStringValue(
+                                DEVICE_MAC_ADDRESS, ""
+                            ),
+                            1,
+                            it
+                        ).second
+                        if (mqttViewModel.isMqttConnected.value && isInternetConnected()) {
+                            mqttViewModel.publishMessageToTopic(
+                                topic, history, isChargingHistory = true
+                            )
+                        } else {
+                            mqttViewModel.storeUnsentMessages(topic, history)
                         }
                     }
                 } else {
@@ -850,16 +858,24 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                     if (shouldSaveLastChargingSummary) {
                         appViewModel.insertGun2LastChargingSummaryInDB(it)
                         appViewModel.insertGun2ChargingHistoryInDB(it)
-                        if (mqttViewModel.isMqttConnected.value) {
-                            mqttViewModel.sendPublishMessageRequest(
-                                mqttViewModel.convertByteArrayToPublishRequest(
-                                    prefHelper.getStringValue(
-                                        DEVICE_MAC_ADDRESS, ""
-                                    ),
-                                    2,
-                                    it
-                                )
+                        val topic = ServerConstants.getTopicAtoB(
+                            prefHelper.getStringValue(
+                                DEVICE_MAC_ADDRESS, ""
                             )
+                        )
+                        val history = mqttViewModel.convertByteArrayToPublishRequest(
+                            prefHelper.getStringValue(
+                                DEVICE_MAC_ADDRESS, ""
+                            ),
+                            2,
+                            it
+                        ).second
+                        if (mqttViewModel.isMqttConnected.value && isInternetConnected()) {
+                            mqttViewModel.publishMessageToTopic(
+                                topic, history, isChargingHistory = true
+                            )
+                        } else {
+                            mqttViewModel.storeUnsentMessages(topic, history)
                         }
                     }
                 } else {

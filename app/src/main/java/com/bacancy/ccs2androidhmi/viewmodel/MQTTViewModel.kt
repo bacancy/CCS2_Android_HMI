@@ -10,6 +10,7 @@ import com.bacancy.ccs2androidhmi.mqtt.models.ChargerDetailsBody
 import com.bacancy.ccs2androidhmi.mqtt.models.ChargingHistoryBody
 import com.bacancy.ccs2androidhmi.mqtt.models.ConnectorStatusBody
 import com.bacancy.ccs2androidhmi.mqtt.models.FaultErrorsBody
+import com.bacancy.ccs2androidhmi.mqtt.models.UnsentMessage
 import com.bacancy.ccs2androidhmi.util.CommonUtils.addColonsToMacAddress
 import com.bacancy.ccs2androidhmi.util.CommonUtils.toJsonString
 import com.bacancy.ccs2androidhmi.util.DateTimeUtils
@@ -18,7 +19,9 @@ import com.bacancy.ccs2androidhmi.util.DateTimeUtils.DATE_TIME_FORMAT_FROM_CHARG
 import com.bacancy.ccs2androidhmi.util.DateTimeUtils.convertDateFormatToDesiredFormat
 import com.bacancy.ccs2androidhmi.util.DateTimeUtils.convertToUtc
 import com.bacancy.ccs2androidhmi.util.LastChargingSummaryUtils
+import com.bacancy.ccs2androidhmi.util.PrefHelper
 import com.bacancy.ccs2androidhmi.util.Resource
+import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,7 +36,7 @@ import org.eclipse.paho.client.mqttv3.MqttMessage
 import javax.inject.Inject
 
 @HiltViewModel
-class MQTTViewModel @Inject constructor(private val mqttClient: MQTTClient) : ViewModel() {
+class MQTTViewModel @Inject constructor(private val mqttClient: MQTTClient, private val prefHelper: PrefHelper) : ViewModel() {
 
     private val _topicSubscriptionState = MutableStateFlow<Resource<Unit>>(Resource.Loading())
     val topicSubscriptionState: StateFlow<Resource<Unit>> = _topicSubscriptionState
@@ -186,12 +189,15 @@ class MQTTViewModel @Inject constructor(private val mqttClient: MQTTClient) : Vi
         }
     }
 
-    fun publishMessageToTopic(topicName: String, message: String) {
+    fun publishMessageToTopic(topicName: String, message: String, isChargingHistory: Boolean = false) {
         _publishMessageState.value = Resource.Loading()
         viewModelScope.launch(Dispatchers.IO) {
             if (mqttClient.isConnected()) {
                 mqttClient.publish(topicName, message, 1, false, object : IMqttActionListener {
                     override fun onSuccess(asyncActionToken: IMqttToken?) {
+                        if(isChargingHistory){
+                            removeUnsentMessages(mutableListOf(UnsentMessage(topicName, message)))
+                        }
                         _publishMessageState.value = Resource.Success(Unit)
                     }
 
@@ -199,11 +205,41 @@ class MQTTViewModel @Inject constructor(private val mqttClient: MQTTClient) : Vi
                         asyncActionToken: IMqttToken?,
                         exception: Throwable?
                     ) {
+                        if(isChargingHistory){
+                            storeUnsentMessages(topicName, message)
+                        }
                         _publishMessageState.value =
                             Resource.Error("Failed to publish message: $message to topic: $topicName")
                     }
                 })
+            } else {
+                if(isChargingHistory){
+                    storeUnsentMessages(topicName, message)
+                }
+                _publishMessageState.value =
+                    Resource.Error("Failed to publish message: $message to topic: $topicName")
             }
+        }
+    }
+
+    fun storeUnsentMessages(topic: String = "", messageBody: String = "") {
+        val unsentMessages = getUnsentMessages()
+        unsentMessages.add(UnsentMessage(topic, messageBody))
+        prefHelper.setStringValue("UNSENT_MESSAGES", Gson().toJson(unsentMessages))
+    }
+
+    fun removeUnsentMessages(sendMessagesList: MutableList<UnsentMessage>) {
+        var unsentMessages = getUnsentMessages()
+        unsentMessages = unsentMessages.filter { !sendMessagesList.contains(it) }.toMutableList()
+        prefHelper.setStringValue("UNSENT_MESSAGES", Gson().toJson(unsentMessages))
+    }
+
+    fun getUnsentMessages(): MutableList<UnsentMessage> {
+        val messagesJson = prefHelper.getStringValue("UNSENT_MESSAGES", "[]") // Default to empty list
+        return try {
+            Gson().fromJson(messagesJson, Array<UnsentMessage>::class.java).toMutableList()
+        } catch (e: Exception) {
+            mutableListOf()
         }
     }
 

@@ -6,7 +6,6 @@ import android.app.UiModeManager
 import android.app.admin.DevicePolicyManager
 import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkRequest
@@ -130,8 +129,9 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         super.onResume()
         observeDeviceInternetStates()
         startClockTimer()
-        manageKioskMode()
+        //manageKioskMode()
     }
+
 
     private fun manageKioskMode() {
         if (!prefHelper.getBoolean(IS_APP_PINNED, false)) {
@@ -164,7 +164,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         }
     }
 
-    private fun observeDeviceInternetStates(){
+    private fun observeDeviceInternetStates() {
         connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         networkCallback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
@@ -172,6 +172,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
                 Log.i(TAG, "###Network onAvailable: Called")
                 startMQTTConnection()
             }
+
             override fun onLost(network: Network) {
                 super.onLost(network)
                 Log.i(TAG, "###Network onLost: Called")
@@ -316,6 +317,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
                     is Resource.Success -> {
                         LogUtils.debugLog("MQTTWorker - Connect onSuccess")
                         observeDeviceMacAddress()
+                        sendUnsentMessages()
                     }
 
                     is Resource.Error -> {
@@ -397,6 +399,18 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
                         LogUtils.debugLog("MQTTWorker - Connect Delivery Complete")
                     }
                 }
+            }
+        }
+    }
+
+    private fun sendUnsentMessages() {
+        lifecycleScope.launch {
+            mqttViewModel.getUnsentMessages().forEach { unsentMessage ->
+                mqttViewModel.publishMessageToTopic(
+                    unsentMessage.topic,
+                    unsentMessage.message,
+                    true
+                )
             }
         }
     }
