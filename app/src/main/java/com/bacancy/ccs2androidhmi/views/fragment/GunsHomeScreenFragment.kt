@@ -14,6 +14,10 @@ import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentGunsHomeScreenBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
 import com.bacancy.ccs2androidhmi.util.CommonUtils
+import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_CHARGING_END_TIME
+import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_CHARGING_START_TIME
+import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_CHARGING_END_TIME
+import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_CHARGING_START_TIME
 import com.bacancy.ccs2androidhmi.util.CommonUtils.INSIDE_LOCAL_START_STOP_SCREEN
 import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_DUAL_SOCKET_MODE_SELECTED
 import com.bacancy.ccs2androidhmi.util.CommonUtils.UNIT_PRICE
@@ -482,6 +486,8 @@ class GunsHomeScreenFragment : BaseFragment() {
                                             prefHelper.setBoolean(IS_DUAL_SOCKET_MODE_SELECTED, false)
                                             (requireActivity() as HMIDashboardActivity).goBack()
                                         }
+                                        prefHelper.setStringValue(GUN_1_CHARGING_START_TIME,"")
+                                        prefHelper.setStringValue(GUN_1_CHARGING_END_TIME,"")
                                     }
                                 }
                             } else {
@@ -491,7 +497,10 @@ class GunsHomeScreenFragment : BaseFragment() {
                                         false,
                                         it,
                                         isDarkTheme
-                                    ) {}
+                                    ) {
+                                        prefHelper.setStringValue(GUN_2_CHARGING_START_TIME,"")
+                                        prefHelper.setStringValue(GUN_2_CHARGING_END_TIME,"")
+                                    }
                                 }
                             }
                         }

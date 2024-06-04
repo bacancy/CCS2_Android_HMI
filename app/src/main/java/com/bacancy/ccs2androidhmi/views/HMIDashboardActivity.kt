@@ -133,49 +133,6 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         observeAllErrorCodes()
 
         observeChargerActiveDeactiveStates()
-
-        manageDualSocketButtonUI(false)
-
-        val floatBytes: ByteArray = ByteBuffer.allocate(4).order(ByteOrder.BIG_ENDIAN)
-            .putFloat(1.toFloat()).array()
-        //createWriteMultipleRegistersRequest(data = floatBytes.toString(Charsets.UTF_8))
-    }
-
-    fun createWriteMultipleRegistersRequest(
-        startAddress: Int = 123,
-        data: String = "999",
-        slaveAddress: Int = 1
-    ): ByteArray {
-        Log.d("TESTER","Data = $data")
-        val quantity = 2
-        Log.d("TESTER","Data Length = ${data.length}")
-        val byteCount =  quantity * 2 // Each register is 2 bytes
-        Log.d("TESTER", "ByteCount = $byteCount")
-        val frame = ByteArray(9 + byteCount)
-        Log.d("TESTER", "Frame size = ${frame.size}")
-        frame[0] = slaveAddress.toByte()
-        frame[1] = ModBusUtils.WRITE_MULTIPLE_REGISTERS_FUNCTION_CODE
-        frame[2] = (startAddress shr 8).toByte()
-        frame[3] = startAddress.toByte()
-        frame[4] = (quantity shr 8).toByte()
-        frame[5] = quantity.toByte()
-        frame[6] = byteCount.toByte()
-        for (i in 0..3 step 2) {
-            Log.d("TESTER","data[Indices] = ${data[i]}")
-            val value = data[i]
-            val valueSecond = data[i+1]
-            val j = if (i > 1) i - (i / 2) else 0
-            val valueIndex = 7 + 2 * j
-            frame[valueIndex] = value.code.toByte() // High byte of register value
-            frame[valueIndex + 1] = valueSecond.code.toByte() // Low byte of register value
-        }
-        Log.d("TESTER", "createWriteMultipleRegistersRequest: BEFORE CRC with HEX = ${frame.toHex()}")
-        val newCRC = ModBusUtils.calculateCRC(frame.dropLast(2).toByteArray())
-
-        frame[frame.size - 2] = newCRC[0]
-        frame[frame.size - 1] = newCRC[1]
-        Log.d("TESTER", "createWriteMultipleRegistersRequest: FINAL HEX = ${frame.toHex()}")
-        return frame
     }
 
     override fun onResume() {
@@ -184,7 +141,6 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         startClockTimer()
         //manageKioskMode()
     }
-
 
     private fun manageKioskMode() {
         if (!prefHelper.getBoolean(IS_APP_PINNED, false)) {
@@ -298,10 +254,8 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
                         )
                     )
                 }
-                val abnormalErrorsList =
-                    errorCodeDomainList.filter { it.errorCodeValue == 1 }.toMutableList()
-                val resolvedErrorsList =
-                    errorCodeDomainList.filter { it.errorCodeValue == 0 }.toMutableList()
+                val abnormalErrorsList = errorCodeDomainList.filter { it.errorCodeValue == 1 }.toMutableList()
+                val resolvedErrorsList = errorCodeDomainList.filter { it.errorCodeValue == 0 }.toMutableList()
 
                 if (abnormalErrorsList.size == resolvedErrorsList.size || abnormalErrorsList.isEmpty()) {
                     sentErrorsList = mutableListOf()
@@ -786,7 +740,6 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
                 adjustGSMLevel(latestMiscInfo.gsmLevel)
                 adjustWifiLevel(latestMiscInfo.wifiLevel)
                 if (latestMiscInfo.rfidTagState.isNotEmpty() && latestMiscInfo.rfidTagState != TOKEN_ID_NONE && latestMiscInfo.rfidTagState != NO_STATE) {
-                    Log.d(TAG, "observeLatestMiscInfo: RFID Tag State - ${latestMiscInfo.rfidTagState}")
                     if (latestMiscInfo.rfidTagState.endsWith("Invalid")) {
                         showCustomToast(latestMiscInfo.rfidTagState, false)
                     } else {

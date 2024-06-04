@@ -188,4 +188,7 @@
     <string name="lbl_by_auto">Auto</string>
     <string name="hint_enter_value">Enter value</string>
     <string name="msg_convey_user_to_start_charging_session">To begin your charging session, please either tap your RFID card, enter the OTP, or use the remote start option.</string>
+    <string name="lbl_gun_1_charging_summary">Gun - 1 Charging Summary</string>
+    <string name="lbl_gun_2_charging_summary">Gun - 2 Charging Summary</string>
+
 </resources>
