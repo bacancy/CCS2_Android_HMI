@@ -406,9 +406,12 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
     private fun sendUnsentMessages() {
         lifecycleScope.launch {
             mqttViewModel.getUnsentMessages().forEach { unsentMessage ->
-                mqttViewModel.publishMessageToTopic(unsentMessage.topic, unsentMessage.message)
+                mqttViewModel.publishMessageToTopic(
+                    unsentMessage.topic,
+                    unsentMessage.message,
+                    true
+                )
             }
-            mqttViewModel.removeUnsentMessages()
         }
     }
 

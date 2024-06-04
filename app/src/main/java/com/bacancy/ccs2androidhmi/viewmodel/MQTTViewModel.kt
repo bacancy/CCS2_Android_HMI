@@ -195,6 +195,9 @@ class MQTTViewModel @Inject constructor(private val mqttClient: MQTTClient, priv
             if (mqttClient.isConnected()) {
                 mqttClient.publish(topicName, message, 1, false, object : IMqttActionListener {
                     override fun onSuccess(asyncActionToken: IMqttToken?) {
+                        if(isChargingHistory){
+                            removeUnsentMessages(mutableListOf(UnsentMessage(topicName, message)))
+                        }
                         _publishMessageState.value = Resource.Success(Unit)
                     }
 
@@ -219,14 +222,15 @@ class MQTTViewModel @Inject constructor(private val mqttClient: MQTTClient, priv
         }
     }
 
-    private fun storeUnsentMessages(topic: String = "", messageBody: String = "") {
+    fun storeUnsentMessages(topic: String = "", messageBody: String = "") {
         val unsentMessages = getUnsentMessages()
         unsentMessages.add(UnsentMessage(topic, messageBody))
         prefHelper.setStringValue("UNSENT_MESSAGES", Gson().toJson(unsentMessages))
     }
 
-    fun removeUnsentMessages() {
-        val unsentMessages : MutableList<UnsentMessage> = mutableListOf()
+    fun removeUnsentMessages(sendMessagesList: MutableList<UnsentMessage>) {
+        var unsentMessages = getUnsentMessages()
+        unsentMessages = unsentMessages.filter { !sendMessagesList.contains(it) }.toMutableList()
         prefHelper.setStringValue("UNSENT_MESSAGES", Gson().toJson(unsentMessages))
     }
 
