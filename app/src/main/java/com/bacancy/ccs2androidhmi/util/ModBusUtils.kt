@@ -75,10 +75,10 @@ object ModBusUtils {
      * */
     fun createWriteMultipleRegistersRequest(
         startAddress: Int,
-        data: IntArray,
+        data: String,
         slaveAddress: Int = 1
     ): ByteArray {
-        val quantity = data.size
+        val quantity = data.length
         val byteCount = quantity * 2 // Each register is 2 bytes
         val frame = ByteArray(9 + byteCount)
         frame[0] = slaveAddress.toByte()
@@ -91,8 +91,8 @@ object ModBusUtils {
         for (i in data.indices) {
             val value = data[i]
             val valueIndex = 7 + 2 * i
-            frame[valueIndex] = (value.toInt() shr 8).toByte() // High byte of register value
-            frame[valueIndex + 1] = value.toByte() // Low byte of register value
+            frame[valueIndex] = (value.code shr 8).toByte() // High byte of register value
+            frame[valueIndex + 1] = value.code.toByte() // Low byte of register value
         }
 
         val newCRC = calculateCRC(frame.dropLast(2).toByteArray())
@@ -100,6 +100,37 @@ object ModBusUtils {
         frame[frame.size - 2] = newCRC[0]
         frame[frame.size - 1] = newCRC[1]
         Log.d("TAG", "createWriteMultipleRegistersRequest: FINAL HEX = ${frame.toHex()}")
+        return frame
+    }
+
+    fun createWriteMultipleRegistersRequestForSessionModeTesting(
+        startAddress: Int,
+        data: String,
+        slaveAddress: Int = 1
+    ): ByteArray {
+        val quantity = 2
+        val byteCount =  quantity * 2 // Each register is 2 bytes
+        val frame = ByteArray(9 + byteCount)
+        frame[0] = slaveAddress.toByte()
+        frame[1] = WRITE_MULTIPLE_REGISTERS_FUNCTION_CODE
+        frame[2] = (startAddress shr 8).toByte()
+        frame[3] = startAddress.toByte()
+        frame[4] = (quantity shr 8).toByte()
+        frame[5] = quantity.toByte()
+        frame[6] = byteCount.toByte()
+        for (i in 0..3 step 2) {
+            val value = data[i]
+            val valueSecond = data[i+1]
+            val j = if (i > 1) i - (i / 2) else 0
+            val valueIndex = 7 + 2 * j
+            frame[valueIndex] = value.code.toByte() // High byte of register value
+            frame[valueIndex + 1] = valueSecond.code.toByte() // Low byte of register value
+        }
+        val newCRC = calculateCRC(frame.dropLast(2).toByteArray())
+
+        frame[frame.size - 2] = newCRC[0]
+        frame[frame.size - 1] = newCRC[1]
+        Log.d("TESTER", "createWriteMultipleRegistersRequest: FINAL HEX = ${frame.toHex()}")
         return frame
     }
 
@@ -294,7 +325,7 @@ object ModBusUtils {
     /**
      * This method is used to calculate CRC for given request frame
      * */
-    private fun calculateCRC(
+    fun calculateCRC(
         data: ByteArray,
         startByte: Int = 0
     ): ByteArray {

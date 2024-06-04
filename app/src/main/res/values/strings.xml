@@ -66,7 +66,7 @@
     <string name="lbl_hz">Hz</string>
     <string name="lbl_a">A</string>
     <string name="lbl_kw">kw</string>
-    <string name="lbl_kwh">kwh</string>
+    <string name="lbl_kwh">kWh</string>
     <string name="lbl_fault_indication">Fault Indication</string>
     <string name="lbl_charging_in_process">Charging in Process</string>
     <string name="lbl_gun_plugged">Gun plugged</string>
@@ -176,5 +176,16 @@
     <string name="title_authorize_for_test_mode">Authorize for Test Mode</string>
     <string name="msg_evseready_app_not_installed">EVSEReady App Not Installed</string>
     <string name="lbl_error_time">Error Time</string>
-
+    <string name="msg_to_inform_about_dual_socket">Both guns should be in PLUGGED IN to start dual socket mode.</string>
+    <string name="msg_to_confirm_to_switch_to_dual_socket">Are you sure you want to switch to dual socket mode?</string>
+    <string name="msg_to_confirm_to_switch_to_single_socket">Are you sure you want to switch to single socket mode?</string>
+    <string name="lbl_gun_1_charging_summary">Gun - 1 Charging Summary</string>
+    <string name="lbl_gun_2_charging_summary">Gun - 2 Charging Summary</string>
+    <string name="lbl_select_session_mode">Select Session Mode By</string>
+    <string name="lbl_by_soc">SoC</string>
+    <string name="lbl_by_time">Time</string>
+    <string name="lbl_by_energy">Energy</string>
+    <string name="lbl_by_auto">Auto</string>
+    <string name="hint_enter_value">Enter value</string>
+    <string name="msg_convey_user_to_start_charging_session">To begin your charging session, please either tap your RFID card, enter the OTP, or use the remote start option.</string>
 </resources>

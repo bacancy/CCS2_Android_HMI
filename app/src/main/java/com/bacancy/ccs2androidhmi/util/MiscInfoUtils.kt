@@ -71,6 +71,8 @@ object MiscInfoUtils {
     private const val TOKEN_ID_SUBMITTED = "Token ID Submitted"
     private const val TOKEN_ID_VALID = "Token ID Valid"
     private const val TOKEN_ID_INVALID = "Token ID Invalid"
+    private const val DUAL_SOCKET_ENABLED = "Dual Socket Enabled"
+    private const val DUAL_SOCKET_DISABLED = "Dual Socket Disabled"
 
     fun getAmbientTemperature(response: ByteArray): Float {
         return ModbusTypeConverter.byteArrayToFloat(response.getRangedArray(AMBIENT_TEMPERATURE_BITS))
@@ -176,7 +178,9 @@ object MiscInfoUtils {
             "3" to RFID_TAG_INVALID,
             "5" to TOKEN_ID_SUBMITTED,
             "6" to TOKEN_ID_VALID,
-            "7" to TOKEN_ID_INVALID
+            "7" to TOKEN_ID_INVALID,
+            "8" to DUAL_SOCKET_ENABLED,
+            "9" to DUAL_SOCKET_DISABLED,
         )
         val status = response.getRangedArray(RFID_TAG_STATE).toHex()
         return statusMap.getOrElse(status.last().toString()) { "No State" }

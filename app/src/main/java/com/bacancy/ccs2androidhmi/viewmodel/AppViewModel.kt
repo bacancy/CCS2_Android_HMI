@@ -122,6 +122,7 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
     }
 
     fun insertMiscInfoInDB(it: ByteArray) {
+        Log.d("observeLatestMiscInfo", "insertMiscInfoInDB -> "+MiscInfoUtils.getRFIDTagState(it))
         insertMiscInfo(
             TbMiscInfo(
                 1,

@@ -46,16 +46,21 @@ import com.bacancy.ccs2androidhmi.util.CommonUtils.EVSE_APP_PACKAGE_NAME
 import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_APP_PINNED
 import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_APP_RESTARTED
 import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_CHARGER_ACTIVE
+import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_DUAL_SOCKET_MODE_SELECTED
 import com.bacancy.ccs2androidhmi.util.CommonUtils.fromJson
 import com.bacancy.ccs2androidhmi.util.CommonUtils.getUniqueItems
 import com.bacancy.ccs2androidhmi.util.CommonUtils.toJsonString
 import com.bacancy.ccs2androidhmi.util.DateTimeUtils
 import com.bacancy.ccs2androidhmi.util.DateTimeUtils.convertToUtc
+import com.bacancy.ccs2androidhmi.util.DialogUtils.clearDialogFlags
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showCustomDialog
+import com.bacancy.ccs2androidhmi.util.DialogUtils.showCustomDialogForAreYouSure
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showPasswordPromptDialog
 import com.bacancy.ccs2androidhmi.util.LogUtils
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.NO_STATE
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.TOKEN_ID_NONE
+import com.bacancy.ccs2androidhmi.util.ModBusUtils
+import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.toHex
 import com.bacancy.ccs2androidhmi.util.NetworkUtils.isInternetConnected
 import com.bacancy.ccs2androidhmi.util.PrefHelper.Companion.IS_DARK_THEME
 import com.bacancy.ccs2androidhmi.util.Resource
@@ -66,6 +71,7 @@ import com.bacancy.ccs2androidhmi.util.showToast
 import com.bacancy.ccs2androidhmi.util.visible
 import com.bacancy.ccs2androidhmi.viewmodel.MQTTViewModel
 import com.bacancy.ccs2androidhmi.views.fragment.AppNotificationsFragment
+import com.bacancy.ccs2androidhmi.views.fragment.DualSocketGunsMoreInformationFragment
 import com.bacancy.ccs2androidhmi.views.fragment.FirmwareVersionInfoFragment
 import com.bacancy.ccs2androidhmi.views.fragment.GunsHomeScreenFragment
 import com.bacancy.ccs2androidhmi.views.fragment.LocalStartStopFragment
@@ -77,6 +83,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -116,6 +124,8 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
         showHideHomeIcon()
 
+        showHideDualSocketButton(true)
+
         startMQTTConnection()
 
         observeMqttOperations()
@@ -123,6 +133,49 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         observeAllErrorCodes()
 
         observeChargerActiveDeactiveStates()
+
+        manageDualSocketButtonUI(false)
+
+        val floatBytes: ByteArray = ByteBuffer.allocate(4).order(ByteOrder.BIG_ENDIAN)
+            .putFloat(1.toFloat()).array()
+        //createWriteMultipleRegistersRequest(data = floatBytes.toString(Charsets.UTF_8))
+    }
+
+    fun createWriteMultipleRegistersRequest(
+        startAddress: Int = 123,
+        data: String = "999",
+        slaveAddress: Int = 1
+    ): ByteArray {
+        Log.d("TESTER","Data = $data")
+        val quantity = 2
+        Log.d("TESTER","Data Length = ${data.length}")
+        val byteCount =  quantity * 2 // Each register is 2 bytes
+        Log.d("TESTER", "ByteCount = $byteCount")
+        val frame = ByteArray(9 + byteCount)
+        Log.d("TESTER", "Frame size = ${frame.size}")
+        frame[0] = slaveAddress.toByte()
+        frame[1] = ModBusUtils.WRITE_MULTIPLE_REGISTERS_FUNCTION_CODE
+        frame[2] = (startAddress shr 8).toByte()
+        frame[3] = startAddress.toByte()
+        frame[4] = (quantity shr 8).toByte()
+        frame[5] = quantity.toByte()
+        frame[6] = byteCount.toByte()
+        for (i in 0..3 step 2) {
+            Log.d("TESTER","data[Indices] = ${data[i]}")
+            val value = data[i]
+            val valueSecond = data[i+1]
+            val j = if (i > 1) i - (i / 2) else 0
+            val valueIndex = 7 + 2 * j
+            frame[valueIndex] = value.code.toByte() // High byte of register value
+            frame[valueIndex + 1] = valueSecond.code.toByte() // Low byte of register value
+        }
+        Log.d("TESTER", "createWriteMultipleRegistersRequest: BEFORE CRC with HEX = ${frame.toHex()}")
+        val newCRC = ModBusUtils.calculateCRC(frame.dropLast(2).toByteArray())
+
+        frame[frame.size - 2] = newCRC[0]
+        frame[frame.size - 1] = newCRC[1]
+        Log.d("TESTER", "createWriteMultipleRegistersRequest: FINAL HEX = ${frame.toHex()}")
+        return frame
     }
 
     override fun onResume() {
@@ -183,7 +236,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
     private fun registerNetworkCallback() {
         val networkRequest = NetworkRequest.Builder().build()
-        connectivityManager.registerNetworkCallback(networkRequest,networkCallback)
+        connectivityManager.registerNetworkCallback(networkRequest, networkCallback)
     }
 
     private fun unregisterNetworkCallback() {
@@ -245,8 +298,10 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
                         )
                     )
                 }
-                val abnormalErrorsList = errorCodeDomainList.filter { it.errorCodeValue == 1 }.toMutableList()
-                val resolvedErrorsList = errorCodeDomainList.filter { it.errorCodeValue == 0 }.toMutableList()
+                val abnormalErrorsList =
+                    errorCodeDomainList.filter { it.errorCodeValue == 1 }.toMutableList()
+                val resolvedErrorsList =
+                    errorCodeDomainList.filter { it.errorCodeValue == 0 }.toMutableList()
 
                 if (abnormalErrorsList.size == resolvedErrorsList.size || abnormalErrorsList.isEmpty()) {
                     sentErrorsList = mutableListOf()
@@ -262,7 +317,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
     }
 
     private fun getErrorSource(sourceId: Int): String {
-        return when(sourceId){
+        return when (sourceId) {
             0 -> "Charger"
             1 -> "Gun 1"
             2 -> "Gun 2"
@@ -369,14 +424,19 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
                                                         )
                                                         sendPopupAcknowledgementToServer(messageBody)
                                                     }
-                                                    withContext(Dispatchers.Main){
+                                                    withContext(Dispatchers.Main) {
                                                         serverPopup =
-                                                            showCustomDialog(messageBody.dialogMessage, messageBody.dialogType.lowercase()) {
+                                                            showCustomDialog(
+                                                                messageBody.dialogMessage,
+                                                                messageBody.dialogType.lowercase(),
+                                                                isCancelable = false
+                                                            ) {
                                                                 popupHandler.removeCallbacks(
                                                                     dismissDialogRunnable
                                                                 )
                                                             }
                                                         serverPopup.show()
+                                                        clearDialogFlags(serverPopup)
                                                         if (messageBody.dialogDuration.isNotEmpty() && messageBody.dialogDuration.toInt() > 0) {
                                                             hideServerPopupAfterGivenSeconds(
                                                                 messageBody.dialogDuration.toInt()
@@ -419,7 +479,10 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         val ackMessage = messageBody.copy(dialogStatus = "RECEIVED")
         val deviceMacAddress = prefHelper.getStringValue(DEVICE_MAC_ADDRESS, "")
         if (deviceMacAddress.isNotEmpty()) {
-            mqttViewModel.publishMessageToTopic(getTopicAtoB(deviceMacAddress), ackMessage.toJsonString())
+            mqttViewModel.publishMessageToTopic(
+                getTopicAtoB(deviceMacAddress),
+                ackMessage.toJsonString()
+            )
         }
     }
 
@@ -573,6 +636,33 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
     private fun handleClicks() {
 
+        binding.tvDualSocket.setOnClickListener {
+            if(binding.tvDualSocket.tag == "DISABLED"){
+                val dialog = showCustomDialog(
+                    getString(R.string.msg_to_inform_about_dual_socket),
+                    "info"
+                ) {}
+                dialog.show()
+                clearDialogFlags(dialog)
+            }else{
+                if (binding.tvDualSocket.text == "Dual Socket") {
+                    showCustomDialogForAreYouSure(
+                        getString(R.string.msg_to_confirm_to_switch_to_dual_socket),isCancelable = false,
+                        {
+                            prefHelper.setBoolean(IS_DUAL_SOCKET_MODE_SELECTED, true)
+                            addNewFragment(DualSocketGunsMoreInformationFragment())
+                        }, {})
+                } else if (binding.tvDualSocket.text == "Single Socket") {
+                    showCustomDialogForAreYouSure(
+                        getString(R.string.msg_to_confirm_to_switch_to_single_socket),isCancelable = false,
+                        {
+                            goBack()
+                        }, {})
+                }
+            }
+
+        }
+
         binding.lnrChargerInoperative.setOnClickListener {}
 
         binding.incToolbar.ivSwitchDarkMode.setOnClickListener {
@@ -592,7 +682,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         }
 
         binding.incToolbar.ivLocalStartStop.setOnClickListener {
-            showPasswordPromptDialog(getString(R.string.title_authorize_for_local_start_stop),{
+            showPasswordPromptDialog(getString(R.string.title_authorize_for_local_start_stop),isCancelable = true, {
                 addNewFragment(LocalStartStopFragment())
             }, {
                 showCustomToast(getString(R.string.msg_invalid_password), false)
@@ -600,7 +690,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         }
 
         binding.incToolbar.ivTestMode.setOnClickListener {
-            showPasswordPromptDialog(getString(R.string.title_authorize_for_test_mode),{
+            showPasswordPromptDialog(getString(R.string.title_authorize_for_test_mode),isCancelable = true, {
                 addNewFragment(TestModeHomeFragment())
             }, {
                 showCustomToast(getString(R.string.msg_invalid_password), false)
@@ -628,7 +718,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
                 packageManager.getLaunchIntentForPackage(EVSE_APP_PACKAGE_NAME)
             if (launchIntent != null) {
                 startActivity(launchIntent, null)
-            }else{
+            } else {
                 showToast(getString(R.string.msg_evseready_app_not_installed))
             }
         } catch (e: Exception) {
@@ -666,6 +756,28 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         }
     }
 
+    fun showHideDualSocketButton(showDualSocket: Boolean = false) {
+        if (showDualSocket) {
+            binding.tvDualSocket.visible()
+        } else {
+            binding.tvDualSocket.invisible()
+        }
+    }
+
+    fun updateDualSocketText(updatedLabel: String = "Dual Socket") {
+        binding.tvDualSocket.text = updatedLabel
+    }
+
+    fun manageDualSocketButtonUI(isBothGunsPluggedIn: Boolean) {
+        if (isBothGunsPluggedIn) {
+            binding.tvDualSocket.tag = "ENABLED"
+            binding.tvDualSocket.setBackgroundResource(R.drawable.bg_rect_half_rounded)
+        } else {
+            binding.tvDualSocket.tag = "DISABLED"
+            binding.tvDualSocket.setBackgroundResource(R.drawable.bg_rect_half_rounded_disabled)
+        }
+    }
+
     private fun observeLatestMiscInfo() {
         appViewModel.latestMiscInfo.observe(this) { latestMiscInfo ->
             if (latestMiscInfo != null) {
@@ -674,6 +786,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
                 adjustGSMLevel(latestMiscInfo.gsmLevel)
                 adjustWifiLevel(latestMiscInfo.wifiLevel)
                 if (latestMiscInfo.rfidTagState.isNotEmpty() && latestMiscInfo.rfidTagState != TOKEN_ID_NONE && latestMiscInfo.rfidTagState != NO_STATE) {
+                    Log.d(TAG, "observeLatestMiscInfo: RFID Tag State - ${latestMiscInfo.rfidTagState}")
                     if (latestMiscInfo.rfidTagState.endsWith("Invalid")) {
                         showCustomToast(latestMiscInfo.rfidTagState, false)
                     } else {

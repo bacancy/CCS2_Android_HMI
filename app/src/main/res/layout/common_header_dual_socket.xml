@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
     android:gravity="center_horizontal"
     android:orientation="vertical">
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:gravity="center">
 
         <TextView
@@ -16,28 +17,21 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingHorizontal="@dimen/_10sdp"
-            android:textSize="@dimen/_14ssp" />
+            tools:text="Gun 1"
+            android:textSize="@dimen/_10ssp" />
 
         <View
-            android:layout_width="@dimen/_10sdp"
-            android:layout_height="match_parent" />
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_2sdp" />
 
         <TextView
             android:id="@+id/tvSubHeader"
             android:layout_width="wrap_content"
-            tools:text="@string/lbl_gun_unplugged"
+            android:gravity="center"
+            android:lines="1"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/_14ssp"
-            android:visibility="gone" />
+            tools:text="@string/lbl_plugged_in"
+            android:textSize="@dimen/_9ssp"
+            android:visibility="visible" />
     </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/_1sdp"
-        android:layout_marginHorizontal="@dimen/_120sdp"
-        android:layout_marginTop="@dimen/_5sdp"
-        android:background="?attr/viewThemeColor"
-        android:visibility="visible" />
-
-
 </LinearLayout>

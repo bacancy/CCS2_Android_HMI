@@ -21,6 +21,21 @@
             android:layout_height="match_parent" />
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/tvDualSocket"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_40sdp"
+        android:background="@drawable/bg_rect_half_rounded_disabled"
+        android:paddingHorizontal="@dimen/_10sdp"
+        android:paddingVertical="@dimen/_3sdp"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_8ssp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:text="Dual Socket" />
+
     <LinearLayout
         android:id="@+id/lnrChargerInoperative"
         android:layout_width="match_parent"

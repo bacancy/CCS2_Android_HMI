@@ -21,6 +21,7 @@ import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.SELECTED_GUN
 import com.bacancy.ccs2androidhmi.util.gone
 import com.bacancy.ccs2androidhmi.util.visible
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
+import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
 import com.bacancy.ccs2androidhmi.views.adapters.ChargingHistoryListAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -38,6 +39,9 @@ class GunsChargingHistoryFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentGunsChargingHistoryBinding.inflate(layoutInflater)
+        (requireActivity() as HMIDashboardActivity).showHideBackIcon()
+        (requireActivity() as HMIDashboardActivity).showHideHomeIcon()
+        (requireActivity() as HMIDashboardActivity).showHideSettingOptions()
         selectedGunNumber = arguments?.getInt(SELECTED_GUN)!!
         return binding.root
     }
@@ -131,7 +135,7 @@ class GunsChargingHistoryFragment : BaseFragment() {
                 ) { message ->
                     when (message) {
                         getString(R.string.msg_file_saved_successfully) -> {
-                            requireActivity().showCustomDialogForAreYouSure(getString(R.string.msg_are_you_sure_to_delete),
+                            requireActivity().showCustomDialogForAreYouSure(getString(R.string.msg_are_you_sure_to_delete),isCancelable = false,
                                 {
                                     //Yes - Delete charging history from local DB for selected gun
                                     appViewModel.deleteChargingHistoryByGunId(selectedGunNumber)

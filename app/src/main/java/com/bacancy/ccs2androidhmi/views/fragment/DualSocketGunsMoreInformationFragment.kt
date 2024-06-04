@@ -10,17 +10,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
-import com.bacancy.ccs2androidhmi.databinding.FragmentGunsMoreInfoScreenBinding
+import com.bacancy.ccs2androidhmi.databinding.FragmentDualSocketGunsMoreInfoScreenBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
 import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_PIN_AUTHORIZATION
 import com.bacancy.ccs2androidhmi.util.CommonUtils
 import com.bacancy.ccs2androidhmi.util.CommonUtils.AUTH_PIN_VALUE
-import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_SELECTED_SESSION_MODE
-import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_SELECTED_SESSION_MODE_VALUE
-import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_SELECTED_SESSION_MODE
-import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_SELECTED_SESSION_MODE_VALUE
-import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_GUN_1_SESSION_MODE_SELECTED
-import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_GUN_2_SESSION_MODE_SELECTED
 import com.bacancy.ccs2androidhmi.util.DialogUtils.clearDialogFlags
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showCustomDialog
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showPinAuthorizationDialog
@@ -41,12 +35,11 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class GunsMoreInformationFragment : BaseFragment() {
+class DualSocketGunsMoreInformationFragment : BaseFragment() {
 
     private var isSessionModeDialogShownOnce: Boolean = false
     private lateinit var sessionModeDialog: Dialog
-    private var selectedGunNumber: Int = 1
-    private lateinit var binding: FragmentGunsMoreInfoScreenBinding
+    private lateinit var binding: FragmentDualSocketGunsMoreInfoScreenBinding
     private lateinit var acMeterInfoFragment: ACMeterInfoFragment
     private lateinit var gunsDCOutputInfoFragment: GunsDCOutputInfoFragment
     private lateinit var gunsLastChargingSummaryFragment: GunsLastChargingSummaryFragment
@@ -70,23 +63,18 @@ class GunsMoreInformationFragment : BaseFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentGunsMoreInfoScreenBinding.inflate(layoutInflater)
-        (requireActivity() as HMIDashboardActivity).showHideBackIcon()
-        (requireActivity() as HMIDashboardActivity).showHideHomeIcon()
+        binding = FragmentDualSocketGunsMoreInfoScreenBinding.inflate(layoutInflater)
+        (requireActivity() as HMIDashboardActivity).showHideBackIcon(false)
+        (requireActivity() as HMIDashboardActivity).showHideHomeIcon(false)
         (requireActivity() as HMIDashboardActivity).showHideSettingOptions()
+        (requireActivity() as HMIDashboardActivity).updateDualSocketText("Single Socket")
         sessionModeDialog =
             requireActivity().showSessionModeDialog { selectedRadioButton, sessionModeValue ->
                 Log.d("TAG", "updateGunsChargingUI - selectedRadioButton: $selectedRadioButton")
                 Log.d("TAG", "updateGunsChargingUI - sessionModeValue: $sessionModeValue")
-                if (selectedGunNumber == 1) {
-                    prefHelper.setBoolean(IS_GUN_1_SESSION_MODE_SELECTED, true)
-                    prefHelper.setIntValue(GUN_1_SELECTED_SESSION_MODE, selectedRadioButton)
-                    prefHelper.setStringValue(GUN_1_SELECTED_SESSION_MODE_VALUE, sessionModeValue)
-                } else {
-                    prefHelper.setBoolean(IS_GUN_2_SESSION_MODE_SELECTED, true)
-                    prefHelper.setIntValue(GUN_2_SELECTED_SESSION_MODE, selectedRadioButton)
-                    prefHelper.setStringValue(GUN_2_SELECTED_SESSION_MODE_VALUE, sessionModeValue)
-                }
+                prefHelper.setBoolean(CommonUtils.IS_GUN_1_SESSION_MODE_SELECTED, true)
+                prefHelper.setIntValue(CommonUtils.GUN_1_SELECTED_SESSION_MODE, selectedRadioButton)
+                prefHelper.setStringValue(CommonUtils.GUN_1_SELECTED_SESSION_MODE_VALUE, sessionModeValue)
                 val dialog = requireActivity().showCustomDialog(getString(R.string.msg_convey_user_to_start_charging_session)) {}
                 dialog.show()
                 requireActivity().clearDialogFlags(dialog)
@@ -95,16 +83,23 @@ class GunsMoreInformationFragment : BaseFragment() {
     }
 
     private fun observeGunsChargingInfo() {
-        appViewModel.getUpdatedGunsChargingInfo(selectedGunNumber).observe(viewLifecycleOwner) {
-            it?.let { gunInfo ->
-                if (gunInfo.gunId == selectedGunNumber) {
-                    updateGunsChargingUI(gunInfo)
-                }
+        appViewModel.getUpdatedGunsChargingInfo(1).observe(requireActivity()) {
+            it?.let {
+                updateGunsChargingUI(1, it)
+            }
+        }
+
+        appViewModel.getUpdatedGunsChargingInfo(2).observe(requireActivity()) {
+            it?.let {
+                updateGunsChargingUI(2, it)
             }
         }
     }
 
-    private fun updateGunsChargingUI(tbGunsChargingInfo: TbGunsChargingInfo) {
+    private fun updateGunsChargingUI(
+        selectedGunNumber: Int,
+        tbGunsChargingInfo: TbGunsChargingInfo
+    ) {
         binding.apply {
             tbGunsChargingInfo.apply {
 
@@ -129,8 +124,8 @@ class GunsMoreInformationFragment : BaseFragment() {
                         ivSessionMode.visible()
                         if (!isSessionModeDialogShownOnce && !sessionModeDialog.isShowing) {
                             val sessionModeKey = when (selectedGunNumber) {
-                                1 -> IS_GUN_1_SESSION_MODE_SELECTED
-                                2 -> IS_GUN_2_SESSION_MODE_SELECTED
+                                1 -> CommonUtils.IS_GUN_1_SESSION_MODE_SELECTED
+                                2 -> CommonUtils.IS_GUN_1_SESSION_MODE_SELECTED
                                 else -> null
                             }
 
@@ -144,7 +139,6 @@ class GunsMoreInformationFragment : BaseFragment() {
                             ivPinAuthorization.visible()
                         }
                     }
-
                     GunsChargingInfoUtils.CHARGING -> {
                         ivSessionMode.gone()
                         isSessionModeDialogShownOnce = false
@@ -160,28 +154,36 @@ class GunsMoreInformationFragment : BaseFragment() {
                     }
                 }
 
-                when (selectedGunNumber) {
-                    1 -> {
-                        incHeader.tvHeader.text =
-                            getString(R.string.lbl_gun_1) + " ($gunChargingState)"
+                if (selectedGunNumber == 1) {
+                    if(gunChargingState == GunsChargingInfoUtils.PLUGGED_IN) {
+                        incHeaderGun1.tvSubHeader.text = getString(R.string.lbl_plugged_in)
+                    } else {
+                        incHeaderGun1.tvSubHeader.text = "($gunChargingState)"
                     }
-
-                    2 -> {
-                        incHeader.tvHeader.text =
-                            getString(R.string.lbl_gun_2) + " ($gunChargingState)"
+                    initialSoc1.tvValue.text = initialSoc.toString()
+                    demandVoltage1.tvValue.text = demandVoltage.toString()
+                    demandCurrent1.tvValue.text = demandCurrent.toString()
+                    chargingVoltage1.tvValue.text = chargingVoltage.toString()
+                    chargingCurrent1.tvValue.text = chargingCurrent.toString()
+                    chargingSoc1.tvValue.text = chargingSoc.toString()
+                    chargingDuration1.tvValue.text = duration
+                    energyConsumption1.tvValue.text = energyConsumption.toString()
+                } else {
+                    if(gunChargingState == GunsChargingInfoUtils.PLUGGED_IN) {
+                        incHeaderGun2.tvSubHeader.text = getString(R.string.lbl_plugged_in)
+                    } else {
+                        incHeaderGun2.tvSubHeader.text = "($gunChargingState)"
                     }
+                    initialSoc2.tvValue.text = initialSoc.toString()
+                    demandVoltage2.tvValue.text = demandVoltage.toString()
+                    demandCurrent2.tvValue.text = demandCurrent.toString()
+                    chargingVoltage2.tvValue.text = chargingVoltage.toString()
+                    chargingCurrent2.tvValue.text = chargingCurrent.toString()
+                    chargingSoc2.tvValue.text = chargingSoc.toString()
+                    chargingDuration2.tvValue.text = duration
+                    energyConsumption2.tvValue.text = energyConsumption.toString()
                 }
 
-                incInitialSoc.tvValue.text = initialSoc.toString()
-                incDemandVoltage.tvValue.text = demandVoltage.toString()
-                incDemandCurrent.tvValue.text = demandCurrent.toString()
-                incChargingVoltage.tvValue.text = chargingVoltage.toString()
-                incChargingCurrent.tvValue.text = chargingCurrent.toString()
-                incChargingSoc.tvValue.text = chargingSoc.toString()
-                incDuration.tvValue.text = duration
-                incEnergyConsumption.tvValue.text = energyConsumption.toString()
-                incGunTemperatureDCPositive.tvValue.text = gunTemperatureDCPositive.toString()
-                incGunTemperatureDCNegative.tvValue.text = gunTemperatureDCNegative.toString()
             }
         }
     }
@@ -217,9 +219,9 @@ class GunsMoreInformationFragment : BaseFragment() {
                 fragmentChangeListener?.replaceFragment(faultInfoFragment)
             }
 
-            ivGunStateInfo.setOnClickListener {
+            /*ivGunStateInfo.setOnClickListener {
                 fragmentChangeListener?.replaceFragment(GunsStateInfoFragment())
-            }
+            }*/
 
             ivPinAuthorization.setOnClickListener {
                 showPinAuthorizationDialog({
@@ -238,65 +240,62 @@ class GunsMoreInformationFragment : BaseFragment() {
                     requireActivity().clearDialogFlags(sessionModeDialog)
                 }
             }
-
         }
     }
 
     private fun getBundleToPass(): Bundle {
         val bundle = Bundle()
-        bundle.putInt(SELECTED_GUN, selectedGunNumber)
+        bundle.putInt(SELECTED_GUN, 1)
         return bundle
     }
 
     override fun setScreenHeaderViews() {
-        selectedGunNumber = arguments?.getInt(SELECTED_GUN)!!
-        prefHelper.setSelectedGunNumber(SELECTED_GUN, selectedGunNumber)
+        prefHelper.setSelectedGunNumber(SELECTED_GUN, 1)
         observeGunsChargingInfo()
         binding.apply {
-            when (selectedGunNumber) {
-                1 -> {
-                    incHeader.tvHeader.text = getString(R.string.lbl_gun_1)
-                }
-
-                2 -> {
-                    incHeader.tvHeader.text = getString(R.string.lbl_gun_2)
-                }
-            }
+            incHeaderGun1.tvHeader.text = getString(R.string.lbl_gun_1)
+            incHeaderGun2.tvHeader.text = getString(R.string.lbl_gun_2)
         }
     }
 
     override fun setupViews() {
         binding.apply {
-            incInitialSoc.tvLabel.text = getString(R.string.lbl_initial_soc)
-            incInitialSoc.tvValueUnit.text = getString(R.string.lbl_percentage)
+            //For Gun1
+            initialSoc1.tvValueUnit.text = getString(R.string.lbl_percentage)
 
-            incDemandVoltage.tvLabel.text = getString(R.string.lbl_demand_voltage)
-            incDemandVoltage.tvValueUnit.text = getString(R.string.lbl_v)
+            demandVoltage1.tvValueUnit.text = getString(R.string.lbl_v)
 
-            incDemandCurrent.tvLabel.text = getString(R.string.lbl_demand_current)
-            incDemandCurrent.tvValueUnit.text = getString(R.string.lbl_a)
+            demandCurrent1.tvValueUnit.text = getString(R.string.lbl_a)
 
-            incChargingVoltage.tvLabel.text = getString(R.string.lbl_charging_voltage)
-            incChargingVoltage.tvValueUnit.text = getString(R.string.lbl_v)
+            chargingVoltage1.tvValueUnit.text = getString(R.string.lbl_v)
 
-            incChargingCurrent.tvLabel.text = getString(R.string.lbl_charging_current)
-            incChargingCurrent.tvValueUnit.text = getString(R.string.lbl_a)
+            chargingCurrent1.tvValueUnit.text = getString(R.string.lbl_a)
 
-            incChargingSoc.tvLabel.text = getString(R.string.lbl_charging_soc)
-            incChargingSoc.tvValueUnit.text = getString(R.string.lbl_percentage)
+            chargingSoc1.tvValueUnit.text = getString(R.string.lbl_percentage)
 
-            incDuration.tvLabel.text = getString(R.string.lbl_duration_hh_mm)
-            incDuration.tvValue.text = getString(R.string.hint_00_00)
-            incDuration.tvValueUnit.invisible()
+            chargingDuration1.tvValue.text = getString(R.string.hint_00_00)
+            chargingDuration1.tvValueUnit.invisible()
 
-            incEnergyConsumption.tvLabel.text = getString(R.string.lbl_energy_consumption)
-            incEnergyConsumption.tvValueUnit.text = getString(R.string.lbl_kwh)
+            energyConsumption1.tvValueUnit.text = getString(R.string.lbl_kwh)
 
-            incGunTemperatureDCPositive.tvLabel.text = getString(R.string.lbl_gun_temp_dc_positive)
-            incGunTemperatureDCPositive.tvValueUnit.text = getString(R.string.lbl_celsius)
+            //For Gun2
+            initialSoc2.tvValueUnit.text = getString(R.string.lbl_percentage)
 
-            incGunTemperatureDCNegative.tvLabel.text = getString(R.string.lbl_gun_temp_dc_negative)
-            incGunTemperatureDCNegative.tvValueUnit.text = getString(R.string.lbl_celsius)
+            demandVoltage2.tvValueUnit.text = getString(R.string.lbl_v)
+
+            demandCurrent2.tvValueUnit.text = getString(R.string.lbl_a)
+
+            chargingVoltage2.tvValueUnit.text = getString(R.string.lbl_v)
+
+            chargingCurrent2.tvValueUnit.text = getString(R.string.lbl_a)
+
+            chargingSoc2.tvValueUnit.text = getString(R.string.lbl_percentage)
+
+            chargingDuration2.tvValue.text = getString(R.string.hint_00_00)
+            chargingDuration2.tvValueUnit.invisible()
+
+            energyConsumption2.tvValueUnit.text = getString(R.string.lbl_kwh)
+
         }
     }
 }
