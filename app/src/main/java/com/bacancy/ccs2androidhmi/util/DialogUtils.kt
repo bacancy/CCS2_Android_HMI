@@ -11,6 +11,8 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.Window
+import android.view.WindowInsets
+import android.view.WindowInsetsController
 import android.view.WindowManager
 import android.widget.RadioButton
 import androidx.fragment.app.Fragment
@@ -27,61 +29,17 @@ import com.bacancy.ccs2androidhmi.util.DialogUtils.clearDialogFlags
 
 object DialogUtils {
 
-    fun Context.showAlertDialog(
-        title: String,
-        message: String,
-        ok: Pair<String, () -> Unit>,
-        cancel: Pair<String, () -> Unit>? = null
-    ) {
-
-        val builder = AlertDialog.Builder(this)
-            .setTitle(title)
-            .setMessage(message)
-            .setCancelable(false)
-            .setPositiveButton(ok.first) { _, _ -> ok.second() }
-
-        cancel?.let {
-            builder.setNegativeButton(it.first) { _, _ -> it.second() }
-        }
-
-        val alertDialog = builder.create()
-
-        val uiFlags = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
-                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
-                View.SYSTEM_UI_FLAG_FULLSCREEN or
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
-                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-
-        alertDialog.window?.let { window ->
-            window.decorView.systemUiVisibility = uiFlags
-
-            val layoutParams = window.attributes
-            layoutParams.flags = layoutParams.flags or
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                    WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
-            window.attributes = layoutParams
-        }
-
-        alertDialog.show()
-    }
-
     fun Activity.showCustomDialog(
         message: String,
         messageType: String = "info",
+        isCancelable: Boolean = true,
         onCloseClicked: () -> Unit
     ): Dialog {
-        // Show custom dialog without creating a new class
         val dialog = Dialog(this, R.style.CustomAlertDialog)
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        dialog.window?.setLayout(
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.WRAP_CONTENT
-        )
+        dialog.setupWithoutTitle()
         val binding = CustomDialogBinding.inflate(layoutInflater)
         dialog.setContentView(binding.root)
 
-        // Initialize your custom views and handle interactions here
         binding.apply {
             tvMessage.text = message
             when (messageType) {
@@ -103,37 +61,17 @@ object DialogUtils {
             }
         }
 
-        val uiFlags = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
-                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
-                View.SYSTEM_UI_FLAG_FULLSCREEN or
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
-                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-
-        dialog.window?.let { window ->
-            window.decorView.systemUiVisibility = uiFlags
-
-            val layoutParams = window.attributes
-            layoutParams.flags = layoutParams.flags or
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                    WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
-            window.attributes = layoutParams
-        }
-
+        dialog.setCancelable(isCancelable)
+        dialog.setupDialogFlags()
         return dialog
     }
 
     fun Activity.showCustomDialogForAreYouSure(message: String,isCancelable: Boolean = false, onYesClicked: () -> Unit, onNoClicked: () -> Unit) {
         val dialog = Dialog(this, R.style.CustomAlertDialog)
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        dialog.window?.setLayout(
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.WRAP_CONTENT
-        )
+        dialog.setupWithoutTitle()
         val binding = CustomDialogAreYouSureBinding.inflate(layoutInflater)
         dialog.setContentView(binding.root)
 
-        // Initialize your custom views and handle interactions here
         binding.apply {
             tvMessage.text = message
             btnYes.setOnClickListener {
@@ -145,26 +83,10 @@ object DialogUtils {
                 onNoClicked()
             }
         }
-
-        val uiFlags = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
-                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
-                View.SYSTEM_UI_FLAG_FULLSCREEN or
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
-                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-
-        dialog.window?.let { window ->
-            window.decorView.systemUiVisibility = uiFlags
-
-            val layoutParams = window.attributes
-            layoutParams.flags = layoutParams.flags or
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                    WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
-            window.attributes = layoutParams
-        }
-
-        // Show the dialog
+        dialog.setCancelable(isCancelable)
+        dialog.setupDialogFlags()
         dialog.show()
+        clearDialogFlags(dialog)
     }
 
     fun Context.showChargingSummaryDialog(
@@ -173,9 +95,8 @@ object DialogUtils {
         isDarkTheme: Boolean,
         onCloseClicked: () -> Unit
     ) {
-        Log.i("JAN25", "showChargingSummaryDialog: CALLED - $isGun1")
         val dialog = Dialog(this, R.style.CustomAlertDialog)
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setupWithoutTitle()
         val binding = DialogGunsChargingSummaryBinding.inflate(LayoutInflater.from(this))
         dialog.setContentView(binding.root)
 
@@ -232,7 +153,7 @@ object DialogUtils {
             incSessionTotalCost.root.setBackgroundColor(resources.getColor(R.color.light_trans_sky_blue))
 
             tvGunsHeader.text =
-                if (isGun1) "Gun - 1 Charging Summary" else "Gun - 2 Charging Summary"
+                if (isGun1) getString(R.string.lbl_gun_1_charging_summary) else getString(R.string.lbl_gun_2_charging_summary)
             tbGunsLastChargingSummary.apply {
                 incEVMacAddress.tvSummaryValue.text = evMacAddress
                 incChargingDuration.tvSummaryValue.text = chargingDuration
@@ -250,37 +171,20 @@ object DialogUtils {
             }
         }
 
-        val uiFlags = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
-                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
-                View.SYSTEM_UI_FLAG_FULLSCREEN or
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
-                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-
-        dialog.window?.let { window ->
-            window.decorView.systemUiVisibility = uiFlags
-
-            val layoutParams = window.attributes
-            layoutParams.flags = layoutParams.flags or
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                    WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
-            window.setLayout(
-                WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.WRAP_CONTENT
-            )
-            window.attributes = layoutParams
-        }
-
+        dialog.setCancelable(true)
+        dialog.setupDialogFlags(true)
         dialog.show()
+        clearDialogFlags(dialog)
     }
 
     fun Activity.showPasswordPromptDialog(
         popupTitle: String = "Authorize",
+        isCancelable: Boolean = true,
         onSuccess: () -> Unit,
         onFailed: () -> Unit
     ) {
         val dialog = Dialog(this, R.style.CustomAlertDialog)
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setupWithoutTitle()
         val binding = DialogPasswordPromptBinding.inflate(layoutInflater)
         dialog.setContentView(binding.root)
 
@@ -297,28 +201,10 @@ object DialogUtils {
             }
         }
 
-        val uiFlags = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
-                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
-                View.SYSTEM_UI_FLAG_FULLSCREEN or
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
-                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-
-        dialog.window?.let { window ->
-            window.decorView.systemUiVisibility = uiFlags
-
-            val layoutParams = window.attributes
-            /*layoutParams.flags = layoutParams.flags or
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                    WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL*/
-            window.setLayout(
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.WRAP_CONTENT
-            )
-            window.attributes = layoutParams
-        }
-
+        dialog.setCancelable(isCancelable)
+        dialog.setupDialogFlags()
         dialog.show()
+        clearDialogFlags(dialog)
     }
 
     fun Fragment.showPinAuthorizationDialog(
@@ -326,7 +212,7 @@ object DialogUtils {
         onFailed: () -> Unit
     ) {
         val dialog = Dialog(requireActivity(), R.style.CustomAlertDialog)
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setupWithoutTitle()
         val binding = DialogPinAuthorizationBinding.inflate(layoutInflater)
         dialog.setContentView(binding.root)
         dialog.setCanceledOnTouchOutside(false)
