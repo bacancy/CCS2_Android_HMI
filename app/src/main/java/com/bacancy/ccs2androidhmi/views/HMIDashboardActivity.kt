@@ -59,8 +59,6 @@ import com.bacancy.ccs2androidhmi.util.DialogUtils.showPasswordPromptDialog
 import com.bacancy.ccs2androidhmi.util.LogUtils
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.NO_STATE
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.TOKEN_ID_NONE
-import com.bacancy.ccs2androidhmi.util.ModBusUtils
-import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.toHex
 import com.bacancy.ccs2androidhmi.util.NetworkUtils.isInternetConnected
 import com.bacancy.ccs2androidhmi.util.PrefHelper.Companion.IS_DARK_THEME
 import com.bacancy.ccs2androidhmi.util.Resource
@@ -71,6 +69,7 @@ import com.bacancy.ccs2androidhmi.util.showToast
 import com.bacancy.ccs2androidhmi.util.visible
 import com.bacancy.ccs2androidhmi.viewmodel.MQTTViewModel
 import com.bacancy.ccs2androidhmi.views.fragment.AppNotificationsFragment
+import com.bacancy.ccs2androidhmi.views.fragment.ChangeAppLanguageFragment
 import com.bacancy.ccs2androidhmi.views.fragment.DualSocketGunsMoreInformationFragment
 import com.bacancy.ccs2androidhmi.views.fragment.FirmwareVersionInfoFragment
 import com.bacancy.ccs2androidhmi.views.fragment.GunsHomeScreenFragment
@@ -83,8 +82,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -621,7 +618,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
         binding.incToolbar.ivSwitchDarkMode.setOnClickListener {
             //toggleTheme()
-            changeLanguage()
+            addNewFragment(ChangeAppLanguageFragment())
         }
 
         binding.incToolbar.imgBack.setOnClickListener {

@@ -200,5 +200,11 @@
     <string name="msg_value_must_be_between_and">La valeur doit être comprise entre %1$s et %2$s</string>
     <string name="lbl_occurred">Produit</string>
     <string name="lbl_resolved">Résolu</string>
-
+    <string name="lbl_settings">Settings</string>
+    <string-array name="languages">
+        <item>Select Language</item>
+        <item>English</item>
+        <item>Spanish</item>
+        <item>French</item>
+    </string-array>
 </resources>
