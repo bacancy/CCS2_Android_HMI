@@ -13,7 +13,7 @@
         android:layout_height="match_parent"
         android:textColor="@color/red"
         android:textSize="@dimen/_8ssp"
-        android:text="Unplugged - "/>
+        tools:text="Unplugged - "/>
 
     <TextView
         android:id="@+id/tvGunStateValue"

@@ -47,12 +47,12 @@ class ChargingHistoryListAdapter(var onItemClick: (TbChargingHistory) -> Unit) :
         fun bind(sampleModel: TbChargingHistory, position: Int) {
             binding.apply {
                 tvEvMacAddress.text = sampleModel.evMacAddress
-                tvChargingDuration.text = sampleModel.totalChargingTime + " min"
+                tvChargingDuration.text = sampleModel.totalChargingTime + " " + itemView.context.getString(R.string.lbl_min_lowercase)
                 tvChargingStartTime.text = sampleModel.chargingStartTime
                 tvChargingEndTime.text = sampleModel.chargingEndTime
                 tvStartSoC.text = sampleModel.startSoc + "%"
                 tvEndSoC.text = sampleModel.endSoc + "%"
-                tvEnergyConsumption.text = sampleModel.energyConsumption + " kwh"
+                tvEnergyConsumption.text = sampleModel.energyConsumption + " " + itemView.context.getString(R.string.lbl_kwh)
                 tvSessionEndReason.text = sampleModel.sessionEndReason
                 tvTotalCost.text = itemView.context.getString(R.string.lbl_gun_total_cost_in_rs, if(sampleModel.totalCost.isEmpty()) 0.0F else sampleModel.totalCost.toFloat())
             }

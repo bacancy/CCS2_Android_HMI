@@ -67,7 +67,7 @@ class DualSocketGunsMoreInformationFragment : BaseFragment() {
         (requireActivity() as HMIDashboardActivity).showHideBackIcon(false)
         (requireActivity() as HMIDashboardActivity).showHideHomeIcon(false)
         (requireActivity() as HMIDashboardActivity).showHideSettingOptions()
-        (requireActivity() as HMIDashboardActivity).updateDualSocketText("Single Socket")
+        (requireActivity() as HMIDashboardActivity).updateDualSocketText(getString(R.string.single_socket))
         sessionModeDialog =
             requireActivity().showSessionModeDialog { selectedRadioButton, sessionModeValue ->
                 Log.d("TAG", "updateGunsChargingUI - selectedRadioButton: $selectedRadioButton")

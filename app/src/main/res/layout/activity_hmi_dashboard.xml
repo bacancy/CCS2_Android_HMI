@@ -34,7 +34,7 @@
         android:textStyle="bold"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:text="Dual Socket" />
+        android:text="@string/lbl_dual_socket" />
 
     <LinearLayout
         android:id="@+id/lnrChargerInoperative"

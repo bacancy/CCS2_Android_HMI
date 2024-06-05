@@ -188,5 +188,17 @@
     <string name="msg_convey_user_to_start_charging_session">To begin your charging session, please either tap your RFID card, enter the OTP, or use the remote start option.</string>
     <string name="lbl_gun_1_charging_summary">Gun - 1 Charging Summary</string>
     <string name="lbl_gun_2_charging_summary">Gun - 2 Charging Summary</string>
+    <string name="lbl_dual_socket">Dual Socket</string>
+    <string name="single_socket">Single Socket</string>
+    <string name="lbl_total_energy">Total Energy</string>
+    <string name="lbl_min_lowercase">min</string>
+    <string name="msg_please_enter_value">Please enter value</string>
+    <string name="msg_value_must_be_in_range">Value must be in range</string>
+    <string name="msg_enter_time_in_minutes_1_999">Enter Time in Minutes (1–999)</string>
+    <string name="msg_enter_energy_in_kwh_0_01_999_99">Enter Energy in kWh (0.01–999.99)</string>
+    <string name="msg_enter_soc_in_1_100">Enter SOC in % (1–100)</string>
+    <string name="msg_value_must_be_between_and">Value must be between %1$s and %2$s</string>
+    <string name="lbl_occurred">Occurred</string>
+    <string name="lbl_resolved">Resolved</string>
 
 </resources>

@@ -105,7 +105,7 @@ class GunsHomeScreenFragment : BaseFragment() {
 
     override fun onResume() {
         super.onResume()
-        (requireActivity() as HMIDashboardActivity).updateDualSocketText("Dual Socket")
+        (requireActivity() as HMIDashboardActivity).updateDualSocketText(getString(R.string.lbl_dual_socket))
         prefHelper.setBoolean(IS_DUAL_SOCKET_MODE_SELECTED, false)
         prefHelper.setBoolean(INSIDE_LOCAL_START_STOP_SCREEN, false)
         prefHelper.setBoolean("IS_IN_TEST_MODE", false)
@@ -411,43 +411,43 @@ class GunsHomeScreenFragment : BaseFragment() {
         binding.apply {
             tbGunsChargingInfo.apply {
                 if (isGun1) {
-                    tvGun1ChargingSoc.tvLabel.text = "Charging SoC"
+                    tvGun1ChargingSoc.tvLabel.text = getString(R.string.lbl_charging_soc)
                     tvGun1ChargingSoc.tvValue.text = "$chargingSoc%"
 
-                    tvGun1ChargingVoltage.tvLabel.text = "Charging Voltage"
+                    tvGun1ChargingVoltage.tvLabel.text = getString(R.string.lbl_charging_voltage)
                     tvGun1ChargingVoltage.tvValue.text = "$chargingVoltage V"
 
-                    tvGun1ChargingCurrent.tvLabel.text = "Charging Current"
+                    tvGun1ChargingCurrent.tvLabel.text = getString(R.string.lbl_charging_current)
                     tvGun1ChargingCurrent.tvValue.text = "$chargingCurrent A"
 
-                    tvGun1EnergyConsumption.tvLabel.text = "Total Energy"
+                    tvGun1EnergyConsumption.tvLabel.text = getString(R.string.lbl_total_energy)
                     tvGun1EnergyConsumption.tvValue.text =
                         getString(R.string.lbl_gun_energy_consumption, energyConsumption)
 
-                    tvGun1Duration.tvLabel.text = "Duration (hh:mm)"
+                    tvGun1Duration.tvLabel.text = getString(R.string.lbl_duration_hh_mm)
                     tvGun1Duration.tvValue.text = duration
 
-                    tvGun1TotalCost.tvLabel.text = "Total Cost"
+                    tvGun1TotalCost.tvLabel.text = getString(R.string.lbl_total_cost)
                     tvGun1TotalCost.tvValue.text =
                         getString(R.string.lbl_gun_total_cost_in_rs, totalCost)
                 } else {
-                    tvGun2ChargingSoc.tvLabel.text = "Charging SoC"
+                    tvGun2ChargingSoc.tvLabel.text = getString(R.string.lbl_charging_soc)
                     tvGun2ChargingSoc.tvValue.text = "$chargingSoc%"
 
-                    tvGun2ChargingVoltage.tvLabel.text = "Charging Voltage"
+                    tvGun2ChargingVoltage.tvLabel.text = getString(R.string.lbl_charging_voltage)
                     tvGun2ChargingVoltage.tvValue.text = "$chargingVoltage V"
 
-                    tvGun2ChargingCurrent.tvLabel.text = "Charging Current"
+                    tvGun2ChargingCurrent.tvLabel.text = getString(R.string.lbl_charging_current)
                     tvGun2ChargingCurrent.tvValue.text = "$chargingCurrent A"
 
-                    tvGun2EnergyConsumption.tvLabel.text = "Total Energy"
+                    tvGun2EnergyConsumption.tvLabel.text = getString(R.string.lbl_total_energy)
                     tvGun2EnergyConsumption.tvValue.text =
                         getString(R.string.lbl_gun_energy_consumption, energyConsumption)
 
-                    tvGun2Duration.tvLabel.text = "Duration (hh:mm)"
+                    tvGun2Duration.tvLabel.text = getString(R.string.lbl_duration_hh_mm)
                     tvGun2Duration.tvValue.text = duration
 
-                    tvGun2TotalCost.tvLabel.text = "Total Cost"
+                    tvGun2TotalCost.tvLabel.text = getString(R.string.lbl_total_cost)
                     tvGun2TotalCost.tvValue.text =
                         getString(R.string.lbl_gun_total_cost_in_rs, totalCost)
                 }
@@ -519,15 +519,6 @@ class GunsHomeScreenFragment : BaseFragment() {
         binding.tvGun2Actor.setOnClickListener {
             openGunsMoreInfoFragment(2)
         }
-
-        binding.tvGun1Label.setOnClickListener {
-
-            /*mqttViewModel.publishMessageToTopic(
-                TOPIC_A_TO_B,
-                "{\"id\":\"T001\",\"chargerRating\":\"60KW\",\"chargerOutputs\":\"2\",\"deviceMacAddress\":\"AA:BB:CC:11:22:33\",\"configDateTime\":\"01-04-2024T04:00:00\"}"
-            )*/
-        }
-
     }
 
     private fun openGunsMoreInfoFragment(gunNumber: Int) {
@@ -537,6 +528,5 @@ class GunsHomeScreenFragment : BaseFragment() {
         fragment.arguments = bundle
         fragmentChangeListener?.replaceFragment(fragment)
     }
-
 
 }

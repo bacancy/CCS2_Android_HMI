@@ -599,14 +599,14 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
                 dialog.show()
                 clearDialogFlags(dialog)
             }else{
-                if (binding.tvDualSocket.text == "Dual Socket") {
+                if (binding.tvDualSocket.text == getString(R.string.lbl_dual_socket)) {
                     showCustomDialogForAreYouSure(
                         getString(R.string.msg_to_confirm_to_switch_to_dual_socket),isCancelable = false,
                         {
                             prefHelper.setBoolean(IS_DUAL_SOCKET_MODE_SELECTED, true)
                             addNewFragment(DualSocketGunsMoreInformationFragment())
                         }, {})
-                } else if (binding.tvDualSocket.text == "Single Socket") {
+                } else if (binding.tvDualSocket.text == getString(R.string.single_socket)) {
                     showCustomDialogForAreYouSure(
                         getString(R.string.msg_to_confirm_to_switch_to_single_socket),isCancelable = false,
                         {
@@ -620,7 +620,8 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         binding.lnrChargerInoperative.setOnClickListener {}
 
         binding.incToolbar.ivSwitchDarkMode.setOnClickListener {
-            toggleTheme()
+            //toggleTheme()
+            changeLanguage()
         }
 
         binding.incToolbar.imgBack.setOnClickListener {
@@ -664,6 +665,16 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
             stopLockTask()
             openEVSEApp()
         }
+    }
+
+    var currLanguage = "en"
+
+    private fun changeLanguage() {
+        currLanguage = if (currLanguage == "en") "es" else "en"
+        val locale = Locale(currLanguage)
+        resources.configuration.setLocale(locale)
+        resources.updateConfiguration(resources.configuration, resources.displayMetrics)
+        recreate()
     }
 
     private fun openEVSEApp() {
@@ -718,7 +729,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         }
     }
 
-    fun updateDualSocketText(updatedLabel: String = "Dual Socket") {
+    fun updateDualSocketText(updatedLabel: String = getString(R.string.lbl_dual_socket)) {
         binding.tvDualSocket.text = updatedLabel
     }
 

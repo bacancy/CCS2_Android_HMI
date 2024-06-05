@@ -51,10 +51,10 @@ class ErrorCodesListAdapter(var onItemClick: (ErrorCodes) -> Unit) :
                 tvErrorCodeName.text = sampleModel.errorCodeName
 
                 if (sampleModel.errorCodeValue == 1) {
-                    tvErrorCodeStatus.text = "Occurred"
+                    tvErrorCodeStatus.text = itemView.context.getString(R.string.lbl_occurred)
                     tvErrorCodeStatus.setBackgroundResource(R.drawable.bg_red_rect_with_white_border)
                 } else {
-                    tvErrorCodeStatus.text = "Resolved"
+                    tvErrorCodeStatus.text = itemView.context.getString(R.string.lbl_resolved)
                     tvErrorCodeStatus.setBackgroundResource(R.drawable.bg_green_rect_with_white_border)
                 }
                 tvErrorCodeSource.text = sampleModel.errorCodeSource
