@@ -113,9 +113,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         makeFullScreen()
         super.onCreate(savedInstanceState)
-        dialog = showCustomDialog(getString(R.string.message_device_communication_error)) {
-            resetReadStopCount()
-        }
+
     }
 
     private fun setupSerialPort() {
@@ -319,7 +317,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
 
     private fun resetReadStopCount() {
         readStopCount = 0
-        if (dialog.isShowing) {
+        if (this::dialog.isInitialized && dialog.isShowing) {
             dialog.dismiss()
         }
     }
@@ -435,12 +433,15 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
         if (readStopCount == 5) {
             prefHelper.setStringValue(AUTH_PIN_VALUE, "")
             lifecycleScope.launch(Dispatchers.Main) {
+                dialog = showCustomDialog(getString(R.string.message_device_communication_error)) {
+                    resetReadStopCount()
+                }
                 dialog.show()
                 clearDialogFlags(dialog)
             }
             resetReadStopCount()
         } else {
-            if (dialog.isShowing) {
+            if (this::dialog.isInitialized && dialog.isShowing) {
                 dialog.dismiss()
             }
         }

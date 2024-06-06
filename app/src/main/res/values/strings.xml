@@ -3,7 +3,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <string name="lbl_ac_meter_information">AC Meter Information</string>
-    <string name="lbl_firmware_version_information">"Firmware Version Information "</string>
+    <string name="lbl_firmware_version_information">Firmware Version Information</string>
     <string name="lbl_dc_output_information">DC Output Information</string>
     <string name="lbl_charging_summary">Charging Summary</string>
     <string name="lbl_charging_history">Charging History</string>
@@ -159,7 +159,6 @@
     <string name="msg_failed_to_create_file">Failed to create file</string>
     <string name="msg_failed_to_save_file">Failed to save file</string>
     <string name="msg_external_storage_not_writable">External storage not writable</string>
-    <string name="csv_mime_type">text/csv</string>
     <string name="lbl_yes">Yes</string>
     <string name="lbl_no">No</string>
     <string name="msg_are_you_sure_to_delete">Do you want to delete the charging history from the app as you have exported it in CSV?.</string>
@@ -200,11 +199,42 @@
     <string name="msg_value_must_be_between_and">Value must be between %1$s and %2$s</string>
     <string name="lbl_occurred">Occurred</string>
     <string name="lbl_resolved">Resolved</string>
+
     <string name="lbl_settings">Settings</string>
-    <string-array name="languages">
-        <item>Select Language</item>
-        <item>English</item>
-        <item>Spanish</item>
-        <item>French</item>
-    </string-array>
+    <string name="lbl_select_app_language">Select App Language</string>
+    <string name="lbl_change_app_language">Change App Language (%1$s)</string>
+
+    <string name="unplugged">Unplugged</string>
+    <string name="unplugged_description">Gun Not Connected</string>
+    <string name="plugged_in">Plugged In</string>
+    <string name="plugged_in_description">Gun Connected with EV</string>
+    <string name="authentication">Authentication</string>
+    <string name="authentication_description">Authentication using RFID/OCPP with in 55 Sec of start this state</string>
+    <string name="authentication_timeout">Authentication Timeout</string>
+    <string name="authentication_timeout_description">Authentication not done within the time interval</string>
+    <string name="authentication_denied">Authentication Denied</string>
+    <string name="authentication_denied_description">Authentication rejected by the Server</string>
+    <string name="authentication_success">Authentication Success</string>
+    <string name="authentication_success_description">Authentication Success Response from Server</string>
+    <string name="isolation_fail">Isolation Fail</string>
+    <string name="isolation_fail_description">Isolation Test Fail</string>
+    <string name="preparing_for_charging">Preparing For Charging</string>
+    <string name="preparing_for_charging_description">Initializing for charging</string>
+    <string name="precharge_fail">Precharge Fail</string>
+    <string name="precharge_fail_description">Precharge Test Fail</string>
+    <string name="charging">Charging</string>
+    <string name="charging_description">EV Charge in Progress</string>
+    <string name="charging_complete">Charging Complete</string>
+    <string name="charging_complete_description">EV charge Completed</string>
+    <string name="plc_fault">PLC Fault</string>
+    <string name="plc_fault_description">Fault Occurred in PLC Module</string>
+    <string name="rectifier_fault">Rectifier Fault</string>
+    <string name="rectifier_fault_description">Fault Occurred in Rectifier Module</string>
+    <string name="communication_error">Communication Error</string>
+    <string name="communication_error_description">Communication Break with EV</string>
+    <string name="emergency_stop">Emergency Stop</string>
+    <string name="emergency_stop_description">Emergency Stop Triggered by user</string>
+    <string name="lbl_switch_to_light_mode">Switch to Light Mode</string>
+    <string name="lbl_switch_to_dark_mode">Switch to Dark Mode</string>
+
 </resources>

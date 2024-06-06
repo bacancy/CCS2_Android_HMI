@@ -56,6 +56,8 @@ import com.bacancy.ccs2androidhmi.util.DialogUtils.clearDialogFlags
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showCustomDialog
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showCustomDialogForAreYouSure
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showPasswordPromptDialog
+import com.bacancy.ccs2androidhmi.util.LanguageConfig.getAppLanguage
+import com.bacancy.ccs2androidhmi.util.LanguageConfig.setAppLanguage
 import com.bacancy.ccs2androidhmi.util.LogUtils
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.NO_STATE
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.TOKEN_ID_NONE
@@ -69,7 +71,7 @@ import com.bacancy.ccs2androidhmi.util.showToast
 import com.bacancy.ccs2androidhmi.util.visible
 import com.bacancy.ccs2androidhmi.viewmodel.MQTTViewModel
 import com.bacancy.ccs2androidhmi.views.fragment.AppNotificationsFragment
-import com.bacancy.ccs2androidhmi.views.fragment.ChangeAppLanguageFragment
+import com.bacancy.ccs2androidhmi.views.fragment.AppSettingsFragment
 import com.bacancy.ccs2androidhmi.views.fragment.DualSocketGunsMoreInformationFragment
 import com.bacancy.ccs2androidhmi.views.fragment.FirmwareVersionInfoFragment
 import com.bacancy.ccs2androidhmi.views.fragment.GunsHomeScreenFragment
@@ -103,13 +105,14 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
     override fun onCreate(savedInstanceState: Bundle?) {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         super.onCreate(savedInstanceState)
+        setAppLanguage(getAppLanguage(prefHelper), prefHelper)
         binding = ActivityHmiDashboardBinding.inflate(layoutInflater)
         setContentView(binding.root)
         prefHelper.setBoolean(IS_APP_RESTARTED, true)
         gunsHomeScreenFragment = GunsHomeScreenFragment()
         addNewFragment(gunsHomeScreenFragment)
 
-        handleViewsVisibility()
+        //handleViewsVisibility() //As this moved to AppSettings screen
 
         handleClicks()
 
@@ -553,7 +556,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         }
     }
 
-    private fun toggleTheme() {
+    fun toggleTheme() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             // Device API level is 31 or higher
             val newNightMode = if (prefHelper.getBoolean(
@@ -617,8 +620,11 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         binding.lnrChargerInoperative.setOnClickListener {}
 
         binding.incToolbar.ivSwitchDarkMode.setOnClickListener {
-            //toggleTheme()
-            addNewFragment(ChangeAppLanguageFragment())
+            toggleTheme()
+        }
+
+        binding.incToolbar.ivSettings.setOnClickListener {
+            addNewFragment(AppSettingsFragment())
         }
 
         binding.incToolbar.imgBack.setOnClickListener {
@@ -662,16 +668,6 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
             stopLockTask()
             openEVSEApp()
         }
-    }
-
-    var currLanguage = "en"
-
-    private fun changeLanguage() {
-        currLanguage = if (currLanguage == "en") "es" else "en"
-        val locale = Locale(currLanguage)
-        resources.configuration.setLocale(locale)
-        resources.updateConfiguration(resources.configuration, resources.displayMetrics)
-        recreate()
     }
 
     private fun openEVSEApp() {
@@ -796,7 +792,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         onBackPressedDispatcher.addCallback(this, callback)
     }
 
-    private fun addNewFragment(fragment: Fragment, shouldMoveToHomeScreen: Boolean = false) {
+    fun addNewFragment(fragment: Fragment, shouldMoveToHomeScreen: Boolean = false) {
         val fragmentManager: FragmentManager = supportFragmentManager
         if (shouldMoveToHomeScreen) {
             //To remove all the fragments in-between calling and first fragment

@@ -16,16 +16,23 @@ import android.view.WindowInsetsController
 import android.view.WindowManager
 import android.widget.RadioButton
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.databinding.CustomDialogAreYouSureBinding
 import com.bacancy.ccs2androidhmi.databinding.CustomDialogBinding
 import com.bacancy.ccs2androidhmi.databinding.DialogGunsChargingSummaryBinding
 import com.bacancy.ccs2androidhmi.databinding.DialogPasswordPromptBinding
 import com.bacancy.ccs2androidhmi.databinding.DialogPinAuthorizationBinding
+import com.bacancy.ccs2androidhmi.databinding.DialogSelectAppLanguageBinding
 import com.bacancy.ccs2androidhmi.databinding.DialogSessionModeSelectionBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsLastChargingSummary
+import com.bacancy.ccs2androidhmi.models.Language
 import com.bacancy.ccs2androidhmi.util.CommonUtils.LOCAL_START_STOP_PIN
 import com.bacancy.ccs2androidhmi.util.DialogUtils.clearDialogFlags
+import com.bacancy.ccs2androidhmi.util.LanguageConfig.getAppLanguage
+import com.bacancy.ccs2androidhmi.util.LanguageConfig.languageList
+import com.bacancy.ccs2androidhmi.util.LanguageConfig.setAppLanguage
+import com.bacancy.ccs2androidhmi.views.adapters.LanguageListAdapter
 
 object DialogUtils {
 
@@ -467,5 +474,32 @@ object DialogUtils {
         } else {
             edtSessionModeValue.error = null
         }
+    }
+
+    fun Activity.showSelectAppLanguageDialog(
+        prefHelper: PrefHelper,
+        onLanguageSelected: (Language) -> Unit,
+    ) {
+        val dialog = Dialog(this, R.style.CustomAlertDialog)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        val binding = DialogSelectAppLanguageBinding.inflate(layoutInflater)
+        dialog.setContentView(binding.root)
+
+        binding.apply {
+            languageRecyclerView.apply {
+                layoutManager = LinearLayoutManager(this@showSelectAppLanguageDialog)
+                languageList.forEach { language ->
+                    language.isSelected = language.code == getAppLanguage(prefHelper)
+                }
+                adapter = LanguageListAdapter(languageList) { selectedLanguage ->
+                    onLanguageSelected(selectedLanguage)
+                    dialog.dismiss()
+                }
+            }
+        }
+
+        dialog.setupDialogFlags()
+        dialog.show()
+        clearDialogFlags(dialog)
     }
 }

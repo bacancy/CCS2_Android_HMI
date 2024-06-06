@@ -23,7 +23,7 @@ class GunsStateInfoFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentGunsStateInfoBinding.inflate(layoutInflater)
-        getGunStates()
+        requireActivity().getGunStates()
         return binding.root
     }
 
@@ -44,6 +44,6 @@ class GunsStateInfoFragment : BaseFragment() {
                 adapter = gunStatesInfoListAdapter
             }
         }
-        gunStatesInfoListAdapter.submitList(getGunStates())
+        gunStatesInfoListAdapter.submitList(requireActivity().getGunStates())
     }
 }

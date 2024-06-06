@@ -1,9 +1,8 @@
 <resources>
     <string name="app_name">HMI Android CCS2</string>
     <string name="hello_blank_fragment">Bonjour fragment vierge</string>
-
     <string name="lbl_ac_meter_information">Informations sur le compteur CA</string>
-    <string name="lbl_firmware_version_information">\"Informations sur la version du micrologiciel\"</string>
+    <string name="lbl_firmware_version_information">Informations sur la version du micrologiciel</string>
     <string name="lbl_dc_output_information">Informations sur la sortie CC</string>
     <string name="lbl_charging_summary">Résumé de charge</string>
     <string name="lbl_charging_history">Historique de charge</string>
@@ -115,51 +114,50 @@
     <string name="lbl_gun_energy_consumption">%1$.3f kWh</string>
     <string name="lbl_gun_total_cost"><![CDATA[Coût total = ₹ %1 $,2f]]></string>
     <string name="lbl_gun_total_cost_in_rs">₹%1$,2f</string>
-    <string name="lbl_unit_price_per_kw">Unit Price = ₹%1$.2f / kWh</string>
-    <string name="lbl_gun_1_charging_status">GUN - 1 Charging Status</string>
-    <string name="lbl_gun_2_charging_status">GUN - 2 Charging Status</string>
-    <string name="lbl_local_start_or_stop_charging">Local Start/Stop Charging</string>
-    <string name="lbl_submit">Submit</string>
-    <string name="lbl_start_gun_1">Start Gun-1</string>
-    <string name="lbl_stop_gun_1">Stop Gun-1</string>
-    <string name="lbl_start_gun_2">Start Gun-2</string>
-    <string name="lbl_stop_gun_2">Stop Gun-2</string>
-    <string name="msg_invalid_password">Invalid Password</string>
-    <string name="lbl_test_mode">Test Mode</string>
-    <string name="lbl_output_on">Output On</string>
-    <string name="lbl_output_off">Output Off</string>
-    <string name="lbl_voltage_v">Voltage(v)</string>
-    <string name="lbl_current_a">Current(A)</string>
-    <string name="hint_between_200_1000v">between 200 – 1000V</string>
-    <string name="hint_between_0_100a">between 0 – 100A</string>
-    <string name="message_device_communication_error">Device Communication Error</string>
-    <string name="lbl_gun_2_loading">Gun - 2 (Loading…)</string>
-    <string name="lbl_gun_1_loading">Gun - 1 (Loading…)</string>
-    <string name="lbl_serial_number">Sr. No.</string>
-    <string name="lbl_error_status">Error Status</string>
-    <string name="lbl_error_desc">Error description</string>
-    <string name="lbl_authorize_for_local_start_stop">Authorize for Local Start/Stop</string>
-    <string name="hint_enter_your_6_digit_pin">Enter your 6-digit PIN</string>
+    <string name="lbl_unit_price_per_kw">Prix unitaire = ₹%1$.2f / kWh</string>
+    <string name="lbl_gun_1_charging_status">Statut de charge du pistolet 1</string>
+    <string name="lbl_gun_2_charging_status">Statut de charge du pistolet 2</string>
+    <string name="lbl_local_start_or_stop_charging">Démarrer/Arrêter la charge locale</string>
+    <string name="lbl_submit">Soumettre</string>
+    <string name="lbl_start_gun_1">Démarrer le pistolet 1</string>
+    <string name="lbl_stop_gun_1">Arrêter le pistolet 1</string>
+    <string name="lbl_start_gun_2">Démarrer le pistolet 2</string>
+    <string name="lbl_stop_gun_2">Arrêter le pistolet 2</string>
+    <string name="msg_invalid_password">Mot de passe invalide</string>
+    <string name="lbl_test_mode">Mode test</string>
+    <string name="lbl_output_on">Sortie activée</string>
+    <string name="lbl_output_off">Sortie désactivée</string>
+    <string name="lbl_voltage_v">Tension(v)</string>
+    <string name="lbl_current_a">Courant(A)</string>
+    <string name="hint_between_200_1000v">entre 200 – 1000V</string>
+    <string name="hint_between_0_100a">entre 0 – 100A</string>
+    <string name="message_device_communication_error">Erreur de communication avec l\'appareil</string>
+    <string name="lbl_gun_2_loading">Pistolet 2 (Chargement en cours…)</string>
+    <string name="lbl_gun_1_loading">Pistolet 1 (Chargement en cours…)</string>
+    <string name="lbl_serial_number">N° de série</string>
+    <string name="lbl_error_status">État d\'erreur</string>
+    <string name="lbl_error_desc">Description de l\'erreur</string>
+    <string name="lbl_authorize_for_local_start_stop">Autoriser le démarrage/arrêt local</string>
+    <string name="hint_enter_your_6_digit_pin">Saisissez votre code PIN à 6 chiffres</string>
     <string name="cd_servotech_logo">servotech logo</string>
     <string name="cd_server_icon">server icon</string>
     <string name="cd_ethernet_icon">ethernet icon</string>
     <string name="cd_gsm_icon">gsm icon</string>
     <string name="cd_wifi_icon">wifi icon</string>
-    <string name="lbl_error_source">Error Source</string>
-    <string name="lbl_no_faults_detected">No Faults Detected</string>
-    <string name="lbl_pin_otp_for_session_authorization">PIN/OTP for Session Authorization</string>
-    <string name="hint_enter_your_pin">Enter your PIN</string>
-    <string name="message_invalid_empty_pin">Invalid/Empty PIN</string>
-    <string name="message_please_input_voltage_between_200_to_1000_v">Please input voltage between 200 to 1000 V</string>
-    <string name="message_please_input_current_between_0_to_100_a">Please input current between 0 to 100 A</string>
-    <string name="msg_permission_granted">Permission Granted</string>
-    <string name="msg_permission_not_granted">Storage permission is required to export charging history.</string>
+    <string name="lbl_error_source">Source de l\'erreur</string>
+    <string name="lbl_no_faults_detected">Aucun défaut détecté</string>
+    <string name="lbl_pin_otp_for_session_authorization">PIN/OTP pour l\'autorisation de session</string>
+    <string name="hint_enter_your_pin">Saisissez votre code PIN</string>
+    <string name="message_invalid_empty_pin">Code PIN invalide/vide</string>
+    <string name="message_please_input_voltage_between_200_to_1000_v">Veuillez saisir une tension comprise entre 200 et 1000 V</string>
+    <string name="message_please_input_current_between_0_to_100_a">Veuillez saisir un courant compris entre 0 et 100 A</string>
+    <string name="msg_permission_granted">Autorisation accordée</string>
+    <string name="msg_permission_not_granted">L\'autorisation de stockage est requise pour exporter l\'historique de charge.</string>
     <string name="csv_row_headers">Sr No.,GunId,EV Mac Address,Charging Start Time,Charging End Time,Total Charging Time(mins),Start SoC(%),End SoC(%),Energy Consumption(kWh),Session End Reason</string>
-    <string name="msg_file_saved_successfully">File saved successfully</string>
-    <string name="msg_failed_to_create_file">Failed to create file</string>
-    <string name="msg_failed_to_save_file">Failed to save file</string>
-    <string name="msg_external_storage_not_writable">External storage not writable</string>
-    <string name="csv_mime_type">texte/csv</string>
+    <string name="msg_file_saved_successfully">Fichier enregistré avec succès</string>
+    <string name="msg_failed_to_create_file">Échec de création du fichier</string>
+    <string name="msg_failed_to_save_file">Échec de sauvegarde du fichier</string>
+    <string name="msg_external_storage_not_writable">Stockage externe non inscriptible</string>
     <string name="lbl_yes">Oui</string>
     <string name="lbl_no">Non</string>
     <string name="msg_are_you_sure_to_delete"><![CDATA[Souhaitez-vous supprimer l\'historique de recharge de l\'application car vous l\'avez exporté au format CSV \?]]></string>
@@ -200,11 +198,41 @@
     <string name="msg_value_must_be_between_and">La valeur doit être comprise entre %1$s et %2$s</string>
     <string name="lbl_occurred">Produit</string>
     <string name="lbl_resolved">Résolu</string>
-    <string name="lbl_settings">Settings</string>
-    <string-array name="languages">
-        <item>Select Language</item>
-        <item>English</item>
-        <item>Spanish</item>
-        <item>French</item>
-    </string-array>
+    <string name="lbl_settings">Paramètres</string>
+    <string name="lbl_select_app_language">Sélectionner la langue de l\'application</string>
+    <string name="lbl_change_app_language">Changer la langue de l\'application (%1$s)</string>
+
+    <string name="unplugged">Débranché</string>
+    <string name="unplugged_description">Pistolet Non Connecté</string>
+    <string name="plugged_in">Branché</string>
+    <string name="plugged_in_description">Pistolet Connecté avec EV</string>
+    <string name="authentication">Authentification</string>
+    <string name="authentication_description">Authentification utilisant RFID/OCPP dans les 55 secondes suivant le début de cet état</string>
+    <string name="authentication_timeout">Délai d\'Authentification Expiré</string>
+    <string name="authentication_timeout_description">Authentification non effectuée dans le délai imparti</string>
+    <string name="authentication_denied">Authentification Refusée</string>
+    <string name="authentication_denied_description">Authentification rejetée par le serveur</string>
+    <string name="authentication_success">Authentification Réussie</string>
+    <string name="authentication_success_description">Réponse d\'Authentification Réussie du Serveur</string>
+    <string name="isolation_fail">Échec de l\'Isolation</string>
+    <string name="isolation_fail_description">Échec du Test d\'Isolation</string>
+    <string name="preparing_for_charging">Préparation à la Charge</string>
+    <string name="preparing_for_charging_description">Initialisation pour la charge</string>
+    <string name="precharge_fail">Échec de la Précharge</string>
+    <string name="precharge_fail_description">Échec du Test de Précharge</string>
+    <string name="charging">En Charge</string>
+    <string name="charging_description">Charge de l\'EV en Cours</string>
+    <string name="charging_complete">Charge Complète</string>
+    <string name="charging_complete_description">Charge de l\'EV Terminée</string>
+    <string name="plc_fault">Défaut de PLC</string>
+    <string name="plc_fault_description">Défaut survenu dans le Module PLC</string>
+    <string name="rectifier_fault">Défaut du Redresseur</string>
+    <string name="rectifier_fault_description">Défaut survenu dans le Module Redresseur</string>
+    <string name="communication_error">Erreur de Communication</string>
+    <string name="communication_error_description">Interruption de Communication avec l\'EV</string>
+    <string name="emergency_stop">Arrêt d\'Urgence</string>
+    <string name="emergency_stop_description">Arrêt d\'Urgence Déclenché par l\'Utilisateur</string>
+    <string name="lbl_switch_to_light_mode">Passer en Mode Clair</string>
+    <string name="lbl_switch_to_dark_mode">Passer en Mode Sombre</string>
+
 </resources>

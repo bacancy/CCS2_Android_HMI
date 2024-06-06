@@ -2,7 +2,6 @@
 <resources>
     <string name="app_name">HMI CCS2 Android</string>
     <string name="hello_blank_fragment">Fragmento en blanco</string>
-
     <string name="lbl_ac_meter_information">Información del medidor de CA</string>
     <string name="lbl_firmware_version_information">Información de la versión del firmware</string>
     <string name="lbl_dc_output_information">Información de salida de CC</string>
@@ -105,7 +104,7 @@
     <string name="gun_2_info">PISTOLA - 2 \n<b>(%1$s)</b></string>
     <string name="lbl_plugged_in">(Conectado)</string>
     <string name="hint_00_00">00:00</string>
-    <string name="hint_mac_address">00-00-00-00-00-00-00-00</string>
+    <string name="hint_mac_address">00–00–00–00–00–00–00–00</string>
     <string name="hint_date_time">00/00/1900 00:00:00</string>
     <string name="hint_float">0.00</string>
     <string name="hint_0">0</string>
@@ -160,7 +159,6 @@
     <string name="msg_failed_to_create_file">Error al crear el archivo</string>
     <string name="msg_failed_to_save_file">Error al guardar el archivo</string>
     <string name="msg_external_storage_not_writable">El almacenamiento externo no se puede escribir</string>
-    <string name="csv_mime_type">text/csv</string>
     <string name="lbl_yes">Sí</string>
     <string name="lbl_no">No</string>
     <string name="msg_are_you_sure_to_delete">¿Desea eliminar el historial de carga de la aplicación ya que lo ha exportado en CSV?</string>
@@ -201,11 +199,41 @@
     <string name="msg_value_must_be_between_and">El valor debe estar entre %1$s y %2$s</string>
     <string name="lbl_occurred">Ocurrido</string>
     <string name="lbl_resolved">Resuelto</string>
-    <string name="lbl_settings">Settings</string>
-    <string-array name="languages">
-        <item>Select Language</item>
-        <item>English</item>
-        <item>Spanish</item>
-        <item>French</item>
-    </string-array>
+    <string name="lbl_settings">Ajustes</string>
+    <string name="lbl_select_app_language">Seleccionar idioma de la aplicación</string>
+    <string name="lbl_change_app_language">Cambiar idioma de la aplicación (%1$s)</string>
+
+    <string name="unplugged">Desconectado</string>
+    <string name="unplugged_description">Pistola No Conectada</string>
+    <string name="plugged_in">Conectado</string>
+    <string name="plugged_in_description">Pistola Conectada con EV</string>
+    <string name="authentication">Autenticación</string>
+    <string name="authentication_description">Autenticación usando RFID/OCPP dentro de 55 segundos de iniciar este estado</string>
+    <string name="authentication_timeout">Tiempo de Autenticación Agotado</string>
+    <string name="authentication_timeout_description">Autenticación no realizada dentro del intervalo de tiempo</string>
+    <string name="authentication_denied">Autenticación Denegada</string>
+    <string name="authentication_denied_description">Autenticación rechazada por el servidor</string>
+    <string name="authentication_success">Autenticación Exitosa</string>
+    <string name="authentication_success_description">Respuesta de Autenticación Exitosa del Servidor</string>
+    <string name="isolation_fail">Fallo de Aislamiento</string>
+    <string name="isolation_fail_description">Fallo en la Prueba de Aislamiento</string>
+    <string name="preparing_for_charging">Preparándose para Cargar</string>
+    <string name="preparing_for_charging_description">Inicializando para cargar</string>
+    <string name="precharge_fail">Fallo de Precarga</string>
+    <string name="precharge_fail_description">Fallo en la Prueba de Precarga</string>
+    <string name="charging">Cargando</string>
+    <string name="charging_description">Carga de EV en Progreso</string>
+    <string name="charging_complete">Carga Completa</string>
+    <string name="charging_complete_description">Carga de EV Completada</string>
+    <string name="plc_fault">Fallo de PLC</string>
+    <string name="plc_fault_description">Fallo Ocurrido en el Módulo PLC</string>
+    <string name="rectifier_fault">Fallo del Rectificador</string>
+    <string name="rectifier_fault_description">Fallo Ocurrido en el Módulo Rectificador</string>
+    <string name="communication_error">Error de Comunicación</string>
+    <string name="communication_error_description">Interrupción de Comunicación con EV</string>
+    <string name="emergency_stop">Parada de Emergencia</string>
+    <string name="emergency_stop_description">Parada de Emergencia Activada por el Usuario</string>
+    <string name="lbl_switch_to_light_mode">Cambiar a Modo Claro</string>
+    <string name="lbl_switch_to_dark_mode">Cambiar a Modo Oscuro</string>
+
 </resources>

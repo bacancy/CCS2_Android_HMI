@@ -1,5 +1,7 @@
 package com.bacancy.ccs2androidhmi.util
 
+import android.content.Context
+import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.models.GunStatesInfo
 
 object StateAndModesUtils {
@@ -26,7 +28,7 @@ object StateAndModesUtils {
         MAINS_FAIL(19, "Mains Fail"),
         UNAVAILABLE(20, "Unavailable"),
         RESERVED(21, "Reserved"),
-        LOADING(-1, "Loading...");
+        LOADING(-1, "Fault");
 
         companion object {
             fun fromStateValue(value: Int): GunChargingState {
@@ -84,43 +86,23 @@ object StateAndModesUtils {
         }
     }
 
-    fun getGunStates(): MutableList<GunStatesInfo> {
+    fun Context.getGunStates(): MutableList<GunStatesInfo> {
         return mutableListOf(
-            GunStatesInfo(1, "Unplugged", "Gun Not Connected", "White"),
-            GunStatesInfo(2, "Plugged In", "Gun Connected with EV", "Yellow"),
-            GunStatesInfo(
-                3,
-                "Authentication",
-                "Authentication using RFID/OCPP with in 55 Sec of start this state",
-                "White"
-            ),
-            GunStatesInfo(
-                4,
-                "Authentication Timeout",
-                "Authentication not done within the time interval",
-                "Red"
-            ),
-            GunStatesInfo(
-                5,
-                "Authentication Denied",
-                "Authentication rejected by the Server",
-                "Red"
-            ),
-            GunStatesInfo(
-                6,
-                "Authentication Success",
-                "Authentication Success Response from Server",
-                "Green"
-            ),
-            GunStatesInfo(7, "Isolation Fail", "Isolation Test Fail", "Red"),
-            GunStatesInfo(8, "Preparing For Charging", "Initializing for charging", "Blue"),
-            GunStatesInfo(9, "Precharge Fail", "Precharge Test Fail", "Red"),
-            GunStatesInfo(10, "Charging", "EV Charge in Progress", "Blue"),
-            GunStatesInfo(11, "Charging Complete", "EV charge Completed", "Green"),
-            GunStatesInfo(12, "PLC Fault", "Fault Occurred in PLC Module", "Red"),
-            GunStatesInfo(13, "Rectifier Fault", "Fault Occurred in Rectifier Module", "Red"),
-            GunStatesInfo(14, "Communication Error", "Communication Break with EV", "Red"),
-            GunStatesInfo(15, "Emergency Stop", "Emergency Stop Triggered by user", "Red")
+            GunStatesInfo(1, getString(R.string.unplugged), getString(R.string.unplugged_description), "White"),
+            GunStatesInfo(2, getString(R.string.plugged_in), getString(R.string.plugged_in_description), "Yellow"),
+            GunStatesInfo(3, getString(R.string.authentication), getString(R.string.authentication_description), "White"),
+            GunStatesInfo(4, getString(R.string.authentication_timeout), getString(R.string.authentication_timeout_description), "Red"),
+            GunStatesInfo(5, getString(R.string.authentication_denied), getString(R.string.authentication_denied_description), "Red"),
+            GunStatesInfo(6, getString(R.string.authentication_success), getString(R.string.authentication_success_description), "Green"),
+            GunStatesInfo(7, getString(R.string.isolation_fail), getString(R.string.isolation_fail_description), "Red"),
+            GunStatesInfo(8, getString(R.string.preparing_for_charging), getString(R.string.preparing_for_charging_description), "Blue"),
+            GunStatesInfo(9, getString(R.string.precharge_fail), getString(R.string.precharge_fail_description), "Red"),
+            GunStatesInfo(10, getString(R.string.charging), getString(R.string.charging_description), "Blue"),
+            GunStatesInfo(11, getString(R.string.charging_complete), getString(R.string.charging_complete_description), "Green"),
+            GunStatesInfo(12, getString(R.string.plc_fault), getString(R.string.plc_fault_description), "Red"),
+            GunStatesInfo(13, getString(R.string.rectifier_fault), getString(R.string.rectifier_fault_description), "Red"),
+            GunStatesInfo(14, getString(R.string.communication_error), getString(R.string.communication_error_description), "Red"),
+            GunStatesInfo(15, getString(R.string.emergency_stop), getString(R.string.emergency_stop_description), "Red")
         )
     }
 
