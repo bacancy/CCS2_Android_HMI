@@ -199,8 +199,8 @@
     <string name="lbl_occurred">Voorgekomen</string>
     <string name="lbl_resolved">Opgelost</string>
     <string name="lbl_settings">Instellingen</string>
-    <string name="lbl_select_app_language">Selecteer app-taal</string>
-    <string name="lbl_change_app_language">App-taal wijzigen (%1$s)</string>
+    <string name="lbl_select_app_language">Selecteer taal</string>
+    <string name="lbl_change_app_language">Taal wijzigen (%1$s)</string>
 
     <string name="unplugged">Losgekoppeld</string>
     <string name="unplugged_description">Pistool Niet Aangesloten</string>
@@ -234,5 +234,8 @@
     <string name="emergency_stop_description">Noodstop Geactiveerd door Gebruiker</string>
     <string name="lbl_switch_to_light_mode">Overschakelen naar Lichtmodus</string>
     <string name="lbl_switch_to_dark_mode">Overschakelen naar Donkere Modus</string>
+    <string name="title_authorize_for_settings">Autoriseren voor Instellingen</string>
+    <string name="msg_please_input_voltage_between_200_to_1000_v">Voer een spanning in tussen 200 en 1000 V</string>
+    <string name="msg_please_input_current_between_0_to_100_a">Voer een stroom in tussen 0 en 100 A</string>
 
 </resources>

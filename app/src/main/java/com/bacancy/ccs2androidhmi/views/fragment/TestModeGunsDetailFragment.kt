@@ -73,14 +73,6 @@ class TestModeGunsDetailFragment : BaseFragment() {
             when (selectedGunNumber) {
 
                 1 -> {
-                    /*if (prefHelper.getIntValue("GUN1_VOLTAGE", 0) > 0) {
-                        prefHelper.setBoolean("IS_GUN_VOLTAGE_CHANGED", true)
-                        edtGunVoltage.setText(""+prefHelper.getIntValue("GUN1_VOLTAGE", 0))
-                    }
-                    if (prefHelper.getIntValue("GUN1_CURRENT", 0) > 0) {
-                        prefHelper.setBoolean("IS_GUN_CURRENT_CHANGED", true)
-                        edtGunCurrent.setText(""+prefHelper.getIntValue("GUN1_CURRENT", 0))
-                    }*/
                     if (prefHelper.getIntValue("GUN1_OUTPUT_ON_OFF_VALUE", 0) == 1) {
                         isOutputOn = true
                         btnOutputOnOff.text = getString(R.string.lbl_output_off)
@@ -91,14 +83,6 @@ class TestModeGunsDetailFragment : BaseFragment() {
                 }
 
                 2 -> {
-                    /*if (prefHelper.getIntValue("GUN2_VOLTAGE", 0) > 0) {
-                        prefHelper.setBoolean("IS_GUN_VOLTAGE_CHANGED", true)
-                        edtGunVoltage.setText(""+prefHelper.getIntValue("GUN2_VOLTAGE", 0))
-                    }
-                    if (prefHelper.getIntValue("GUN2_CURRENT", 0) > 0) {
-                        prefHelper.setBoolean("IS_GUN_CURRENT_CHANGED", true)
-                        edtGunCurrent.setText(""+prefHelper.getIntValue("GUN2_CURRENT", 0))
-                    }*/
                     if (prefHelper.getIntValue("GUN2_OUTPUT_ON_OFF_VALUE", 0) == 1) {
                         isOutputOn = true
                         btnOutputOnOff.text = getString(R.string.lbl_output_off)
@@ -133,7 +117,7 @@ class TestModeGunsDetailFragment : BaseFragment() {
                             }
                         }
                     } else {
-                        requireContext().showCustomToast("Please input voltage between 200 to 1000 V", false)
+                        requireContext().showCustomToast(getString(R.string.msg_please_input_voltage_between_200_to_1000_v), false)
                     }
 
                     edtGunVoltage.hideKeyboard(requireContext())
@@ -155,7 +139,7 @@ class TestModeGunsDetailFragment : BaseFragment() {
                             }
                         }
                     } else {
-                        requireContext().showCustomToast("Please input current between 0 to 100 A", false)
+                        requireContext().showCustomToast(getString(R.string.msg_please_input_current_between_0_to_100_a), false)
                     }
 
                     edtGunCurrent.hideKeyboard(requireContext())
@@ -163,25 +147,6 @@ class TestModeGunsDetailFragment : BaseFragment() {
                 }
                 false
             }
-
-            /*btnOutputOnOff.setOnClickListener {
-                prefHelper.setBoolean("IS_OUTPUT_ON_OFF_VALUE_CHANGED", true)
-                if (prefHelper.getBoolean("IS_OUTPUT_ON_OFF_VALUE_CHANGED", false)) {
-                    prefHelper.setBoolean("IS_OUTPUT_ON_OFF_VALUE_CHANGED", false)
-                    btnOutputOnOff.text = getString(R.string.lbl_output_on)
-                    0
-                } else {
-                    prefHelper.setBoolean("IS_OUTPUT_ON_OFF_VALUE_CHANGED", true)
-                    btnOutputOnOff.text = getString(R.string.lbl_output_off)
-                    1
-                }
-                //val value = if (isOutputOn) 1 else 0
-                if (selectedGunNumber == 1) {
-                    prefHelper.setIntValue("GUN1_OUTPUT_ON_OFF_VALUE", value)
-                } else {
-                    prefHelper.setIntValue("GUN2_OUTPUT_ON_OFF_VALUE", value)
-                }
-            }*/
 
             btnOutputOnOff.setOnClickListener {
                 prefHelper.setBoolean("IS_OUTPUT_ON_OFF_VALUE_CHANGED", true)
@@ -193,7 +158,6 @@ class TestModeGunsDetailFragment : BaseFragment() {
                     btnOutputOnOff.text = getString(R.string.lbl_output_off)
                 }
                 val value = if (isOutputOn) 1 else 0
-                //prefHelper.setIntValue("OUTPUT_ON_OFF_VALUE", value)
                 if (selectedGunNumber == 1) {
                     prefHelper.setIntValue("GUN1_OUTPUT_ON_OFF_VALUE", value)
                 } else {

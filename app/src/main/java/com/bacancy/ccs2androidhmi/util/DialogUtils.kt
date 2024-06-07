@@ -188,7 +188,8 @@ object DialogUtils {
         popupTitle: String,
         isCancelable: Boolean = true,
         onSuccess: () -> Unit,
-        onFailed: () -> Unit
+        onFailed: () -> Unit,
+        password: String = LOCAL_START_STOP_PIN
     ) {
         val dialog = Dialog(this, R.style.CustomAlertDialog)
         dialog.setupWithoutTitle()
@@ -200,7 +201,7 @@ object DialogUtils {
             btnSubmit.setOnClickListener {
                 dialog.dismiss()
                 val enteredPassword = edtPassword.text.toString()
-                if (enteredPassword.length == 6 && enteredPassword == LOCAL_START_STOP_PIN) {
+                if (enteredPassword.length == password.length && enteredPassword == password) {
                     onSuccess()
                 } else {
                     onFailed()

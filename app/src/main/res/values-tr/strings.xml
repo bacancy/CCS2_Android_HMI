@@ -199,8 +199,8 @@
     <string name="lbl_occurred">Oluştu</string>
     <string name="lbl_resolved">Çözüldü</string>
     <string name="lbl_settings">Ayarlar</string>
-    <string name="lbl_select_app_language">Uygulama Dilini Seçin</string>
-    <string name="lbl_change_app_language">Uygulama Dilini Değiştir (%1$s)</string>
+    <string name="lbl_select_app_language">Dil Seçin</string>
+    <string name="lbl_change_app_language">Dili Değiştir (%1$s)</string>
 
     <string name="unplugged">Fişi Çekili</string>
     <string name="unplugged_description">Tabanca Bağlı Değil</string>
@@ -234,5 +234,8 @@
     <string name="emergency_stop_description">Kullanıcı Tarafından Acil Durum Durdurması Etkinleştirildi</string>
     <string name="lbl_switch_to_light_mode">Açık Moda Geç</string>
     <string name="lbl_switch_to_dark_mode">Karanlık Moda Geç</string>
+    <string name="title_authorize_for_settings">Ayarlar için Yetkilendir</string>
+    <string name="msg_please_input_voltage_between_200_to_1000_v">Lütfen 200 ile 1000 V arasında bir voltaj girin</string>
+    <string name="msg_please_input_current_between_0_to_100_a">Lütfen 0 ile 100 A arasında bir akım girin</string>
 
 </resources>

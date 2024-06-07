@@ -6,6 +6,7 @@ import android.app.UiModeManager
 import android.app.admin.DevicePolicyManager
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkRequest
@@ -15,6 +16,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.KeyEvent
+import android.view.View
 import android.view.WindowManager
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
@@ -40,6 +42,7 @@ import com.bacancy.ccs2androidhmi.receiver.MyDeviceAdminReceiver
 import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_LOCAL_START_STOP
 import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_TEST_MODE
 import com.bacancy.ccs2androidhmi.util.CommonUtils
+import com.bacancy.ccs2androidhmi.util.CommonUtils.APP_SETTINGS_PIN
 import com.bacancy.ccs2androidhmi.util.CommonUtils.CHARGER_ACTIVE_DEACTIVE_MESSAGE_RECD
 import com.bacancy.ccs2androidhmi.util.CommonUtils.DEVICE_MAC_ADDRESS
 import com.bacancy.ccs2androidhmi.util.CommonUtils.EVSE_APP_PACKAGE_NAME
@@ -580,7 +583,6 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
     override fun onNightModeChanged(mode: Int) {
         super.onNightModeChanged(mode)
-        Log.d(TAG, "onNightModeChanged: Called")
         lifecycleScope.launch {
             resetPorts()
             delay(1000)
@@ -624,7 +626,11 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         }
 
         binding.incToolbar.ivSettings.setOnClickListener {
-            addNewFragment(AppSettingsFragment())
+            showPasswordPromptDialog(getString(R.string.title_authorize_for_settings),isCancelable = true, {
+                addNewFragment(AppSettingsFragment())
+            }, {
+                showCustomToast(getString(R.string.msg_invalid_password), false)
+            }, password = APP_SETTINGS_PIN)
         }
 
         binding.incToolbar.imgBack.setOnClickListener {
@@ -666,11 +672,10 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         binding.incToolbar.ivLogo.setOnClickListener {
             prefHelper.setBoolean(IS_APP_PINNED, false)
             stopLockTask()
-            openEVSEApp()
         }
     }
 
-    private fun openEVSEApp() {
+    fun openEVSEApp() {
         try {
             val launchIntent: Intent? =
                 packageManager.getLaunchIntentForPackage(EVSE_APP_PACKAGE_NAME)
@@ -842,7 +847,6 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
     override fun onPause() {
         super.onPause()
-        mApplication!!.closeSerialPort()
         handler.removeCallbacks(runnable)
         unregisterNetworkCallback()
     }

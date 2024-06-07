@@ -199,8 +199,8 @@
     <string name="lbl_occurred">Ocorreu</string>
     <string name="lbl_resolved">Resolvido</string>
     <string name="lbl_settings">Configurações</string>
-    <string name="lbl_select_app_language">Selecionar idioma do aplicativo</string>
-    <string name="lbl_change_app_language">Alterar idioma do aplicativo (%1$s)</string>
+    <string name="lbl_select_app_language">Selecionar idioma</string>
+    <string name="lbl_change_app_language">Mudar idioma (%1$s)</string>
 
     <string name="unplugged">Desconectado</string>
     <string name="unplugged_description">Pistola Não Conectada</string>
@@ -234,5 +234,8 @@
     <string name="emergency_stop_description">Parada de Emergência Acionada pelo Usuário</string>
     <string name="lbl_switch_to_light_mode">Mudar para o Modo Claro</string>
     <string name="lbl_switch_to_dark_mode">Mudar para o Modo Escuro</string>
+    <string name="title_authorize_for_settings">Autorizar para Configurações</string>
+    <string name="msg_please_input_voltage_between_200_to_1000_v">Por favor, insira uma voltagem entre 200 e 1000 V</string>
+    <string name="msg_please_input_current_between_0_to_100_a">Por favor, insira uma corrente entre 0 e 100 A</string>
 
 </resources>

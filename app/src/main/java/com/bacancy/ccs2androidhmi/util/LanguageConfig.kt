@@ -1,8 +1,8 @@
 package com.bacancy.ccs2androidhmi.util
 
 import android.content.Context
-import android.util.Log
 import com.bacancy.ccs2androidhmi.models.Language
+import com.bacancy.ccs2androidhmi.views.fragment.AppSettingsFragment
 import java.util.Locale
 
 object LanguageConfig {
@@ -33,6 +33,11 @@ object LanguageConfig {
 
     fun getAppLanguage(prefHelper: PrefHelper): String {
         return prefHelper.getStringValue(SELECTED_APP_LANGUAGE, DEFAULT_APP_LANGUAGE)
+    }
+
+    fun getLanguageName(prefHelper: PrefHelper): String {
+        val languageCode = getAppLanguage(prefHelper)
+        return languageList.find { it.code == languageCode }?.name ?: AppSettingsFragment.ENGLISH
     }
 
 }

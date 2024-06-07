@@ -199,8 +199,8 @@
     <string name="lbl_occurred">Produit</string>
     <string name="lbl_resolved">Résolu</string>
     <string name="lbl_settings">Paramètres</string>
-    <string name="lbl_select_app_language">Sélectionner la langue de l\'application</string>
-    <string name="lbl_change_app_language">Changer la langue de l\'application (%1$s)</string>
+    <string name="lbl_select_app_language">Sélectionner la langue</string>
+    <string name="lbl_change_app_language">Changer la langue (%1$s)</string>
 
     <string name="unplugged">Débranché</string>
     <string name="unplugged_description">Pistolet Non Connecté</string>
@@ -234,5 +234,8 @@
     <string name="emergency_stop_description">Arrêt d\'Urgence Déclenché par l\'Utilisateur</string>
     <string name="lbl_switch_to_light_mode">Passer en Mode Clair</string>
     <string name="lbl_switch_to_dark_mode">Passer en Mode Sombre</string>
+    <string name="title_authorize_for_settings">Autoriser pour les Paramètres</string>
+    <string name="msg_please_input_voltage_between_200_to_1000_v">Veuillez entrer une tension entre 200 et 1000 V</string>
+    <string name="msg_please_input_current_between_0_to_100_a">Veuillez entrer un courant entre 0 et 100 A</string>
 
 </resources>

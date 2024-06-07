@@ -201,8 +201,8 @@
     <string name="lbl_resolved">Resolved</string>
 
     <string name="lbl_settings">Settings</string>
-    <string name="lbl_select_app_language">Select App Language</string>
-    <string name="lbl_change_app_language">Change App Language (%1$s)</string>
+    <string name="lbl_select_app_language">Select Language</string>
+    <string name="lbl_change_app_language">Change Language (%1$s)</string>
 
     <string name="unplugged">Unplugged</string>
     <string name="unplugged_description">Gun Not Connected</string>
@@ -236,5 +236,8 @@
     <string name="emergency_stop_description">Emergency Stop Triggered by user</string>
     <string name="lbl_switch_to_light_mode">Switch to Light Mode</string>
     <string name="lbl_switch_to_dark_mode">Switch to Dark Mode</string>
+    <string name="title_authorize_for_settings">Authorize for Settings</string>
+    <string name="msg_please_input_voltage_between_200_to_1000_v">Please input voltage between 200 to 1000 V</string>
+    <string name="msg_please_input_current_between_0_to_100_a">Please input current between 0 to 100 A</string>
 
 </resources>
