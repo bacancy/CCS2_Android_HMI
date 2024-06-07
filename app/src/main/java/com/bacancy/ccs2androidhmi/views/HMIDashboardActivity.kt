@@ -104,6 +104,17 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
     private val mqttViewModel: MQTTViewModel by viewModels()
     private val TAG = "HMIDashboardActivity"
 
+    override fun onResumeFragments() {
+        super.onResumeFragments()
+        val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainer)
+        if (currentFragment == null) {
+            lifecycleScope.launch {
+                gunsHomeScreenFragment = GunsHomeScreenFragment()
+                addNewFragment(gunsHomeScreenFragment)
+            }
+        }
+    }
+
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -112,8 +123,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         binding = ActivityHmiDashboardBinding.inflate(layoutInflater)
         setContentView(binding.root)
         prefHelper.setBoolean(IS_APP_RESTARTED, true)
-        gunsHomeScreenFragment = GunsHomeScreenFragment()
-        addNewFragment(gunsHomeScreenFragment)
+
 
         //handleViewsVisibility() //As this moved to AppSettings screen
 
@@ -774,8 +784,8 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
     private fun updateTimerUI() {
         val currentTime = Calendar.getInstance().time
-        val dateFormat =
-            SimpleDateFormat(CommonUtils.CLOCK_DATE_AND_TIME_FORMAT, Locale.ENGLISH)
+        val locale = if(resources.configuration.locales.size()>0) resources.configuration.locales[0] else Locale.ENGLISH
+        val dateFormat = SimpleDateFormat(CommonUtils.CLOCK_DATE_AND_TIME_FORMAT, locale)
         val formattedDate = dateFormat.format(currentTime)
         binding.incToolbar.tvDateTime.text = formattedDate.uppercase()
     }

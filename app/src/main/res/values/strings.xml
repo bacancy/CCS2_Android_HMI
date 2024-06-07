@@ -240,4 +240,21 @@
     <string name="msg_please_input_voltage_between_200_to_1000_v">Please input voltage between 200 to 1000 V</string>
     <string name="msg_please_input_current_between_0_to_100_a">Please input current between 0 to 100 A</string>
 
+    <string name="lbl_english">English</string>
+    <string name="lbl_hindi">Hindi</string>
+    <string name="lbl_arabic">Arabic</string>
+    <string name="lbl_spanish">Spanish</string>
+    <string name="lbl_french">French</string>
+    <string name="lbl_portugese">Portuguese</string>
+    <string name="lbl_dutch">Dutch</string>
+    <string name="lbl_turkish">Turkish</string>
+
+    <string name="lbl_english_default">English</string>
+    <string name="lbl_hindi_default">हिंदी</string>
+    <string name="lbl_arabic_default">عربي</string>
+    <string name="lbl_spanish_default">Espanol</string>
+    <string name="lbl_french_default">Francais</string>
+    <string name="lbl_portugese_default">Português</string>
+    <string name="lbl_dutch_default">Nederlands</string>
+    <string name="lbl_turkish_default">Türkçe</string>
 </resources>

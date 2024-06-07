@@ -28,10 +28,8 @@ import com.bacancy.ccs2androidhmi.databinding.DialogSessionModeSelectionBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsLastChargingSummary
 import com.bacancy.ccs2androidhmi.models.Language
 import com.bacancy.ccs2androidhmi.util.CommonUtils.LOCAL_START_STOP_PIN
-import com.bacancy.ccs2androidhmi.util.DialogUtils.clearDialogFlags
 import com.bacancy.ccs2androidhmi.util.LanguageConfig.getAppLanguage
-import com.bacancy.ccs2androidhmi.util.LanguageConfig.languageList
-import com.bacancy.ccs2androidhmi.util.LanguageConfig.setAppLanguage
+import com.bacancy.ccs2androidhmi.util.LanguageConfig.getLanguagesList
 import com.bacancy.ccs2androidhmi.views.adapters.LanguageListAdapter
 
 object DialogUtils {
@@ -489,10 +487,10 @@ object DialogUtils {
         binding.apply {
             languageRecyclerView.apply {
                 layoutManager = LinearLayoutManager(this@showSelectAppLanguageDialog)
-                languageList.forEach { language ->
+                getLanguagesList().forEach { language ->
                     language.isSelected = language.code == getAppLanguage(prefHelper)
                 }
-                adapter = LanguageListAdapter(languageList) { selectedLanguage ->
+                adapter = LanguageListAdapter(getLanguagesList()) { selectedLanguage ->
                     onLanguageSelected(selectedLanguage)
                     dialog.dismiss()
                 }

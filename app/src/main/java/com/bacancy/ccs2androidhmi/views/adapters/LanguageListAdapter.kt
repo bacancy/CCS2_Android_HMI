@@ -20,6 +20,7 @@ class LanguageListAdapter(private val data: List<Language>,
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = data[position]
         holder.binding.radioButton.text = item.name
+        holder.binding.tvLanguageDefault.text = "(${item.defaultName})"
         holder.binding.radioButton.isChecked = item.isSelected
 
         holder.binding.radioButton.setOnCheckedChangeListener { _, isChecked ->

@@ -238,4 +238,21 @@
     <string name="msg_please_input_voltage_between_200_to_1000_v">Por favor, insira uma voltagem entre 200 e 1000 V</string>
     <string name="msg_please_input_current_between_0_to_100_a">Por favor, insira uma corrente entre 0 e 100 A</string>
 
+    <string name="lbl_english">Inglês</string>
+    <string name="lbl_hindi">Hindi</string>
+    <string name="lbl_arabic">Árabe</string>
+    <string name="lbl_spanish">Espanhol</string>
+    <string name="lbl_french">Francês</string>
+    <string name="lbl_portugese">Português</string>
+    <string name="lbl_dutch">Holandês</string>
+    <string name="lbl_turkish">Turco</string>
+
+    <string name="lbl_english_default">English</string>
+    <string name="lbl_hindi_default">हिंदी</string>
+    <string name="lbl_arabic_default">عربي</string>
+    <string name="lbl_spanish_default">Espanol</string>
+    <string name="lbl_french_default">Francais</string>
+    <string name="lbl_portugese_default">Português</string>
+    <string name="lbl_dutch_default">Nederlands</string>
+    <string name="lbl_turkish_default">Türkçe</string>
 </resources>

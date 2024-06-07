@@ -13,6 +13,7 @@ import com.bacancy.ccs2androidhmi.util.CommonUtils
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showSelectAppLanguageDialog
 import com.bacancy.ccs2androidhmi.util.LanguageConfig.getLanguageName
 import com.bacancy.ccs2androidhmi.util.LanguageConfig.setAppLanguage
+import com.bacancy.ccs2androidhmi.util.LanguageConfig.setupLanguagesList
 import com.bacancy.ccs2androidhmi.util.PrefHelper
 import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
 import com.bacancy.ccs2androidhmi.views.adapters.AppSettingsAdapter
@@ -48,6 +49,9 @@ class AppSettingsFragment : BaseFragment() {
     override fun handleClicks() {}
 
     private fun setupSettingsList() {
+
+       requireActivity().setupLanguagesList()
+
         binding.rvSettings.apply {
             layoutManager = GridLayoutManager(requireContext(), 2)
             adapter = AppSettingsAdapter(getSettingsList()) { selectedItem ->
@@ -55,7 +59,7 @@ class AppSettingsFragment : BaseFragment() {
                     SET_01 -> {
                         requireActivity().showSelectAppLanguageDialog(prefHelper) {
                             requireActivity().setAppLanguage(it.code, prefHelper)
-                            (requireActivity() as HMIDashboardActivity).goBack()
+                            requireActivity().recreate()
                         }
                     }
 
@@ -106,7 +110,7 @@ class AppSettingsFragment : BaseFragment() {
 
     private fun getSettingsList(): List<Pair<String, String>> {
 
-        val appLanguageTitle = getString(R.string.lbl_change_app_language, getLanguageName(prefHelper))
+        val appLanguageTitle = getString(R.string.lbl_change_app_language, requireActivity().getLanguageName(prefHelper))
 
         val switchModeTitle = if (prefHelper.getBoolean(
                 PrefHelper.IS_DARK_THEME,

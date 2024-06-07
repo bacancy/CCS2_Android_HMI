@@ -238,4 +238,21 @@
     <string name="msg_please_input_voltage_between_200_to_1000_v">Lütfen 200 ile 1000 V arasında bir voltaj girin</string>
     <string name="msg_please_input_current_between_0_to_100_a">Lütfen 0 ile 100 A arasında bir akım girin</string>
 
+    <string name="lbl_english">İngilizce</string>
+    <string name="lbl_hindi">Hintçe</string>
+    <string name="lbl_arabic">Arapça</string>
+    <string name="lbl_spanish">İspanyolca</string>
+    <string name="lbl_french">Fransızca</string>
+    <string name="lbl_portugese">Portekizce</string>
+    <string name="lbl_dutch">Felemenkçe</string>
+    <string name="lbl_turkish">Türkçe</string>
+
+    <string name="lbl_english_default">English</string>
+    <string name="lbl_hindi_default">हिंदी</string>
+    <string name="lbl_arabic_default">عربي</string>
+    <string name="lbl_spanish_default">Espanol</string>
+    <string name="lbl_french_default">Francais</string>
+    <string name="lbl_portugese_default">Português</string>
+    <string name="lbl_dutch_default">Nederlands</string>
+    <string name="lbl_turkish_default">Türkçe</string>
 </resources>

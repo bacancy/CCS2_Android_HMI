@@ -238,4 +238,21 @@
     <string name="msg_please_input_voltage_between_200_to_1000_v">Voer een spanning in tussen 200 en 1000 V</string>
     <string name="msg_please_input_current_between_0_to_100_a">Voer een stroom in tussen 0 en 100 A</string>
 
+    <string name="lbl_english">Engels</string>
+    <string name="lbl_hindi">Hindi</string>
+    <string name="lbl_arabic">Arabisch</string>
+    <string name="lbl_spanish">Spaans</string>
+    <string name="lbl_french">Frans</string>
+    <string name="lbl_portugese">Portugees</string>
+    <string name="lbl_dutch">Nederlands</string>
+    <string name="lbl_turkish">Turks</string>
+
+    <string name="lbl_english_default">English</string>
+    <string name="lbl_hindi_default">हिंदी</string>
+    <string name="lbl_arabic_default">عربي</string>
+    <string name="lbl_spanish_default">Espanol</string>
+    <string name="lbl_french_default">Francais</string>
+    <string name="lbl_portugese_default">Português</string>
+    <string name="lbl_dutch_default">Nederlands</string>
+    <string name="lbl_turkish_default">Türkçe</string>
 </resources>
