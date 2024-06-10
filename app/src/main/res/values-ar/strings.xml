@@ -240,6 +240,16 @@
     <string name="msg_please_input_voltage_between_200_to_1000_v">يرجى إدخال الجهد بين 200 و1000 فولت</string>
     <string name="msg_please_input_current_between_0_to_100_a">يرجى إدخال التيار بين 0 و100 أمبير</string>
 
+    <string name="lbl_plugged_in_waiting_for_authentication">موصول &amp; في انتظار المصادقة</string>
+    <string name="lbl_complete">مكتمل</string>
+    <string name="lbl_temperature_fault">خلل في درجة الحرارة</string>
+    <string name="lbl_spd_fault">خلل SPD</string>
+    <string name="lbl_smoke_fault">خلل في الدخان</string>
+    <string name="lbl_tamper_fault">خلل في العبث</string>
+    <string name="lbl_mains_fail">فشل في التيار الكهربائي</string>
+    <string name="lbl_unavailable">غير متوفر</string>
+    <string name="lbl_reserved">محجوز</string>
+
     <string name="lbl_english">الإنجليزية</string>
     <string name="lbl_hindi">الهندية</string>
     <string name="lbl_arabic">العربية</string>

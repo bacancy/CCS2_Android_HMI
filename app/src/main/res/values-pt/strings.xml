@@ -238,6 +238,16 @@
     <string name="msg_please_input_voltage_between_200_to_1000_v">Por favor, insira uma voltagem entre 200 e 1000 V</string>
     <string name="msg_please_input_current_between_0_to_100_a">Por favor, insira uma corrente entre 0 e 100 A</string>
 
+    <string name="lbl_plugged_in_waiting_for_authentication">Conectado &amp; Aguardando Autenticação</string>
+    <string name="lbl_complete">Completo</string>
+    <string name="lbl_temperature_fault">Falha de Temperatura</string>
+    <string name="lbl_spd_fault">Falha SPD</string>
+    <string name="lbl_smoke_fault">Falha de Fumaça</string>
+    <string name="lbl_tamper_fault">Falha de Violação</string>
+    <string name="lbl_mains_fail">Falha na Rede Elétrica</string>
+    <string name="lbl_unavailable">Indisponível</string>
+    <string name="lbl_reserved">Reservado</string>
+
     <string name="lbl_english">Inglês</string>
     <string name="lbl_hindi">Hindi</string>
     <string name="lbl_arabic">Árabe</string>

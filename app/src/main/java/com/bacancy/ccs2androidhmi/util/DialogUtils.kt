@@ -99,7 +99,7 @@ object DialogUtils {
         tbGunsLastChargingSummary: TbGunsLastChargingSummary,
         isDarkTheme: Boolean,
         onCloseClicked: () -> Unit
-    ) {
+    ): Dialog {
         val dialog = Dialog(this, R.style.CustomAlertDialog)
         dialog.setupWithoutTitle()
         val binding = DialogGunsChargingSummaryBinding.inflate(LayoutInflater.from(this))
@@ -178,8 +178,7 @@ object DialogUtils {
 
         dialog.setCancelable(true)
         dialog.setupDialogFlags(true)
-        dialog.show()
-        clearDialogFlags(dialog)
+        return dialog
     }
 
     fun Activity.showPasswordPromptDialog(

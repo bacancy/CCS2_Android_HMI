@@ -1,5 +1,6 @@
 package com.bacancy.ccs2androidhmi.viewmodel
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
@@ -224,11 +225,13 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
         }
     }
 
-    fun insertGun1InfoInDB(it: ByteArray) {
+    fun insertGun1InfoInDB(it: ByteArray, context: Context) {
         insertGunsChargingInfo(
             TbGunsChargingInfo(
                 gunId = 1,
-                gunChargingState = GunsChargingInfoUtils.getGunChargingState(it).description,
+                gunChargingState = "",
+                gunChargingStateToSave = GunsChargingInfoUtils.getGunChargingState(it).descriptionToSave,
+                gunChargingStateToShow = context.getString(GunsChargingInfoUtils.getGunChargingState(it).descriptionToShow),
                 initialSoc = GunsChargingInfoUtils.getInitialSoc(it),
                 chargingSoc = GunsChargingInfoUtils.getChargingSoc(it),
                 demandVoltage = GunsChargingInfoUtils.getDemandVoltage(it),
@@ -311,11 +314,13 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
         }
     }
 
-    fun insertGun2InfoInDB(it: ByteArray) {
+    fun insertGun2InfoInDB(it: ByteArray, context: Context) {
         insertGunsChargingInfo(
             TbGunsChargingInfo(
                 gunId = 2,
-                gunChargingState = GunsChargingInfoUtils.getGunChargingState(it).description,
+                gunChargingState = "",
+                gunChargingStateToSave = GunsChargingInfoUtils.getGunChargingState(it).descriptionToSave,
+                gunChargingStateToShow = context.getString(GunsChargingInfoUtils.getGunChargingState(it).descriptionToShow),
                 initialSoc = GunsChargingInfoUtils.getInitialSoc(it),
                 chargingSoc = GunsChargingInfoUtils.getChargingSoc(it),
                 demandVoltage = GunsChargingInfoUtils.getDemandVoltage(it),

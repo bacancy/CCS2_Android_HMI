@@ -153,7 +153,7 @@
     <string name="message_please_input_current_between_0_to_100_a">Lütfen akımı 0 ila 100 A arası girin</string>
     <string name="msg_permission_granted">İzin Verildi</string>
     <string name="msg_permission_not_granted">Şarj geçmişini dışa aktarmak için depolama izni gereklidir.</string>
-    <string name="csv_row_headers">Sıra No., Silah Kimliği, EV Mac Adresi, Şarj Başlangıç Saati, Şarj Bitiş Saati, Toplam Şarj Süresi(dakika), Başlangıç SoC(%), Bitiş SoC(%), Enerji Tüketimi(kWh), Oturum Bitiş Nedeni</string>
+    <string name="csv_row_headers">Sr No.,GunId,EV Mac Address,Charging Start Time,Charging End Time,Total Charging Time(mins),Start SoC(%),End SoC(%),Energy Consumption(kWh),Session End Reason</string>
     <string name="msg_file_saved_successfully">Dosya başarıyla kaydedildi</string>
     <string name="msg_failed_to_create_file">Dosya oluşturulamadı</string>
     <string name="msg_failed_to_save_file">Dosya kaydedilemedi</string>
@@ -237,6 +237,16 @@
     <string name="title_authorize_for_settings">Ayarlar için Yetkilendir</string>
     <string name="msg_please_input_voltage_between_200_to_1000_v">Lütfen 200 ile 1000 V arasında bir voltaj girin</string>
     <string name="msg_please_input_current_between_0_to_100_a">Lütfen 0 ile 100 A arasında bir akım girin</string>
+
+    <string name="lbl_plugged_in_waiting_for_authentication">Bağlandı &amp; Kimlik Doğrulama Bekleniyor</string>
+    <string name="lbl_complete">Tamamlandı</string>
+    <string name="lbl_temperature_fault">Sıcaklık Hatası</string>
+    <string name="lbl_spd_fault">SPD Hatası</string>
+    <string name="lbl_smoke_fault">Duman Hatası</string>
+    <string name="lbl_tamper_fault">Kurcalama Hatası</string>
+    <string name="lbl_mains_fail">Ana Güç Hatası</string>
+    <string name="lbl_unavailable">Kullanılamaz</string>
+    <string name="lbl_reserved">Rezerve Edildi</string>
 
     <string name="lbl_english">İngilizce</string>
     <string name="lbl_hindi">Hintçe</string>

@@ -154,7 +154,7 @@
     <string name="message_please_input_current_between_0_to_100_a">Ingrese una corriente entre 0 y 100 A</string>
     <string name="msg_permission_granted">Permiso concedido</string>
     <string name="msg_permission_not_granted">Se requiere permiso de almacenamiento para exportar el historial de carga.</string>
-    <string name="csv_row_headers">N.° de serie,ID de pistola,Dirección MAC del VE,Hora de inicio de carga,Hora de finalización de carga,Tiempo total de carga (min),SoC inicial(%),SoC final(%),Consumo de energía(kWh),Motivo de finalización de la sesión</string>
+    <string name="csv_row_headers">Sr No.,GunId,EV Mac Address,Charging Start Time,Charging End Time,Total Charging Time(mins),Start SoC(%),End SoC(%),Energy Consumption(kWh),Session End Reason</string>
     <string name="msg_file_saved_successfully">Archivo guardado exitosamente</string>
     <string name="msg_failed_to_create_file">Error al crear el archivo</string>
     <string name="msg_failed_to_save_file">Error al guardar el archivo</string>
@@ -238,6 +238,16 @@
     <string name="title_authorize_for_settings">Autorizar para Configuraciones</string>
     <string name="msg_please_input_voltage_between_200_to_1000_v">Por favor, introduzca un voltaje entre 200 y 1000 V</string>
     <string name="msg_please_input_current_between_0_to_100_a">Por favor, introduzca una corriente entre 0 y 100 A</string>
+
+    <string name="lbl_plugged_in_waiting_for_authentication">Conectado &amp; Esperando Autenticación</string>
+    <string name="lbl_complete">Completo</string>
+    <string name="lbl_temperature_fault">Fallo de Temperatura</string>
+    <string name="lbl_spd_fault">Fallo SPD</string>
+    <string name="lbl_smoke_fault">Fallo de Humo</string>
+    <string name="lbl_tamper_fault">Fallo de Manipulación</string>
+    <string name="lbl_mains_fail">Fallo de Red</string>
+    <string name="lbl_unavailable">No Disponible</string>
+    <string name="lbl_reserved">Reservado</string>
 
     <string name="lbl_english">Inglés</string>
     <string name="lbl_hindi">Hindi</string>

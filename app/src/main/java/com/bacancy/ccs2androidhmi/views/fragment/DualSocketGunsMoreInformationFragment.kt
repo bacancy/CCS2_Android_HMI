@@ -114,12 +114,12 @@ class DualSocketGunsMoreInformationFragment : BaseFragment() {
                         mqttViewModel.sendGunStatusToMqtt(
                             prefHelper.getStringValue(
                                 CommonUtils.DEVICE_MAC_ADDRESS, ""
-                            ), selectedGunNumber, gunChargingState
+                            ), selectedGunNumber, gunChargingStateToSave
                         )
                     }
                 }
 
-                when (gunChargingState) {
+                when (gunChargingStateToSave) {
                     GunsChargingInfoUtils.PLUGGED_IN -> {
                         ivSessionMode.visible()
                         if (!isSessionModeDialogShownOnce && !sessionModeDialog.isShowing) {
@@ -139,7 +139,7 @@ class DualSocketGunsMoreInformationFragment : BaseFragment() {
                             ivPinAuthorization.visible()
                         }
                     }
-                    GunsChargingInfoUtils.CHARGING -> {
+                    GunsChargingInfoUtils.LBL_CHARGING -> {
                         ivSessionMode.gone()
                         isSessionModeDialogShownOnce = false
                         if (SHOW_PIN_AUTHORIZATION) {
@@ -155,10 +155,10 @@ class DualSocketGunsMoreInformationFragment : BaseFragment() {
                 }
 
                 if (selectedGunNumber == 1) {
-                    if(gunChargingState == GunsChargingInfoUtils.PLUGGED_IN) {
+                    if(gunChargingStateToSave == GunsChargingInfoUtils.PLUGGED_IN) {
                         incHeaderGun1.tvSubHeader.text = getString(R.string.lbl_plugged_in)
                     } else {
-                        incHeaderGun1.tvSubHeader.text = "($gunChargingState)"
+                        incHeaderGun1.tvSubHeader.text = "($gunChargingStateToShow)"
                     }
                     initialSoc1.tvValue.text = initialSoc.toString()
                     demandVoltage1.tvValue.text = demandVoltage.toString()
@@ -169,10 +169,10 @@ class DualSocketGunsMoreInformationFragment : BaseFragment() {
                     chargingDuration1.tvValue.text = duration
                     energyConsumption1.tvValue.text = energyConsumption.toString()
                 } else {
-                    if(gunChargingState == GunsChargingInfoUtils.PLUGGED_IN) {
+                    if(gunChargingStateToSave == GunsChargingInfoUtils.PLUGGED_IN) {
                         incHeaderGun2.tvSubHeader.text = getString(R.string.lbl_plugged_in)
                     } else {
-                        incHeaderGun2.tvSubHeader.text = "($gunChargingState)"
+                        incHeaderGun2.tvSubHeader.text = "($gunChargingStateToShow)"
                     }
                     initialSoc2.tvValue.text = initialSoc.toString()
                     demandVoltage2.tvValue.text = demandVoltage.toString()

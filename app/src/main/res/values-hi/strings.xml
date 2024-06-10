@@ -33,16 +33,16 @@
     <string name="lbl_charging_duration">चार्जिंग अवधि</string>
     <string name="lbl_charging_start_date_time"><![CDATA[चार्जिंग प्रारंभ दिनांक और समय]]></string>
     <string name="lbl_charging_end_date_time"><![CDATA[चार्जिंग की अंतिम तिथि एवं समय]]></string>
-    <string name="lbl_start_soc">SoC प्रारंभ करें</string>
-    <string name="lbl_end_soc">SoC समाप्त करें</string>
+    <string name="lbl_start_soc">प्रारंभ SoC</string>
+    <string name="lbl_end_soc">समाप्त SoC</string>
     <string name="lbl_energy_consumption">ऊर्जा की खपत</string>
     <string name="lbl_session_end_reason">सत्र समाप्ति का कारण</string>
-    <string name="lbl_initial_soc">प्रारंभिक एसओसी</string>
+    <string name="lbl_initial_soc">प्रारंभिक SoC</string>
     <string name="lbl_demand_voltage">मांग वोल्टेज</string>
     <string name="lbl_demand_current">मांग वर्तमान</string>
     <string name="lbl_charging_voltage">चार्जिंग वोल्टेज</string>
     <string name="lbl_charging_current">आवेशित धारा</string>
-    <string name="lbl_charging_soc">चार्जिंग एसओसी</string>
+    <string name="lbl_charging_soc">चार्जिंग SoC</string>
     <string name="lbl_duration_hh_mm">अवधि (एचएच:मिमी)</string>
     <string name="lbl_dc_meter_information">डीसी मीटर सूचना</string>
     <string name="lbl_voltage">वोल्टेज</string>
@@ -62,11 +62,11 @@
     <string name="lbl_led">नेतृत्व किया</string>
     <string name="lbl_plc_1">पीएलसी 1</string>
     <string name="lbl_plc_2">पीएलसी 2</string>
-    <string name="lbl_v">वी</string>
-    <string name="lbl_hz">हर्ट्ज</string>
-    <string name="lbl_a">ए</string>
-    <string name="lbl_kw">किलोवाट</string>
-    <string name="lbl_kwh">किलोवाट</string>
+    <string name="lbl_v">V</string>
+    <string name="lbl_hz">Hz</string>
+    <string name="lbl_a">A</string>
+    <string name="lbl_kw">kw</string>
+    <string name="lbl_kwh">kWh</string>
     <string name="lbl_fault_indication">दोष संकेत</string>
     <string name="lbl_charging_in_process">चार्जिंग प्रक्रिया में है</string>
     <string name="lbl_gun_plugged">बंदूक प्लग की गई</string>
@@ -74,7 +74,7 @@
     <string name="lbl_gun_unplugged">गन अनप्लग्ड</string>
     <string name="lbl_charging_completed">चार्जिंग पूरी हो गई</string>
     <string name="lbl_click_here_for_more">और के लिए यहां क्लिक करें</string>
-    <string name="lbl_close">बंद करना</string>
+    <string name="lbl_close">बंद करे</string>
     <string name="lbl_voltage_v1n">वोल्टेज V1N</string>
     <string name="lbl_voltage_v2n">वोल्टेज V2N</string>
     <string name="lbl_voltage_v3n">वोल्टेज V3N</string>
@@ -90,7 +90,7 @@
     <string name="lbl_gun_1">बंदूक - 1</string>
     <string name="lbl_gun_2">बंदूक - 2</string>
     <string name="lbl_percentage">%</string>
-    <string name="lbl_min">मिन</string>
+    <string name="lbl_min">मिनट</string>
     <string name="cd_back">पीछे</string>
     <string name="lbl_rectifier_1">दिष्टकारी 1:</string>
     <string name="lbl_rectifier_2">दिष्टकारी 2:</string>
@@ -108,7 +108,7 @@
     <string name="hint_date_time">00/01/1900 00:00:00</string>
     <string name="hint_float">0.00</string>
     <string name="hint_0">0</string>
-    <string name="lbl_gun_charging_soc">एसओसी चार्ज करना = %1$d%%</string>
+    <string name="lbl_gun_charging_soc">SoC चार्ज करना = %1$d%%</string>
     <string name="lbl_gun_charging_voltage">चार्जिंग वोल्टेज (V) = %1$d</string>
     <string name="lbl_gun_charging_current">चार्जिंग करंट(ए) = %1$d</string>
     <string name="lbl_gun_charging_duration">अवधि = %1$s</string>
@@ -119,7 +119,7 @@
     <string name="lbl_gun_1_charging_status">गन - 1 चार्जिंग स्थिति</string>
     <string name="lbl_gun_2_charging_status">गन - 2 चार्जिंग स्थिति</string>
     <string name="lbl_local_start_or_stop_charging">स्थानीय स्टार्ट/स्टॉप चार्जिंग</string>
-    <string name="lbl_submit">जमा करना</string>
+    <string name="lbl_submit">जमा करें</string>
     <string name="lbl_start_gun_1">गन-1 प्रारंभ करें</string>
     <string name="lbl_stop_gun_1">बन्दूक-1</string>
     <string name="lbl_start_gun_2">गन-2 प्रारंभ करें</string>
@@ -154,7 +154,7 @@
     <string name="message_please_input_current_between_0_to_100_a">कृपया 0 से 100 ए के बीच करंट इनपुट करें</string>
     <string name="msg_permission_granted">की अनुमति दी</string>
     <string name="msg_permission_not_granted">चार्जिंग इतिहास निर्यात करने के लिए संग्रहण अनुमति आवश्यक है।</string>
-    <string name="csv_row_headers">क्रमांक, गनआईडी, ईवी मैक एड्रेस, चार्जिंग प्रारंभ समय, चार्जिंग समाप्ति समय, कुल चार्जिंग समय (मिनट), प्रारंभ एसओसी (%), अंतिम एसओसी (%), ऊर्जा खपत (केडब्ल्यूएच), सत्र समाप्ति कारण</string>
+    <string name="csv_row_headers">Sr No.,GunId,EV Mac Address,Charging Start Time,Charging End Time,Total Charging Time(mins),Start SoC(%),End SoC(%),Energy Consumption(kWh),Session End Reason</string>
     <string name="msg_file_saved_successfully">फ़ाइल सफलतापूर्वक सहेजी गई</string>
     <string name="msg_failed_to_create_file">फ़ाइल बनाने में विफल</string>
     <string name="msg_failed_to_save_file">फ़ाइल सहेजने में विफल</string>
@@ -164,7 +164,7 @@
     <string name="msg_are_you_sure_to_delete">क्या आप ऐप से चार्जिंग इतिहास हटाना चाहते हैं क्योंकि आपने इसे सीएसवी में निर्यात किया है\?</string>
     <string name="lbl_gun_temp_dc_positive">गन तापमान DC+</string>
     <string name="lbl_gun_temp_dc_negative">गन तापमान डीसी-</string>
-    <string name="lbl_celsius">डिग्री सेल्सियस</string>
+    <string name="lbl_celsius">°C</string>
     <string name="msg_internet_connection_unavailable">इंटरनेट कनेक्शन अनुपलब्ध.</string>
     <string name="lbl_charger_ninoperative">चार्जर\nनिष्क्रिय</string>
     <string name="msg_charger_is_inoperative">चार्जर निष्क्रिय है.</string>
@@ -179,7 +179,7 @@
     <string name="msg_to_confirm_to_switch_to_dual_socket">क्या आप वाकई डुअल सॉकेट मोड पर स्विच करना चाहते हैं\?</string>
     <string name="msg_to_confirm_to_switch_to_single_socket">क्या आप वाकई सिंगल सॉकेट मोड पर स्विच करना चाहते हैं\?</string>
     <string name="lbl_select_session_mode">सेशन मोड का चयन करें</string>
-    <string name="lbl_by_soc">समाज</string>
+    <string name="lbl_by_soc">SoC</string>
     <string name="lbl_by_time">समय</string>
     <string name="lbl_by_energy">ऊर्जा</string>
     <string name="lbl_by_auto">ऑटो</string>
@@ -231,7 +231,7 @@
     <string name="rectifier_fault">रेक्टिफायर त्रुटि</string>
     <string name="rectifier_fault_description">रेक्टिफायर मॉड्यूल में त्रुटि उत्पन्न हुई</string>
     <string name="communication_error">संपर्क त्रुटि</string>
-    <string name="communication_error_description">Communication Break with EV</string>
+    <string name="communication_error_description">EV के साथ संचार टूटना</string>
     <string name="emergency_stop">आपातकालीन बंद</string>
     <string name="emergency_stop_description">उपयोगकर्ता द्वारा आपातकालीन रोक</string>
     <string name="lbl_switch_to_light_mode">लाइट मोड पर स्विच करें</string>
@@ -239,6 +239,16 @@
     <string name="title_authorize_for_settings">सेटिंग्स के लिए प्राधिकृत करें</string>
     <string name="msg_please_input_voltage_between_200_to_1000_v">कृपया वोल्टेज 200 से 1000 V के बीच इनपुट करें</string>
     <string name="msg_please_input_current_between_0_to_100_a">कृपया 0 से 100 ए के बीच करंट इनपुट करें</string>
+
+    <string name="lbl_plugged_in_waiting_for_authentication">प्लग इन &amp; प्रमाणीकरण की प्रतीक्षा में</string>
+    <string name="lbl_complete">पूरा</string>
+    <string name="lbl_temperature_fault">तापमान दोष</string>
+    <string name="lbl_spd_fault">एसपीडी दोष</string>
+    <string name="lbl_smoke_fault">धुआं दोष</string>
+    <string name="lbl_tamper_fault">छेड़छाड़ दोष</string>
+    <string name="lbl_mains_fail">मुख्य विफल</string>
+    <string name="lbl_unavailable">अनुपलब्ध</string>
+    <string name="lbl_reserved">आरक्षित</string>
 
     <string name="lbl_english">अंग्रेज़ी</string>
     <string name="lbl_hindi">हिंदी</string>

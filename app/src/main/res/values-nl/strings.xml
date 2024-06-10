@@ -238,6 +238,16 @@
     <string name="msg_please_input_voltage_between_200_to_1000_v">Voer een spanning in tussen 200 en 1000 V</string>
     <string name="msg_please_input_current_between_0_to_100_a">Voer een stroom in tussen 0 en 100 A</string>
 
+    <string name="lbl_plugged_in_waiting_for_authentication">Aangesloten &amp; Wachten op Authenticatie</string>
+    <string name="lbl_complete">Voltooid</string>
+    <string name="lbl_temperature_fault">Temperatuurfout</string>
+    <string name="lbl_spd_fault">SPD-fout</string>
+    <string name="lbl_smoke_fault">Rookfout</string>
+    <string name="lbl_tamper_fault">Sabotagefout</string>
+    <string name="lbl_mains_fail">Hoofdstroomstoring</string>
+    <string name="lbl_unavailable">Niet Beschikbaar</string>
+    <string name="lbl_reserved">Gereserveerd</string>
+
     <string name="lbl_english">Engels</string>
     <string name="lbl_hindi">Hindi</string>
     <string name="lbl_arabic">Arabisch</string>

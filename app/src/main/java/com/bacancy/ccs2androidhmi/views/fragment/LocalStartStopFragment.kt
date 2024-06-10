@@ -90,7 +90,7 @@ class LocalStartStopFragment : BaseFragment() {
 
         appViewModel.getUpdatedGunsChargingInfo(1).observe(viewLifecycleOwner) {
             it?.let {
-                when (it.gunChargingState) {
+                when (it.gunChargingStateToSave) {
 
                     GunsChargingInfoUtils.PLUGGED_IN -> {
                         if (prefHelper.getBoolean(IS_GUN_1_CLICKED, false)) {
@@ -106,7 +106,7 @@ class LocalStartStopFragment : BaseFragment() {
 
                     }
 
-                    GunsChargingInfoUtils.CHARGING -> {
+                    GunsChargingInfoUtils.LBL_CHARGING -> {
                         isGun1ChargingStarted = true
                         if (prefHelper.getBoolean(IS_GUN_1_CLICKED, false)) {
                             prefHelper.setBoolean(IS_GUN_1_CLICKED, false)
@@ -130,7 +130,7 @@ class LocalStartStopFragment : BaseFragment() {
                         binding.btnStartStopGun1.isEnabled = false
                         binding.btnStartStopGun1.backgroundTintList =
                             ContextCompat.getColorStateList(requireContext(), R.color.grey)
-                        binding.btnStartStopGun1.text = "Gun - 1 (${it.gunChargingState})"
+                        binding.btnStartStopGun1.text = "Gun - 1 (${it.gunChargingStateToShow})"
                     }
                 }
             }
@@ -138,7 +138,7 @@ class LocalStartStopFragment : BaseFragment() {
 
         appViewModel.getUpdatedGunsChargingInfo(2).observe(viewLifecycleOwner) {
             it?.let {
-                when (it.gunChargingState) {
+                when (it.gunChargingStateToSave) {
 
                     GunsChargingInfoUtils.PLUGGED_IN -> {
                         if (prefHelper.getBoolean(IS_GUN_2_CLICKED, false)) {
@@ -154,7 +154,7 @@ class LocalStartStopFragment : BaseFragment() {
 
                     }
 
-                    GunsChargingInfoUtils.CHARGING -> {
+                    GunsChargingInfoUtils.LBL_CHARGING -> {
                         isGun2ChargingStarted = true
                         if (prefHelper.getBoolean(IS_GUN_2_CLICKED, false)) {
                             prefHelper.setBoolean(IS_GUN_2_CLICKED, false)
@@ -178,7 +178,7 @@ class LocalStartStopFragment : BaseFragment() {
                         binding.btnStartStopGun2.isEnabled = false
                         binding.btnStartStopGun2.backgroundTintList =
                             ContextCompat.getColorStateList(requireContext(), R.color.grey)
-                        binding.btnStartStopGun2.text = "Gun - 2 (${it.gunChargingState})"
+                        binding.btnStartStopGun2.text = "Gun - 2 (${it.gunChargingStateToShow})"
                     }
                 }
             }

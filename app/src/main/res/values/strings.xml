@@ -240,6 +240,16 @@
     <string name="msg_please_input_voltage_between_200_to_1000_v">Please input voltage between 200 to 1000 V</string>
     <string name="msg_please_input_current_between_0_to_100_a">Please input current between 0 to 100 A</string>
 
+    <string name="lbl_plugged_in_waiting_for_authentication">Plugged In &amp; Waiting for Authentication</string>
+    <string name="lbl_complete">Complete</string>
+    <string name="lbl_temperature_fault">Temperature Fault</string>
+    <string name="lbl_spd_fault">SPD Fault</string>
+    <string name="lbl_smoke_fault">Smoke Fault</string>
+    <string name="lbl_tamper_fault">Tamper Fault</string>
+    <string name="lbl_mains_fail">Mains Fail</string>
+    <string name="lbl_unavailable">Unavailable</string>
+    <string name="lbl_reserved">Reserved</string>
+
     <string name="lbl_english">English</string>
     <string name="lbl_hindi">Hindi</string>
     <string name="lbl_arabic">Arabic</string>

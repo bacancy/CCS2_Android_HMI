@@ -47,27 +47,27 @@ import com.bacancy.ccs2androidhmi.util.DateTimeUtils.convertDateFormatToDesiredF
 import com.bacancy.ccs2androidhmi.util.DateTimeUtils.convertToUtc
 import com.bacancy.ccs2androidhmi.util.DialogUtils.clearDialogFlags
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showCustomDialog
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_DENIED
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_SUCCESS
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_TIMEOUT
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.CHARGING
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.COMMUNICATION_ERROR
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.COMPLETE
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.EMERGENCY_STOP
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.ISOLATION_FAIL
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.MAINS_FAIL
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.PLC_FAULT
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.PLUGGED_IN
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.PRECHARGE_FAIL
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.RECTIFIER_FAULT
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.RESERVED
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_AUTHENTICATION_DENIED
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_AUTHENTICATION_SUCCESS
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_AUTHENTICATION_TIMEOUT
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_CHARGING
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_COMMUNICATION_ERROR
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_COMPLETE
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_EMERGENCY_STOP
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_ISOLATION_FAIL
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_MAINS_FAIL
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_PLC_FAULT
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_PRECHARGE_FAIL
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_RECTIFIER_FAULT
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_RESERVED
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_SMOKE_FAULT
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_SPD_FAULT
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_TAMPER_FAULT
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_TEMPERATURE_FAULT
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_UNAVAILABLE
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.SELECTED_GUN
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.SMOKE_FAULT
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.SPD_FAULT
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.TAMPER_FAULT
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.TEMPERATURE_FAULT
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.UNAVAILABLE
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.UNPLUGGED
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_UNPLUGGED
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.PLUGGED_IN
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getGunChargingState
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils
 import com.bacancy.ccs2androidhmi.util.ModBusUtils
@@ -534,24 +534,24 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 ) {
                     resetReadStopCount()
                     Log.d(TAG, "readGun1Info: Response = ${it.toHex()}")
-                    appViewModel.insertGun1InfoInDB(it)
+                    appViewModel.insertGun1InfoInDB(it, this)
                     Log.d(
                         TAG,
-                        "readGun1Info: Gun Current State: ${getGunChargingState(it).description}"
+                        "readGun1Info: Gun Current State: ${getGunChargingState(it).descriptionToSave}"
                     )
-                    when (getGunChargingState(it).description) {
-                        UNPLUGGED -> {
+                    when (getGunChargingState(it).descriptionToSave) {
+                        LBL_UNPLUGGED -> {
                             isGun1PluggedIn = false
                             openGun1LastChargingSummary()
                         }
 
                         PLUGGED_IN,
-                        AUTHENTICATION_SUCCESS -> {
+                        LBL_AUTHENTICATION_SUCCESS -> {
                             isGun1PluggedIn = true
                             openGun1LastChargingSummary()
                         }
 
-                        CHARGING -> {
+                        LBL_CHARGING -> {
                             prefHelper.setStringValue(GUN_1_CHARGING_END_TIME, "")
                             if(prefHelper.getStringValue(GUN_1_CHARGING_START_TIME,"").isEmpty()){
                                 prefHelper.setStringValue(GUN_1_CHARGING_START_TIME, DateTimeUtils.getCurrentDateTime().convertDateFormatToDesiredFormat(
@@ -561,22 +561,22 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                             openGun1LastChargingSummary()
                         }
 
-                        COMPLETE,
-                        COMMUNICATION_ERROR,
-                        AUTHENTICATION_TIMEOUT,
-                        PLC_FAULT,
-                        RECTIFIER_FAULT,
-                        AUTHENTICATION_DENIED,
-                        PRECHARGE_FAIL,
-                        ISOLATION_FAIL,
-                        TEMPERATURE_FAULT,
-                        SPD_FAULT,
-                        SMOKE_FAULT,
-                        TAMPER_FAULT,
-                        MAINS_FAIL,
-                        UNAVAILABLE,
-                        RESERVED,
-                        EMERGENCY_STOP,
+                        LBL_COMPLETE,
+                        LBL_COMMUNICATION_ERROR,
+                        LBL_AUTHENTICATION_TIMEOUT,
+                        LBL_PLC_FAULT,
+                        LBL_RECTIFIER_FAULT,
+                        LBL_AUTHENTICATION_DENIED,
+                        LBL_PRECHARGE_FAIL,
+                        LBL_ISOLATION_FAIL,
+                        LBL_TEMPERATURE_FAULT,
+                        LBL_SPD_FAULT,
+                        LBL_SMOKE_FAULT,
+                        LBL_TAMPER_FAULT,
+                        LBL_MAINS_FAIL,
+                        LBL_UNAVAILABLE,
+                        LBL_RESERVED,
+                        LBL_EMERGENCY_STOP,
                         -> {
                             if (isGun1PluggedIn) {
                                 isGun1PluggedIn = false
@@ -820,24 +820,24 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                     resetReadStopCount()
                     Log.d(TAG, "readGun2Info: Response = ${it.toHex()}")
 
-                    appViewModel.insertGun2InfoInDB(it)
+                    appViewModel.insertGun2InfoInDB(it, this)
                     Log.d(
                         TAG,
-                        "readGun2Info: Gun Current State: ${getGunChargingState(it).description}"
+                        "readGun2Info: Gun Current State: ${getGunChargingState(it).descriptionToSave}"
                     )
-                    when (getGunChargingState(it).description) {
-                        UNPLUGGED -> {
+                    when (getGunChargingState(it).descriptionToSave) {
+                        LBL_UNPLUGGED -> {
                             isGun2PluggedIn = false
                             openGun2LastChargingSummary()
                         }
 
                         PLUGGED_IN,
-                        AUTHENTICATION_SUCCESS -> {
+                        LBL_AUTHENTICATION_SUCCESS -> {
                             isGun2PluggedIn = true
                             openGun2LastChargingSummary()
                         }
 
-                        CHARGING -> {
+                        LBL_CHARGING -> {
                             prefHelper.setStringValue(GUN_2_CHARGING_END_TIME, "")
                             if(prefHelper.getStringValue(GUN_2_CHARGING_START_TIME,"").isEmpty()) {
                                 prefHelper.setStringValue(
@@ -852,22 +852,22 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                             openGun2LastChargingSummary()
                         }
 
-                        COMPLETE,
-                        COMMUNICATION_ERROR,
-                        AUTHENTICATION_TIMEOUT,
-                        PLC_FAULT,
-                        RECTIFIER_FAULT,
-                        AUTHENTICATION_DENIED,
-                        PRECHARGE_FAIL,
-                        ISOLATION_FAIL,
-                        TEMPERATURE_FAULT,
-                        SPD_FAULT,
-                        SMOKE_FAULT,
-                        TAMPER_FAULT,
-                        MAINS_FAIL,
-                        UNAVAILABLE,
-                        RESERVED,
-                        EMERGENCY_STOP,
+                        LBL_COMPLETE,
+                        LBL_COMMUNICATION_ERROR,
+                        LBL_AUTHENTICATION_TIMEOUT,
+                        LBL_PLC_FAULT,
+                        LBL_RECTIFIER_FAULT,
+                        LBL_AUTHENTICATION_DENIED,
+                        LBL_PRECHARGE_FAIL,
+                        LBL_ISOLATION_FAIL,
+                        LBL_TEMPERATURE_FAULT,
+                        LBL_SPD_FAULT,
+                        LBL_SMOKE_FAULT,
+                        LBL_TAMPER_FAULT,
+                        LBL_MAINS_FAIL,
+                        LBL_UNAVAILABLE,
+                        LBL_RESERVED,
+                        LBL_EMERGENCY_STOP,
                         -> {
                             if (isGun2PluggedIn) {
                                 if(prefHelper.getStringValue(GUN_2_CHARGING_END_TIME,"").isEmpty()) {
