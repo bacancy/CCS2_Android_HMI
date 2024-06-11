@@ -2,4 +2,6 @@
 <resources>
     <color name="inverse_color">#000000</color>
     <color name="transparent_black_99">#99000000</color>
+    <color name="selected_radio_color">#FFFFFF</color>
+    <color name="unselected_radio_color">#000000</color>
 </resources>

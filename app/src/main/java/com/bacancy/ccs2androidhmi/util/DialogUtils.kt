@@ -281,7 +281,7 @@ object DialogUtils {
         onSuccess: (Int, String) -> Unit,
     ): Dialog {
         val dialog = Dialog(this, R.style.CustomAlertDialog)
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setupWithoutTitle()
         val binding = DialogSessionModeSelectionBinding.inflate(layoutInflater)
         dialog.setContentView(binding.root)
         dialog.setCanceledOnTouchOutside(false)
@@ -319,25 +319,37 @@ object DialogUtils {
 
             radioByAuto.setOnCheckedChangeListener { _, isClicked ->
                 if (isClicked) {
+                    lnrAuto.setBackgroundResource(R.drawable.radio_auto_rounded_rect_selected)
                     handleRadioButtonSelection(this@showSessionModeDialog,radioByAuto)
+                }else{
+                    lnrAuto.setBackgroundResource(R.drawable.radio_auto_rounded_rect)
                 }
             }
 
             radioByTime.setOnCheckedChangeListener { _, isClicked ->
                 if (isClicked) {
+                    lnrTime.setBackgroundResource(R.drawable.radio_time_rounded_rect_selected)
                     handleRadioButtonSelection(this@showSessionModeDialog,radioByTime)
+                }else{
+                    lnrTime.setBackgroundResource(R.drawable.radio_time_rounded_rect)
                 }
             }
 
             radioByEnergy.setOnCheckedChangeListener { _, isClicked ->
                 if (isClicked) {
+                    lnrEnergy.setBackgroundResource(R.drawable.radio_energy_rounded_rect_selected)
                     handleRadioButtonSelection(this@showSessionModeDialog,radioByEnergy)
+                }else{
+                    lnrEnergy.setBackgroundResource(R.drawable.radio_energy_rounded_rect)
                 }
             }
 
             radioBySoc.setOnCheckedChangeListener { _, isClicked ->
                 if (isClicked) {
+                    lnrSoC.setBackgroundResource(R.drawable.radio_soc_rounded_rect_selected)
                     handleRadioButtonSelection(this@showSessionModeDialog,radioBySoc)
+                }else{
+                    lnrSoC.setBackgroundResource(R.drawable.radio_soc_rounded_rect)
                 }
             }
         }
