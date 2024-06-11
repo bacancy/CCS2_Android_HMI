@@ -37,6 +37,7 @@
                 android:padding="@dimen/_10sdp">
 
                 <ImageView
+                    android:id="@+id/imgAuto"
                     android:layout_width="@dimen/_16sdp"
                     android:src="@drawable/ic_auto"
                     android:layout_height="@dimen/_16sdp"/>
@@ -69,6 +70,7 @@
                 android:padding="@dimen/_10sdp">
 
                 <ImageView
+                    android:id="@+id/imgTime"
                     android:layout_width="@dimen/_16sdp"
                     android:src="@drawable/ic_time"
                     android:layout_height="@dimen/_16sdp"/>
@@ -99,6 +101,7 @@
                 android:padding="@dimen/_10sdp">
 
                 <ImageView
+                    android:id="@+id/imgSoc"
                     android:layout_width="@dimen/_16sdp"
                     android:src="@drawable/ic_soc"
                     android:layout_height="@dimen/_16sdp"/>
@@ -130,6 +133,7 @@
                 android:padding="@dimen/_10sdp">
 
                 <ImageView
+                    android:id="@+id/imgEnergy"
                     android:layout_width="@dimen/_16sdp"
                     android:src="@drawable/ic_energy"
                     android:layout_height="@dimen/_16sdp"/>

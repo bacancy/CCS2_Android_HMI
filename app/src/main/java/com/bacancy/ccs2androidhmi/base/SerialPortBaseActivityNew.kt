@@ -77,6 +77,23 @@ import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.toHex
 import com.bacancy.ccs2androidhmi.util.NetworkUtils.isInternetConnected
 import com.bacancy.ccs2androidhmi.util.PrefHelper
 import com.bacancy.ccs2androidhmi.util.ReadWriteUtil
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.AUTHENTICATE_GUN
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.CHARGER_ACTIVE_DEACTIVE
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.ENABLE_DISABLE_DUAL_SOCKET
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.GUN1_CURRENT
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.GUN1_OUTPUT_ON_OFF
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.GUN1_SESSION_MODE
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.GUN1_SESSION_MODE_VALUE
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.GUN1_VOLTAGE
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.GUN2_CURRENT
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.GUN2_OUTPUT_ON_OFF
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.GUN2_SESSION_MODE
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.GUN2_SESSION_MODE_VALUE
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.GUN2_VOLTAGE
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.LOCAL_START_STOP
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.PIN_AUTHORIZATION
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.TEST_MODE_ON_OFF
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.UPDATE_TEST_MODE
 import com.bacancy.ccs2androidhmi.util.ResponseSizes
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
 import com.bacancy.ccs2androidhmi.viewmodel.MQTTViewModel
@@ -195,7 +212,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
             ReadWriteUtil.writeToSingleHoldingRegisterNew(
                 mOutputStream,
                 mInputStream,
-                442,
+                CHARGER_ACTIVE_DEACTIVE,
                 if (isChargerActive) 1 else 0, {
                     Log.d(TAG, "writeForChargerActiveDeactive: Response Got")
                     sendChargerStatusConfirmation(isChargerActive)
@@ -1006,7 +1023,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
             ReadWriteUtil.writeToMultipleHoldingRegisterNew(
                 mOutputStream,
                 mInputStream,
-                75,
+                PIN_AUTHORIZATION,
                 enteredPin, {
                     Log.d(TAG, "writeForPinAuthorization: Response Got")
                     prefHelper.setStringValue(AUTH_PIN_VALUE, "")
@@ -1025,7 +1042,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
             ReadWriteUtil.writeToSingleHoldingRegisterNew(
                 mOutputStream,
                 mInputStream,
-                30,
+                AUTHENTICATE_GUN,
                 gunNumber, {
                     Log.d(TAG, "authenticateGun: Response Got")
                     lifecycleScope.launch {
@@ -1067,7 +1084,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
             ReadWriteUtil.writeToSingleHoldingRegisterNew(
                 mOutputStream,
                 mInputStream,
-                86,
+                ENABLE_DISABLE_DUAL_SOCKET,
                 mode, {
                     Log.d(TAG, "writeForDualSocketMode: Response Got")
                     lifecycleScope.launch {
@@ -1083,7 +1100,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
             ReadWriteUtil.writeToSingleHoldingRegisterNew(
                 mOutputStream,
                 mInputStream,
-                if (isGun1) 122 else 222,
+                if (isGun1) GUN1_SESSION_MODE else GUN2_SESSION_MODE,
                 selectedSessionMode, {
                     Log.d(TAG, "writeForSelectedSessionMode: Response Got")
                     lifecycleScope.launch {
@@ -1118,7 +1135,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
             ReadWriteUtil.writeToSingleHoldingRegisterNew(
                 mOutputStream,
                 mInputStream,
-                if (isGun1) 123 else 223,
+                if (isGun1) GUN1_SESSION_MODE_VALUE else GUN2_SESSION_MODE_VALUE,
                 selectedSessionModeValue.toInt(), {
                     Log.d(TAG, "writeForSelectedSessionModeValue: Response Got")
                     lifecycleScope.launch {
@@ -1154,7 +1171,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
             ReadWriteUtil.writeToSingleHoldingRegisterNew(
                 mOutputStream,
                 mInputStream,
-                48,
+                LOCAL_START_STOP,
                 gunsStartStopData, {
                     Log.d(TAG, "writeForLocalStartStop: Response Got")
                     lifecycleScope.launch {
@@ -1196,7 +1213,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
             ReadWriteUtil.writeToSingleHoldingRegisterNew(
                 mOutputStream,
                 mInputStream,
-                350,
+                TEST_MODE_ON_OFF,
                 isTestMode, {
                     Log.d(TAG, "writeForTestModeOnOff: Response Got")
                     if (isTestMode != 1) {
@@ -1229,12 +1246,12 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 )
                 if (prefHelper.getIntValue("SELECTED_GUN_IN_TEST_MODE", 1) == 1) {
                     writeForGunsRectifier(
-                        356,
+                        GUN1_OUTPUT_ON_OFF,
                         prefHelper.getIntValue("GUN1_OUTPUT_ON_OFF_VALUE", 0)
                     )
                 } else {
                     writeForGunsRectifier(
-                        359,
+                        GUN2_OUTPUT_ON_OFF,
                         prefHelper.getIntValue("GUN2_OUTPUT_ON_OFF_VALUE", 0)
                     )
                 }
@@ -1255,19 +1272,19 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
             ReadWriteUtil.writeToSingleHoldingRegisterNew(
                 mOutputStream,
                 mInputStream,
-                351,
+                UPDATE_TEST_MODE,
                 generateRandomNumber(), {
                     Log.d(TAG, "writeForUpdateTestMode: Response Got")
                     lifecycleScope.launch {
                         if (prefHelper.getBoolean("IS_GUN_VOLTAGE_CHANGED", false)) {
                             if (prefHelper.getIntValue("SELECTED_GUN_IN_TEST_MODE", 1) == 1) {
                                 writeForGunsRectifier(
-                                    354,
+                                    GUN1_VOLTAGE,
                                     prefHelper.getIntValue("GUN1_VOLTAGE", 0)
                                 )
                             } else {
                                 writeForGunsRectifier(
-                                    357,
+                                    GUN2_VOLTAGE,
                                     prefHelper.getIntValue("GUN2_VOLTAGE", 0)
                                 )
                             }
@@ -1276,12 +1293,12 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                         } else if (prefHelper.getBoolean("IS_GUN_CURRENT_CHANGED", false)) {
                             if (prefHelper.getIntValue("SELECTED_GUN_IN_TEST_MODE", 1) == 1) {
                                 writeForGunsRectifier(
-                                    355,
+                                    GUN1_CURRENT,
                                     prefHelper.getIntValue("GUN1_CURRENT", 0)
                                 )
                             } else {
                                 writeForGunsRectifier(
-                                    358,
+                                    GUN2_CURRENT,
                                     prefHelper.getIntValue("GUN2_CURRENT", 0)
                                 )
                             }
