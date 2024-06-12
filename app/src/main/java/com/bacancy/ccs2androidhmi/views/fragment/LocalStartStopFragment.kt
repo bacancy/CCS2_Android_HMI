@@ -108,6 +108,7 @@ class LocalStartStopFragment : BaseFragment() {
 
                     GunsChargingInfoUtils.LBL_CHARGING -> {
                         isGun1ChargingStarted = true
+                        prefHelper.setBoolean(GUN_1_LOCAL_START, true)
                         if (prefHelper.getBoolean(IS_GUN_1_CLICKED, false)) {
                             prefHelper.setBoolean(IS_GUN_1_CLICKED, false)
                             binding.btnStartStopGun1.isEnabled = false
@@ -156,6 +157,7 @@ class LocalStartStopFragment : BaseFragment() {
 
                     GunsChargingInfoUtils.LBL_CHARGING -> {
                         isGun2ChargingStarted = true
+                        prefHelper.setBoolean(GUN_2_LOCAL_START, true)
                         if (prefHelper.getBoolean(IS_GUN_2_CLICKED, false)) {
                             prefHelper.setBoolean(IS_GUN_2_CLICKED, false)
                             binding.btnStartStopGun2.isEnabled = false

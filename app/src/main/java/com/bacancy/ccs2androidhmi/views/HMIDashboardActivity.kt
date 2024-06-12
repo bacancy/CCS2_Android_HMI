@@ -1,28 +1,32 @@
 package com.bacancy.ccs2androidhmi.views
 
+import android.Manifest
 import android.app.Activity
 import android.app.Dialog
 import android.app.UiModeManager
 import android.app.admin.DevicePolicyManager
 import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration
+import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkRequest
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.KeyEvent
-import android.view.View
 import android.view.WindowManager
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
@@ -87,6 +91,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -124,9 +129,6 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         setContentView(binding.root)
         prefHelper.setBoolean(IS_APP_RESTARTED, true)
 
-
-        //handleViewsVisibility() //As this moved to AppSettings screen
-
         handleClicks()
 
         handleBackStackChanges()
@@ -148,8 +150,50 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         observeChargerActiveDeactiveStates()
     }
 
+    private fun loadClientLogoFromDownloads() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+            != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 101)
+        } else {
+            loadImage()
+        }
+    }
+
+    private fun loadImage(imageName: String = "ccs2_hmi_logo") {
+        val downloadsDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+
+        val potentialFilePaths = listOf(
+            File(downloadsDirectory, "$imageName.jpg"),
+            File(downloadsDirectory, "$imageName.png"),
+            File(downloadsDirectory, "$imageName.webp")
+            // Add other extensions as needed
+        )
+
+        // Check each potential file path for existence
+        for (file in potentialFilePaths) {
+            if (file.exists()) {
+                val bitmap = BitmapFactory.decodeFile(file.absolutePath)
+                binding.incToolbar.ivLogo.setImageBitmap(bitmap)
+                return
+            }
+        }
+
+        binding.incToolbar.ivLogo.setImageResource(R.drawable.sample_logo)
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 101 && grantResults.isNotEmpty() &&
+            grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            loadImage()
+        } else {
+            showToast("Enable permission to load client logo")
+        }
+    }
+
     override fun onResume() {
         super.onResume()
+        loadClientLogoFromDownloads()
         observeDeviceInternetStates()
         startClockTimer()
         //manageKioskMode()

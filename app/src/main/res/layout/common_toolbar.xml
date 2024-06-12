@@ -133,7 +133,7 @@
         android:layout_height="@dimen/_30sdp"
         android:adjustViewBounds="true"
         android:gravity="center"
-        android:src="@drawable/img_servotech_logo"
+        tools:src="@drawable/img_servotech_logo"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
