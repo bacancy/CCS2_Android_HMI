@@ -178,7 +178,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
             }
         }
 
-        binding.incToolbar.ivLogo.setImageResource(R.drawable.sample_logo)
+        binding.incToolbar.ivLogo.setImageResource(R.drawable.img_servotech_logo)//replace with sample_logo
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -193,7 +193,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
     override fun onResume() {
         super.onResume()
-        loadClientLogoFromDownloads()
+        loadClientLogoFromDownloads()//remove this when kiosk mode app is built
         observeDeviceInternetStates()
         startClockTimer()
         //manageKioskMode()
@@ -204,6 +204,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
             requestDeviceAdminPermissions()
         } else {
             startLockTask()
+            loadClientLogoFromDownloads()
         }
     }
 
@@ -227,6 +228,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         if (result.resultCode == Activity.RESULT_OK) {
             prefHelper.setBoolean(IS_APP_PINNED, true)
             startLockTask()
+            loadClientLogoFromDownloads()
         }
     }
 
