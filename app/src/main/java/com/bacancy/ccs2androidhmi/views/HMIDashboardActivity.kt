@@ -111,6 +111,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
     override fun onResumeFragments() {
         super.onResumeFragments()
+        //TEST COMMIT
         val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainer)
         if (currentFragment == null) {
             lifecycleScope.launch {
