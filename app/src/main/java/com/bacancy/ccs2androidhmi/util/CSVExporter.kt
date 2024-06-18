@@ -74,7 +74,7 @@ object CSVExporter {
             if (isExternalStorageWritable()) {
                 try {
                     val file = DocumentFile.fromTreeUri(this@exportCSVInCustomDirectory, folderUri)
-                        ?.createFile(getString(R.string.csv_mime_type), generateFileNameWithTimestamp())
+                        ?.createFile("text/csv", generateFileNameWithTimestamp())
 
                     file?.let { documentFile ->
                         contentResolver.openOutputStream(documentFile.uri)?.use { outputStream ->

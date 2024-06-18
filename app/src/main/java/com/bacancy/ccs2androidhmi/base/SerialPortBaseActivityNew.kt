@@ -47,27 +47,27 @@ import com.bacancy.ccs2androidhmi.util.DateTimeUtils.convertDateFormatToDesiredF
 import com.bacancy.ccs2androidhmi.util.DateTimeUtils.convertToUtc
 import com.bacancy.ccs2androidhmi.util.DialogUtils.clearDialogFlags
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showCustomDialog
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_DENIED
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_SUCCESS
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_TIMEOUT
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.CHARGING
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.COMMUNICATION_ERROR
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.COMPLETE
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.EMERGENCY_STOP
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.ISOLATION_FAIL
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.MAINS_FAIL
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.PLC_FAULT
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.PLUGGED_IN
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.PRECHARGE_FAIL
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.RECTIFIER_FAULT
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.RESERVED
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_AUTHENTICATION_DENIED
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_AUTHENTICATION_SUCCESS
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_AUTHENTICATION_TIMEOUT
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_CHARGING
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_COMMUNICATION_ERROR
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_COMPLETE
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_EMERGENCY_STOP
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_ISOLATION_FAIL
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_MAINS_FAIL
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_PLC_FAULT
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_PRECHARGE_FAIL
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_RECTIFIER_FAULT
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_RESERVED
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_SMOKE_FAULT
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_SPD_FAULT
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_TAMPER_FAULT
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_TEMPERATURE_FAULT
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_UNAVAILABLE
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.SELECTED_GUN
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.SMOKE_FAULT
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.SPD_FAULT
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.TAMPER_FAULT
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.TEMPERATURE_FAULT
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.UNAVAILABLE
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.UNPLUGGED
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_UNPLUGGED
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.PLUGGED_IN
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getGunChargingState
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils
 import com.bacancy.ccs2androidhmi.util.ModBusUtils
@@ -77,6 +77,23 @@ import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.toHex
 import com.bacancy.ccs2androidhmi.util.NetworkUtils.isInternetConnected
 import com.bacancy.ccs2androidhmi.util.PrefHelper
 import com.bacancy.ccs2androidhmi.util.ReadWriteUtil
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.AUTHENTICATE_GUN
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.CHARGER_ACTIVE_DEACTIVE
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.ENABLE_DISABLE_DUAL_SOCKET
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.GUN1_CURRENT
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.GUN1_OUTPUT_ON_OFF
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.GUN1_SESSION_MODE
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.GUN1_SESSION_MODE_VALUE
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.GUN1_VOLTAGE
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.GUN2_CURRENT
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.GUN2_OUTPUT_ON_OFF
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.GUN2_SESSION_MODE
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.GUN2_SESSION_MODE_VALUE
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.GUN2_VOLTAGE
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.LOCAL_START_STOP
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.PIN_AUTHORIZATION
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.TEST_MODE_ON_OFF
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.UPDATE_TEST_MODE
 import com.bacancy.ccs2androidhmi.util.ResponseSizes
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
 import com.bacancy.ccs2androidhmi.viewmodel.MQTTViewModel
@@ -113,9 +130,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         makeFullScreen()
         super.onCreate(savedInstanceState)
-        dialog = showCustomDialog(getString(R.string.message_device_communication_error)) {
-            resetReadStopCount()
-        }
+
     }
 
     private fun setupSerialPort() {
@@ -197,7 +212,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
             ReadWriteUtil.writeToSingleHoldingRegisterNew(
                 mOutputStream,
                 mInputStream,
-                442,
+                CHARGER_ACTIVE_DEACTIVE,
                 if (isChargerActive) 1 else 0, {
                     Log.d(TAG, "writeForChargerActiveDeactive: Response Got")
                     sendChargerStatusConfirmation(isChargerActive)
@@ -319,7 +334,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
 
     private fun resetReadStopCount() {
         readStopCount = 0
-        if (dialog.isShowing) {
+        if (this::dialog.isInitialized && dialog.isShowing) {
             dialog.dismiss()
         }
     }
@@ -435,12 +450,15 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
         if (readStopCount == 5) {
             prefHelper.setStringValue(AUTH_PIN_VALUE, "")
             lifecycleScope.launch(Dispatchers.Main) {
+                dialog = showCustomDialog(getString(R.string.message_device_communication_error)) {
+                    resetReadStopCount()
+                }
                 dialog.show()
                 clearDialogFlags(dialog)
             }
             resetReadStopCount()
         } else {
-            if (dialog.isShowing) {
+            if (this::dialog.isInitialized && dialog.isShowing) {
                 dialog.dismiss()
             }
         }
@@ -533,24 +551,24 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 ) {
                     resetReadStopCount()
                     Log.d(TAG, "readGun1Info: Response = ${it.toHex()}")
-                    appViewModel.insertGun1InfoInDB(it)
+                    appViewModel.insertGun1InfoInDB(it, this)
                     Log.d(
                         TAG,
-                        "readGun1Info: Gun Current State: ${getGunChargingState(it).description}"
+                        "readGun1Info: Gun Current State: ${getGunChargingState(it).descriptionToSave}"
                     )
-                    when (getGunChargingState(it).description) {
-                        UNPLUGGED -> {
+                    when (getGunChargingState(it).descriptionToSave) {
+                        LBL_UNPLUGGED -> {
                             isGun1PluggedIn = false
                             openGun1LastChargingSummary()
                         }
 
                         PLUGGED_IN,
-                        AUTHENTICATION_SUCCESS -> {
+                        LBL_AUTHENTICATION_SUCCESS -> {
                             isGun1PluggedIn = true
                             openGun1LastChargingSummary()
                         }
 
-                        CHARGING -> {
+                        LBL_CHARGING -> {
                             prefHelper.setStringValue(GUN_1_CHARGING_END_TIME, "")
                             if(prefHelper.getStringValue(GUN_1_CHARGING_START_TIME,"").isEmpty()){
                                 prefHelper.setStringValue(GUN_1_CHARGING_START_TIME, DateTimeUtils.getCurrentDateTime().convertDateFormatToDesiredFormat(
@@ -560,22 +578,22 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                             openGun1LastChargingSummary()
                         }
 
-                        COMPLETE,
-                        COMMUNICATION_ERROR,
-                        AUTHENTICATION_TIMEOUT,
-                        PLC_FAULT,
-                        RECTIFIER_FAULT,
-                        AUTHENTICATION_DENIED,
-                        PRECHARGE_FAIL,
-                        ISOLATION_FAIL,
-                        TEMPERATURE_FAULT,
-                        SPD_FAULT,
-                        SMOKE_FAULT,
-                        TAMPER_FAULT,
-                        MAINS_FAIL,
-                        UNAVAILABLE,
-                        RESERVED,
-                        EMERGENCY_STOP,
+                        LBL_COMPLETE,
+                        LBL_COMMUNICATION_ERROR,
+                        LBL_AUTHENTICATION_TIMEOUT,
+                        LBL_PLC_FAULT,
+                        LBL_RECTIFIER_FAULT,
+                        LBL_AUTHENTICATION_DENIED,
+                        LBL_PRECHARGE_FAIL,
+                        LBL_ISOLATION_FAIL,
+                        LBL_TEMPERATURE_FAULT,
+                        LBL_SPD_FAULT,
+                        LBL_SMOKE_FAULT,
+                        LBL_TAMPER_FAULT,
+                        LBL_MAINS_FAIL,
+                        LBL_UNAVAILABLE,
+                        LBL_RESERVED,
+                        LBL_EMERGENCY_STOP,
                         -> {
                             if (isGun1PluggedIn) {
                                 isGun1PluggedIn = false
@@ -819,24 +837,24 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                     resetReadStopCount()
                     Log.d(TAG, "readGun2Info: Response = ${it.toHex()}")
 
-                    appViewModel.insertGun2InfoInDB(it)
+                    appViewModel.insertGun2InfoInDB(it, this)
                     Log.d(
                         TAG,
-                        "readGun2Info: Gun Current State: ${getGunChargingState(it).description}"
+                        "readGun2Info: Gun Current State: ${getGunChargingState(it).descriptionToSave}"
                     )
-                    when (getGunChargingState(it).description) {
-                        UNPLUGGED -> {
+                    when (getGunChargingState(it).descriptionToSave) {
+                        LBL_UNPLUGGED -> {
                             isGun2PluggedIn = false
                             openGun2LastChargingSummary()
                         }
 
                         PLUGGED_IN,
-                        AUTHENTICATION_SUCCESS -> {
+                        LBL_AUTHENTICATION_SUCCESS -> {
                             isGun2PluggedIn = true
                             openGun2LastChargingSummary()
                         }
 
-                        CHARGING -> {
+                        LBL_CHARGING -> {
                             prefHelper.setStringValue(GUN_2_CHARGING_END_TIME, "")
                             if(prefHelper.getStringValue(GUN_2_CHARGING_START_TIME,"").isEmpty()) {
                                 prefHelper.setStringValue(
@@ -851,22 +869,22 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                             openGun2LastChargingSummary()
                         }
 
-                        COMPLETE,
-                        COMMUNICATION_ERROR,
-                        AUTHENTICATION_TIMEOUT,
-                        PLC_FAULT,
-                        RECTIFIER_FAULT,
-                        AUTHENTICATION_DENIED,
-                        PRECHARGE_FAIL,
-                        ISOLATION_FAIL,
-                        TEMPERATURE_FAULT,
-                        SPD_FAULT,
-                        SMOKE_FAULT,
-                        TAMPER_FAULT,
-                        MAINS_FAIL,
-                        UNAVAILABLE,
-                        RESERVED,
-                        EMERGENCY_STOP,
+                        LBL_COMPLETE,
+                        LBL_COMMUNICATION_ERROR,
+                        LBL_AUTHENTICATION_TIMEOUT,
+                        LBL_PLC_FAULT,
+                        LBL_RECTIFIER_FAULT,
+                        LBL_AUTHENTICATION_DENIED,
+                        LBL_PRECHARGE_FAIL,
+                        LBL_ISOLATION_FAIL,
+                        LBL_TEMPERATURE_FAULT,
+                        LBL_SPD_FAULT,
+                        LBL_SMOKE_FAULT,
+                        LBL_TAMPER_FAULT,
+                        LBL_MAINS_FAIL,
+                        LBL_UNAVAILABLE,
+                        LBL_RESERVED,
+                        LBL_EMERGENCY_STOP,
                         -> {
                             if (isGun2PluggedIn) {
                                 if(prefHelper.getStringValue(GUN_2_CHARGING_END_TIME,"").isEmpty()) {
@@ -1005,7 +1023,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
             ReadWriteUtil.writeToMultipleHoldingRegisterNew(
                 mOutputStream,
                 mInputStream,
-                75,
+                PIN_AUTHORIZATION,
                 enteredPin, {
                     Log.d(TAG, "writeForPinAuthorization: Response Got")
                     prefHelper.setStringValue(AUTH_PIN_VALUE, "")
@@ -1024,7 +1042,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
             ReadWriteUtil.writeToSingleHoldingRegisterNew(
                 mOutputStream,
                 mInputStream,
-                30,
+                AUTHENTICATE_GUN,
                 gunNumber, {
                     Log.d(TAG, "authenticateGun: Response Got")
                     lifecycleScope.launch {
@@ -1066,7 +1084,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
             ReadWriteUtil.writeToSingleHoldingRegisterNew(
                 mOutputStream,
                 mInputStream,
-                86,
+                ENABLE_DISABLE_DUAL_SOCKET,
                 mode, {
                     Log.d(TAG, "writeForDualSocketMode: Response Got")
                     lifecycleScope.launch {
@@ -1082,7 +1100,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
             ReadWriteUtil.writeToSingleHoldingRegisterNew(
                 mOutputStream,
                 mInputStream,
-                if (isGun1) 122 else 222,
+                if (isGun1) GUN1_SESSION_MODE else GUN2_SESSION_MODE,
                 selectedSessionMode, {
                     Log.d(TAG, "writeForSelectedSessionMode: Response Got")
                     lifecycleScope.launch {
@@ -1117,7 +1135,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
             ReadWriteUtil.writeToSingleHoldingRegisterNew(
                 mOutputStream,
                 mInputStream,
-                if (isGun1) 123 else 223,
+                if (isGun1) GUN1_SESSION_MODE_VALUE else GUN2_SESSION_MODE_VALUE,
                 selectedSessionModeValue.toInt(), {
                     Log.d(TAG, "writeForSelectedSessionModeValue: Response Got")
                     lifecycleScope.launch {
@@ -1153,7 +1171,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
             ReadWriteUtil.writeToSingleHoldingRegisterNew(
                 mOutputStream,
                 mInputStream,
-                48,
+                LOCAL_START_STOP,
                 gunsStartStopData, {
                     Log.d(TAG, "writeForLocalStartStop: Response Got")
                     lifecycleScope.launch {
@@ -1195,7 +1213,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
             ReadWriteUtil.writeToSingleHoldingRegisterNew(
                 mOutputStream,
                 mInputStream,
-                350,
+                TEST_MODE_ON_OFF,
                 isTestMode, {
                     Log.d(TAG, "writeForTestModeOnOff: Response Got")
                     if (isTestMode != 1) {
@@ -1228,12 +1246,12 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 )
                 if (prefHelper.getIntValue("SELECTED_GUN_IN_TEST_MODE", 1) == 1) {
                     writeForGunsRectifier(
-                        356,
+                        GUN1_OUTPUT_ON_OFF,
                         prefHelper.getIntValue("GUN1_OUTPUT_ON_OFF_VALUE", 0)
                     )
                 } else {
                     writeForGunsRectifier(
-                        359,
+                        GUN2_OUTPUT_ON_OFF,
                         prefHelper.getIntValue("GUN2_OUTPUT_ON_OFF_VALUE", 0)
                     )
                 }
@@ -1254,19 +1272,19 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
             ReadWriteUtil.writeToSingleHoldingRegisterNew(
                 mOutputStream,
                 mInputStream,
-                351,
+                UPDATE_TEST_MODE,
                 generateRandomNumber(), {
                     Log.d(TAG, "writeForUpdateTestMode: Response Got")
                     lifecycleScope.launch {
                         if (prefHelper.getBoolean("IS_GUN_VOLTAGE_CHANGED", false)) {
                             if (prefHelper.getIntValue("SELECTED_GUN_IN_TEST_MODE", 1) == 1) {
                                 writeForGunsRectifier(
-                                    354,
+                                    GUN1_VOLTAGE,
                                     prefHelper.getIntValue("GUN1_VOLTAGE", 0)
                                 )
                             } else {
                                 writeForGunsRectifier(
-                                    357,
+                                    GUN2_VOLTAGE,
                                     prefHelper.getIntValue("GUN2_VOLTAGE", 0)
                                 )
                             }
@@ -1275,12 +1293,12 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                         } else if (prefHelper.getBoolean("IS_GUN_CURRENT_CHANGED", false)) {
                             if (prefHelper.getIntValue("SELECTED_GUN_IN_TEST_MODE", 1) == 1) {
                                 writeForGunsRectifier(
-                                    355,
+                                    GUN1_CURRENT,
                                     prefHelper.getIntValue("GUN1_CURRENT", 0)
                                 )
                             } else {
                                 writeForGunsRectifier(
-                                    358,
+                                    GUN2_CURRENT,
                                     prefHelper.getIntValue("GUN2_CURRENT", 0)
                                 )
                             }

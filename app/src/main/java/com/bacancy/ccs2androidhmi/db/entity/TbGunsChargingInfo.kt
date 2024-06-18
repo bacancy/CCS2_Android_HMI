@@ -8,6 +8,8 @@ data class TbGunsChargingInfo(
     @PrimaryKey(autoGenerate = true)
     var gunId: Int? = null,
     var gunChargingState: String,
+    var gunChargingStateToSave: String,
+    var gunChargingStateToShow: String,
     var initialSoc: Int,
     var chargingSoc: Int,
     var demandVoltage: Int,

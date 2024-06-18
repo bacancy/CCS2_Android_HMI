@@ -1,5 +1,6 @@
 package com.bacancy.ccs2androidhmi.views.fragment
 
+import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -21,28 +22,29 @@ import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_CHARGING_START_TIME
 import com.bacancy.ccs2androidhmi.util.CommonUtils.INSIDE_LOCAL_START_STOP_SCREEN
 import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_DUAL_SOCKET_MODE_SELECTED
 import com.bacancy.ccs2androidhmi.util.CommonUtils.UNIT_PRICE
+import com.bacancy.ccs2androidhmi.util.DialogUtils.clearDialogFlags
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showChargingSummaryDialog
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_DENIED
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_TIMEOUT
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.CHARGING
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.COMMUNICATION_ERROR
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.COMPLETE
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.EMERGENCY_STOP
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.ISOLATION_FAIL
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.MAINS_FAIL
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.PLC_FAULT
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_AUTHENTICATION_DENIED
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_AUTHENTICATION_TIMEOUT
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_CHARGING
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_COMMUNICATION_ERROR
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_COMPLETE
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_EMERGENCY_STOP
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_ISOLATION_FAIL
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_MAINS_FAIL
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_PLC_FAULT
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.PLUGGED_IN
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.PRECHARGE_FAIL
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.PREPARING_FOR_CHARGING
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.RECTIFIER_FAULT
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.RESERVED
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_PRECHARGE_FAIL
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_PREPARING_FOR_CHARGING
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_RECTIFIER_FAULT
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_RESERVED
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.SELECTED_GUN
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.SMOKE_FAULT
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.SPD_FAULT
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.TAMPER_FAULT
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.TEMPERATURE_FAULT
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.UNAVAILABLE
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.UNPLUGGED
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_SMOKE_FAULT
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_SPD_FAULT
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_TAMPER_FAULT
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_TEMPERATURE_FAULT
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_UNAVAILABLE
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_UNPLUGGED
 import com.bacancy.ccs2androidhmi.util.NetworkUtils.isInternetConnected
 import com.bacancy.ccs2androidhmi.util.PrefHelper
 import com.bacancy.ccs2androidhmi.util.PrefHelper.Companion.IS_DARK_THEME
@@ -62,6 +64,8 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class GunsHomeScreenFragment : BaseFragment() {
 
+    private lateinit var summaryDialogGun1: Dialog
+    private lateinit var summaryDialogGun2: Dialog
     private var isGun1PluggedIn: Boolean = false
     private var isGun2PluggedIn: Boolean = false
     private var isGun1ChargingStarted: Boolean = false
@@ -105,7 +109,7 @@ class GunsHomeScreenFragment : BaseFragment() {
 
     override fun onResume() {
         super.onResume()
-        (requireActivity() as HMIDashboardActivity).updateDualSocketText("Dual Socket")
+        (requireActivity() as HMIDashboardActivity).updateDualSocketText(getString(R.string.lbl_dual_socket))
         prefHelper.setBoolean(IS_DUAL_SOCKET_MODE_SELECTED, false)
         prefHelper.setBoolean(INSIDE_LOCAL_START_STOP_SCREEN, false)
         prefHelper.setBoolean("IS_IN_TEST_MODE", false)
@@ -148,7 +152,7 @@ class GunsHomeScreenFragment : BaseFragment() {
             prefHelper.setSelectedGunNumber(SELECTED_GUN, 0)
         }
 
-        binding.tvGun1State.text = "(${tbGunsChargingInfo.gunChargingState})"
+        binding.tvGun1State.text = "(${tbGunsChargingInfo.gunChargingStateToShow})"
 
         //Send GUN 1 Charging State
         if (requireContext().isInternetConnected() && prefHelper.getStringValue(
@@ -159,11 +163,12 @@ class GunsHomeScreenFragment : BaseFragment() {
             mqttViewModel.sendGunStatusToMqtt(
                 prefHelper.getStringValue(
                     CommonUtils.DEVICE_MAC_ADDRESS, ""
-                ), 1, tbGunsChargingInfo.gunChargingState
+                ), 1, tbGunsChargingInfo.gunChargingStateToSave
             )
         }
-        when (tbGunsChargingInfo.gunChargingState) {
-            UNPLUGGED -> {
+        when (tbGunsChargingInfo.gunChargingStateToSave) {
+            LBL_UNPLUGGED -> {
+                hideGunsSummaryDialog(true)
                 isGun1PluggedIn = false
                 hideGunsChargingStatusUI(true)
                 binding.tvGun1State.removeBlinking()
@@ -172,6 +177,7 @@ class GunsHomeScreenFragment : BaseFragment() {
             }
 
             PLUGGED_IN -> {
+                hideGunsSummaryDialog(true)
                 isGun1PluggedIn = true
                 hideGunsChargingStatusUI(true)
                 binding.tvGun1State.removeBlinking()
@@ -180,7 +186,8 @@ class GunsHomeScreenFragment : BaseFragment() {
                 binding.tvGun1State.text = getString(R.string.lbl_plugged_in)
             }
 
-            CHARGING -> {
+            LBL_CHARGING -> {
+                hideGunsSummaryDialog(true)
                 isGun1PluggedIn = false
                 binding.tvGun1State.removeBlinking()
                 isGun1ChargingStarted = true
@@ -189,7 +196,8 @@ class GunsHomeScreenFragment : BaseFragment() {
                 showGunsChargingStatusUI(true, tbGunsChargingInfo)
             }
 
-            PREPARING_FOR_CHARGING -> {
+            LBL_PREPARING_FOR_CHARGING -> {
+                hideGunsSummaryDialog(true)
                 isGun1PluggedIn = false
                 hideGunsChargingStatusUI(true)
                 binding.tvGun1State.removeBlinking()
@@ -197,26 +205,26 @@ class GunsHomeScreenFragment : BaseFragment() {
                 binding.ivGun1Half.setImageResource(R.drawable.img_gun1_charging_completed)
             }
 
-            COMPLETE -> {
+            LBL_COMPLETE -> {
                 isGun1PluggedIn = false
                 binding.tvGun1State.removeBlinking()
                 binding.ivGun1Half.setImageResource(R.drawable.img_gun1_charging)
                 hideGunsChargingStatusUI(true)
             }
 
-            PLC_FAULT,
-            RECTIFIER_FAULT,
-            TEMPERATURE_FAULT,
-            SPD_FAULT,
-            SMOKE_FAULT,
-            TAMPER_FAULT -> {
+            LBL_PLC_FAULT,
+            LBL_RECTIFIER_FAULT,
+            LBL_TEMPERATURE_FAULT,
+            LBL_SPD_FAULT,
+            LBL_SMOKE_FAULT,
+            LBL_TAMPER_FAULT -> {
                 isGun1PluggedIn = false
                 binding.tvGun1State.startBlinking(requireContext())
                 binding.ivGun1Half.setImageResource(R.drawable.img_gun1_fault)
                 hideGunsChargingStatusUI(true)
             }
 
-            EMERGENCY_STOP -> {
+            LBL_EMERGENCY_STOP -> {
                 isGun1PluggedIn = false
                 binding.tvGun1State.startBlinking(requireContext())
                 hideGunsChargingStatusUI(true)
@@ -225,30 +233,30 @@ class GunsHomeScreenFragment : BaseFragment() {
             else -> {
                 isGun1PluggedIn = false
                 binding.tvGun1State.startBlinking(requireContext())
-                binding.tvGun1State.text = "(${tbGunsChargingInfo.gunChargingState})"
+                binding.tvGun1State.text = "(${tbGunsChargingInfo.gunChargingStateToShow})"
                 hideGunsChargingStatusUI(true)
             }
         }
 
         handleDualSocketButtonVisibility()
 
-        when (tbGunsChargingInfo.gunChargingState) {
-            COMPLETE,
-            COMMUNICATION_ERROR,
-            AUTHENTICATION_TIMEOUT,
-            PLC_FAULT,
-            RECTIFIER_FAULT,
-            AUTHENTICATION_DENIED,
-            PRECHARGE_FAIL,
-            ISOLATION_FAIL,
-            TEMPERATURE_FAULT,
-            SPD_FAULT,
-            SMOKE_FAULT,
-            TAMPER_FAULT,
-            MAINS_FAIL,
-            UNAVAILABLE,
-            RESERVED,
-            EMERGENCY_STOP,
+        when (tbGunsChargingInfo.gunChargingStateToSave) {
+            LBL_COMPLETE,
+            LBL_COMMUNICATION_ERROR,
+            LBL_AUTHENTICATION_TIMEOUT,
+            LBL_PLC_FAULT,
+            LBL_RECTIFIER_FAULT,
+            LBL_AUTHENTICATION_DENIED,
+            LBL_PRECHARGE_FAIL,
+            LBL_ISOLATION_FAIL,
+            LBL_TEMPERATURE_FAULT,
+            LBL_SPD_FAULT,
+            LBL_SMOKE_FAULT,
+            LBL_TAMPER_FAULT,
+            LBL_MAINS_FAIL,
+            LBL_UNAVAILABLE,
+            LBL_RESERVED,
+            LBL_EMERGENCY_STOP,
             -> {
                 Log.d(
                     "TAG",
@@ -269,7 +277,7 @@ class GunsHomeScreenFragment : BaseFragment() {
             prefHelper.setSelectedGunNumber(SELECTED_GUN, 0)
         }
 
-        binding.tvGun2State.text = "(${tbGunsChargingInfo.gunChargingState})"
+        binding.tvGun2State.text = "(${tbGunsChargingInfo.gunChargingStateToShow})"
 
         //Send GUN 2 Charging State
         val chargerOutputs = prefHelper.getStringValue(CommonUtils.CHARGER_OUTPUTS, "")
@@ -282,12 +290,13 @@ class GunsHomeScreenFragment : BaseFragment() {
                 mqttViewModel.sendGunStatusToMqtt(
                     prefHelper.getStringValue(
                         CommonUtils.DEVICE_MAC_ADDRESS, ""
-                    ), 2, tbGunsChargingInfo.gunChargingState
+                    ), 2, tbGunsChargingInfo.gunChargingStateToSave
                 )
             }
         }
-        when (tbGunsChargingInfo.gunChargingState) {
-            UNPLUGGED -> {
+        when (tbGunsChargingInfo.gunChargingStateToSave) {
+            LBL_UNPLUGGED -> {
+                hideGunsSummaryDialog(false)
                 isGun2PluggedIn = false
                 hideGunsChargingStatusUI(false)
                 binding.tvGun2State.removeBlinking()
@@ -296,6 +305,7 @@ class GunsHomeScreenFragment : BaseFragment() {
             }
 
             PLUGGED_IN -> {
+                hideGunsSummaryDialog(false)
                 isGun2PluggedIn = true
                 hideGunsChargingStatusUI(false)
                 binding.tvGun2State.removeBlinking()
@@ -304,7 +314,8 @@ class GunsHomeScreenFragment : BaseFragment() {
                 binding.tvGun2State.text = getString(R.string.lbl_plugged_in)
             }
 
-            CHARGING -> {
+            LBL_CHARGING -> {
+                hideGunsSummaryDialog(false)
                 isGun2PluggedIn = false
                 binding.tvGun2State.removeBlinking()
                 isGun2ChargingStarted = true
@@ -313,7 +324,8 @@ class GunsHomeScreenFragment : BaseFragment() {
                 showGunsChargingStatusUI(false, tbGunsChargingInfo)
             }
 
-            PREPARING_FOR_CHARGING -> {
+            LBL_PREPARING_FOR_CHARGING -> {
+                hideGunsSummaryDialog(false)
                 isGun2PluggedIn = false
                 hideGunsChargingStatusUI(false)
                 binding.tvGun2State.removeBlinking()
@@ -321,26 +333,26 @@ class GunsHomeScreenFragment : BaseFragment() {
                 binding.ivGun2Half.setImageResource(R.drawable.img_gun2_charging_completed)
             }
 
-            COMPLETE -> {
+            LBL_COMPLETE -> {
                 isGun2PluggedIn = false
                 binding.tvGun2State.removeBlinking()
                 binding.ivGun2Half.setImageResource(R.drawable.img_gun2_charging)
                 hideGunsChargingStatusUI(false)
             }
 
-            PLC_FAULT,
-            RECTIFIER_FAULT,
-            TEMPERATURE_FAULT,
-            SPD_FAULT,
-            SMOKE_FAULT,
-            TAMPER_FAULT -> {
+            LBL_PLC_FAULT,
+            LBL_RECTIFIER_FAULT,
+            LBL_TEMPERATURE_FAULT,
+            LBL_SPD_FAULT,
+            LBL_SMOKE_FAULT,
+            LBL_TAMPER_FAULT -> {
                 isGun2PluggedIn = false
                 binding.tvGun2State.startBlinking(requireContext())
                 binding.ivGun2Half.setImageResource(R.drawable.img_gun2_fault)
                 hideGunsChargingStatusUI(false)
             }
 
-            EMERGENCY_STOP -> {
+            LBL_EMERGENCY_STOP -> {
                 isGun2PluggedIn = false
                 binding.tvGun2State.startBlinking(requireContext())
                 hideGunsChargingStatusUI(false)
@@ -349,32 +361,36 @@ class GunsHomeScreenFragment : BaseFragment() {
             else -> {
                 isGun2PluggedIn = false
                 binding.tvGun2State.startBlinking(requireContext())
-                binding.tvGun2State.text = "(${tbGunsChargingInfo.gunChargingState})"
+                binding.tvGun2State.text = "(${tbGunsChargingInfo.gunChargingStateToShow})"
                 hideGunsChargingStatusUI(false)
             }
         }
 
         handleDualSocketButtonVisibility()
 
-        when (tbGunsChargingInfo.gunChargingState) {
-            COMPLETE,
-            COMMUNICATION_ERROR,
-            AUTHENTICATION_TIMEOUT,
-            PLC_FAULT,
-            RECTIFIER_FAULT,
-            AUTHENTICATION_DENIED,
-            PRECHARGE_FAIL,
-            ISOLATION_FAIL,
-            TEMPERATURE_FAULT,
-            SPD_FAULT,
-            SMOKE_FAULT,
-            TAMPER_FAULT,
-            MAINS_FAIL,
-            UNAVAILABLE,
-            RESERVED,
-            EMERGENCY_STOP,
+        when (tbGunsChargingInfo.gunChargingStateToSave) {
+            LBL_COMPLETE,
+            LBL_COMMUNICATION_ERROR,
+            LBL_AUTHENTICATION_TIMEOUT,
+            LBL_PLC_FAULT,
+            LBL_RECTIFIER_FAULT,
+            LBL_AUTHENTICATION_DENIED,
+            LBL_PRECHARGE_FAIL,
+            LBL_ISOLATION_FAIL,
+            LBL_TEMPERATURE_FAULT,
+            LBL_SPD_FAULT,
+            LBL_SMOKE_FAULT,
+            LBL_TAMPER_FAULT,
+            LBL_MAINS_FAIL,
+            LBL_UNAVAILABLE,
+            LBL_RESERVED,
+            LBL_EMERGENCY_STOP,
             -> {
-                if (!shouldShowGun2SummaryDialog && isGun2ChargingStarted && !prefHelper.getBoolean(IS_DUAL_SOCKET_MODE_SELECTED, false)) {
+                if (!shouldShowGun2SummaryDialog && isGun2ChargingStarted && !prefHelper.getBoolean(
+                        IS_DUAL_SOCKET_MODE_SELECTED,
+                        false
+                    )
+                ) {
                     isGun2ChargingStarted = false
                     shouldShowGun2SummaryDialog = true
                     observeGunsLastChargingSummary(false)
@@ -385,12 +401,22 @@ class GunsHomeScreenFragment : BaseFragment() {
 
     }
 
+    private fun hideGunsSummaryDialog(isGun1: Boolean) {
+        if (isGun1 && this::summaryDialogGun1.isInitialized && summaryDialogGun1.isShowing) {
+            summaryDialogGun1.dismiss()
+        } else {
+            if (this::summaryDialogGun2.isInitialized && summaryDialogGun2.isShowing) {
+                summaryDialogGun2.dismiss()
+            }
+        }
+    }
+
     private fun isBothGunsPluggedIn(): Boolean {
         return isGun1PluggedIn && isGun2PluggedIn
     }
 
     private fun handleDualSocketButtonVisibility() {
-        if(isAdded){
+        if (isAdded) {
             (requireActivity() as HMIDashboardActivity).manageDualSocketButtonUI(isBothGunsPluggedIn())
         }
     }
@@ -411,43 +437,43 @@ class GunsHomeScreenFragment : BaseFragment() {
         binding.apply {
             tbGunsChargingInfo.apply {
                 if (isGun1) {
-                    tvGun1ChargingSoc.tvLabel.text = "Charging SoC"
+                    tvGun1ChargingSoc.tvLabel.text = getString(R.string.lbl_charging_soc)
                     tvGun1ChargingSoc.tvValue.text = "$chargingSoc%"
 
-                    tvGun1ChargingVoltage.tvLabel.text = "Charging Voltage"
+                    tvGun1ChargingVoltage.tvLabel.text = getString(R.string.lbl_charging_voltage)
                     tvGun1ChargingVoltage.tvValue.text = "$chargingVoltage V"
 
-                    tvGun1ChargingCurrent.tvLabel.text = "Charging Current"
+                    tvGun1ChargingCurrent.tvLabel.text = getString(R.string.lbl_charging_current)
                     tvGun1ChargingCurrent.tvValue.text = "$chargingCurrent A"
 
-                    tvGun1EnergyConsumption.tvLabel.text = "Total Energy"
+                    tvGun1EnergyConsumption.tvLabel.text = getString(R.string.lbl_total_energy)
                     tvGun1EnergyConsumption.tvValue.text =
                         getString(R.string.lbl_gun_energy_consumption, energyConsumption)
 
-                    tvGun1Duration.tvLabel.text = "Duration (hh:mm)"
+                    tvGun1Duration.tvLabel.text = getString(R.string.lbl_duration_hh_mm)
                     tvGun1Duration.tvValue.text = duration
 
-                    tvGun1TotalCost.tvLabel.text = "Total Cost"
+                    tvGun1TotalCost.tvLabel.text = getString(R.string.lbl_total_cost)
                     tvGun1TotalCost.tvValue.text =
                         getString(R.string.lbl_gun_total_cost_in_rs, totalCost)
                 } else {
-                    tvGun2ChargingSoc.tvLabel.text = "Charging SoC"
+                    tvGun2ChargingSoc.tvLabel.text = getString(R.string.lbl_charging_soc)
                     tvGun2ChargingSoc.tvValue.text = "$chargingSoc%"
 
-                    tvGun2ChargingVoltage.tvLabel.text = "Charging Voltage"
+                    tvGun2ChargingVoltage.tvLabel.text = getString(R.string.lbl_charging_voltage)
                     tvGun2ChargingVoltage.tvValue.text = "$chargingVoltage V"
 
-                    tvGun2ChargingCurrent.tvLabel.text = "Charging Current"
+                    tvGun2ChargingCurrent.tvLabel.text = getString(R.string.lbl_charging_current)
                     tvGun2ChargingCurrent.tvValue.text = "$chargingCurrent A"
 
-                    tvGun2EnergyConsumption.tvLabel.text = "Total Energy"
+                    tvGun2EnergyConsumption.tvLabel.text = getString(R.string.lbl_total_energy)
                     tvGun2EnergyConsumption.tvValue.text =
                         getString(R.string.lbl_gun_energy_consumption, energyConsumption)
 
-                    tvGun2Duration.tvLabel.text = "Duration (hh:mm)"
+                    tvGun2Duration.tvLabel.text = getString(R.string.lbl_duration_hh_mm)
                     tvGun2Duration.tvValue.text = duration
 
-                    tvGun2TotalCost.tvLabel.text = "Total Cost"
+                    tvGun2TotalCost.tvLabel.text = getString(R.string.lbl_total_cost)
                     tvGun2TotalCost.tvValue.text =
                         getString(R.string.lbl_gun_total_cost_in_rs, totalCost)
                 }
@@ -476,31 +502,43 @@ class GunsHomeScreenFragment : BaseFragment() {
                             if (isGun1) {
                                 if (shouldShowGun1SummaryDialog) {
                                     shouldShowGun1SummaryDialog = false
-                                    requireContext().showChargingSummaryDialog(
+                                    summaryDialogGun1 = requireContext().showChargingSummaryDialog(
                                         true,
                                         it,
                                         isDarkTheme
                                     ) {
-                                        if(prefHelper.getBoolean(IS_DUAL_SOCKET_MODE_SELECTED, false)){
-                                            isGun2ChargingStarted = false //To avoid showing gun-2 charging summary dialog when charging stopped in Dual Socket mode
-                                            prefHelper.setBoolean(IS_DUAL_SOCKET_MODE_SELECTED, false)
+                                        if (prefHelper.getBoolean(
+                                                IS_DUAL_SOCKET_MODE_SELECTED,
+                                                false
+                                            )
+                                        ) {
+                                            isGun2ChargingStarted =
+                                                false //To avoid showing gun-2 charging summary dialog when charging stopped in Dual Socket mode
+                                            prefHelper.setBoolean(
+                                                IS_DUAL_SOCKET_MODE_SELECTED,
+                                                false
+                                            )
                                             (requireActivity() as HMIDashboardActivity).goBack()
                                         }
-                                        prefHelper.setStringValue(GUN_1_CHARGING_START_TIME,"")
-                                        prefHelper.setStringValue(GUN_1_CHARGING_END_TIME,"")
+                                        prefHelper.setStringValue(GUN_1_CHARGING_START_TIME, "")
+                                        prefHelper.setStringValue(GUN_1_CHARGING_END_TIME, "")
                                     }
+                                    summaryDialogGun1.show()
+                                    requireActivity().clearDialogFlags(summaryDialogGun1)
                                 }
                             } else {
                                 if (shouldShowGun2SummaryDialog) {
                                     shouldShowGun2SummaryDialog = false
-                                    requireContext().showChargingSummaryDialog(
+                                    summaryDialogGun2 = requireContext().showChargingSummaryDialog(
                                         false,
                                         it,
                                         isDarkTheme
                                     ) {
-                                        prefHelper.setStringValue(GUN_2_CHARGING_START_TIME,"")
-                                        prefHelper.setStringValue(GUN_2_CHARGING_END_TIME,"")
+                                        prefHelper.setStringValue(GUN_2_CHARGING_START_TIME, "")
+                                        prefHelper.setStringValue(GUN_2_CHARGING_END_TIME, "")
                                     }
+                                    summaryDialogGun2.show()
+                                    requireActivity().clearDialogFlags(summaryDialogGun2)
                                 }
                             }
                         }
@@ -519,15 +557,6 @@ class GunsHomeScreenFragment : BaseFragment() {
         binding.tvGun2Actor.setOnClickListener {
             openGunsMoreInfoFragment(2)
         }
-
-        binding.tvGun1Label.setOnClickListener {
-
-            /*mqttViewModel.publishMessageToTopic(
-                TOPIC_A_TO_B,
-                "{\"id\":\"T001\",\"chargerRating\":\"60KW\",\"chargerOutputs\":\"2\",\"deviceMacAddress\":\"AA:BB:CC:11:22:33\",\"configDateTime\":\"01-04-2024T04:00:00\"}"
-            )*/
-        }
-
     }
 
     private fun openGunsMoreInfoFragment(gunNumber: Int) {
@@ -537,6 +566,5 @@ class GunsHomeScreenFragment : BaseFragment() {
         fragment.arguments = bundle
         fragmentChangeListener?.replaceFragment(fragment)
     }
-
 
 }

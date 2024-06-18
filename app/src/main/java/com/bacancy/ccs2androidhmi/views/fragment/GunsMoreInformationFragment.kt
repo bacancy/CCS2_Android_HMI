@@ -119,12 +119,12 @@ class GunsMoreInformationFragment : BaseFragment() {
                         mqttViewModel.sendGunStatusToMqtt(
                             prefHelper.getStringValue(
                                 CommonUtils.DEVICE_MAC_ADDRESS, ""
-                            ), selectedGunNumber, gunChargingState
+                            ), selectedGunNumber, gunChargingStateToSave
                         )
                     }
                 }
 
-                when (gunChargingState) {
+                when (gunChargingStateToSave) {
                     GunsChargingInfoUtils.PLUGGED_IN -> {
                         ivSessionMode.visible()
                         if (!isSessionModeDialogShownOnce && !sessionModeDialog.isShowing) {
@@ -145,9 +145,12 @@ class GunsMoreInformationFragment : BaseFragment() {
                         }
                     }
 
-                    GunsChargingInfoUtils.CHARGING -> {
+                    GunsChargingInfoUtils.LBL_CHARGING -> {
                         ivSessionMode.gone()
                         isSessionModeDialogShownOnce = false
+                        if(sessionModeDialog.isShowing){
+                            sessionModeDialog.dismiss()
+                        }
                         if (SHOW_PIN_AUTHORIZATION) {
                             ivPinAuthorization.visible()
                         }
@@ -156,6 +159,9 @@ class GunsMoreInformationFragment : BaseFragment() {
                     else -> {
                         ivSessionMode.gone()
                         isSessionModeDialogShownOnce = false
+                        if(sessionModeDialog.isShowing){
+                            sessionModeDialog.dismiss()
+                        }
                         ivPinAuthorization.gone()
                     }
                 }
@@ -163,12 +169,12 @@ class GunsMoreInformationFragment : BaseFragment() {
                 when (selectedGunNumber) {
                     1 -> {
                         incHeader.tvHeader.text =
-                            getString(R.string.lbl_gun_1) + " ($gunChargingState)"
+                            getString(R.string.lbl_gun_1) + " ($gunChargingStateToShow)"
                     }
 
                     2 -> {
                         incHeader.tvHeader.text =
-                            getString(R.string.lbl_gun_2) + " ($gunChargingState)"
+                            getString(R.string.lbl_gun_2) + " ($gunChargingStateToShow)"
                     }
                 }
 

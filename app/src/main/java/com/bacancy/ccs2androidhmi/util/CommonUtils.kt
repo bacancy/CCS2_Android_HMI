@@ -23,6 +23,7 @@ object CommonUtils {
     const val GUN_1_LOCAL_START = "GUN_1_LOCAL_START"
     const val GUN_2_LOCAL_START = "GUN_2_LOCAL_START"
     const val LOCAL_START_STOP_PIN = "123456"
+    const val APP_SETTINGS_PIN = "987654"
 
     const val AUTH_PIN_VALUE="AUTH_PIN_VALUE"
     const val FILE_NAME_DATE_TIME_FORMAT = "yyyyMMdd_HHmmss"

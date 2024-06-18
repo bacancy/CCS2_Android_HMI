@@ -1,32 +1,55 @@
 package com.bacancy.ccs2androidhmi.util
 
+import android.content.Context
+import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.models.GunStatesInfo
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_AUTHENTICATION_DENIED
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_AUTHENTICATION_SUCCESS
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_AUTHENTICATION_TIMEOUT
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_CHARGING
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_COMMUNICATION_ERROR
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_COMPLETE
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_EMERGENCY_STOP
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_ISOLATION_FAIL
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_MAINS_FAIL
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_PLC_FAULT
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_PRECHARGE_FAIL
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_PREPARING_FOR_CHARGING
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_RECTIFIER_FAULT
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_RESERVED
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_SMOKE_FAULT
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_SPD_FAULT
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_TAMPER_FAULT
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_TEMPERATURE_FAULT
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_UNAVAILABLE
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_UNPLUGGED
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.PLUGGED_IN
 
 object StateAndModesUtils {
-    enum class GunChargingState(val stateValue: Int, val description: String) {
-        UNPLUGGED(0, "Unplugged"),
-        PLUGGED_WAITING(1, "Plugged In & Waiting for Authentication"),
-        PLUGGED_AUTHENTICATING(2, "Plugged In & Waiting for Authentication"),
-        AUTHENTICATION_SUCCESS(3, "Authentication Success"),
-        PREPARING_FOR_CHARGING(4, "Preparing For Charging"),
-        CHARGING(5, "Charging"),
-        COMPLETE(6, "Complete"),
-        COMMUNICATION_ERROR(7, "Communication Error"),
-        AUTHENTICATION_TIMEOUT(8, "Authentication Timeout"),
-        PLC_FAULT(9, "PLC Fault"),
-        RECTIFIER_FAULT(10, "Rectifier Fault"),
-        EMERGENCY_STOP(11, "Emergency Stop"),
-        AUTHENTICATION_DENIED(12, "Authentication Denied"),
-        PRECHARGE_FAIL(13, "Precharge Fail"),
-        ISOLATION_FAIL(14, "Isolation Fail"),
-        TEMPERATURE_FAULT(15, "Temperature Fault"),
-        SPD_FAULT(16, "SPD Fault"),
-        SMOKE_FAULT(17, "Smoke Fault"),
-        TAMPER_FAULT(18, "Tamper Fault"),
-        MAINS_FAIL(19, "Mains Fail"),
-        UNAVAILABLE(20, "Unavailable"),
-        RESERVED(21, "Reserved"),
-        LOADING(-1, "Loading...");
+    enum class GunChargingState(val stateValue: Int, val descriptionToShow: Int,val descriptionToSave: String) {
+        UNPLUGGED(0, R.string.unplugged,LBL_UNPLUGGED),
+        PLUGGED_WAITING(1, R.string.lbl_plugged_in_waiting_for_authentication,PLUGGED_IN),
+        PLUGGED_AUTHENTICATING(2, R.string.lbl_plugged_in_waiting_for_authentication,PLUGGED_IN),
+        AUTHENTICATION_SUCCESS(3, R.string.authentication_success,LBL_AUTHENTICATION_SUCCESS),
+        PREPARING_FOR_CHARGING(4, R.string.preparing_for_charging,LBL_PREPARING_FOR_CHARGING),
+        CHARGING(5, R.string.charging,LBL_CHARGING),
+        COMPLETE(6, R.string.lbl_complete,LBL_COMPLETE),
+        COMMUNICATION_ERROR(7, R.string.communication_error,LBL_COMMUNICATION_ERROR),
+        AUTHENTICATION_TIMEOUT(8, R.string.authentication_timeout,LBL_AUTHENTICATION_TIMEOUT),
+        PLC_FAULT(9, R.string.plc_fault,LBL_PLC_FAULT),
+        RECTIFIER_FAULT(10, R.string.rectifier_fault,LBL_RECTIFIER_FAULT),
+        EMERGENCY_STOP(11, R.string.emergency_stop,LBL_EMERGENCY_STOP),
+        AUTHENTICATION_DENIED(12, R.string.authentication_denied, LBL_AUTHENTICATION_DENIED),
+        PRECHARGE_FAIL(13, R.string.precharge_fail,LBL_PRECHARGE_FAIL),
+        ISOLATION_FAIL(14, R.string.isolation_fail,LBL_ISOLATION_FAIL),
+        TEMPERATURE_FAULT(15, R.string.lbl_temperature_fault,LBL_TEMPERATURE_FAULT),
+        SPD_FAULT(16, R.string.lbl_spd_fault,LBL_SPD_FAULT),
+        SMOKE_FAULT(17, R.string.lbl_smoke_fault,LBL_SMOKE_FAULT),
+        TAMPER_FAULT(18, R.string.lbl_tamper_fault,LBL_TAMPER_FAULT),
+        MAINS_FAIL(19, R.string.lbl_mains_fail,LBL_MAINS_FAIL),
+        UNAVAILABLE(20, R.string.lbl_unavailable,LBL_UNAVAILABLE),
+        RESERVED(21, R.string.lbl_reserved,LBL_RESERVED),
+        LOADING(-1, R.string.lbl_fault, "Fault");
 
         companion object {
             fun fromStateValue(value: Int): GunChargingState {
@@ -84,43 +107,23 @@ object StateAndModesUtils {
         }
     }
 
-    fun getGunStates(): MutableList<GunStatesInfo> {
+    fun Context.getGunStates(): MutableList<GunStatesInfo> {
         return mutableListOf(
-            GunStatesInfo(1, "Unplugged", "Gun Not Connected", "White"),
-            GunStatesInfo(2, "Plugged In", "Gun Connected with EV", "Yellow"),
-            GunStatesInfo(
-                3,
-                "Authentication",
-                "Authentication using RFID/OCPP with in 55 Sec of start this state",
-                "White"
-            ),
-            GunStatesInfo(
-                4,
-                "Authentication Timeout",
-                "Authentication not done within the time interval",
-                "Red"
-            ),
-            GunStatesInfo(
-                5,
-                "Authentication Denied",
-                "Authentication rejected by the Server",
-                "Red"
-            ),
-            GunStatesInfo(
-                6,
-                "Authentication Success",
-                "Authentication Success Response from Server",
-                "Green"
-            ),
-            GunStatesInfo(7, "Isolation Fail", "Isolation Test Fail", "Red"),
-            GunStatesInfo(8, "Preparing For Charging", "Initializing for charging", "Blue"),
-            GunStatesInfo(9, "Precharge Fail", "Precharge Test Fail", "Red"),
-            GunStatesInfo(10, "Charging", "EV Charge in Progress", "Blue"),
-            GunStatesInfo(11, "Charging Complete", "EV charge Completed", "Green"),
-            GunStatesInfo(12, "PLC Fault", "Fault Occurred in PLC Module", "Red"),
-            GunStatesInfo(13, "Rectifier Fault", "Fault Occurred in Rectifier Module", "Red"),
-            GunStatesInfo(14, "Communication Error", "Communication Break with EV", "Red"),
-            GunStatesInfo(15, "Emergency Stop", "Emergency Stop Triggered by user", "Red")
+            GunStatesInfo(1, getString(R.string.unplugged), getString(R.string.unplugged_description), "White"),
+            GunStatesInfo(2, getString(R.string.plugged_in), getString(R.string.plugged_in_description), "Yellow"),
+            GunStatesInfo(3, getString(R.string.authentication), getString(R.string.authentication_description), "White"),
+            GunStatesInfo(4, getString(R.string.authentication_timeout), getString(R.string.authentication_timeout_description), "Red"),
+            GunStatesInfo(5, getString(R.string.authentication_denied), getString(R.string.authentication_denied_description), "Red"),
+            GunStatesInfo(6, getString(R.string.authentication_success), getString(R.string.authentication_success_description), "Green"),
+            GunStatesInfo(7, getString(R.string.isolation_fail), getString(R.string.isolation_fail_description), "Red"),
+            GunStatesInfo(8, getString(R.string.preparing_for_charging), getString(R.string.preparing_for_charging_description), "Blue"),
+            GunStatesInfo(9, getString(R.string.precharge_fail), getString(R.string.precharge_fail_description), "Red"),
+            GunStatesInfo(10, getString(R.string.charging), getString(R.string.charging_description), "Blue"),
+            GunStatesInfo(11, getString(R.string.charging_complete), getString(R.string.charging_complete_description), "Green"),
+            GunStatesInfo(12, getString(R.string.plc_fault), getString(R.string.plc_fault_description), "Red"),
+            GunStatesInfo(13, getString(R.string.rectifier_fault), getString(R.string.rectifier_fault_description), "Red"),
+            GunStatesInfo(14, getString(R.string.communication_error), getString(R.string.communication_error_description), "Red"),
+            GunStatesInfo(15, getString(R.string.emergency_stop), getString(R.string.emergency_stop_description), "Red")
         )
     }
 

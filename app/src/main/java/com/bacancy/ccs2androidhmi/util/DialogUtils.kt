@@ -16,16 +16,21 @@ import android.view.WindowInsetsController
 import android.view.WindowManager
 import android.widget.RadioButton
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.databinding.CustomDialogAreYouSureBinding
 import com.bacancy.ccs2androidhmi.databinding.CustomDialogBinding
 import com.bacancy.ccs2androidhmi.databinding.DialogGunsChargingSummaryBinding
 import com.bacancy.ccs2androidhmi.databinding.DialogPasswordPromptBinding
 import com.bacancy.ccs2androidhmi.databinding.DialogPinAuthorizationBinding
+import com.bacancy.ccs2androidhmi.databinding.DialogSelectAppLanguageBinding
 import com.bacancy.ccs2androidhmi.databinding.DialogSessionModeSelectionBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsLastChargingSummary
+import com.bacancy.ccs2androidhmi.models.Language
 import com.bacancy.ccs2androidhmi.util.CommonUtils.LOCAL_START_STOP_PIN
-import com.bacancy.ccs2androidhmi.util.DialogUtils.clearDialogFlags
+import com.bacancy.ccs2androidhmi.util.LanguageConfig.getAppLanguage
+import com.bacancy.ccs2androidhmi.util.LanguageConfig.getLanguagesList
+import com.bacancy.ccs2androidhmi.views.adapters.LanguageListAdapter
 
 object DialogUtils {
 
@@ -94,7 +99,7 @@ object DialogUtils {
         tbGunsLastChargingSummary: TbGunsLastChargingSummary,
         isDarkTheme: Boolean,
         onCloseClicked: () -> Unit
-    ) {
+    ): Dialog {
         val dialog = Dialog(this, R.style.CustomAlertDialog)
         dialog.setupWithoutTitle()
         val binding = DialogGunsChargingSummaryBinding.inflate(LayoutInflater.from(this))
@@ -173,15 +178,15 @@ object DialogUtils {
 
         dialog.setCancelable(true)
         dialog.setupDialogFlags(true)
-        dialog.show()
-        clearDialogFlags(dialog)
+        return dialog
     }
 
     fun Activity.showPasswordPromptDialog(
-        popupTitle: String = "Authorize",
+        popupTitle: String,
         isCancelable: Boolean = true,
         onSuccess: () -> Unit,
-        onFailed: () -> Unit
+        onFailed: () -> Unit,
+        password: String = LOCAL_START_STOP_PIN
     ) {
         val dialog = Dialog(this, R.style.CustomAlertDialog)
         dialog.setupWithoutTitle()
@@ -193,7 +198,7 @@ object DialogUtils {
             btnSubmit.setOnClickListener {
                 dialog.dismiss()
                 val enteredPassword = edtPassword.text.toString()
-                if (enteredPassword.length == 6 && enteredPassword == LOCAL_START_STOP_PIN) {
+                if (enteredPassword.length == password.length && enteredPassword == password) {
                     onSuccess()
                 } else {
                     onFailed()
@@ -276,7 +281,7 @@ object DialogUtils {
         onSuccess: (Int, String) -> Unit,
     ): Dialog {
         val dialog = Dialog(this, R.style.CustomAlertDialog)
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setupWithoutTitle()
         val binding = DialogSessionModeSelectionBinding.inflate(layoutInflater)
         dialog.setContentView(binding.root)
         dialog.setCanceledOnTouchOutside(false)
@@ -285,10 +290,10 @@ object DialogUtils {
             edtSessionModeValue.gone()
             btnSubmit.setOnClickListener {
                 if (!radioByAuto.isChecked && edtSessionModeValue.text.isEmpty()) {
-                    edtSessionModeValue.error = "Please enter value"
+                    edtSessionModeValue.error = getString(R.string.msg_please_enter_value)
                     return@setOnClickListener
                 } else if(!validateSelectedValueRange()){
-                    edtSessionModeValue.error = "Value must be in range"
+                    edtSessionModeValue.error = getString(R.string.msg_value_must_be_in_range)
                     return@setOnClickListener
                 }
 
@@ -314,25 +319,37 @@ object DialogUtils {
 
             radioByAuto.setOnCheckedChangeListener { _, isClicked ->
                 if (isClicked) {
-                    handleRadioButtonSelection(radioByAuto)
+                    lnrAuto.setBackgroundResource(R.drawable.radio_auto_rounded_rect_selected)
+                    handleRadioButtonSelection(this@showSessionModeDialog,radioByAuto)
+                }else{
+                    lnrAuto.setBackgroundResource(R.drawable.radio_auto_rounded_rect)
                 }
             }
 
             radioByTime.setOnCheckedChangeListener { _, isClicked ->
                 if (isClicked) {
-                    handleRadioButtonSelection(radioByTime)
+                    lnrTime.setBackgroundResource(R.drawable.radio_time_rounded_rect_selected)
+                    handleRadioButtonSelection(this@showSessionModeDialog,radioByTime)
+                }else{
+                    lnrTime.setBackgroundResource(R.drawable.radio_time_rounded_rect)
                 }
             }
 
             radioByEnergy.setOnCheckedChangeListener { _, isClicked ->
                 if (isClicked) {
-                    handleRadioButtonSelection(radioByEnergy)
+                    lnrEnergy.setBackgroundResource(R.drawable.radio_energy_rounded_rect_selected)
+                    handleRadioButtonSelection(this@showSessionModeDialog,radioByEnergy)
+                }else{
+                    lnrEnergy.setBackgroundResource(R.drawable.radio_energy_rounded_rect)
                 }
             }
 
             radioBySoc.setOnCheckedChangeListener { _, isClicked ->
                 if (isClicked) {
-                    handleRadioButtonSelection(radioBySoc)
+                    lnrSoC.setBackgroundResource(R.drawable.radio_soc_rounded_rect_selected)
+                    handleRadioButtonSelection(this@showSessionModeDialog,radioBySoc)
+                }else{
+                    lnrSoC.setBackgroundResource(R.drawable.radio_soc_rounded_rect)
                 }
             }
         }
@@ -360,7 +377,7 @@ object DialogUtils {
     private var energyTextWatcher: TextWatcher? = null
     private var socTextWatcher: TextWatcher? = null
 
-    private fun DialogSessionModeSelectionBinding.handleRadioButtonSelection(selectedRadioButton: RadioButton) {
+    private fun DialogSessionModeSelectionBinding.handleRadioButtonSelection(context: Context,selectedRadioButton: RadioButton) {
         // List of all radio buttons
         val radioButtons = listOf(radioByAuto, radioByTime, radioByEnergy, radioBySoc)
 
@@ -381,33 +398,33 @@ object DialogUtils {
             radioByTime -> {
                 handleEditTextVisibility(
                     true,
-                    "Enter Time in Minutes (1-999)",
+                    context.getString(R.string.msg_enter_time_in_minutes_1_999),
                     InputType.TYPE_CLASS_NUMBER,
                     InputFilter.LengthFilter(3)
                 ) { text ->
-                    validateTextValue(text, 1, 999)
+                    validateTextValue(context,text, 1, 999)
                 }
             }
 
             radioByEnergy -> {
                 handleEditTextVisibility(
                     true,
-                    "Enter Energy in kWh (0.01-999.99)",
+                    context.getString(R.string.msg_enter_energy_in_kwh_0_01_999_99),
                     InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL,
                     InputFilter.LengthFilter(6)
                 ) { text ->
-                    validateTextValue(text, 0.01, 999.99)
+                    validateTextValue(context,text, 0.01, 999.99)
                 }
             }
 
             radioBySoc -> {
                 handleEditTextVisibility(
                     true,
-                    "Enter SOC in % (1-100)",
+                    context.getString(R.string.msg_enter_soc_in_1_100),
                     InputType.TYPE_CLASS_NUMBER,
                     InputFilter.LengthFilter(3)
                 ) { text ->
-                    validateTextValue(text, 1, 100)
+                    validateTextValue(context,text, 1, 100)
                 }
             }
         }
@@ -455,15 +472,44 @@ object DialogUtils {
     }
 
     private fun DialogSessionModeSelectionBinding.validateTextValue(
+        context: Context,
         text: CharSequence?,
         minValue: Number,
         maxValue: Number
     ) {
         val value = text?.toString()?.toDoubleOrNull()
         if (value != null && (value < minValue.toDouble() || value > maxValue.toDouble())) {
-            edtSessionModeValue.error = "Value must be between $minValue and $maxValue"
+            edtSessionModeValue.error =
+                context.getString(R.string.msg_value_must_be_between_and, minValue, maxValue)
         } else {
             edtSessionModeValue.error = null
         }
+    }
+
+    fun Activity.showSelectAppLanguageDialog(
+        prefHelper: PrefHelper,
+        onLanguageSelected: (Language) -> Unit,
+    ) {
+        val dialog = Dialog(this, R.style.CustomAlertDialog)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        val binding = DialogSelectAppLanguageBinding.inflate(layoutInflater)
+        dialog.setContentView(binding.root)
+
+        binding.apply {
+            languageRecyclerView.apply {
+                layoutManager = LinearLayoutManager(this@showSelectAppLanguageDialog)
+                getLanguagesList().forEach { language ->
+                    language.isSelected = language.code == getAppLanguage(prefHelper)
+                }
+                adapter = LanguageListAdapter(getLanguagesList()) { selectedLanguage ->
+                    onLanguageSelected(selectedLanguage)
+                    dialog.dismiss()
+                }
+            }
+        }
+
+        dialog.setupDialogFlags()
+        dialog.show()
+        clearDialogFlags(dialog)
     }
 }

@@ -1,16 +1,20 @@
 package com.bacancy.ccs2androidhmi.views
 
+import android.Manifest
 import android.app.Activity
 import android.app.Dialog
 import android.app.UiModeManager
 import android.app.admin.DevicePolicyManager
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkRequest
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
@@ -21,6 +25,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
@@ -40,6 +46,7 @@ import com.bacancy.ccs2androidhmi.receiver.MyDeviceAdminReceiver
 import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_LOCAL_START_STOP
 import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_TEST_MODE
 import com.bacancy.ccs2androidhmi.util.CommonUtils
+import com.bacancy.ccs2androidhmi.util.CommonUtils.APP_SETTINGS_PIN
 import com.bacancy.ccs2androidhmi.util.CommonUtils.CHARGER_ACTIVE_DEACTIVE_MESSAGE_RECD
 import com.bacancy.ccs2androidhmi.util.CommonUtils.DEVICE_MAC_ADDRESS
 import com.bacancy.ccs2androidhmi.util.CommonUtils.EVSE_APP_PACKAGE_NAME
@@ -56,11 +63,11 @@ import com.bacancy.ccs2androidhmi.util.DialogUtils.clearDialogFlags
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showCustomDialog
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showCustomDialogForAreYouSure
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showPasswordPromptDialog
+import com.bacancy.ccs2androidhmi.util.LanguageConfig.getAppLanguage
+import com.bacancy.ccs2androidhmi.util.LanguageConfig.setAppLanguage
 import com.bacancy.ccs2androidhmi.util.LogUtils
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.NO_STATE
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.TOKEN_ID_NONE
-import com.bacancy.ccs2androidhmi.util.ModBusUtils
-import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.toHex
 import com.bacancy.ccs2androidhmi.util.NetworkUtils.isInternetConnected
 import com.bacancy.ccs2androidhmi.util.PrefHelper.Companion.IS_DARK_THEME
 import com.bacancy.ccs2androidhmi.util.Resource
@@ -71,6 +78,7 @@ import com.bacancy.ccs2androidhmi.util.showToast
 import com.bacancy.ccs2androidhmi.util.visible
 import com.bacancy.ccs2androidhmi.viewmodel.MQTTViewModel
 import com.bacancy.ccs2androidhmi.views.fragment.AppNotificationsFragment
+import com.bacancy.ccs2androidhmi.views.fragment.AppSettingsFragment
 import com.bacancy.ccs2androidhmi.views.fragment.DualSocketGunsMoreInformationFragment
 import com.bacancy.ccs2androidhmi.views.fragment.FirmwareVersionInfoFragment
 import com.bacancy.ccs2androidhmi.views.fragment.GunsHomeScreenFragment
@@ -83,8 +91,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -102,17 +109,26 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
     private val mqttViewModel: MQTTViewModel by viewModels()
     private val TAG = "HMIDashboardActivity"
 
+    override fun onResumeFragments() {
+        super.onResumeFragments()
+        //TEST COMMIT
+        val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainer)
+        if (currentFragment == null) {
+            lifecycleScope.launch {
+                gunsHomeScreenFragment = GunsHomeScreenFragment()
+                addNewFragment(gunsHomeScreenFragment)
+            }
+        }
+    }
+
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         super.onCreate(savedInstanceState)
+        setAppLanguage(getAppLanguage(prefHelper), prefHelper)
         binding = ActivityHmiDashboardBinding.inflate(layoutInflater)
         setContentView(binding.root)
         prefHelper.setBoolean(IS_APP_RESTARTED, true)
-        gunsHomeScreenFragment = GunsHomeScreenFragment()
-        addNewFragment(gunsHomeScreenFragment)
-
-        handleViewsVisibility()
 
         handleClicks()
 
@@ -135,8 +151,50 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         observeChargerActiveDeactiveStates()
     }
 
+    private fun loadClientLogoFromDownloads() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+            != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 101)
+        } else {
+            loadImage()
+        }
+    }
+
+    private fun loadImage(imageName: String = "ccs2_hmi_logo") {
+        val downloadsDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+
+        val potentialFilePaths = listOf(
+            File(downloadsDirectory, "$imageName.jpg"),
+            File(downloadsDirectory, "$imageName.png"),
+            File(downloadsDirectory, "$imageName.webp")
+            // Add other extensions as needed
+        )
+
+        // Check each potential file path for existence
+        for (file in potentialFilePaths) {
+            if (file.exists()) {
+                val bitmap = BitmapFactory.decodeFile(file.absolutePath)
+                binding.incToolbar.ivLogo.setImageBitmap(bitmap)
+                return
+            }
+        }
+
+        binding.incToolbar.ivLogo.setImageResource(R.drawable.img_servotech_logo)//replace with sample_logo
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 101 && grantResults.isNotEmpty() &&
+            grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            loadImage()
+        } else {
+            showToast("Enable permission to load client logo")
+        }
+    }
+
     override fun onResume() {
         super.onResume()
+        loadClientLogoFromDownloads()//remove this when kiosk mode app is built
         observeDeviceInternetStates()
         startClockTimer()
         //manageKioskMode()
@@ -147,6 +205,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
             requestDeviceAdminPermissions()
         } else {
             startLockTask()
+            loadClientLogoFromDownloads()
         }
     }
 
@@ -170,6 +229,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         if (result.resultCode == Activity.RESULT_OK) {
             prefHelper.setBoolean(IS_APP_PINNED, true)
             startLockTask()
+            loadClientLogoFromDownloads()
         }
     }
 
@@ -556,7 +616,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         }
     }
 
-    private fun toggleTheme() {
+    fun toggleTheme() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             // Device API level is 31 or higher
             val newNightMode = if (prefHelper.getBoolean(
@@ -580,7 +640,6 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
     override fun onNightModeChanged(mode: Int) {
         super.onNightModeChanged(mode)
-        Log.d(TAG, "onNightModeChanged: Called")
         lifecycleScope.launch {
             resetPorts()
             delay(1000)
@@ -599,14 +658,14 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
                 dialog.show()
                 clearDialogFlags(dialog)
             }else{
-                if (binding.tvDualSocket.text == "Dual Socket") {
+                if (binding.tvDualSocket.text == getString(R.string.lbl_dual_socket)) {
                     showCustomDialogForAreYouSure(
                         getString(R.string.msg_to_confirm_to_switch_to_dual_socket),isCancelable = false,
                         {
                             prefHelper.setBoolean(IS_DUAL_SOCKET_MODE_SELECTED, true)
                             addNewFragment(DualSocketGunsMoreInformationFragment())
                         }, {})
-                } else if (binding.tvDualSocket.text == "Single Socket") {
+                } else if (binding.tvDualSocket.text == getString(R.string.single_socket)) {
                     showCustomDialogForAreYouSure(
                         getString(R.string.msg_to_confirm_to_switch_to_single_socket),isCancelable = false,
                         {
@@ -621,6 +680,14 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
         binding.incToolbar.ivSwitchDarkMode.setOnClickListener {
             toggleTheme()
+        }
+
+        binding.incToolbar.ivSettings.setOnClickListener {
+            showPasswordPromptDialog(getString(R.string.title_authorize_for_settings),isCancelable = true, {
+                addNewFragment(AppSettingsFragment())
+            }, {
+                showCustomToast(getString(R.string.msg_invalid_password), false)
+            }, password = APP_SETTINGS_PIN)
         }
 
         binding.incToolbar.imgBack.setOnClickListener {
@@ -662,11 +729,10 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         binding.incToolbar.ivLogo.setOnClickListener {
             prefHelper.setBoolean(IS_APP_PINNED, false)
             stopLockTask()
-            openEVSEApp()
         }
     }
 
-    private fun openEVSEApp() {
+    fun openEVSEApp() {
         try {
             val launchIntent: Intent? =
                 packageManager.getLaunchIntentForPackage(EVSE_APP_PACKAGE_NAME)
@@ -718,7 +784,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         }
     }
 
-    fun updateDualSocketText(updatedLabel: String = "Dual Socket") {
+    fun updateDualSocketText(updatedLabel: String = getString(R.string.lbl_dual_socket)) {
         binding.tvDualSocket.text = updatedLabel
     }
 
@@ -765,8 +831,8 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
     private fun updateTimerUI() {
         val currentTime = Calendar.getInstance().time
-        val dateFormat =
-            SimpleDateFormat(CommonUtils.CLOCK_DATE_AND_TIME_FORMAT, Locale.ENGLISH)
+        val locale = if(resources.configuration.locales.size()>0) resources.configuration.locales[0] else Locale.ENGLISH
+        val dateFormat = SimpleDateFormat(CommonUtils.CLOCK_DATE_AND_TIME_FORMAT, locale)
         val formattedDate = dateFormat.format(currentTime)
         binding.incToolbar.tvDateTime.text = formattedDate.uppercase()
     }
@@ -788,7 +854,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         onBackPressedDispatcher.addCallback(this, callback)
     }
 
-    private fun addNewFragment(fragment: Fragment, shouldMoveToHomeScreen: Boolean = false) {
+    fun addNewFragment(fragment: Fragment, shouldMoveToHomeScreen: Boolean = false) {
         val fragmentManager: FragmentManager = supportFragmentManager
         if (shouldMoveToHomeScreen) {
             //To remove all the fragments in-between calling and first fragment
@@ -838,7 +904,6 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
     override fun onPause() {
         super.onPause()
-        mApplication!!.closeSerialPort()
         handler.removeCallbacks(runnable)
         unregisterNetworkCallback()
     }
