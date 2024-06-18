@@ -65,14 +65,17 @@ import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_SPD_FAULT
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_TAMPER_FAULT
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_TEMPERATURE_FAULT
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_UNAVAILABLE
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.SELECTED_GUN
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_UNPLUGGED
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.PLUGGED_IN
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.SELECTED_GUN
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getGunChargingState
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils
 import com.bacancy.ccs2androidhmi.util.ModBusUtils
 import com.bacancy.ccs2androidhmi.util.ModbusRequestFrames
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter
+import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.getIntValueFromByte
+import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.getRangedArray
+import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.hexStringToDecimal
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.toHex
 import com.bacancy.ccs2androidhmi.util.NetworkUtils.isInternetConnected
 import com.bacancy.ccs2androidhmi.util.PrefHelper
@@ -90,6 +93,7 @@ import com.bacancy.ccs2androidhmi.util.RegisterAddresses.GUN2_OUTPUT_ON_OFF
 import com.bacancy.ccs2androidhmi.util.RegisterAddresses.GUN2_SESSION_MODE
 import com.bacancy.ccs2androidhmi.util.RegisterAddresses.GUN2_SESSION_MODE_VALUE
 import com.bacancy.ccs2androidhmi.util.RegisterAddresses.GUN2_VOLTAGE
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.KEY_ACCESS_PARAMETER
 import com.bacancy.ccs2androidhmi.util.RegisterAddresses.LOCAL_START_STOP
 import com.bacancy.ccs2androidhmi.util.RegisterAddresses.PIN_AUTHORIZATION
 import com.bacancy.ccs2androidhmi.util.RegisterAddresses.TEST_MODE_ON_OFF
@@ -155,7 +159,79 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
 
     fun setupPortsAndStartReading() {
         setupSerialPort()
-        startReading()
+        //startReading()
+        lifecycleScope.launch {
+            readConfigAccessParamsState()
+        }
+    }
+
+    private suspend fun readConfigAccessParamsState() {
+        Log.i(
+            "TUE_TAG",
+            "readConfigAccessParamsState: Request Sent - ${
+                ModbusRequestFrames.getConfigAccessParamsStateRequestFrame().toHex()
+            }"
+        )
+        ReadWriteUtil.writeRequestAndReadResponse(
+            mOutputStream,
+            mInputStream,
+            ResponseSizes.SINGLE_REGISTER_RESPONSE_SIZE,
+            ModbusRequestFrames.getConfigAccessParamsStateRequestFrame(),
+            onDataReceived = {
+                if (it.toHex()
+                        .startsWith(ModBusUtils.HOLDING_REGISTERS_CORRECT_RESPONSE_BITS)
+                ) {
+                    resetReadStopCount()
+                    //010302 (2222/1111/1234/4321/5678) 20fd
+                    //1111 - system available for configuration
+                    //2222 - system not available for configuration
+                    //1234 - to start accessing config parameters
+                    //4321 - Store data and access parameters
+                    //5678 - CDM default configuration parameters
+                    Log.d("TUE_TAG", "readConfigAccessParamsState: Response = ${it.toHex()}")
+                    val chargingEndTimeArray = it.getRangedArray(3..4)
+                    val mappedArray = chargingEndTimeArray.map { it2 -> it2.getIntValueFromByte() }
+                    val accessData = ModbusTypeConverter.decimalArrayToHexArray(mappedArray).joinToString { it2 -> it2 }.replace(", ", "")
+                    Log.d("TUE_TAG", "readConfigAccessParamsState: Response in hex = $accessData")
+                    if(accessData == "1111"){
+                        //write "1234" to start accessing config parameters
+                        lifecycleScope.launch {
+                            writeForConfigAccessParamsState("1234")
+                        }
+                    }else{
+                        lifecycleScope.launch {
+                            readConfigAccessParamsState()
+                        }
+                    }
+                } else {
+                    Log.e("TUE_TAG", "readConfigAccessParamsState: Error Response - ${it.toHex()}")
+                }
+            }, onReadStopped = {
+                showReadStoppedUI()
+                Log.e("TUE_TAG", "readConfigAccessParamsState: OnReadStopped Called")
+                lifecycleScope.launch {
+                    readConfigAccessParamsState()
+                }
+            })
+    }
+
+    private suspend fun writeForConfigAccessParamsState(accessStartCode: String) {
+        Log.i(
+            "TUE_TAG",
+            "writeForConfigAccessParamsState: Request Code - $accessStartCode"
+        )
+        lifecycleScope.launch(Dispatchers.IO) {
+            ReadWriteUtil.writeToSingleHoldingRegisterNew(
+                mOutputStream,
+                mInputStream,
+                KEY_ACCESS_PARAMETER,
+                accessStartCode.hexStringToDecimal(), {
+                    Log.d("TUE_TAG", "writeForConfigAccessParamsState: Response Got")
+                    lifecycleScope.launch {
+                        readConfigAccessParamsState()
+                    }
+                }, {})
+        }
     }
 
     private fun makeFullScreen() {

@@ -18,4 +18,5 @@ object RegisterAddresses {
     const val GUN2_VOLTAGE = 357
     const val GUN2_CURRENT = 358
     const val GUN2_OUTPUT_ON_OFF = 359
+    const val KEY_ACCESS_PARAMETER = 400
 }
