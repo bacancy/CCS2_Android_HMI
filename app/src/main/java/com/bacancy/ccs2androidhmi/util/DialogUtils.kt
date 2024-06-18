@@ -25,6 +25,7 @@ import com.bacancy.ccs2androidhmi.databinding.DialogPasswordPromptBinding
 import com.bacancy.ccs2androidhmi.databinding.DialogPinAuthorizationBinding
 import com.bacancy.ccs2androidhmi.databinding.DialogSelectAppLanguageBinding
 import com.bacancy.ccs2androidhmi.databinding.DialogSessionModeSelectionBinding
+import com.bacancy.ccs2androidhmi.databinding.DialogStartStopChargingSelectionBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsLastChargingSummary
 import com.bacancy.ccs2androidhmi.models.Language
 import com.bacancy.ccs2androidhmi.util.CommonUtils.LOCAL_START_STOP_PIN
@@ -37,6 +38,7 @@ object DialogUtils {
     fun Activity.showCustomDialog(
         message: String,
         messageType: String = "info",
+        buttonLabel: String = getString(R.string.lbl_close),
         isCancelable: Boolean = true,
         onCloseClicked: () -> Unit
     ): Dialog {
@@ -47,6 +49,7 @@ object DialogUtils {
 
         binding.apply {
             tvMessage.text = message
+            btnClose.text = buttonLabel
             when (messageType) {
                 "info" -> {
                     ivMessageType.visible()
@@ -351,6 +354,35 @@ object DialogUtils {
                 }else{
                     lnrSoC.setBackgroundResource(R.drawable.radio_soc_rounded_rect)
                 }
+            }
+        }
+
+        dialog.setupDialogFlags()
+
+        return dialog
+    }
+
+    fun Activity.showStartStopChargingDialog(
+        isStartCharging: Boolean,
+        onOTPClick: () -> Unit,
+        onRFIDClick: () -> Unit
+    ): Dialog {
+        val dialog = Dialog(this, R.style.CustomAlertDialog)
+        dialog.setupWithoutTitle()
+        val binding = DialogStartStopChargingSelectionBinding.inflate(layoutInflater)
+        dialog.setContentView(binding.root)
+        dialog.setCanceledOnTouchOutside(false)
+
+        binding.apply {
+            tvStartStopCharging.text = if (isStartCharging) "Start Charging by" else "Stop Charging by"
+
+            ivEnterOTP.setOnClickListener {
+                dialog.dismiss()
+                onOTPClick()
+            }
+            ivTapRFID.setOnClickListener {
+                dialog.dismiss()
+                onRFIDClick()
             }
         }
 

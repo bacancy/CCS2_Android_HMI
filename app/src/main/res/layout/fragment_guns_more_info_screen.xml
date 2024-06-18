@@ -229,4 +229,18 @@
 
     </LinearLayout>
 
+    <Button
+        android:id="@+id/btnStartStopCharging"
+        android:background="@drawable/start_rounded_rect_selected"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_8ssp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:paddingVertical="@dimen/_5sdp"
+        android:paddingHorizontal="@dimen/_10sdp"
+        android:text="START" />
+
 </LinearLayout>
