@@ -1,9 +1,13 @@
 package com.bacancy.ccs2androidhmi.views.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.viewModels
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
@@ -15,15 +19,18 @@ import com.bacancy.ccs2androidhmi.util.LanguageConfig.getLanguageName
 import com.bacancy.ccs2androidhmi.util.LanguageConfig.setAppLanguage
 import com.bacancy.ccs2androidhmi.util.LanguageConfig.setupLanguagesList
 import com.bacancy.ccs2androidhmi.util.PrefHelper
+import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
 import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
 import com.bacancy.ccs2androidhmi.views.adapters.AppSettingsAdapter
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class AppSettingsFragment : BaseFragment() {
 
     private lateinit var binding: FragmentAppSettingsBinding
+    val appViewModel: AppViewModel by viewModels()
 
     @Inject
     lateinit var prefHelper: PrefHelper
@@ -37,7 +44,16 @@ class AppSettingsFragment : BaseFragment() {
         (requireActivity() as HMIDashboardActivity).showHideHomeIcon()
         (requireActivity() as HMIDashboardActivity).showHideSettingOptions()
         setupSettingsList()
+        observeConfigAccessKeys()
         return binding.root
+    }
+
+    private fun observeConfigAccessKeys() {
+        lifecycleScope.launch {
+            appViewModel.currentConfigAccessKey.collect {
+                Log.d("WED_TAG","Current ConfigAccess Key = $it")
+            }
+        }
     }
 
     override fun setScreenHeaderViews() {
@@ -103,6 +119,14 @@ class AppSettingsFragment : BaseFragment() {
                         prefHelper.setBoolean(CommonUtils.IS_APP_PINNED, false)
                         (requireActivity() as HMIDashboardActivity).openEVSEApp()
                     }
+
+                    SET_09 -> {
+                        prefHelper.setBoolean("CDM_CONFIG_OPTION_ENTERED", true)
+
+                        /*(requireActivity() as HMIDashboardActivity).addNewFragment(
+                            CDMConfigurationFragment()
+                        )*/
+                    }
                 }
             }
         }
@@ -130,7 +154,8 @@ class AppSettingsFragment : BaseFragment() {
             SET_05 to getString(R.string.lbl_local_start_or_stop_charging),
             SET_06 to getString(R.string.lbl_test_mode),
             SET_07 to getString(R.string.lbl_notifications),
-            SET_08 to "Charger Commissioning"
+            SET_08 to "Charger Commissioning",
+            SET_09 to "CDM Configuration"
         )
 
         if (!AppConfig.SHOW_LOCAL_START_STOP) {
@@ -153,6 +178,7 @@ class AppSettingsFragment : BaseFragment() {
         const val SET_06 = "SET_06"
         const val SET_07 = "SET_07"
         const val SET_08 = "SET_08"
+        const val SET_09 = "SET_09"
         const val ENGLISH = "English"
     }
 }

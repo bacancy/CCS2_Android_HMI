@@ -159,10 +159,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
 
     fun setupPortsAndStartReading() {
         setupSerialPort()
-        //startReading()
-        lifecycleScope.launch {
-            readConfigAccessParamsState()
-        }
+        startReading()
     }
 
     private suspend fun readConfigAccessParamsState() {
@@ -193,14 +190,28 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                     val mappedArray = chargingEndTimeArray.map { it2 -> it2.getIntValueFromByte() }
                     val accessData = ModbusTypeConverter.decimalArrayToHexArray(mappedArray).joinToString { it2 -> it2 }.replace(", ", "")
                     Log.d("TUE_TAG", "readConfigAccessParamsState: Response in hex = $accessData")
-                    if(accessData == "1111"){
-                        //write "1234" to start accessing config parameters
-                        lifecycleScope.launch {
-                            writeForConfigAccessParamsState("1234")
+                    appViewModel.setKeyForConfigAccess(accessData)
+                    when (accessData) {
+                        "2222" -> {
+                            //system not available for configuration
+                            lifecycleScope.launch {
+                                readConfigAccessParamsState()
+                            }
                         }
-                    }else{
-                        lifecycleScope.launch {
-                            readConfigAccessParamsState()
+                        "1111" -> {
+                            //system available for configuration
+                            //write "1234" to start accessing config parameters
+                            lifecycleScope.launch {
+                                //writeForConfigAccessParamsState("1234")
+                            }
+                            lifecycleScope.launch {
+                                readConfigAccessParamsState()
+                            }
+                        }
+                        else -> {
+                            lifecycleScope.launch {
+                                readConfigAccessParamsState()
+                            }
                         }
                     }
                 } else {
@@ -258,25 +269,31 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
     private fun startReading() {
         lifecycleScope.launch {
             delay(mCommonDelay)
-            val isChargerActiveDeactiveMessageRecd =
-                prefHelper.getBoolean(CommonUtils.CHARGER_ACTIVE_DEACTIVE_MESSAGE_RECD, false)
-            if (isChargerActiveDeactiveMessageRecd) {
-                prefHelper.setBoolean(CommonUtils.CHARGER_ACTIVE_DEACTIVE_MESSAGE_RECD, false)
-                val isChargerActive = prefHelper.getBoolean(IS_CHARGER_ACTIVE, true)
-                Log.i(
-                    TAG,
-                    "startReading: MAKING CHARGER - ${if (isChargerActive) "OPERATIVE" else "INOPERATIVE"}"
-                )
-                writeForChargerActiveDeactive()
-            } else {
-                //readChargerActiveDeactiveState()
-                writeForDualSocketMode(
-                    if (prefHelper.getBoolean(
-                            IS_DUAL_SOCKET_MODE_SELECTED,
-                            false
-                        )
-                    ) 1 else 0
-                )
+            if(prefHelper.getBoolean("CDM_CONFIG_OPTION_ENTERED", false)){
+                lifecycleScope.launch {
+                    readConfigAccessParamsState()
+                }
+            }else{
+                val isChargerActiveDeactiveMessageRecd =
+                    prefHelper.getBoolean(CommonUtils.CHARGER_ACTIVE_DEACTIVE_MESSAGE_RECD, false)
+                if (isChargerActiveDeactiveMessageRecd) {
+                    prefHelper.setBoolean(CommonUtils.CHARGER_ACTIVE_DEACTIVE_MESSAGE_RECD, false)
+                    val isChargerActive = prefHelper.getBoolean(IS_CHARGER_ACTIVE, true)
+                    Log.i(
+                        TAG,
+                        "startReading: MAKING CHARGER - ${if (isChargerActive) "OPERATIVE" else "INOPERATIVE"}"
+                    )
+                    writeForChargerActiveDeactive()
+                } else {
+                    //readChargerActiveDeactiveState()
+                    writeForDualSocketMode(
+                        if (prefHelper.getBoolean(
+                                IS_DUAL_SOCKET_MODE_SELECTED,
+                                false
+                            )
+                        ) 1 else 0
+                    )
+                }
             }
         }
     }
