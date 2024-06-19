@@ -267,4 +267,13 @@
     <string name="lbl_portugese_default">Português</string>
     <string name="lbl_dutch_default">Nederlands</string>
     <string name="lbl_turkish_default">Türkçe</string>
+
+    <string name="msg_tap_rfid_to_start_charging">अपना RFID कार्ड टैप करने के बाद, \'OK' पर क्लिक करें।</string>
+    <string name="lbl_ok">ठीक है</string>
+    <string name="lbl_start_charging">चार्जिंग शुरू करें</string>
+    <string name="lbl_stop_charging">चार्जिंग रोकें</string>
+    <string name="lbl_enter_otp">ओटीपी दर्ज करें</string>
+    <string name="lbl_tap_rfid">RFID टैप करें</string>
+    <string name="lbl_start">शुरू</string>
+    <string name="lbl_stop">रोकें</string>
 </resources>

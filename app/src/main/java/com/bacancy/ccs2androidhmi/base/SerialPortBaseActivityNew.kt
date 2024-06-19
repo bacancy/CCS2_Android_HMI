@@ -564,12 +564,13 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
 
                         PLUGGED_IN,
                         LBL_AUTHENTICATION_SUCCESS -> {
+                            prefHelper.setStringValue(GUN_1_CHARGING_START_TIME, "")
+                            prefHelper.setStringValue(GUN_1_CHARGING_END_TIME, "")
                             isGun1PluggedIn = true
                             openGun1LastChargingSummary()
                         }
 
                         LBL_CHARGING -> {
-                            prefHelper.setStringValue(GUN_1_CHARGING_END_TIME, "")
                             if(prefHelper.getStringValue(GUN_1_CHARGING_START_TIME,"").isEmpty()){
                                 prefHelper.setStringValue(GUN_1_CHARGING_START_TIME, DateTimeUtils.getCurrentDateTime().convertDateFormatToDesiredFormat(
                                     DATE_TIME_FORMAT, DATE_TIME_FORMAT_FROM_CHARGER))
@@ -850,12 +851,13 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
 
                         PLUGGED_IN,
                         LBL_AUTHENTICATION_SUCCESS -> {
+                            prefHelper.setStringValue(GUN_2_CHARGING_START_TIME, "")
+                            prefHelper.setStringValue(GUN_2_CHARGING_END_TIME, "")
                             isGun2PluggedIn = true
                             openGun2LastChargingSummary()
                         }
 
                         LBL_CHARGING -> {
-                            prefHelper.setStringValue(GUN_2_CHARGING_END_TIME, "")
                             if(prefHelper.getStringValue(GUN_2_CHARGING_START_TIME,"").isEmpty()) {
                                 prefHelper.setStringValue(
                                     GUN_2_CHARGING_START_TIME,

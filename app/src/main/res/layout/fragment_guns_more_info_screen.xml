@@ -180,7 +180,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_10sdp"
+        android:layout_marginTop="@dimen/_5sdp"
         android:orientation="horizontal">
 
         <Button
@@ -235,12 +235,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/white"
-        android:textSize="@dimen/_8ssp"
+        android:textSize="@dimen/_7ssp"
         android:textStyle="bold"
         android:visibility="gone"
-        android:layout_marginTop="@dimen/_5sdp"
+        android:layout_marginTop="@dimen/_3sdp"
         android:paddingVertical="@dimen/_5sdp"
-        android:paddingHorizontal="@dimen/_10sdp"
-        android:text="START" />
+        android:paddingHorizontal="@dimen/_10sdp" />
 
 </LinearLayout>

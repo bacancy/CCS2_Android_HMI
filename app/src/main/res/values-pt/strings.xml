@@ -265,4 +265,13 @@
     <string name="lbl_portugese_default">Português</string>
     <string name="lbl_dutch_default">Nederlands</string>
     <string name="lbl_turkish_default">Türkçe</string>
+
+    <string name="msg_tap_rfid_to_start_charging">Depois de tocar seu cartão RFID, clique em \'OK'.</string>
+    <string name="lbl_ok">OK</string>
+    <string name="lbl_start_charging">Iniciar Carregamento</string>
+    <string name="lbl_stop_charging">Parar Carregamento</string>
+    <string name="lbl_enter_otp">Digite o OTP</string>
+    <string name="lbl_tap_rfid">Toque no RFID</string>
+    <string name="lbl_start">INICIAR</string>
+    <string name="lbl_stop">PARAR</string>
 </resources>

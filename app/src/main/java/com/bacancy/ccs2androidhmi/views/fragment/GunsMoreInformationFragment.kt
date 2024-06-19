@@ -98,7 +98,7 @@ class GunsMoreInformationFragment : BaseFragment() {
             showPinAuthDialog()
         }) {
             val dialogInfo =
-                requireActivity().showCustomDialog("Once your RFID card has been tapped, click 'OK'.", buttonLabel = "OK") {}
+                requireActivity().showCustomDialog(getString(R.string.msg_tap_rfid_to_start_charging), buttonLabel = getString(R.string.lbl_ok)) {}
             dialogInfo.show()
             requireActivity().clearDialogFlags(dialogInfo)
         }
@@ -138,46 +138,21 @@ class GunsMoreInformationFragment : BaseFragment() {
 
                 when (gunChargingStateToSave) {
                     GunsChargingInfoUtils.PLUGGED_IN -> {
-                        ivSessionMode.visible()
                         handleStartStopButtonVisibility(shouldDisplayShow = true,isCharging = false)
-                        /*if (!isSessionModeDialogShownOnce && !sessionModeDialog.isShowing) {
-                            val sessionModeKey = when (selectedGunNumber) {
-                                1 -> IS_GUN_1_SESSION_MODE_SELECTED
-                                2 -> IS_GUN_2_SESSION_MODE_SELECTED
-                                else -> null
-                            }
-
-                            if (sessionModeKey != null && !prefHelper.getBoolean(sessionModeKey, false)) {
-                                isSessionModeDialogShownOnce = true
-                                sessionModeDialog.show()
-                                requireActivity().clearDialogFlags(sessionModeDialog)
-                            }
-                        }*/
-                        if (SHOW_PIN_AUTHORIZATION) {
-                            ivPinAuthorization.visible()
-                        }
                     }
 
                     GunsChargingInfoUtils.LBL_CHARGING -> {
                         handleStartStopButtonVisibility(shouldDisplayShow = true,isCharging = true)
-                        ivSessionMode.gone()
-                        /*isSessionModeDialogShownOnce = false*/
                         if(sessionModeDialog.isShowing){
                             sessionModeDialog.dismiss()
-                        }
-                        if (SHOW_PIN_AUTHORIZATION) {
-                            ivPinAuthorization.visible()
                         }
                     }
 
                     else -> {
                         handleStartStopButtonVisibility(shouldDisplayShow = false,isCharging = false)
-                        ivSessionMode.gone()
-                        /*isSessionModeDialogShownOnce = false*/
                         if(sessionModeDialog.isShowing){
                             sessionModeDialog.dismiss()
                         }
-                        ivPinAuthorization.gone()
                     }
                 }
 
@@ -212,10 +187,10 @@ class GunsMoreInformationFragment : BaseFragment() {
             if (shouldDisplayShow) {
                 btnStartStopCharging.visible()
                 if(isCharging){
-                    btnStartStopCharging.text = "STOP"
+                    btnStartStopCharging.text = getString(R.string.lbl_stop)
                     btnStartStopCharging.setBackgroundResource(R.drawable.stop_rounded_rect_selected)
                 } else {
-                    btnStartStopCharging.text = "START"
+                    btnStartStopCharging.text = getString(R.string.lbl_start)
                     btnStartStopCharging.setBackgroundResource(R.drawable.start_rounded_rect_selected)
                 }
             } else {
@@ -228,7 +203,7 @@ class GunsMoreInformationFragment : BaseFragment() {
         binding.apply {
 
             btnStartStopCharging.setOnClickListener {
-                if(btnStartStopCharging.text == "START"){
+                if(btnStartStopCharging.text == getString(R.string.lbl_start)){
                     if(sessionModeDialog.isShowing.not()){
                         sessionModeDialog.show()
                     }

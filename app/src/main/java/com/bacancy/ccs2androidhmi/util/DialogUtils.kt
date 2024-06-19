@@ -374,7 +374,7 @@ object DialogUtils {
         dialog.setCanceledOnTouchOutside(false)
 
         binding.apply {
-            tvStartStopCharging.text = if (isStartCharging) "Start Charging by" else "Stop Charging by"
+            tvStartStopCharging.text = if (isStartCharging) getString(R.string.lbl_start_charging) else getString(R.string.lbl_stop_charging)
 
             ivEnterOTP.setOnClickListener {
                 dialog.dismiss()

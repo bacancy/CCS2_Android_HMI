@@ -267,4 +267,13 @@
     <string name="lbl_portugese_default">Português</string>
     <string name="lbl_dutch_default">Nederlands</string>
     <string name="lbl_turkish_default">Türkçe</string>
+
+    <string name="msg_tap_rfid_to_start_charging">بمجرد أن تلمس بطاقة RFID الخاصة بك، انقر على \'موافق'.</string>
+    <string name="lbl_ok">موافق</string>
+    <string name="lbl_start_charging">ابدأ الشحن</string>
+    <string name="lbl_stop_charging">أوقف الشحن</string>
+    <string name="lbl_enter_otp">أدخل OTP</string>
+    <string name="lbl_tap_rfid">اضغط على RFID</string>
+    <string name="lbl_start">ابدأ</string>
+    <string name="lbl_stop">توقف</string>
 </resources>

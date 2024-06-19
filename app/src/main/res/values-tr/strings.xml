@@ -265,4 +265,13 @@
     <string name="lbl_portugese_default">Português</string>
     <string name="lbl_dutch_default">Nederlands</string>
     <string name="lbl_turkish_default">Türkçe</string>
+
+    <string name="msg_tap_rfid_to_start_charging">RFID kartınızı dokundurduktan sonra, \'Tamam' düğmesine tıklayın.</string>
+    <string name="lbl_ok">Tamam</string>
+    <string name="lbl_start_charging">Şarjı Başlat</string>
+    <string name="lbl_stop_charging">Şarjı Durdur</string>
+    <string name="lbl_enter_otp">OTP\'yi Girin</string>
+    <string name="lbl_tap_rfid">RFID\'yi dokundur</string>
+    <string name="lbl_start">BAŞLA</string>
+    <string name="lbl_stop">DUR</string>
 </resources>
