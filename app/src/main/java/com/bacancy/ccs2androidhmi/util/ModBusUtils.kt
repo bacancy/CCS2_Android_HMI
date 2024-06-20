@@ -159,7 +159,8 @@ object ModBusUtils {
         frame[5] = quantity.toByte()
         frame[6] = byteCount.toByte()
 
-        val newArray = hexStringToByteArray(data)
+        //val newArray = hexStringToByteArray(data)
+        val newArray = data.toByteArray(Charsets.UTF_8)
         val result = ByteArray(20)
         val elementsToCopy = minOf(newArray.size, 20)
         newArray.copyInto(result, endIndex = elementsToCopy)
