@@ -1,6 +1,7 @@
 package com.bacancy.ccs2androidhmi.views.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,7 +26,14 @@ class CDMConfigurationFragment : BaseFragment() {
         (requireActivity() as HMIDashboardActivity).showHideBackIcon()
         (requireActivity() as HMIDashboardActivity).showHideHomeIcon()
         (requireActivity() as HMIDashboardActivity).showHideSettingOptions()
+        observeConfigurationParameters()
         return binding.root
+    }
+
+    private fun observeConfigurationParameters() {
+        appViewModel.getConfigurationParameters.observe(viewLifecycleOwner){
+            Log.d("CDMConfigurationFragment", "observeConfigurationParameters: $it")
+        }
     }
 
     override fun setScreenHeaderViews() {

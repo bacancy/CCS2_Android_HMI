@@ -123,9 +123,9 @@ class AppSettingsFragment : BaseFragment() {
                     SET_09 -> {
                         prefHelper.setBoolean("CDM_CONFIG_OPTION_ENTERED", true)
 
-                        /*(requireActivity() as HMIDashboardActivity).addNewFragment(
+                        (requireActivity() as HMIDashboardActivity).addNewFragment(
                             CDMConfigurationFragment()
-                        )*/
+                        )
                     }
                 }
             }

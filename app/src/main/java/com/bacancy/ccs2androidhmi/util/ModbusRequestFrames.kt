@@ -92,4 +92,11 @@ object ModbusRequestFrames {
     ): ByteArray {
         return ModBusUtils.createReadHoldingRegistersRequest(startAddress, quantity)
     }
+
+    fun getConfigurationParametersRequestFrame(
+        startAddress: Int = 400,
+        quantity: Int = 45
+    ): ByteArray {
+        return ModBusUtils.createReadHoldingRegistersRequest(startAddress, quantity)
+    }
 }

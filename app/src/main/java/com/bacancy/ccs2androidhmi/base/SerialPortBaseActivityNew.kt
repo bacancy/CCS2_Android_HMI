@@ -195,22 +195,19 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                         "2222" -> {
                             //system not available for configuration
                             lifecycleScope.launch {
-                                readConfigAccessParamsState()
+                                getConfigurationParameters()
                             }
                         }
                         "1111" -> {
                             //system available for configuration
                             //write "1234" to start accessing config parameters
                             lifecycleScope.launch {
-                                //writeForConfigAccessParamsState("1234")
-                            }
-                            lifecycleScope.launch {
-                                readConfigAccessParamsState()
+                                getConfigurationParameters()
                             }
                         }
                         else -> {
                             lifecycleScope.launch {
-                                readConfigAccessParamsState()
+                                getConfigurationParameters()
                             }
                         }
                     }
@@ -221,7 +218,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 showReadStoppedUI()
                 Log.e("TUE_TAG", "readConfigAccessParamsState: OnReadStopped Called")
                 lifecycleScope.launch {
-                    readConfigAccessParamsState()
+                    getConfigurationParameters()
                 }
             })
     }
@@ -376,6 +373,45 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 Log.e(TAG, "readChargerActiveDeactiveState: OnReadStopped Called")
                 lifecycleScope.launch {
                     readMiscInfo()
+                }
+            })
+    }
+
+    private suspend fun getConfigurationParameters() {
+        Log.i(
+            TAG,
+            "getConfigurationParameters: Request Sent - ${
+                ModbusRequestFrames.getConfigurationParametersRequestFrame().toHex()
+            }"
+        )
+        ReadWriteUtil.writeRequestAndReadResponse(
+            mOutputStream,
+            mInputStream,
+            ResponseSizes.CONFIGURATION_PARAMETERS_RESPONSE_SIZE,
+            ModbusRequestFrames.getConfigurationParametersRequestFrame(),
+            onDataReceived = {
+                if (it.toHex()
+                        .startsWith(ModBusUtils.HOLDING_REGISTERS_CORRECT_RESPONSE_BITS)
+                ) {
+                    resetReadStopCount()
+                    lifecycleScope.launch {
+                        //getConfigurationParameters()
+                    }
+                    Log.d(TAG, "getConfigurationParameters: Response = ${it.toHex()}")
+                    appViewModel.insertConfigurationParametersInDB(it)
+                } else {
+                    lifecycleScope.launch {
+                        //getConfigurationParameters()
+                    }
+                    Log.e(TAG, "getConfigurationParameters: Error Response - ${it.toHex()}")
+                }
+            }, onReadStopped = {
+                Log.e(TAG, "getConfigurationParameters: OnReadStopped Called")
+                showReadStoppedUI()
+                lifecycleScope.launch {
+                    lifecycleScope.launch {
+                        //getConfigurationParameters()
+                    }
                 }
             })
     }

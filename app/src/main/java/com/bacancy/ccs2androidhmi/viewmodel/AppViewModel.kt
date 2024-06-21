@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bacancy.ccs2androidhmi.db.entity.TbAcMeterInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbChargingHistory
+import com.bacancy.ccs2androidhmi.db.entity.TbConfigurationParameters
 import com.bacancy.ccs2androidhmi.db.entity.TbErrorCodes
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsDcMeterInfo
@@ -19,6 +20,7 @@ import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_CHARGING_END_TIME
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_CHARGING_START_TIME
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_CHARGING_END_TIME
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_CHARGING_START_TIME
+import com.bacancy.ccs2androidhmi.util.ConfigurationParametersUtils
 import com.bacancy.ccs2androidhmi.util.DateTimeUtils
 import com.bacancy.ccs2androidhmi.util.DateTimeUtils.DATE_TIME_FORMAT
 import com.bacancy.ccs2androidhmi.util.DateTimeUtils.DATE_TIME_FORMAT_FOR_UI
@@ -29,6 +31,7 @@ import com.bacancy.ccs2androidhmi.util.LastChargingSummaryUtils
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils
 import com.bacancy.ccs2androidhmi.util.ModBusUtils
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter
+import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.hexStringToDecimal
 import com.bacancy.ccs2androidhmi.util.PrefHelper
 import com.bacancy.ccs2androidhmi.util.StateAndModesUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -444,4 +447,49 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
         Log.d("WED_TAG","accessData = $accessData")
         _currentConfigAccessKey.value = accessData
     }
+
+    fun insertConfigurationParametersInDB(it: ByteArray) {
+
+        Log.d("CDM_TAG","Charge Control Mode = ${ConfigurationParametersUtils.getChargeControlMode(it)}")
+
+        Log.d("CDM_TAG","Rectifier Selection = ${ConfigurationParametersUtils.getRectifierSelection(it).hexStringToDecimal()}")
+        Log.d("CDM_TAG","Number of Rectifier Per Group = ${ConfigurationParametersUtils.getNumberOfRectifierPerGroup(it).hexStringToDecimal()}")
+        Log.d("CDM_TAG","Rectifier Max Voltage = ${ConfigurationParametersUtils.getRectifierMaxVoltage(it).hexStringToDecimal()}")
+        Log.d("CDM_TAG","Rectifier Max Power = ${ConfigurationParametersUtils.getRectifierMaxPower(it).hexStringToDecimal()}")
+        Log.d("CDM_TAG","Rectifier Max Current = ${ConfigurationParametersUtils.getRectifierMaxCurrent(it).hexStringToDecimal()}")
+
+        val tbConfigurationParameters = TbConfigurationParameters(
+            chargeControlMode = ConfigurationParametersUtils.getChargeControlModeValue(it),
+            selectedRectifier = ConfigurationParametersUtils.getRectifierSelection(it).hexStringToDecimal(),
+            numberOfRectifierPerGroup = ConfigurationParametersUtils.getNumberOfRectifierPerGroup(it).hexStringToDecimal(),
+            rectifierMaxPower = ConfigurationParametersUtils.getRectifierMaxPower(it).hexStringToDecimal(),
+            rectifierMaxVoltage = ConfigurationParametersUtils.getRectifierMaxVoltage(it).hexStringToDecimal(),
+            rectifierMaxCurrent = ConfigurationParametersUtils.getRectifierMaxCurrent(it).hexStringToDecimal()
+        )
+
+        viewModelScope.launch {
+            mainRepository.insertConfigurationParameters(tbConfigurationParameters)
+        }
+
+        Log.d("CDM_TAG","Config Access Params Key = ${ConfigurationParametersUtils.getConfigAccessKey(it)}")
+        Log.d("CDM_TAG","Max DC Output Power Capacity of Charger = ${ConfigurationParametersUtils.getMaxDCOutputPowerCapacityOfCharger(it).hexStringToDecimal()}")
+        Log.d("CDM_TAG","AC Meter Selection = ${ConfigurationParametersUtils.getACMeterSelection(it).hexStringToDecimal()}")
+        Log.d("CDM_TAG","AC Meter Data Configuration = ${ConfigurationParametersUtils.getACMeterDataConfiguration(it)}")
+        Log.d("CDM_TAG","ACMDC Data Type = ${ConfigurationParametersUtils.getACMeterDataType(it)}")
+        Log.d("CDM_TAG","ACMDC Data Endianness = ${ConfigurationParametersUtils.getACMeterDataEndianness(it)}")
+        Log.d("CDM_TAG","ACMDC Read Function = ${ConfigurationParametersUtils.getACMeterReadFunction(it)}")
+        Log.d("CDM_TAG","ACMDC Data in Watt/KW = ${ConfigurationParametersUtils.getACMeterDataTypeInWattOrKW(it)}")
+        Log.d("CDM_TAG","ACMDC Mandatory Yes/No = ${ConfigurationParametersUtils.getACMeterMandatory(it)}")
+
+        Log.d("CDM_TAG","DC Meter Selection = ${ConfigurationParametersUtils.getDCMeterSelection(it).hexStringToDecimal()}")
+        Log.d("CDM_TAG","DC Meter Data Configuration = ${ConfigurationParametersUtils.getDCMeterDataConfiguration(it)}")
+        Log.d("CDM_TAG","DCMDC Data Type = ${ConfigurationParametersUtils.getDCMeterDataType(it)}")
+        Log.d("CDM_TAG","DCMDC Data Endianness = ${ConfigurationParametersUtils.getDCMeterDataEndianness(it)}")
+        Log.d("CDM_TAG","DCMDC Read Function = ${ConfigurationParametersUtils.getDCMeterReadFunction(it)}")
+        Log.d("CDM_TAG","DCMDC Data in Watt/KW = ${ConfigurationParametersUtils.getDCMeterDataTypeInWattOrKW(it)}")
+        Log.d("CDM_TAG","DCMDC Mandatory Yes/No = ${ConfigurationParametersUtils.getDCMeterMandatory(it)}")
+
+    }
+
+    val getConfigurationParameters: LiveData<List<TbConfigurationParameters>> = mainRepository.getAllConfigurationParameters()
 }
