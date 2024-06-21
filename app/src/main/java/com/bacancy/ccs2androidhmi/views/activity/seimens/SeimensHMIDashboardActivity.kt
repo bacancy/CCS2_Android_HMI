@@ -90,7 +90,7 @@ class SeimensHMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeL
         super.onCreate(savedInstanceState)
         binding = ActivitySeimensHmiDashboardBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        prefHelper.setBoolean(CommonUtils.IS_APP_RESTARTED, true)
         gunsHomeScreenFragment = SeimensGunsHomeScreenFragment()
         addNewFragment(gunsHomeScreenFragment)
 
