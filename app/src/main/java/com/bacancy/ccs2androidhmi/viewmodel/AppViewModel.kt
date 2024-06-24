@@ -464,7 +464,11 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
             numberOfRectifierPerGroup = ConfigurationParametersUtils.getNumberOfRectifierPerGroup(it).hexStringToDecimal(),
             rectifierMaxPower = ConfigurationParametersUtils.getRectifierMaxPower(it).hexStringToDecimal(),
             rectifierMaxVoltage = ConfigurationParametersUtils.getRectifierMaxVoltage(it).hexStringToDecimal(),
-            rectifierMaxCurrent = ConfigurationParametersUtils.getRectifierMaxCurrent(it).hexStringToDecimal()
+            rectifierMaxCurrent = ConfigurationParametersUtils.getRectifierMaxCurrent(it).hexStringToDecimal(),
+            selectedACMeter = ConfigurationParametersUtils.getACMeterSelection(it).hexStringToDecimal(),
+            isACMeterMandatory = ConfigurationParametersUtils.getACMeterMandatory(it),
+            selectedDCMeter = ConfigurationParametersUtils.getDCMeterSelection(it).hexStringToDecimal(),
+            isDCMeterMandatory = ConfigurationParametersUtils.getDCMeterMandatory(it)
         )
 
         viewModelScope.launch {
@@ -488,6 +492,14 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
         Log.d("CDM_TAG","DCMDC Read Function = ${ConfigurationParametersUtils.getDCMeterReadFunction(it)}")
         Log.d("CDM_TAG","DCMDC Data in Watt/KW = ${ConfigurationParametersUtils.getDCMeterDataTypeInWattOrKW(it)}")
         Log.d("CDM_TAG","DCMDC Mandatory Yes/No = ${ConfigurationParametersUtils.getDCMeterMandatory(it)}")
+
+        Log.d("CDM_TAG","Fault Detection Enable/Disable = ${ConfigurationParametersUtils.getFaultDetectionEnableDisable(it)}")
+        Log.d("CDM_TAG","SPD Fault Detection = ${ConfigurationParametersUtils.getSPDFaultDetection(it)}")
+        Log.d("CDM_TAG","Smoke Fault Detection = ${ConfigurationParametersUtils.getSmokeFaultDetection(it)}")
+        Log.d("CDM_TAG","Tamper Fault Detection = ${ConfigurationParametersUtils.getTamperFaultDetection(it)}")
+        Log.d("CDM_TAG","LED Module Fault Detection = ${ConfigurationParametersUtils.getLEDModuleFaultDetection(it)}")
+        Log.d("CDM_TAG","Gun Temp Fault Detection = ${ConfigurationParametersUtils.getGunTemperatureFaultDetection(it)}")
+        Log.d("CDM_TAG","Isolation Fault Detection = ${ConfigurationParametersUtils.getIsolationFaultDetection(it)}")
 
     }
 

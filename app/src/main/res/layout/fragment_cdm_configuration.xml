@@ -13,6 +13,338 @@
         android:id="@+id/incHeader"
         layout="@layout/common_header" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:background="?attr/dialogBackground"
+        android:orientation="vertical">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tvCharger"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:padding="@dimen/_5sdp"
+                android:text="Charger"
+                android:textColor="@color/green"
+                android:textSize="@dimen/_9ssp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvRectifier"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:padding="@dimen/_5sdp"
+                android:text="Rectifier"
+                android:textSize="@dimen/_9ssp" />
+
+            <TextView
+                android:id="@+id/tvACMeter"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:padding="@dimen/_5sdp"
+                android:text="AC Meter"
+                android:textSize="@dimen/_9ssp" />
+
+            <TextView
+                android:id="@+id/tvDCMeter"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:padding="@dimen/_5sdp"
+                android:text="DC Meter"
+                android:textSize="@dimen/_9ssp" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/selected_radio_color" />
+
+        <LinearLayout
+            android:id="@+id/lnrCharger"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/_10sdp"
+            android:visibility="visible">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Charge Control Mode"
+                android:textSize="@dimen/_8ssp" />
+
+            <Spinner
+                android:id="@+id/spnChargeControlMode"
+                android:layout_width="@dimen/_100sdp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:background="?attr/dialogBackground"
+                android:padding="@dimen/_10sdp" />
+
+        </LinearLayout>
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/lnrRectifier"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/_10sdp"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Rectifier Selection"
+                    android:textSize="@dimen/_8ssp" />
+
+                <Spinner
+                    android:id="@+id/spnRectifierSelection"
+                    android:layout_width="@dimen/_100sdp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:background="?attr/dialogBackground"
+                    android:padding="@dimen/_10sdp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:text="Rectifier Per Group"
+                    android:textSize="@dimen/_8ssp" />
+
+                <EditText
+                    android:id="@+id/edtRectifierPerGroup"
+                    android:layout_width="@dimen/_100sdp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:background="?attr/dialogBackground"
+                    android:digits="12345678"
+                    android:hint="(1-8)"
+                    android:importantForAutofill="no"
+                    android:inputType="number"
+                    android:maxLength="1"
+                    android:padding="@dimen/_10sdp"
+                    android:singleLine="true"
+                    android:textColorHint="@color/light_grey"
+                    android:textSize="@dimen/_8ssp"
+                    android:visibility="visible" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:text="Rectifier Max Power (kW)"
+                    android:textSize="@dimen/_8ssp" />
+
+                <EditText
+                    android:id="@+id/edtRectifierMaxPower"
+                    android:layout_width="@dimen/_100sdp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:background="?attr/dialogBackground"
+                    android:digits="1234567890"
+                    android:hint="(1-50)"
+                    android:importantForAutofill="no"
+                    android:inputType="number"
+                    android:maxLength="2"
+                    android:padding="@dimen/_10sdp"
+                    android:singleLine="true"
+                    android:textColorHint="@color/light_grey"
+                    android:textSize="@dimen/_8ssp"
+                    android:visibility="visible" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:text="Rectifier Max Voltage (V)"
+                    android:textSize="@dimen/_8ssp" />
+
+                <EditText
+                    android:id="@+id/edtRectifierMaxVoltage"
+                    android:layout_width="@dimen/_100sdp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:background="?attr/dialogBackground"
+                    android:digits="1234567890"
+                    android:hint="(200-1000)"
+                    android:importantForAutofill="no"
+                    android:inputType="number"
+                    android:maxLength="4"
+                    android:padding="@dimen/_10sdp"
+                    android:singleLine="true"
+                    android:textColorHint="@color/light_grey"
+                    android:textSize="@dimen/_8ssp"
+                    android:visibility="visible" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:text="Rectifier Max Current (A)"
+                    android:textSize="@dimen/_8ssp" />
+
+                <EditText
+                    android:id="@+id/edtRectifierMaxCurrent"
+                    android:layout_width="@dimen/_100sdp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:background="?attr/dialogBackground"
+                    android:digits="1234567890"
+                    android:hint="(1-100)"
+                    android:importantForAutofill="no"
+                    android:inputType="number"
+                    android:maxLength="3"
+                    android:padding="@dimen/_10sdp"
+                    android:singleLine="true"
+                    android:textColorHint="@color/light_grey"
+                    android:textSize="@dimen/_8ssp"
+                    android:visibility="visible" />
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+        <LinearLayout
+            android:id="@+id/lnrACMeter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/_10sdp"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="AC Meter Selection"
+                android:textSize="@dimen/_8ssp" />
+
+            <Spinner
+                android:id="@+id/spnACMeterSelection"
+                android:layout_width="@dimen/_100sdp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:background="?attr/dialogBackground"
+                android:padding="@dimen/_10sdp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/lnrDCMeter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/_10sdp"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="DC Meter Selection"
+                android:textSize="@dimen/_8ssp" />
+
+            <Spinner
+                android:id="@+id/spnDCMeterSelection"
+                android:layout_width="@dimen/_100sdp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:background="?attr/dialogBackground"
+                android:padding="@dimen/_10sdp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:padding="@dimen/_10sdp">
+
+            <!--<TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Charge Control Mode"
+                android:textSize="@dimen/_10ssp" />
+
+            <Spinner
+                android:id="@+id/spnChargeControlMode"
+                android:layout_width="@dimen/_100sdp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:background="?attr/dialogBackground"
+                android:padding="@dimen/_10sdp" />-->
+
+            <!--<TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:text="Rectifier Selection"
+                android:textSize="@dimen/_10ssp" />
+
+            <Spinner
+                android:id="@+id/spnRectifierSelection"
+                android:layout_width="@dimen/_100sdp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:background="?attr/dialogBackground"
+                android:padding="@dimen/_10sdp" />-->
+
+            <!--<TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:text="AC Meter Selection"
+                android:textSize="@dimen/_10ssp" />
+
+            <Spinner
+                android:id="@+id/spnACMeterSelection"
+                android:layout_width="@dimen/_100sdp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:background="?attr/dialogBackground"
+                android:padding="@dimen/_10sdp" />-->
+
+            <!--<TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:text="DC Meter Selection"
+                android:textSize="@dimen/_10ssp" />
+
+            <Spinner
+                android:id="@+id/spnDCMeterSelection"
+                android:layout_width="@dimen/_100sdp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:background="?attr/dialogBackground"
+                android:padding="@dimen/_10sdp" />-->
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
 </LinearLayout>

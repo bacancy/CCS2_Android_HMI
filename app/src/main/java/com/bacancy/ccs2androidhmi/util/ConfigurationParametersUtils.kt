@@ -139,8 +139,8 @@ object ConfigurationParametersUtils {
         }
     }
 
-    fun getACMeterMandatory(response: ByteArray): String {
-        return when (getACMeterDataConfiguration(response)[4]) {
+    fun getACMeterMandatory(response: ByteArray): Int {
+        /*return when (getACMeterDataConfiguration(response)[4]) {
             '0' -> {
                 "No"
             }
@@ -148,7 +148,8 @@ object ConfigurationParametersUtils {
                 "Yes"
             }
             else -> ""
-        }
+        }*/
+        return getACMeterDataConfiguration(response)[4].digitToInt()
     }
 
     fun getVoltageV1NRegisterAddress(response: ByteArray): String {
@@ -257,8 +258,8 @@ object ConfigurationParametersUtils {
         }
     }
 
-    fun getDCMeterMandatory(response: ByteArray): String {
-        return when (getDCMeterDataConfiguration(response)[4]) {
+    fun getDCMeterMandatory(response: ByteArray): Int {
+        /*return when (getDCMeterDataConfiguration(response)[4]) {
             '0' -> {
                 "No"
             }
@@ -266,7 +267,8 @@ object ConfigurationParametersUtils {
                 "Yes"
             }
             else -> ""
-        }
+        }*/
+        return getDCMeterDataConfiguration(response)[4].digitToInt()
     }
 
     fun getVoltageRegisterAddress(response: ByteArray): String {
@@ -306,7 +308,81 @@ object ConfigurationParametersUtils {
     }
 
     fun getFaultDetectionEnableDisable(response: ByteArray): String {
-        return response.getRangedArray(FAULT_DETECTION_ENABLE_DISABLE).toHex()
+        return ModbusTypeConverter.byteArrayToBinaryString(response.getRangedArray(
+            FAULT_DETECTION_ENABLE_DISABLE
+        )).reversed().substring(0, 7)
+    }
+
+    fun getSPDFaultDetection(response: ByteArray): String {
+        return when (getFaultDetectionEnableDisable(response)[1]) {
+            '0' -> {
+                "Disabled"
+            }
+            '1' -> {
+                "Enabled"
+            }
+            else -> ""
+        }
+    }
+
+    fun getSmokeFaultDetection(response: ByteArray): String {
+        return when (getFaultDetectionEnableDisable(response)[2]) {
+            '0' -> {
+                "Disabled"
+            }
+            '1' -> {
+                "Enabled"
+            }
+            else -> ""
+        }
+    }
+
+    fun getTamperFaultDetection(response: ByteArray): String {
+        return when (getFaultDetectionEnableDisable(response)[3]) {
+            '0' -> {
+                "Disabled"
+            }
+            '1' -> {
+                "Enabled"
+            }
+            else -> ""
+        }
+    }
+
+    fun getLEDModuleFaultDetection(response: ByteArray): String {
+        return when (getFaultDetectionEnableDisable(response)[4]) {
+            '0' -> {
+                "Disabled"
+            }
+            '1' -> {
+                "Enabled"
+            }
+            else -> ""
+        }
+    }
+
+    fun getGunTemperatureFaultDetection(response: ByteArray): String {
+        return when (getFaultDetectionEnableDisable(response)[5]) {
+            '0' -> {
+                "Disabled"
+            }
+            '1' -> {
+                "Enabled"
+            }
+            else -> ""
+        }
+    }
+
+    fun getIsolationFaultDetection(response: ByteArray): String {
+        return when (getFaultDetectionEnableDisable(response)[6]) {
+            '0' -> {
+                "Disabled"
+            }
+            '1' -> {
+                "Enabled"
+            }
+            else -> ""
+        }
     }
 
     fun getDCGunTemperatureThresholdValue(response: ByteArray): String {
@@ -368,5 +444,44 @@ object ConfigurationParametersUtils {
 
     fun getGUN2MaxCurrentLimit(response: ByteArray): String {
         return response.getRangedArray(GUN2_MAX_CURRENT_LIMIT).toHex()
+    }
+
+    fun getChargeControlModeList(): Array<String> {
+        return arrayOf("Standalone Mode", "Dynamic Mode")
+    }
+
+    fun getRectifiersList(): Array<String> {
+        return arrayOf(
+            "Uugreen Rectifier",
+            "Maxwell Rectifier",
+            "Sicon Rectifier",
+            "Tonhe Rectifier",
+            "Huawei Rectifier"
+        )
+    }
+
+    fun getACMetersList(): Array<String> {
+        return arrayOf(
+            "User Defined Custom AC Meter",
+            "Selec EM4M",
+            "Rishabh 3430",
+            "Elmeasure M30",
+            "Elmeasure LG2XX0D",
+            "Havells SDM630",
+            "Selec MFM384"
+        )
+    }
+
+    fun getDCMetersList(): Array<String> {
+        return arrayOf(
+            "User Defined Custom DC Meter",
+            "Rishabh EM6000",
+            "Rishabh EM6001",
+            "Selec EM2M",
+            "Elecnova PD195Z",
+            "Yada DCM3366D-J2",
+            "Pilot DCMSPM90",
+            "Elmeasure EDC2150D"
+        )
     }
 }

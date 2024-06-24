@@ -13,4 +13,8 @@ data class TbConfigurationParameters(
     var rectifierMaxPower: Int,
     var rectifierMaxVoltage: Int,
     var rectifierMaxCurrent: Int,
+    var selectedACMeter: Int,
+    var isACMeterMandatory: Int,
+    var selectedDCMeter: Int,
+    var isDCMeterMandatory: Int,
 )
