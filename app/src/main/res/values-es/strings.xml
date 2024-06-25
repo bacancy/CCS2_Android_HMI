@@ -267,4 +267,26 @@
     <string name="lbl_dutch_default">Nederlands</string>
     <string name="lbl_turkish_default">Türkçe</string>
 
+    <string name="lbl_charger">Cargador</string>
+    <string name="lbl_rectifier">Rectificador</string>
+    <string name="lbl_dc_meter">Medidor DC</string>
+    <string name="lbl_fault_detection">Detección de fallas</string>
+    <string name="lbl_charge_control_mode">Modo de control de carga</string>
+    <string name="lbl_rectifier_selection">Selección de rectificador</string>
+    <string name="lbl_rectifier_per_group">Rectificador por grupo</string>
+    <string name="lbl_rectifier_max_power_kw">Potencia máxima del rectificador (kW)</string>
+    <string name="lbl_rectifier_max_voltage_v">Voltaje máximo del rectificador (V)</string>
+    <string name="lbl_rectifier_max_current_a">Corriente máxima del rectificador (A)</string>
+    <string name="lbl_ac_meter_selection">Selección de medidor AC</string>
+    <string name="lbl_dc_meter_selection">Selección de medidor DC</string>
+    <string name="lbl_spd_fault_detection">Detección de fallas SPD</string>
+    <string name="lbl_smoke_fault_detection">Detección de fallas de humo</string>
+    <string name="lbl_tamper_fault_detection">Detección de fallas de manipulación</string>
+    <string name="lbl_led_module_fault_detection">Detección de fallas del módulo LED</string>
+    <string name="lbl_gun_temperature_fault_detection">Detección de fallas de temperatura del arma</string>
+    <string name="lbl_isolation_fault_detection">Detección de fallas de aislamiento</string>
+    <string name="lbl_dc_gun_temperature_threshold_value_c">Valor umbral de temperatura del arma DC (C)</string>
+    <string name="lbl_phase_low_detection_voltage_v">Voltaje de detección de fase baja (V)</string>
+    <string name="lbl_phase_high_detection_voltage_v">Voltaje de detección de fase alta (V)</string>
+
 </resources>

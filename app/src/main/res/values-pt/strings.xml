@@ -265,4 +265,27 @@
     <string name="lbl_portugese_default">Português</string>
     <string name="lbl_dutch_default">Nederlands</string>
     <string name="lbl_turkish_default">Türkçe</string>
+
+    <string name="lbl_charger">Carregador</string>
+    <string name="lbl_rectifier">Retificador</string>
+    <string name="lbl_dc_meter">Medidor DC</string>
+    <string name="lbl_fault_detection">Detecção de falhas</string>
+    <string name="lbl_charge_control_mode">Modo de controle de carga</string>
+    <string name="lbl_rectifier_selection">Seleção de retificador</string>
+    <string name="lbl_rectifier_per_group">Retificador por grupo</string>
+    <string name="lbl_rectifier_max_power_kw">Potência máxima do retificador (kW)</string>
+    <string name="lbl_rectifier_max_voltage_v">Tensão máxima do retificador (V)</string>
+    <string name="lbl_rectifier_max_current_a">Corrente máxima do retificador (A)</string>
+    <string name="lbl_ac_meter_selection">Seleção de medidor AC</string>
+    <string name="lbl_dc_meter_selection">Seleção de medidor DC</string>
+    <string name="lbl_spd_fault_detection">Detecção de falha SPD</string>
+    <string name="lbl_smoke_fault_detection">Detecção de falha de fumaça</string>
+    <string name="lbl_tamper_fault_detection">Detecção de falha de violação</string>
+    <string name="lbl_led_module_fault_detection">Detecção de falha do módulo LED</string>
+    <string name="lbl_gun_temperature_fault_detection">Detecção de falha de temperatura da arma</string>
+    <string name="lbl_isolation_fault_detection">Detecção de falha de isolamento</string>
+    <string name="lbl_dc_gun_temperature_threshold_value_c">Valor de limiar de temperatura da arma DC (C)</string>
+    <string name="lbl_phase_low_detection_voltage_v">Tensão de detecção de fase baixa (V)</string>
+    <string name="lbl_phase_high_detection_voltage_v">Tensão de detecção de fase alta (V)</string>
+
 </resources>

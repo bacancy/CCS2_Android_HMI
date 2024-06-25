@@ -35,6 +35,7 @@ class CDMConfigurationFragment : BaseFragment() {
         (requireActivity() as HMIDashboardActivity).showHideBackIcon()
         (requireActivity() as HMIDashboardActivity).showHideHomeIcon()
         (requireActivity() as HMIDashboardActivity).showHideSettingOptions()
+        updateSelectedTab(0)
         observeConfigurationParameters()
         handleTabSelections()
         return binding.root
@@ -59,6 +60,9 @@ class CDMConfigurationFragment : BaseFragment() {
                 updateSelectedTab(3)
             }
 
+            tvFaultDetection.setOnClickListener {
+                updateSelectedTab(4)
+            }
         }
     }
 
@@ -68,10 +72,12 @@ class CDMConfigurationFragment : BaseFragment() {
             tvRectifier.updateSelectedTabColor(tabId == 1)
             tvACMeter.updateSelectedTabColor(tabId == 2)
             tvDCMeter.updateSelectedTabColor(tabId == 3)
+            tvFaultDetection.updateSelectedTabColor(tabId == 4)
             binding.lnrCharger.visibility = if (tabId == 0) View.VISIBLE else View.GONE
             binding.lnrRectifier.visibility = if (tabId == 1) View.VISIBLE else View.GONE
             binding.lnrACMeter.visibility = if (tabId == 2) View.VISIBLE else View.GONE
             binding.lnrDCMeter.visibility = if (tabId == 3) View.VISIBLE else View.GONE
+            binding.lnrFaultDetection.visibility = if (tabId == 4) View.VISIBLE else View.GONE
         }
     }
 
@@ -84,14 +90,31 @@ class CDMConfigurationFragment : BaseFragment() {
         appViewModel.getConfigurationParameters.observe(viewLifecycleOwner) { paramsList ->
             Log.d("CDMConfigurationFragment", "observeConfigurationParameters: $paramsList")
             paramsList?.let {
-                it[0].apply {
-                    setupChargeControlModeSpinner(chargeControlMode)
-                    setupRectifierSelectionSpinner(selectedRectifier)
-                    setupRectifierData(this)
-                    setupACMeterSelectionSpinner(selectedACMeter)
-                    setupDCMeterSelectionSpinner(selectedDCMeter)
+                if(it.isNotEmpty()) {
+                    it[0].apply {
+                        setupChargeControlModeSpinner(chargeControlMode)
+                        setupRectifierSelectionSpinner(selectedRectifier)
+                        setupRectifierData(this)
+                        setupFaultDetectionData(this)
+                        setupACMeterSelectionSpinner(selectedACMeter)
+                        setupDCMeterSelectionSpinner(selectedDCMeter)
+                    }
                 }
             }
+        }
+    }
+
+    private fun setupFaultDetectionData(tbConfigurationParameters: TbConfigurationParameters) {
+        binding.apply {
+            switchSPDFaultDetection.isChecked = tbConfigurationParameters.spdFaultDetection == 1
+            switchSmokeFaultDetection.isChecked = tbConfigurationParameters.smokeFaultDetection == 1
+            switchTamperFaultDetection.isChecked = tbConfigurationParameters.tamperFaultDetection == 1
+            switchLEDFaultDetection.isChecked = tbConfigurationParameters.ledModuleFaultDetection == 1
+            switchGunTemperatureFaultDetection.isChecked = tbConfigurationParameters.gunTempFaultDetection == 1
+            switchIsolationFaultDetection.isChecked = tbConfigurationParameters.isolationFaultDetection == 1
+            edtDcGunTemperatureThresholdValue.setText(tbConfigurationParameters.gunTemperatureThresholdValue.toString())
+            edtPhaseLowDetectionVoltage.setText(tbConfigurationParameters.phaseLowDetectionVoltage.toString())
+            edtPhaseHighDetectionVoltage.setText(tbConfigurationParameters.phaseHighDetectionVoltage.toString())
         }
     }
 

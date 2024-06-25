@@ -267,4 +267,27 @@
     <string name="lbl_portugese_default">Português</string>
     <string name="lbl_dutch_default">Nederlands</string>
     <string name="lbl_turkish_default">Türkçe</string>
+
+    <string name="lbl_charger">شاحن</string>
+    <string name="lbl_rectifier">مقوم</string>
+    <string name="lbl_dc_meter">مقياس التيار المستمر</string>
+    <string name="lbl_fault_detection">كشف العطل</string>
+    <string name="lbl_charge_control_mode">وضع التحكم في الشحن</string>
+    <string name="lbl_rectifier_selection">اختيار المقوم</string>
+    <string name="lbl_rectifier_per_group">المقوم لكل مجموعة</string>
+    <string name="lbl_rectifier_max_power_kw">الحد الأقصى لقدرة المقوم (كيلوواط)</string>
+    <string name="lbl_rectifier_max_voltage_v">الحد الأقصى لفولتية المقوم (فولت)</string>
+    <string name="lbl_rectifier_max_current_a">الحد الأقصى للتيار المقوم (أمبير)</string>
+    <string name="lbl_ac_meter_selection">اختيار مقياس التيار المتردد</string>
+    <string name="lbl_dc_meter_selection">اختيار مقياس التيار المستمر</string>
+    <string name="lbl_spd_fault_detection">كشف عطل SPD</string>
+    <string name="lbl_smoke_fault_detection">كشف عطل الدخان</string>
+    <string name="lbl_tamper_fault_detection">كشف عطل العبث</string>
+    <string name="lbl_led_module_fault_detection">كشف عطل وحدة LED</string>
+    <string name="lbl_gun_temperature_fault_detection">كشف عطل درجة حرارة البندقية</string>
+    <string name="lbl_isolation_fault_detection">كشف عطل العزل</string>
+    <string name="lbl_dc_gun_temperature_threshold_value_c">قيمة عتبة درجة حرارة البندقية DC (م)</string>
+    <string name="lbl_phase_low_detection_voltage_v">فولتية كشف انخفاض المرحلة (فولت)</string>
+    <string name="lbl_phase_high_detection_voltage_v">فولتية كشف ارتفاع المرحلة (فولت)</string>
+
 </resources>

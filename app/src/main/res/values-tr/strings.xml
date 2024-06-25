@@ -265,4 +265,27 @@
     <string name="lbl_portugese_default">Português</string>
     <string name="lbl_dutch_default">Nederlands</string>
     <string name="lbl_turkish_default">Türkçe</string>
+
+    <string name="lbl_charger">Şarj Cihazı</string>
+    <string name="lbl_rectifier">Doğrultucu</string>
+    <string name="lbl_dc_meter">DC Ölçer</string>
+    <string name="lbl_fault_detection">Hata Tespiti</string>
+    <string name="lbl_charge_control_mode">Şarj Kontrol Modu</string>
+    <string name="lbl_rectifier_selection">Doğrultucu Seçimi</string>
+    <string name="lbl_rectifier_per_group">Grup Başına Doğrultucu</string>
+    <string name="lbl_rectifier_max_power_kw">Maksimum Doğrultucu Gücü (kW)</string>
+    <string name="lbl_rectifier_max_voltage_v">Maksimum Doğrultucu Voltajı (V)</string>
+    <string name="lbl_rectifier_max_current_a">Maksimum Doğrultucu Akımı (A)</string>
+    <string name="lbl_ac_meter_selection">AC Ölçer Seçimi</string>
+    <string name="lbl_dc_meter_selection">DC Ölçer Seçimi</string>
+    <string name="lbl_spd_fault_detection">SPD Hata Tespiti</string>
+    <string name="lbl_smoke_fault_detection">Duman Hata Tespiti</string>
+    <string name="lbl_tamper_fault_detection">Kurcalama Hata Tespiti</string>
+    <string name="lbl_led_module_fault_detection">LED Modülü Hata Tespiti</string>
+    <string name="lbl_gun_temperature_fault_detection">Tabanca Sıcaklık Hata Tespiti</string>
+    <string name="lbl_isolation_fault_detection">Yalıtım Hata Tespiti</string>
+    <string name="lbl_dc_gun_temperature_threshold_value_c">DC tabanca sıcaklık eşik değeri (C)</string>
+    <string name="lbl_phase_low_detection_voltage_v">Faz düşük algılama voltajı (V)</string>
+    <string name="lbl_phase_high_detection_voltage_v">Faz yüksek algılama voltajı (V)</string>
+
 </resources>

@@ -265,4 +265,27 @@
     <string name="lbl_portugese_default">Português</string>
     <string name="lbl_dutch_default">Nederlands</string>
     <string name="lbl_turkish_default">Türkçe</string>
+
+    <string name="lbl_charger">Chargeur</string>
+    <string name="lbl_rectifier">Redresseur</string>
+    <string name="lbl_dc_meter">Compteur DC</string>
+    <string name="lbl_fault_detection">Détection de défauts</string>
+    <string name="lbl_charge_control_mode">Mode de contrôle de charge</string>
+    <string name="lbl_rectifier_selection">Sélection du redresseur</string>
+    <string name="lbl_rectifier_per_group">Redresseur par groupe</string>
+    <string name="lbl_rectifier_max_power_kw">Puissance max du redresseur (kW)</string>
+    <string name="lbl_rectifier_max_voltage_v">Tension max du redresseur (V)</string>
+    <string name="lbl_rectifier_max_current_a">Courant max du redresseur (A)</string>
+    <string name="lbl_ac_meter_selection">Sélection du compteur AC</string>
+    <string name="lbl_dc_meter_selection">Sélection du compteur DC</string>
+    <string name="lbl_spd_fault_detection">Détection de défaut SPD</string>
+    <string name="lbl_smoke_fault_detection">Détection de défaut de fumée</string>
+    <string name="lbl_tamper_fault_detection">Détection de défaut de sabotage</string>
+    <string name="lbl_led_module_fault_detection">Détection de défaut du module LED</string>
+    <string name="lbl_gun_temperature_fault_detection">Détection de défaut de température de l\'arme</string>
+    <string name="lbl_isolation_fault_detection">Détection de défaut d\'isolation</string>
+    <string name="lbl_dc_gun_temperature_threshold_value_c">Valeur seuil de température de l\'arme DC (C)</string>
+    <string name="lbl_phase_low_detection_voltage_v">Tension de détection de phase basse (V)</string>
+    <string name="lbl_phase_high_detection_voltage_v">Tension de détection de phase haute (V)</string>
+
 </resources>

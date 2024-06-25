@@ -265,4 +265,27 @@
     <string name="lbl_portugese_default">Português</string>
     <string name="lbl_dutch_default">Nederlands</string>
     <string name="lbl_turkish_default">Türkçe</string>
+
+    <string name="lbl_charger">Oplader</string>
+    <string name="lbl_rectifier">Gelijkrichter</string>
+    <string name="lbl_dc_meter">DC Meter</string>
+    <string name="lbl_fault_detection">Foutdetectie</string>
+    <string name="lbl_charge_control_mode">Laadcontrolemodus</string>
+    <string name="lbl_rectifier_selection">Gelijkrichter Selectie</string>
+    <string name="lbl_rectifier_per_group">Gelijkrichter Per Groep</string>
+    <string name="lbl_rectifier_max_power_kw">Maximaal Vermogen van Gelijkrichter (kW)</string>
+    <string name="lbl_rectifier_max_voltage_v">Maximale Spanning van Gelijkrichter (V)</string>
+    <string name="lbl_rectifier_max_current_a">Maximale Stroom van Gelijkrichter (A)</string>
+    <string name="lbl_ac_meter_selection">AC Meter Selectie</string>
+    <string name="lbl_dc_meter_selection">DC Meter Selectie</string>
+    <string name="lbl_spd_fault_detection">SPD Foutdetectie</string>
+    <string name="lbl_smoke_fault_detection">Rook Foutdetectie</string>
+    <string name="lbl_tamper_fault_detection">Sabotage Foutdetectie</string>
+    <string name="lbl_led_module_fault_detection">LED-module Foutdetectie</string>
+    <string name="lbl_gun_temperature_fault_detection">Wapentemperatuur Foutdetectie</string>
+    <string name="lbl_isolation_fault_detection">Isolatie Foutdetectie</string>
+    <string name="lbl_dc_gun_temperature_threshold_value_c">DC Wapentemperatuur Drempelwaarde (C)</string>
+    <string name="lbl_phase_low_detection_voltage_v">Fase Lage Detectiespanning (V)</string>
+    <string name="lbl_phase_high_detection_voltage_v">Fase Hoge Detectiespanning (V)</string>
+
 </resources>

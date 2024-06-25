@@ -1,5 +1,6 @@
 package com.bacancy.ccs2androidhmi.util
 
+import android.util.Log
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.getRangedArray
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.hexStringToDecimal
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.toHex
@@ -313,76 +314,28 @@ object ConfigurationParametersUtils {
         )).reversed().substring(0, 7)
     }
 
-    fun getSPDFaultDetection(response: ByteArray): String {
-        return when (getFaultDetectionEnableDisable(response)[1]) {
-            '0' -> {
-                "Disabled"
-            }
-            '1' -> {
-                "Enabled"
-            }
-            else -> ""
-        }
+    fun getSPDFaultDetection(response: ByteArray): Int {
+        return getFaultDetectionEnableDisable(response)[0].digitToInt()
     }
 
-    fun getSmokeFaultDetection(response: ByteArray): String {
-        return when (getFaultDetectionEnableDisable(response)[2]) {
-            '0' -> {
-                "Disabled"
-            }
-            '1' -> {
-                "Enabled"
-            }
-            else -> ""
-        }
+    fun getSmokeFaultDetection(response: ByteArray): Int {
+        return getFaultDetectionEnableDisable(response)[1].digitToInt()
     }
 
-    fun getTamperFaultDetection(response: ByteArray): String {
-        return when (getFaultDetectionEnableDisable(response)[3]) {
-            '0' -> {
-                "Disabled"
-            }
-            '1' -> {
-                "Enabled"
-            }
-            else -> ""
-        }
+    fun getTamperFaultDetection(response: ByteArray): Int {
+        return getFaultDetectionEnableDisable(response)[2].digitToInt()
     }
 
-    fun getLEDModuleFaultDetection(response: ByteArray): String {
-        return when (getFaultDetectionEnableDisable(response)[4]) {
-            '0' -> {
-                "Disabled"
-            }
-            '1' -> {
-                "Enabled"
-            }
-            else -> ""
-        }
+    fun getLEDModuleFaultDetection(response: ByteArray): Int {
+        return getFaultDetectionEnableDisable(response)[3].digitToInt()
     }
 
-    fun getGunTemperatureFaultDetection(response: ByteArray): String {
-        return when (getFaultDetectionEnableDisable(response)[5]) {
-            '0' -> {
-                "Disabled"
-            }
-            '1' -> {
-                "Enabled"
-            }
-            else -> ""
-        }
+    fun getGunTemperatureFaultDetection(response: ByteArray): Int {
+        return getFaultDetectionEnableDisable(response)[4].digitToInt()
     }
 
-    fun getIsolationFaultDetection(response: ByteArray): String {
-        return when (getFaultDetectionEnableDisable(response)[6]) {
-            '0' -> {
-                "Disabled"
-            }
-            '1' -> {
-                "Enabled"
-            }
-            else -> ""
-        }
+    fun getIsolationFaultDetection(response: ByteArray): Int {
+        return getFaultDetectionEnableDisable(response)[5].digitToInt()
     }
 
     fun getDCGunTemperatureThresholdValue(response: ByteArray): String {

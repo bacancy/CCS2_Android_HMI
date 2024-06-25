@@ -459,6 +459,7 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
         Log.d("CDM_TAG","Rectifier Max Current = ${ConfigurationParametersUtils.getRectifierMaxCurrent(it).hexStringToDecimal()}")
 
         val tbConfigurationParameters = TbConfigurationParameters(
+            id = 1,
             chargeControlMode = ConfigurationParametersUtils.getChargeControlModeValue(it),
             selectedRectifier = ConfigurationParametersUtils.getRectifierSelection(it).hexStringToDecimal(),
             numberOfRectifierPerGroup = ConfigurationParametersUtils.getNumberOfRectifierPerGroup(it).hexStringToDecimal(),
@@ -468,7 +469,16 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
             selectedACMeter = ConfigurationParametersUtils.getACMeterSelection(it).hexStringToDecimal(),
             isACMeterMandatory = ConfigurationParametersUtils.getACMeterMandatory(it),
             selectedDCMeter = ConfigurationParametersUtils.getDCMeterSelection(it).hexStringToDecimal(),
-            isDCMeterMandatory = ConfigurationParametersUtils.getDCMeterMandatory(it)
+            isDCMeterMandatory = ConfigurationParametersUtils.getDCMeterMandatory(it),
+            spdFaultDetection = ConfigurationParametersUtils.getSPDFaultDetection(it),
+            smokeFaultDetection = ConfigurationParametersUtils.getSmokeFaultDetection(it),
+            tamperFaultDetection = ConfigurationParametersUtils.getTamperFaultDetection(it),
+            ledModuleFaultDetection = ConfigurationParametersUtils.getLEDModuleFaultDetection(it),
+            gunTempFaultDetection = ConfigurationParametersUtils.getGunTemperatureFaultDetection(it),
+            isolationFaultDetection = ConfigurationParametersUtils.getIsolationFaultDetection(it),
+            gunTemperatureThresholdValue = ConfigurationParametersUtils.getDCGunTemperatureThresholdValue(it).hexStringToDecimal(),
+            phaseLowDetectionVoltage = ConfigurationParametersUtils.getPhaseLowDetectionVoltage(it).hexStringToDecimal(),
+            phaseHighDetectionVoltage = ConfigurationParametersUtils.getPhaseHighDetectionVoltage(it).hexStringToDecimal()
         )
 
         viewModelScope.launch {

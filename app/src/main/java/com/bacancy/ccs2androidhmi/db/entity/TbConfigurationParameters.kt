@@ -17,4 +17,13 @@ data class TbConfigurationParameters(
     var isACMeterMandatory: Int,
     var selectedDCMeter: Int,
     var isDCMeterMandatory: Int,
+    var spdFaultDetection: Int,
+    var smokeFaultDetection: Int,
+    var tamperFaultDetection: Int,
+    var ledModuleFaultDetection: Int,
+    var gunTempFaultDetection: Int,
+    var isolationFaultDetection: Int,
+    var gunTemperatureThresholdValue: Int,
+    var phaseLowDetectionVoltage: Int,
+    var phaseHighDetectionVoltage: Int,
 )

@@ -267,4 +267,26 @@
     <string name="lbl_portugese_default">Português</string>
     <string name="lbl_dutch_default">Nederlands</string>
     <string name="lbl_turkish_default">Türkçe</string>
+
+    <string name="lbl_charger">Charger</string>
+    <string name="lbl_rectifier">Rectifier</string>
+    <string name="lbl_dc_meter">DC Meter</string>
+    <string name="lbl_fault_detection">Fault Detection</string>
+    <string name="lbl_charge_control_mode">Charge Control Mode</string>
+    <string name="lbl_rectifier_selection">Rectifier Selection</string>
+    <string name="lbl_rectifier_per_group">Rectifier Per Group</string>
+    <string name="lbl_rectifier_max_power_kw">Rectifier Max Power (kW)</string>
+    <string name="lbl_rectifier_max_voltage_v">Rectifier Max Voltage (V)</string>
+    <string name="lbl_rectifier_max_current_a">Rectifier Max Current (A)</string>
+    <string name="lbl_ac_meter_selection">AC Meter Selection</string>
+    <string name="lbl_dc_meter_selection">DC Meter Selection</string>
+    <string name="lbl_spd_fault_detection">SPD Fault Detection</string>
+    <string name="lbl_smoke_fault_detection">Smoke Fault Detection</string>
+    <string name="lbl_tamper_fault_detection">Tamper Fault Detection</string>
+    <string name="lbl_led_module_fault_detection">LED Module Fault Detection</string>
+    <string name="lbl_gun_temperature_fault_detection">Gun Temperature Fault Detection</string>
+    <string name="lbl_isolation_fault_detection">Isolation Fault Detection</string>
+    <string name="lbl_dc_gun_temperature_threshold_value_c">DC gun temperature threshold value (C)</string>
+    <string name="lbl_phase_low_detection_voltage_v">Phase low detection voltage (V)</string>
+    <string name="lbl_phase_high_detection_voltage_v">Phase high detection voltage (V)</string>
 </resources>

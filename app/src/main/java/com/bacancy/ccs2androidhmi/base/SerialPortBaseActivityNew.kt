@@ -195,19 +195,19 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                         "2222" -> {
                             //system not available for configuration
                             lifecycleScope.launch {
-                                getConfigurationParameters()
+                                readMiscInfo()
                             }
                         }
                         "1111" -> {
                             //system available for configuration
-                            //write "1234" to start accessing config parameters
+                            //write "1234" to start accessing config parameters - TODO
                             lifecycleScope.launch {
                                 getConfigurationParameters()
                             }
                         }
                         else -> {
                             lifecycleScope.launch {
-                                getConfigurationParameters()
+                                readMiscInfo()
                             }
                         }
                     }
@@ -395,13 +395,13 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 ) {
                     resetReadStopCount()
                     lifecycleScope.launch {
-                        //getConfigurationParameters()
+                        readMiscInfo()
                     }
                     Log.d(TAG, "getConfigurationParameters: Response = ${it.toHex()}")
                     appViewModel.insertConfigurationParametersInDB(it)
                 } else {
                     lifecycleScope.launch {
-                        //getConfigurationParameters()
+                        getConfigurationParameters()
                     }
                     Log.e(TAG, "getConfigurationParameters: Error Response - ${it.toHex()}")
                 }
@@ -409,9 +409,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 Log.e(TAG, "getConfigurationParameters: OnReadStopped Called")
                 showReadStoppedUI()
                 lifecycleScope.launch {
-                    lifecycleScope.launch {
-                        //getConfigurationParameters()
-                    }
+                    startReading()
                 }
             })
     }
