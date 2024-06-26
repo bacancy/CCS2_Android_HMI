@@ -105,160 +105,192 @@
                 android:background="?attr/dialogBackground"
                 android:padding="@dimen/_10sdp" />
 
+            <Button
+                android:id="@+id/btnSubmitCharger"
+                style="@style/CommonButtonTheme"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_20sdp"
+                android:layout_gravity="end"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:paddingHorizontal="@dimen/_10sdp"
+                android:text="@string/lbl_submit"
+                android:textSize="@dimen/_8ssp" />
+
         </LinearLayout>
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <GridLayout
+            <LinearLayout
                 android:id="@+id/lnrRectifier"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:columnCount="3"
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 android:padding="@dimen/_10sdp"
-                android:useDefaultMargins="true"
                 android:visibility="gone">
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
+                <GridLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:columnCount="3"
+                    android:orientation="horizontal"
+                    android:useDefaultMargins="true">
 
-                    <TextView
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/lbl_rectifier_selection"
-                        android:textSize="@dimen/_8ssp" />
+                        android:orientation="vertical">
 
-                    <Spinner
-                        android:id="@+id/spnRectifierSelection"
-                        android:layout_width="@dimen/_100sdp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/_5sdp"
-                        android:background="?attr/dialogBackground"
-                        android:padding="@dimen/_11sdp" />
-                </LinearLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/lbl_rectifier_selection"
+                            android:textSize="@dimen/_8ssp" />
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                        <Spinner
+                            android:id="@+id/spnRectifierSelection"
+                            android:layout_width="@dimen/_100sdp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_5sdp"
+                            android:background="?attr/dialogBackground"
+                            android:padding="@dimen/_11sdp" />
+                    </LinearLayout>
 
-                    <TextView
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/lbl_rectifier_per_group"
-                        android:textSize="@dimen/_8ssp" />
+                        android:orientation="vertical">
 
-                    <EditText
-                        android:id="@+id/edtRectifierPerGroup"
-                        android:layout_width="@dimen/_100sdp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/_5sdp"
-                        android:background="?attr/dialogBackground"
-                        android:digits="12345678"
-                        android:hint="(1-8)"
-                        android:importantForAutofill="no"
-                        android:inputType="number"
-                        android:maxLength="1"
-                        android:padding="@dimen/_10sdp"
-                        android:singleLine="true"
-                        android:textColorHint="@color/light_grey"
-                        android:textSize="@dimen/_8ssp"
-                        android:visibility="visible" />
-                </LinearLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/lbl_rectifier_per_group"
+                            android:textSize="@dimen/_8ssp" />
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                        <EditText
+                            android:id="@+id/edtRectifierPerGroup"
+                            android:layout_width="@dimen/_100sdp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_5sdp"
+                            android:background="?attr/dialogBackground"
+                            android:digits="12345678"
+                            android:hint="(1-8)"
+                            android:imeOptions="actionDone"
+                            android:importantForAutofill="no"
+                            android:inputType="number"
+                            android:maxLength="1"
+                            android:padding="@dimen/_10sdp"
+                            android:singleLine="true"
+                            android:textColorHint="@color/light_grey"
+                            android:textSize="@dimen/_8ssp"
+                            android:visibility="visible" />
+                    </LinearLayout>
 
-                    <TextView
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/lbl_rectifier_max_power_kw"
-                        android:textSize="@dimen/_8ssp" />
+                        android:orientation="vertical">
 
-                    <EditText
-                        android:id="@+id/edtRectifierMaxPower"
-                        android:layout_width="@dimen/_100sdp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/_5sdp"
-                        android:background="?attr/dialogBackground"
-                        android:digits="1234567890"
-                        android:hint="(1-50)"
-                        android:importantForAutofill="no"
-                        android:inputType="number"
-                        android:maxLength="3"
-                        android:padding="@dimen/_10sdp"
-                        android:singleLine="true"
-                        android:textColorHint="@color/light_grey"
-                        android:textSize="@dimen/_8ssp"
-                        android:visibility="visible" />
-                </LinearLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/lbl_rectifier_max_power_kw"
+                            android:textSize="@dimen/_8ssp" />
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                        <EditText
+                            android:id="@+id/edtRectifierMaxPower"
+                            android:layout_width="@dimen/_100sdp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_5sdp"
+                            android:background="?attr/dialogBackground"
+                            android:digits="1234567890"
+                            android:hint="(1-50)"
+                            android:imeOptions="actionDone"
+                            android:importantForAutofill="no"
+                            android:inputType="number"
+                            android:maxLength="3"
+                            android:padding="@dimen/_10sdp"
+                            android:singleLine="true"
+                            android:textColorHint="@color/light_grey"
+                            android:textSize="@dimen/_8ssp"
+                            android:visibility="visible" />
+                    </LinearLayout>
 
-                    <TextView
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/_10sdp"
-                        android:text="@string/lbl_rectifier_max_voltage_v"
-                        android:textSize="@dimen/_8ssp" />
+                        android:orientation="vertical">
 
-                    <EditText
-                        android:id="@+id/edtRectifierMaxVoltage"
-                        android:layout_width="@dimen/_100sdp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/_5sdp"
-                        android:background="?attr/dialogBackground"
-                        android:digits="1234567890"
-                        android:hint="(200-1000)"
-                        android:importantForAutofill="no"
-                        android:inputType="number"
-                        android:maxLength="4"
-                        android:padding="@dimen/_10sdp"
-                        android:singleLine="true"
-                        android:textColorHint="@color/light_grey"
-                        android:textSize="@dimen/_8ssp"
-                        android:visibility="visible" />
-                </LinearLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_10sdp"
+                            android:text="@string/lbl_rectifier_max_voltage_v"
+                            android:textSize="@dimen/_8ssp" />
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                        <EditText
+                            android:id="@+id/edtRectifierMaxVoltage"
+                            android:layout_width="@dimen/_100sdp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_5sdp"
+                            android:background="?attr/dialogBackground"
+                            android:digits="1234567890"
+                            android:hint="(200-1000)"
+                            android:imeOptions="actionDone"
+                            android:importantForAutofill="no"
+                            android:inputType="number"
+                            android:maxLength="4"
+                            android:padding="@dimen/_10sdp"
+                            android:singleLine="true"
+                            android:textColorHint="@color/light_grey"
+                            android:textSize="@dimen/_8ssp"
+                            android:visibility="visible" />
+                    </LinearLayout>
 
-                    <TextView
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/_10sdp"
-                        android:text="@string/lbl_rectifier_max_current_a"
-                        android:textSize="@dimen/_8ssp" />
+                        android:orientation="vertical">
 
-                    <EditText
-                        android:id="@+id/edtRectifierMaxCurrent"
-                        android:layout_width="@dimen/_100sdp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/_5sdp"
-                        android:background="?attr/dialogBackground"
-                        android:digits="1234567890"
-                        android:hint="(1-100)"
-                        android:importantForAutofill="no"
-                        android:inputType="number"
-                        android:maxLength="3"
-                        android:padding="@dimen/_10sdp"
-                        android:singleLine="true"
-                        android:textColorHint="@color/light_grey"
-                        android:textSize="@dimen/_8ssp"
-                        android:visibility="visible" />
-                </LinearLayout>
-            </GridLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_10sdp"
+                            android:text="@string/lbl_rectifier_max_current_a"
+                            android:textSize="@dimen/_8ssp" />
+
+                        <EditText
+                            android:id="@+id/edtRectifierMaxCurrent"
+                            android:layout_width="@dimen/_100sdp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_5sdp"
+                            android:background="?attr/dialogBackground"
+                            android:digits="1234567890"
+                            android:hint="(1-100)"
+                            android:imeOptions="actionDone"
+                            android:importantForAutofill="no"
+                            android:inputType="number"
+                            android:maxLength="3"
+                            android:padding="@dimen/_10sdp"
+                            android:singleLine="true"
+                            android:textColorHint="@color/light_grey"
+                            android:textSize="@dimen/_8ssp"
+                            android:visibility="visible" />
+                    </LinearLayout>
+                </GridLayout>
+
+                <Button
+                    android:id="@+id/btnSubmitRectifier"
+                    style="@style/CommonButtonTheme"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/_20sdp"
+                    android:layout_gravity="end"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:paddingHorizontal="@dimen/_10sdp"
+                    android:text="@string/lbl_submit"
+                    android:textSize="@dimen/_8ssp" />
+            </LinearLayout>
         </androidx.core.widget.NestedScrollView>
 
         <LinearLayout
@@ -283,6 +315,26 @@
                 android:background="?attr/dialogBackground"
                 android:padding="@dimen/_10sdp" />
 
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/switchACMeterMandatory"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:text="AC Meter Mandatory"
+                android:textSize="@dimen/_8ssp"
+                app:switchPadding="@dimen/_10sdp" />
+
+            <Button
+                android:id="@+id/btnSubmitACMeter"
+                style="@style/CommonButtonTheme"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_20sdp"
+                android:layout_gravity="end"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:paddingHorizontal="@dimen/_10sdp"
+                android:text="@string/lbl_submit"
+                android:textSize="@dimen/_8ssp" />
+
         </LinearLayout>
 
         <LinearLayout
@@ -306,6 +358,26 @@
                 android:layout_marginTop="@dimen/_5sdp"
                 android:background="?attr/dialogBackground"
                 android:padding="@dimen/_10sdp" />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/switchDCMeterMandatory"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:text="DC Meter Mandatory"
+                android:textSize="@dimen/_8ssp"
+                app:switchPadding="@dimen/_10sdp" />
+
+            <Button
+                android:id="@+id/btnSubmitDCMeter"
+                style="@style/CommonButtonTheme"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_20sdp"
+                android:layout_gravity="end"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:paddingHorizontal="@dimen/_10sdp"
+                android:text="@string/lbl_submit"
+                android:textSize="@dimen/_8ssp" />
 
         </LinearLayout>
 
@@ -393,10 +465,10 @@
                 <GridLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:useDefaultMargins="true"
-                    android:columnCount="3"
                     android:layout_marginTop="@dimen/_10sdp"
-                    android:orientation="horizontal">
+                    android:columnCount="3"
+                    android:orientation="horizontal"
+                    android:useDefaultMargins="true">
 
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -485,6 +557,17 @@
                             android:visibility="visible" />
                     </LinearLayout>
                 </GridLayout>
+
+                <Button
+                    android:id="@+id/btnSubmitFaultDetection"
+                    style="@style/CommonButtonTheme"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/_20sdp"
+                    android:layout_gravity="end"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:paddingHorizontal="@dimen/_10sdp"
+                    android:text="@string/lbl_submit"
+                    android:textSize="@dimen/_8ssp" />
 
             </LinearLayout>
 

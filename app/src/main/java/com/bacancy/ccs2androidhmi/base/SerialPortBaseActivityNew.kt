@@ -37,6 +37,7 @@ import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_CHARGER_ACTIVE
 import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_DUAL_SOCKET_MODE_SELECTED
 import com.bacancy.ccs2androidhmi.util.CommonUtils.UNIT_PRICE
 import com.bacancy.ccs2androidhmi.util.CommonUtils.addColonsToMacAddress
+import com.bacancy.ccs2androidhmi.util.CommonUtils.fromJson
 import com.bacancy.ccs2androidhmi.util.CommonUtils.generateRandomNumber
 import com.bacancy.ccs2androidhmi.util.CommonUtils.getCleanedMacAddress
 import com.bacancy.ccs2androidhmi.util.CommonUtils.toJsonString
@@ -186,9 +187,11 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                     //4321 - Store data and access parameters
                     //5678 - CDM default configuration parameters
                     Log.d("TUE_TAG", "readConfigAccessParamsState: Response = ${it.toHex()}")
+                    prefHelper.setBoolean("CDM_CONFIG_OPTION_ENTERED", false)
                     val chargingEndTimeArray = it.getRangedArray(3..4)
                     val mappedArray = chargingEndTimeArray.map { it2 -> it2.getIntValueFromByte() }
-                    val accessData = ModbusTypeConverter.decimalArrayToHexArray(mappedArray).joinToString { it2 -> it2 }.replace(", ", "")
+                    val accessData = ModbusTypeConverter.decimalArrayToHexArray(mappedArray)
+                        .joinToString { it2 -> it2 }.replace(", ", "")
                     Log.d("TUE_TAG", "readConfigAccessParamsState: Response in hex = $accessData")
                     appViewModel.setKeyForConfigAccess(accessData)
                     when (accessData) {
@@ -218,7 +221,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 showReadStoppedUI()
                 Log.e("TUE_TAG", "readConfigAccessParamsState: OnReadStopped Called")
                 lifecycleScope.launch {
-                    getConfigurationParameters()
+                    startReading()
                 }
             })
     }
@@ -266,11 +269,27 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
     private fun startReading() {
         lifecycleScope.launch {
             delay(mCommonDelay)
-            if(prefHelper.getBoolean("CDM_CONFIG_OPTION_ENTERED", false)){
+            if (prefHelper.getBoolean("CDM_CONFIG_OPTION_ENTERED", false)) {
                 lifecycleScope.launch {
                     readConfigAccessParamsState()
                 }
-            }else{
+            } else if (prefHelper.getBoolean("CDM_RECTIFIERS_UPDATED", false)) {
+                lifecycleScope.launch {
+                    if (prefHelper.getStringValue("RECTIFIERS_DATA", "").isNotEmpty()) {
+                        writeForCDMRectifiers(
+                            prefHelper.getStringValue("RECTIFIERS_DATA", "").fromJson<List<Int>>()
+                        )
+                    }
+                }
+            } else if (prefHelper.getBoolean("CDM_FAULT_DETECTION_UPDATED", false)) {
+                lifecycleScope.launch {
+                    if (prefHelper.getStringValue("FAULT_DETECTION_DATA", "").isNotEmpty()) {
+                        writeForCDMFaultDetection(
+                            prefHelper.getStringValue("FAULT_DETECTION_DATA", "").fromJson<List<Int>>()
+                        )
+                    }
+                }
+            } else {
                 val isChargerActiveDeactiveMessageRecd =
                     prefHelper.getBoolean(CommonUtils.CHARGER_ACTIVE_DEACTIVE_MESSAGE_RECD, false)
                 if (isChargerActiveDeactiveMessageRecd) {
@@ -395,13 +414,13 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 ) {
                     resetReadStopCount()
                     lifecycleScope.launch {
-                        readMiscInfo()
+                        startReading()
                     }
                     Log.d(TAG, "getConfigurationParameters: Response = ${it.toHex()}")
                     appViewModel.insertConfigurationParametersInDB(it)
                 } else {
                     lifecycleScope.launch {
-                        getConfigurationParameters()
+                        startReading()
                     }
                     Log.e(TAG, "getConfigurationParameters: Error Response - ${it.toHex()}")
                 }
@@ -691,15 +710,23 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
 
                         PLUGGED_IN,
                         LBL_AUTHENTICATION_SUCCESS -> {
+                            prefHelper.setStringValue(GUN_1_CHARGING_START_TIME, "")
+                            prefHelper.setStringValue(GUN_1_CHARGING_END_TIME, "")
                             isGun1PluggedIn = true
                             openGun1LastChargingSummary()
                         }
 
                         LBL_CHARGING -> {
-                            prefHelper.setStringValue(GUN_1_CHARGING_END_TIME, "")
-                            if(prefHelper.getStringValue(GUN_1_CHARGING_START_TIME,"").isEmpty()){
-                                prefHelper.setStringValue(GUN_1_CHARGING_START_TIME, DateTimeUtils.getCurrentDateTime().convertDateFormatToDesiredFormat(
-                                    DATE_TIME_FORMAT, DATE_TIME_FORMAT_FROM_CHARGER))
+                            if (prefHelper.getStringValue(GUN_1_CHARGING_START_TIME, "")
+                                    .isEmpty()
+                            ) {
+                                prefHelper.setStringValue(
+                                    GUN_1_CHARGING_START_TIME,
+                                    DateTimeUtils.getCurrentDateTime()
+                                        .convertDateFormatToDesiredFormat(
+                                            DATE_TIME_FORMAT, DATE_TIME_FORMAT_FROM_CHARGER
+                                        )
+                                )
                             }
                             isGun1PluggedIn = true
                             openGun1LastChargingSummary()
@@ -724,7 +751,9 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                         -> {
                             if (isGun1PluggedIn) {
                                 isGun1PluggedIn = false
-                                if(prefHelper.getStringValue(GUN_1_CHARGING_END_TIME,"").isEmpty()) {
+                                if (prefHelper.getStringValue(GUN_1_CHARGING_END_TIME, "")
+                                        .isEmpty()
+                                ) {
                                     prefHelper.setStringValue(
                                         GUN_1_CHARGING_END_TIME,
                                         DateTimeUtils.getCurrentDateTime()
@@ -977,13 +1006,16 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
 
                         PLUGGED_IN,
                         LBL_AUTHENTICATION_SUCCESS -> {
+                            prefHelper.setStringValue(GUN_2_CHARGING_START_TIME, "")
+                            prefHelper.setStringValue(GUN_2_CHARGING_END_TIME, "")
                             isGun2PluggedIn = true
                             openGun2LastChargingSummary()
                         }
 
                         LBL_CHARGING -> {
-                            prefHelper.setStringValue(GUN_2_CHARGING_END_TIME, "")
-                            if(prefHelper.getStringValue(GUN_2_CHARGING_START_TIME,"").isEmpty()) {
+                            if (prefHelper.getStringValue(GUN_2_CHARGING_START_TIME, "")
+                                    .isEmpty()
+                            ) {
                                 prefHelper.setStringValue(
                                     GUN_2_CHARGING_START_TIME,
                                     DateTimeUtils.getCurrentDateTime()
@@ -1014,7 +1046,9 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                         LBL_EMERGENCY_STOP,
                         -> {
                             if (isGun2PluggedIn) {
-                                if(prefHelper.getStringValue(GUN_2_CHARGING_END_TIME,"").isEmpty()) {
+                                if (prefHelper.getStringValue(GUN_2_CHARGING_END_TIME, "")
+                                        .isEmpty()
+                                ) {
                                     prefHelper.setStringValue(
                                         GUN_2_CHARGING_END_TIME,
                                         DateTimeUtils.getCurrentDateTime()
@@ -1159,6 +1193,58 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                     }
                 }, {
                     prefHelper.setStringValue(AUTH_PIN_VALUE, "")
+                })
+        }
+    }
+
+    private fun writeForCDMRectifiers(values: List<Int>) {
+        Log.i(TAG, "writeForCDMRectifiers Request Started")
+        lifecycleScope.launch(Dispatchers.IO) {
+            delay(500)
+            ReadWriteUtil.writeToMultipleHoldingRegister(
+                mOutputStream,
+                mInputStream,
+                401,
+                values, {
+                    Log.d(TAG, "writeForCDMRectifiers: Response Got")
+                    prefHelper.setBoolean("CDM_RECTIFIERS_UPDATED", false)
+                    prefHelper.setStringValue("RECTIFIERS_DATA", "")
+                    lifecycleScope.launch {
+                        getConfigurationParameters()//remove this
+                        //TO-DO - Instead we have to write config access key as 4321 to save the updated value to mcu
+                        //writeForConfigAccessParamsState("4321")
+                    }
+                }, {
+                    Log.d(TAG, "writeForCDMRectifiers: Error Response")
+                    lifecycleScope.launch {
+                        startReading()
+                    }
+                })
+        }
+    }
+
+    private fun writeForCDMFaultDetection(values: List<Int>) {
+        Log.i(TAG, "writeForCDMFaultDetection Request Started")
+        lifecycleScope.launch(Dispatchers.IO) {
+            delay(500)
+            ReadWriteUtil.writeToMultipleHoldingRegister(
+                mOutputStream,
+                mInputStream,
+                432,
+                values, {
+                    Log.d(TAG, "writeForCDMFaultDetection: Response Got")
+                    prefHelper.setBoolean("CDM_FAULT_DETECTION_UPDATED", false)
+                    prefHelper.setStringValue("FAULT_DETECTION_DATA", "")
+                    lifecycleScope.launch {
+                        getConfigurationParameters()//remove this
+                        //TO-DO - Instead we have to write config access key as 4321 to save the updated value to mcu
+                        //writeForConfigAccessParamsState("4321")
+                    }
+                }, {
+                    Log.d(TAG, "writeForCDMFaultDetection: Error Response")
+                    lifecycleScope.launch {
+                        startReading()
+                    }
                 })
         }
     }
