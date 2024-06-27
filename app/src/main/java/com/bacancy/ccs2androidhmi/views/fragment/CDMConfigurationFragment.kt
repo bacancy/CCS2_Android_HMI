@@ -12,6 +12,16 @@ import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentCdmConfigurationBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbConfigurationParameters
+import com.bacancy.ccs2androidhmi.util.CommonUtils.AC_METER_DATA
+import com.bacancy.ccs2androidhmi.util.CommonUtils.CDM_AC_METER_UPDATED
+import com.bacancy.ccs2androidhmi.util.CommonUtils.CDM_CHARGER_UPDATED
+import com.bacancy.ccs2androidhmi.util.CommonUtils.CDM_DC_METER_UPDATED
+import com.bacancy.ccs2androidhmi.util.CommonUtils.CDM_FAULT_DETECTION_UPDATED
+import com.bacancy.ccs2androidhmi.util.CommonUtils.CDM_RECTIFIERS_UPDATED
+import com.bacancy.ccs2androidhmi.util.CommonUtils.CHARGER_DATA
+import com.bacancy.ccs2androidhmi.util.CommonUtils.DC_METER_DATA
+import com.bacancy.ccs2androidhmi.util.CommonUtils.FAULT_DETECTION_DATA
+import com.bacancy.ccs2androidhmi.util.CommonUtils.RECTIFIERS_DATA
 import com.bacancy.ccs2androidhmi.util.CommonUtils.toJsonString
 import com.bacancy.ccs2androidhmi.util.ConfigurationParametersUtils.getACMetersList
 import com.bacancy.ccs2androidhmi.util.ConfigurationParametersUtils.getChargeControlModeList
@@ -73,27 +83,22 @@ class CDMConfigurationFragment : BaseFragment() {
             }
 
             btnSubmitCharger.setOnClickListener {
-                prefHelper.setBoolean("CDM_CHARGER_UPDATED", true)
                 checkChargerDataAndSubmit()
             }
 
             btnSubmitRectifier.setOnClickListener {
-                prefHelper.setBoolean("CDM_RECTIFIERS_UPDATED", true)
                 checkRectifiersDataAndSubmit()
             }
 
             btnSubmitACMeter.setOnClickListener {
-                prefHelper.setBoolean("CDM_AC_METER_UPDATED", true)
                 checkACMeterDataAndSubmit()
             }
 
             btnSubmitDCMeter.setOnClickListener {
-                prefHelper.setBoolean("CDM_DC_METER_UPDATED", true)
                 checkDCMeterDataAndSubmit()
             }
 
             btnSubmitFaultDetection.setOnClickListener {
-                prefHelper.setBoolean("CDM_FAULT_DETECTION_UPDATED", true)
                 checkFaultDetectionDataAndSubmit()
             }
         }
@@ -104,31 +109,41 @@ class CDMConfigurationFragment : BaseFragment() {
             val selectedChargeControlMode = spnChargeControlMode.selectedItemPosition
             val chargeControlModeList = mutableListOf<Int>()
             chargeControlModeList.add(selectedChargeControlMode)
-            prefHelper.setStringValue("CHARGER_DATA", chargeControlModeList.toJsonString())
+            prefHelper.setBoolean(CDM_CHARGER_UPDATED, true)
+            prefHelper.setStringValue(CHARGER_DATA, chargeControlModeList.toJsonString())
         }
     }
 
-    private fun checkACMeterDataAndSubmit(){
+    private fun checkACMeterDataAndSubmit() {
         binding.apply {
             val selectedACMeter = spnACMeterSelection.selectedItemPosition
             val isACMeterMandatory = if (switchACMeterMandatory.isChecked) 1 else 0
-            val binaryString = currentConfigParameters.acMeterDataConfiguration.substring(0, 4) + isACMeterMandatory.toString()
+            Log.d("CDMConfigurationFragment", "Current AC Meter Config: ${currentConfigParameters.acMeterDataConfiguration}")
+            val binaryString = currentConfigParameters.acMeterDataConfiguration.substring(
+                0,
+                4
+            ) + isACMeterMandatory.toString()
+            Log.d("CDMConfigurationFragment", "Binary String: $binaryString")
             val decimal = Integer.parseInt(binaryString, 2)
             val acMeterList = mutableListOf<Int>()
             acMeterList.apply {
-                add(decimal)
                 add(selectedACMeter)
+                add(decimal)
             }
-            Log.d("CDMConfigurationFragment", "checkACMeterDataAndSubmit: $acMeterList")
-            prefHelper.setStringValue("AC_METER_DATA", acMeterList.toJsonString())
+            Log.d("CDMConfigurationFragment", "Ac Meter List: $acMeterList")
+            prefHelper.setBoolean(CDM_AC_METER_UPDATED, true)
+            prefHelper.setStringValue(AC_METER_DATA, acMeterList.toJsonString())
         }
     }
 
-    private fun checkDCMeterDataAndSubmit(){
+    private fun checkDCMeterDataAndSubmit() {
         binding.apply {
             val selectedDCMeter = spnDCMeterSelection.selectedItemPosition
             val isDCMeterMandatory = if (switchDCMeterMandatory.isChecked) 1 else 0
-            val binaryString = currentConfigParameters.dcMeterDataConfiguration.substring(0, 4) + isDCMeterMandatory.toString()
+            val binaryString = currentConfigParameters.dcMeterDataConfiguration.substring(
+                0,
+                4
+            ) + isDCMeterMandatory.toString()
             val decimal = Integer.parseInt(binaryString, 2)
             val dcMeterList = mutableListOf<Int>()
             dcMeterList.apply {
@@ -136,7 +151,8 @@ class CDMConfigurationFragment : BaseFragment() {
                 add(selectedDCMeter)
             }
             Log.d("CDMConfigurationFragment", "checkDCMeterDataAndSubmit: $dcMeterList")
-            prefHelper.setStringValue("DC_METER_DATA", dcMeterList.toJsonString())
+            prefHelper.setBoolean(CDM_DC_METER_UPDATED, true)
+            prefHelper.setStringValue(DC_METER_DATA, dcMeterList.toJsonString())
         }
     }
 
@@ -158,26 +174,25 @@ class CDMConfigurationFragment : BaseFragment() {
             var phaseHighDetectionVoltage = 0
             var isAllValid = true
 
-            if (edtDcGunTemperatureThresholdValue.text.toString().isNotEmpty()) {
-                gunTemperatureThresholdValue =
-                    edtDcGunTemperatureThresholdValue.text.toString().toInt()
-            } else {
+            if (edtDcGunTemperatureThresholdValue.text.isEmpty() || edtDcGunTemperatureThresholdValue.text.toString().toInt() !in 0..850) {
                 isAllValid = false
-                edtDcGunTemperatureThresholdValue.error = "Please enter value"
+                edtDcGunTemperatureThresholdValue.error = "Please enter value between 0-850"
+            } else {
+                gunTemperatureThresholdValue = edtDcGunTemperatureThresholdValue.text.toString().toInt()
             }
 
-            if (edtPhaseLowDetectionVoltage.text.toString().isNotEmpty()) {
+            if (edtPhaseLowDetectionVoltage.text.isEmpty() || edtPhaseLowDetectionVoltage.text.toString().toInt() !in 0..400) {
+                isAllValid = false
+                edtPhaseLowDetectionVoltage.error = "Please enter value between 0-400"
+            } else {
                 phaseLowDetectionVoltage = edtPhaseLowDetectionVoltage.text.toString().toInt()
-            } else {
-                isAllValid = false
-                edtPhaseLowDetectionVoltage.error = "Please enter value"
             }
 
-            if (edtPhaseHighDetectionVoltage.text.toString().isNotEmpty()) {
-                phaseHighDetectionVoltage = edtPhaseHighDetectionVoltage.text.toString().toInt()
-            } else {
+            if (edtPhaseHighDetectionVoltage.text.isEmpty() || edtPhaseHighDetectionVoltage.text.toString().toInt() !in 0..600) {
                 isAllValid = false
-                edtPhaseHighDetectionVoltage.error = "Please enter value"
+                edtPhaseHighDetectionVoltage.error = "Please enter value between 0-600"
+            } else {
+                phaseHighDetectionVoltage = edtPhaseHighDetectionVoltage.text.toString().toInt()
             }
 
             if (isAllValid) {
@@ -188,7 +203,8 @@ class CDMConfigurationFragment : BaseFragment() {
                     add(phaseLowDetectionVoltage)
                     add(phaseHighDetectionVoltage)
                 }
-                prefHelper.setStringValue("FAULT_DETECTION_DATA", faultDetectionList.toJsonString())
+                prefHelper.setBoolean(CDM_FAULT_DETECTION_UPDATED, true)
+                prefHelper.setStringValue(FAULT_DETECTION_DATA, faultDetectionList.toJsonString())
             }
         }
     }
@@ -197,39 +213,38 @@ class CDMConfigurationFragment : BaseFragment() {
         binding.apply {
 
             var isAllValid = true
+            val selectedRectifier = spnRectifierSelection.selectedItemPosition
             var rectifierPerGroup = 0
             var rectifierMaxPower = 0
             var rectifierMaxVoltage = 0
             var rectifierMaxCurrent = 0
-            val selectedRectifier = spnRectifierSelection.selectedItemPosition
 
-            if (edtRectifierPerGroup.text.toString().isNotEmpty()) {
+            if (edtRectifierPerGroup.text.isEmpty() || edtRectifierPerGroup.text.toString().toInt() !in 1..8) {
+                isAllValid = false
+                edtRectifierPerGroup.error = "Please enter value between 1-8"
+            } else {
                 rectifierPerGroup = edtRectifierPerGroup.text.toString().toInt()
-            } else {
-                isAllValid = false
-                edtRectifierPerGroup.error = "Please enter value"
             }
 
-            if (edtRectifierMaxPower.text.toString().isNotEmpty()) {
+            if (edtRectifierMaxPower.text.isEmpty() || edtRectifierMaxPower.text.toString().toInt() !in 1..50) {
+                isAllValid = false
+                edtRectifierMaxPower.error = "Please enter value between 1-50"
+            } else {
                 rectifierMaxPower = edtRectifierMaxPower.text.toString().toInt()
-            } else {
-                isAllValid = false
-                edtRectifierMaxPower.error = "Please enter value"
             }
 
-            if (edtRectifierMaxVoltage.text.toString().isNotEmpty()) {
+            if (edtRectifierMaxVoltage.text.isEmpty() || edtRectifierMaxVoltage.text.toString().toInt() !in 200..1000) {
+                isAllValid = false
+                edtRectifierMaxVoltage.error = "Please enter value between 200-1000"
+            } else {
                 rectifierMaxVoltage = edtRectifierMaxVoltage.text.toString().toInt()
-            } else {
-                isAllValid = false
-                edtRectifierMaxVoltage.error = "Please enter value"
             }
 
-            if (edtRectifierMaxCurrent.text.toString().isNotEmpty()) {
-                rectifierMaxCurrent = edtRectifierMaxCurrent.text.toString().toInt()
-            } else {
+            if (edtRectifierMaxCurrent.text.isEmpty() || edtRectifierMaxCurrent.text.toString().toInt() !in 1..100) {
                 isAllValid = false
-                edtRectifierMaxCurrent.error = "Please enter value"
-
+                edtRectifierMaxCurrent.error = "Please enter value between 1-100"
+            } else {
+                rectifierMaxCurrent = edtRectifierMaxCurrent.text.toString().toInt()
             }
 
             if (isAllValid) {
@@ -242,7 +257,8 @@ class CDMConfigurationFragment : BaseFragment() {
                     add(rectifierMaxVoltage)
                     add(rectifierMaxCurrent)
                 }
-                prefHelper.setStringValue("RECTIFIERS_DATA", rectifiersList.toJsonString())
+                prefHelper.setBoolean(CDM_RECTIFIERS_UPDATED, true)
+                prefHelper.setStringValue(RECTIFIERS_DATA, rectifiersList.toJsonString())
             }
         }
     }

@@ -19,4 +19,10 @@ object RegisterAddresses {
     const val GUN2_CURRENT = 358
     const val GUN2_OUTPUT_ON_OFF = 359
     const val KEY_ACCESS_PARAMETER = 400
+
+    const val CDM_FAULT_DETECTION = 432
+    const val CDM_RECTIFIER = 401
+    const val CDM_CHARGER = 441
+    const val CDM_AC_METER = 407
+    const val CDM_DC_METER = 421
 }

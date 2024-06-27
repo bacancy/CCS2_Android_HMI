@@ -16,11 +16,21 @@ import com.bacancy.ccs2androidhmi.db.entity.TbAcMeterInfo
 import com.bacancy.ccs2androidhmi.mqtt.ServerConstants
 import com.bacancy.ccs2androidhmi.mqtt.models.ChargerStatusConfirmationRequestBody
 import com.bacancy.ccs2androidhmi.util.CommonUtils
+import com.bacancy.ccs2androidhmi.util.CommonUtils.AC_METER_DATA
 import com.bacancy.ccs2androidhmi.util.CommonUtils.AC_METER_FRAG
 import com.bacancy.ccs2androidhmi.util.CommonUtils.AUTH_PIN_VALUE
+import com.bacancy.ccs2androidhmi.util.CommonUtils.CDM_AC_METER_UPDATED
+import com.bacancy.ccs2androidhmi.util.CommonUtils.CDM_CHARGER_UPDATED
+import com.bacancy.ccs2androidhmi.util.CommonUtils.CDM_CONFIG_OPTION_ENTERED
+import com.bacancy.ccs2androidhmi.util.CommonUtils.CDM_DC_METER_UPDATED
+import com.bacancy.ccs2androidhmi.util.CommonUtils.CDM_FAULT_DETECTION_UPDATED
+import com.bacancy.ccs2androidhmi.util.CommonUtils.CDM_RECTIFIERS_UPDATED
+import com.bacancy.ccs2androidhmi.util.CommonUtils.CHARGER_DATA
 import com.bacancy.ccs2androidhmi.util.CommonUtils.CHARGER_OUTPUTS
 import com.bacancy.ccs2androidhmi.util.CommonUtils.CHARGER_RATINGS
+import com.bacancy.ccs2androidhmi.util.CommonUtils.DC_METER_DATA
 import com.bacancy.ccs2androidhmi.util.CommonUtils.DEVICE_MAC_ADDRESS
+import com.bacancy.ccs2androidhmi.util.CommonUtils.FAULT_DETECTION_DATA
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_CHARGING_END_TIME
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_CHARGING_START_TIME
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_DC_METER_FRAG
@@ -35,6 +45,9 @@ import com.bacancy.ccs2androidhmi.util.CommonUtils.INSIDE_LOCAL_START_STOP_SCREE
 import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_APP_RESTARTED
 import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_CHARGER_ACTIVE
 import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_DUAL_SOCKET_MODE_SELECTED
+import com.bacancy.ccs2androidhmi.util.CommonUtils.RECTIFIERS_DATA
+import com.bacancy.ccs2androidhmi.util.CommonUtils.SYSTEM_AVAILABLE
+import com.bacancy.ccs2androidhmi.util.CommonUtils.SYSTEM_UNAVAILABLE
 import com.bacancy.ccs2androidhmi.util.CommonUtils.UNIT_PRICE
 import com.bacancy.ccs2androidhmi.util.CommonUtils.addColonsToMacAddress
 import com.bacancy.ccs2androidhmi.util.CommonUtils.fromJson
@@ -82,6 +95,11 @@ import com.bacancy.ccs2androidhmi.util.NetworkUtils.isInternetConnected
 import com.bacancy.ccs2androidhmi.util.PrefHelper
 import com.bacancy.ccs2androidhmi.util.ReadWriteUtil
 import com.bacancy.ccs2androidhmi.util.RegisterAddresses.AUTHENTICATE_GUN
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.CDM_AC_METER
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.CDM_CHARGER
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.CDM_DC_METER
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.CDM_FAULT_DETECTION
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.CDM_RECTIFIER
 import com.bacancy.ccs2androidhmi.util.RegisterAddresses.CHARGER_ACTIVE_DEACTIVE
 import com.bacancy.ccs2androidhmi.util.RegisterAddresses.ENABLE_DISABLE_DUAL_SOCKET
 import com.bacancy.ccs2androidhmi.util.RegisterAddresses.GUN1_CURRENT
@@ -106,6 +124,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.InputStream
 import java.io.OutputStream
 import java.nio.ByteBuffer
@@ -187,27 +206,32 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                     //4321 - Store data and access parameters
                     //5678 - CDM default configuration parameters
                     Log.d("TUE_TAG", "readConfigAccessParamsState: Response = ${it.toHex()}")
-                    prefHelper.setBoolean("CDM_CONFIG_OPTION_ENTERED", false)
+                    prefHelper.setBoolean(CDM_CONFIG_OPTION_ENTERED, false)
                     val chargingEndTimeArray = it.getRangedArray(3..4)
                     val mappedArray = chargingEndTimeArray.map { it2 -> it2.getIntValueFromByte() }
                     val accessData = ModbusTypeConverter.decimalArrayToHexArray(mappedArray)
                         .joinToString { it2 -> it2 }.replace(", ", "")
                     Log.d("TUE_TAG", "readConfigAccessParamsState: Response in hex = $accessData")
-                    appViewModel.setKeyForConfigAccess(accessData)
                     when (accessData) {
-                        "2222" -> {
+                        SYSTEM_UNAVAILABLE -> {
                             //system not available for configuration
-                            lifecycleScope.launch {
-                                readMiscInfo()
+                            lifecycleScope.launch(Dispatchers.Main) {
+                                showCustomDialog("System not available for configuration, please unplug the gun(s) to continue.", isCancelable = false){
+                                    lifecycleScope.launch {
+                                        readMiscInfo()
+                                    }
+                                }
                             }
                         }
-                        "1111" -> {
+
+                        SYSTEM_AVAILABLE -> {
                             //system available for configuration
-                            //write "1234" to start accessing config parameters - TODO
+                            //write "1234" to start accessing config parameters
                             lifecycleScope.launch {
-                                getConfigurationParameters()
+                                writeForConfigAccessParamsState("1234")
                             }
                         }
+
                         else -> {
                             lifecycleScope.launch {
                                 readMiscInfo()
@@ -239,9 +263,13 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 accessStartCode.hexStringToDecimal(), {
                     Log.d("TUE_TAG", "writeForConfigAccessParamsState: Response Got")
                     lifecycleScope.launch {
-                        readConfigAccessParamsState()
+                        getConfigurationParameters()
                     }
-                }, {})
+                }, {
+                    lifecycleScope.launch {
+                        startReading()
+                    }
+                })
         }
     }
 
@@ -269,25 +297,37 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
     private fun startReading() {
         lifecycleScope.launch {
             delay(mCommonDelay)
-            if (prefHelper.getBoolean("CDM_CONFIG_OPTION_ENTERED", false)) {
-                lifecycleScope.launch {
-                    readConfigAccessParamsState()
+            if (prefHelper.getBoolean(CDM_CONFIG_OPTION_ENTERED, false)) {
+                readConfigAccessParamsState()
+            } else if (prefHelper.getBoolean(CDM_CHARGER_UPDATED, false)) {
+                if (prefHelper.getStringValue(CHARGER_DATA, "").isNotEmpty()) {
+                    writeForCDMFields(1,
+                        prefHelper.getStringValue(CHARGER_DATA, "").fromJson<List<Int>>()
+                    )
                 }
-            } else if (prefHelper.getBoolean("CDM_RECTIFIERS_UPDATED", false)) {
-                lifecycleScope.launch {
-                    if (prefHelper.getStringValue("RECTIFIERS_DATA", "").isNotEmpty()) {
-                        writeForCDMRectifiers(
-                            prefHelper.getStringValue("RECTIFIERS_DATA", "").fromJson<List<Int>>()
-                        )
-                    }
+            } else if (prefHelper.getBoolean(CDM_RECTIFIERS_UPDATED, false)) {
+                if (prefHelper.getStringValue(RECTIFIERS_DATA, "").isNotEmpty()) {
+                    writeForCDMFields(2,
+                        prefHelper.getStringValue(RECTIFIERS_DATA, "").fromJson<List<Int>>()
+                    )
                 }
-            } else if (prefHelper.getBoolean("CDM_FAULT_DETECTION_UPDATED", false)) {
-                lifecycleScope.launch {
-                    if (prefHelper.getStringValue("FAULT_DETECTION_DATA", "").isNotEmpty()) {
-                        writeForCDMFaultDetection(
-                            prefHelper.getStringValue("FAULT_DETECTION_DATA", "").fromJson<List<Int>>()
-                        )
-                    }
+            } else if (prefHelper.getBoolean(CDM_AC_METER_UPDATED, false)) {
+                if (prefHelper.getStringValue(AC_METER_DATA, "").isNotEmpty()) {
+                    writeForCDMFields(3,
+                        prefHelper.getStringValue(AC_METER_DATA, "").fromJson<List<Int>>()
+                    )
+                }
+            } else if (prefHelper.getBoolean(CDM_DC_METER_UPDATED, false)) {
+                if (prefHelper.getStringValue(DC_METER_DATA, "").isNotEmpty()) {
+                    writeForCDMFields(4,
+                        prefHelper.getStringValue(DC_METER_DATA, "").fromJson<List<Int>>()
+                    )
+                }
+            } else if (prefHelper.getBoolean(CDM_FAULT_DETECTION_UPDATED, false)) {
+                if (prefHelper.getStringValue(FAULT_DETECTION_DATA, "").isNotEmpty()) {
+                    writeForCDMFields(5,
+                        prefHelper.getStringValue(FAULT_DETECTION_DATA, "").fromJson<List<Int>>()
+                    )
                 }
             } else {
                 val isChargerActiveDeactiveMessageRecd =
@@ -413,11 +453,11 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                         .startsWith(ModBusUtils.HOLDING_REGISTERS_CORRECT_RESPONSE_BITS)
                 ) {
                     resetReadStopCount()
+                    appViewModel.insertConfigurationParametersInDB(it)
                     lifecycleScope.launch {
                         startReading()
                     }
                     Log.d(TAG, "getConfigurationParameters: Response = ${it.toHex()}")
-                    appViewModel.insertConfigurationParametersInDB(it)
                 } else {
                     lifecycleScope.launch {
                         startReading()
@@ -1197,25 +1237,23 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
         }
     }
 
-    private fun writeForCDMRectifiers(values: List<Int>) {
-        Log.i(TAG, "writeForCDMRectifiers Request Started")
+    private fun writeForCDMFields(fieldCode: Int, values: List<Int>) {
+        Log.i(TAG, "writeForCDMFields Request Started - $fieldCode")
         lifecycleScope.launch(Dispatchers.IO) {
             delay(500)
             ReadWriteUtil.writeToMultipleHoldingRegister(
                 mOutputStream,
                 mInputStream,
-                401,
+                getCDMFieldStartingAddress(fieldCode),
                 values, {
-                    Log.d(TAG, "writeForCDMRectifiers: Response Got")
-                    prefHelper.setBoolean("CDM_RECTIFIERS_UPDATED", false)
-                    prefHelper.setStringValue("RECTIFIERS_DATA", "")
+                    Log.d(TAG, "writeForCDMFields: Response Got - $fieldCode")
+                    resetCDMPrefs(fieldCode)
                     lifecycleScope.launch {
-                        getConfigurationParameters()//remove this
-                        //TO-DO - Instead we have to write config access key as 4321 to save the updated value to mcu
-                        //writeForConfigAccessParamsState("4321")
+                        //write config access key as 4321 to save the updated value to mcu
+                        writeForConfigAccessParamsState("4321")
                     }
                 }, {
-                    Log.d(TAG, "writeForCDMRectifiers: Error Response")
+                    Log.d(TAG, "writeForCDMFields: Error Response")
                     lifecycleScope.launch {
                         startReading()
                     }
@@ -1223,29 +1261,45 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
         }
     }
 
-    private fun writeForCDMFaultDetection(values: List<Int>) {
-        Log.i(TAG, "writeForCDMFaultDetection Request Started")
-        lifecycleScope.launch(Dispatchers.IO) {
-            delay(500)
-            ReadWriteUtil.writeToMultipleHoldingRegister(
-                mOutputStream,
-                mInputStream,
-                432,
-                values, {
-                    Log.d(TAG, "writeForCDMFaultDetection: Response Got")
-                    prefHelper.setBoolean("CDM_FAULT_DETECTION_UPDATED", false)
-                    prefHelper.setStringValue("FAULT_DETECTION_DATA", "")
-                    lifecycleScope.launch {
-                        getConfigurationParameters()//remove this
-                        //TO-DO - Instead we have to write config access key as 4321 to save the updated value to mcu
-                        //writeForConfigAccessParamsState("4321")
-                    }
-                }, {
-                    Log.d(TAG, "writeForCDMFaultDetection: Error Response")
-                    lifecycleScope.launch {
-                        startReading()
-                    }
-                })
+    private fun getCDMFieldStartingAddress(fieldCode: Int): Int {
+        return when (fieldCode) {
+            1 -> CDM_CHARGER
+            2 -> CDM_RECTIFIER
+            3 -> CDM_AC_METER
+            4 -> CDM_DC_METER
+            5 -> CDM_FAULT_DETECTION
+            else -> 0
+        }
+    }
+
+    private fun resetCDMPrefs(fieldCode: Int) {
+        when (fieldCode) {
+            1 -> {
+                prefHelper.setBoolean(CDM_CHARGER_UPDATED, false)
+                prefHelper.setStringValue(CHARGER_DATA, "")
+            }
+
+            2 -> {
+                prefHelper.setBoolean(CDM_RECTIFIERS_UPDATED, false)
+                prefHelper.setStringValue(RECTIFIERS_DATA, "")
+            }
+
+            3 -> {
+                prefHelper.setBoolean(CDM_AC_METER_UPDATED, false)
+                prefHelper.setStringValue(AC_METER_DATA, "")
+            }
+
+            4 -> {
+                prefHelper.setBoolean(CDM_DC_METER_UPDATED, false)
+                prefHelper.setStringValue(DC_METER_DATA, "")
+            }
+
+            5 -> {
+                prefHelper.setBoolean(CDM_FAULT_DETECTION_UPDATED, false)
+                prefHelper.setStringValue(FAULT_DETECTION_DATA, "")
+            }
+
+            else -> {}
         }
     }
 

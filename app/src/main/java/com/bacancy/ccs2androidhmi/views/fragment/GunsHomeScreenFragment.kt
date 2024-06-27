@@ -15,6 +15,7 @@ import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentGunsHomeScreenBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
 import com.bacancy.ccs2androidhmi.util.CommonUtils
+import com.bacancy.ccs2androidhmi.util.CommonUtils.CDM_CONFIG_OPTION_ENTERED
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_CHARGING_END_TIME
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_CHARGING_START_TIME
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_CHARGING_END_TIME
@@ -109,7 +110,7 @@ class GunsHomeScreenFragment : BaseFragment() {
 
     override fun onResume() {
         super.onResume()
-        prefHelper.setBoolean("CDM_CONFIG_OPTION_ENTERED", false)
+        prefHelper.setBoolean(CDM_CONFIG_OPTION_ENTERED, false)
         (requireActivity() as HMIDashboardActivity).updateDualSocketText(getString(R.string.lbl_dual_socket))
         prefHelper.setBoolean(IS_DUAL_SOCKET_MODE_SELECTED, false)
         prefHelper.setBoolean(INSIDE_LOCAL_START_STOP_SCREEN, false)

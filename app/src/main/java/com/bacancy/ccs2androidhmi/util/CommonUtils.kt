@@ -50,6 +50,21 @@ object CommonUtils {
     const val IS_GUN_1_SESSION_MODE_SELECTED = "IS_GUN_1_SESSION_MODE_SELECTED"
     const val IS_GUN_2_SESSION_MODE_SELECTED = "IS_GUN_2_SESSION_MODE_SELECTED"
 
+    //CDM Constants
+    const val CDM_CONFIG_OPTION_ENTERED = "CDM_CONFIG_OPTION_ENTERED"
+    const val CDM_CHARGER_UPDATED = "CDM_CHARGER_UPDATED"
+    const val CHARGER_DATA = "CHARGER_DATA"
+    const val CDM_AC_METER_UPDATED = "CDM_AC_METER_UPDATED"
+    const val AC_METER_DATA = "AC_METER_DATA"
+    const val CDM_DC_METER_UPDATED = "CDM_DC_METER_UPDATED"
+    const val DC_METER_DATA = "DC_METER_DATA"
+    const val CDM_RECTIFIERS_UPDATED = "CDM_RECTIFIERS_UPDATED"
+    const val RECTIFIERS_DATA = "RECTIFIERS_DATA"
+    const val CDM_FAULT_DETECTION_UPDATED = "CDM_FAULT_DETECTION_UPDATED"
+    const val FAULT_DETECTION_DATA = "FAULT_DETECTION_DATA"
+    const val SYSTEM_AVAILABLE = "1111"
+    const val SYSTEM_UNAVAILABLE = "2222"
+
     private fun swapAdjacentElements(array: MutableList<Int>): MutableList<Int> {
         for (i in 0 until array.size - 1 step 2) {
             // Swap adjacent elements

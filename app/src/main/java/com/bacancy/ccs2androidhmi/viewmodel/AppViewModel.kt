@@ -440,14 +440,6 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
         return errorCodesList
     }
 
-    private val _currentConfigAccessKey = MutableStateFlow("0000")
-    val currentConfigAccessKey = _currentConfigAccessKey.asStateFlow()
-
-    fun setKeyForConfigAccess(accessData: String) {
-        Log.d("WED_TAG","accessData = $accessData")
-        _currentConfigAccessKey.value = accessData
-    }
-
     fun insertConfigurationParametersInDB(it: ByteArray) {
 
         Log.d("CDM_TAG","Charge Control Mode = ${ConfigurationParametersUtils.getChargeControlMode(it)}")

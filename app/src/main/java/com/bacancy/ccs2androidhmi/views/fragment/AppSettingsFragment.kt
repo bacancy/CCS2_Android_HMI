@@ -14,6 +14,7 @@ import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentAppSettingsBinding
 import com.bacancy.ccs2androidhmi.util.AppConfig
 import com.bacancy.ccs2androidhmi.util.CommonUtils
+import com.bacancy.ccs2androidhmi.util.CommonUtils.CDM_CONFIG_OPTION_ENTERED
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showSelectAppLanguageDialog
 import com.bacancy.ccs2androidhmi.util.LanguageConfig.getLanguageName
 import com.bacancy.ccs2androidhmi.util.LanguageConfig.setAppLanguage
@@ -44,16 +45,7 @@ class AppSettingsFragment : BaseFragment() {
         (requireActivity() as HMIDashboardActivity).showHideHomeIcon()
         (requireActivity() as HMIDashboardActivity).showHideSettingOptions()
         setupSettingsList()
-        observeConfigAccessKeys()
         return binding.root
-    }
-
-    private fun observeConfigAccessKeys() {
-        lifecycleScope.launch {
-            appViewModel.currentConfigAccessKey.collect {
-                Log.d("WED_TAG","Current ConfigAccess Key = $it")
-            }
-        }
     }
 
     override fun setScreenHeaderViews() {
@@ -121,7 +113,7 @@ class AppSettingsFragment : BaseFragment() {
                     }
 
                     SET_09 -> {
-                        prefHelper.setBoolean("CDM_CONFIG_OPTION_ENTERED", true)
+                        prefHelper.setBoolean(CDM_CONFIG_OPTION_ENTERED, true)
 
                         (requireActivity() as HMIDashboardActivity).addNewFragment(
                             CDMConfigurationFragment()
