@@ -257,6 +257,7 @@ class CDMConfigurationFragment : BaseFragment() {
                     add(rectifierMaxVoltage)
                     add(rectifierMaxCurrent)
                 }
+                Log.d("###CDMCONFIG","checkRectifiersDataAndSubmit: $rectifiersList")
                 prefHelper.setBoolean(CDM_RECTIFIERS_UPDATED, true)
                 prefHelper.setStringValue(RECTIFIERS_DATA, rectifiersList.toJsonString())
             }
@@ -290,23 +291,19 @@ class CDMConfigurationFragment : BaseFragment() {
 
     private fun observeConfigurationParameters() {
         appViewModel.getConfigurationParameters.observe(viewLifecycleOwner) { paramsList ->
-            Log.d("CDMConfigurationFragment", "observeConfigurationParameters from DB: $paramsList")
-            if (!isReadOnce) {
+            Log.d("###CDMCONFIG", "observeConfigurationParameters from DB: $paramsList")
+            if (!isReadOnce && paramsList.isNotEmpty()) {
                 isReadOnce = true
-                paramsList?.let {
-                    if (it.isNotEmpty()) {
-                        it[0].apply {
-                            currentConfigParameters = this
-                            setupChargeControlModeSpinner(chargeControlMode)
-                            setupRectifierSelectionSpinner(selectedRectifier)
-                            setupACMeterSelectionSpinner(selectedACMeter)
-                            setupDCMeterSelectionSpinner(selectedDCMeter)
-                            setupRectifierData(this)
-                            setupACMeterData(this)
-                            setupDCMeterData(this)
-                            setupFaultDetectionData(this)
-                        }
-                    }
+                paramsList[0].apply {
+                    currentConfigParameters = this
+                    setupChargeControlModeSpinner(chargeControlMode)
+                    setupRectifierSelectionSpinner(selectedRectifier)
+                    setupACMeterSelectionSpinner(selectedACMeter)
+                    setupDCMeterSelectionSpinner(selectedDCMeter)
+                    setupRectifierData(this)
+                    setupACMeterData(this)
+                    setupDCMeterData(this)
+                    setupFaultDetectionData(this)
                 }
             }
         }

@@ -289,5 +289,18 @@
     <string name="lbl_dc_gun_temperature_threshold_value_c">قيمة عتبة درجة حرارة البندقية DC (م)</string>
     <string name="lbl_phase_low_detection_voltage_v">فولتية كشف انخفاض المرحلة (فولت)</string>
     <string name="lbl_phase_high_detection_voltage_v">فولتية كشف ارتفاع المرحلة (فولت)</string>
+    <string name="msg_checking_cdm_status">جاري التحقق من حالة CDM…</string>
+    <string name="msg_system_busy">النظام غير متاح للتكوين، يرجى فصل البندقية (البنادق) للمتابعة.</string>
+    <string name="charger_commissioning">تشغيل الشاحن</string>
+    <string name="cdm_configuration">تكوين CDM</string>
+    <string name="lbl_ac_meter_mandatory">مقياس التيار المتردد إلزامي</string>
+    <string name="lbl_dc_meter_mandatory">مقياس التيار المستمر إلزامي</string>
+    <string name="range_phase_high">(0–600)</string>
+    <string name="range_phase_low">(0–400)</string>
+    <string name="range_gun_temp_threshold">(0–850)</string>
+    <string name="range_rectifier_max_current">(1–100)</string>
+    <string name="range_rectifier_max_voltage">(200–1000)</string>
+    <string name="range_rectifier_max_power">(1–50)</string>
+    <string name="range_rectifier_per_group">(1–8)</string>
 
 </resources>

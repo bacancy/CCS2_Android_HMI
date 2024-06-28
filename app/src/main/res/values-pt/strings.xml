@@ -287,5 +287,18 @@
     <string name="lbl_dc_gun_temperature_threshold_value_c">Valor de limiar de temperatura da arma DC (C)</string>
     <string name="lbl_phase_low_detection_voltage_v">Tensão de detecção de fase baixa (V)</string>
     <string name="lbl_phase_high_detection_voltage_v">Tensão de detecção de fase alta (V)</string>
+    <string name="msg_checking_cdm_status">Verificando o status do CDM…</string>
+    <string name="msg_system_busy">Sistema não disponível para configuração, por favor, desconecte a(s) pistola(s) para continuar.</string>
+    <string name="charger_commissioning">Comissionamento do Carregador</string>
+    <string name="cdm_configuration">Configuração do CDM</string>
+    <string name="lbl_ac_meter_mandatory">Medidor AC Obrigatório</string>
+    <string name="lbl_dc_meter_mandatory">Medidor DC Obrigatório</string>
+    <string name="range_phase_high">(0–600)</string>
+    <string name="range_phase_low">(0–400)</string>
+    <string name="range_gun_temp_threshold">(0–850)</string>
+    <string name="range_rectifier_max_current">(1–100)</string>
+    <string name="range_rectifier_max_voltage">(200–1000)</string>
+    <string name="range_rectifier_max_power">(1–50)</string>
+    <string name="range_rectifier_per_group">(1–8)</string>
 
 </resources>

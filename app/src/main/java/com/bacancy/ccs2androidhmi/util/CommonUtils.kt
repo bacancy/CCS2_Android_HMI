@@ -64,6 +64,8 @@ object CommonUtils {
     const val FAULT_DETECTION_DATA = "FAULT_DETECTION_DATA"
     const val SYSTEM_AVAILABLE = "1111"
     const val SYSTEM_UNAVAILABLE = "2222"
+    const val STORE_DATA_INTO_FLASH = "4321"
+    const val ACCESS_PARAMETERS = "1234"
 
     private fun swapAdjacentElements(array: MutableList<Int>): MutableList<Int> {
         for (i in 0 until array.size - 1 step 2) {

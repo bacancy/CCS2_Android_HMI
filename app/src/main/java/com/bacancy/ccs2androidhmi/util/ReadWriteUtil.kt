@@ -34,7 +34,7 @@ object ReadWriteUtil {
                         regValue
                     )
                 Log.d(
-                    "TAG",
+                    "###CDMCONFIG",
                     "writeToMultipleHoldingRegister: Write Request Frame - ${writeRequestFrame.toHex()}"
                 )
                 bufferedOutputStream.write(writeRequestFrame)

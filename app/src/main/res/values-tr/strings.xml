@@ -287,5 +287,18 @@
     <string name="lbl_dc_gun_temperature_threshold_value_c">DC tabanca sıcaklık eşik değeri (C)</string>
     <string name="lbl_phase_low_detection_voltage_v">Faz düşük algılama voltajı (V)</string>
     <string name="lbl_phase_high_detection_voltage_v">Faz yüksek algılama voltajı (V)</string>
+    <string name="msg_checking_cdm_status">CDM Durumu Kontrol Ediliyor…</string>
+    <string name="msg_system_busy">Sistem yapılandırma için müsait değil, devam etmek için tabancayı çıkarın.</string>
+    <string name="charger_commissioning">Şarj Cihazı Devreye Alma</string>
+    <string name="cdm_configuration">CDM Yapılandırması</string>
+    <string name="lbl_ac_meter_mandatory">AC Ölçer Zorunlu</string>
+    <string name="lbl_dc_meter_mandatory">DC Ölçer Zorunlu</string>
+    <string name="range_phase_high">(0–600)</string>
+    <string name="range_phase_low">(0–400)</string>
+    <string name="range_gun_temp_threshold">(0–850)</string>
+    <string name="range_rectifier_max_current">(1–100)</string>
+    <string name="range_rectifier_max_voltage">(200–1000)</string>
+    <string name="range_rectifier_max_power">(1–50)</string>
+    <string name="range_rectifier_per_group">(1–8)</string>
 
 </resources>

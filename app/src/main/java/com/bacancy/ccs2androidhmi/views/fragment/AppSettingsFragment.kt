@@ -1,13 +1,10 @@
 package com.bacancy.ccs2androidhmi.views.fragment
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.viewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
@@ -24,7 +21,6 @@ import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
 import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
 import com.bacancy.ccs2androidhmi.views.adapters.AppSettingsAdapter
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -61,7 +57,7 @@ class AppSettingsFragment : BaseFragment() {
        requireActivity().setupLanguagesList()
 
         binding.rvSettings.apply {
-            layoutManager = GridLayoutManager(requireContext(), 2)
+            layoutManager = GridLayoutManager(requireContext(), 3)
             adapter = AppSettingsAdapter(getSettingsList()) { selectedItem ->
                 when (selectedItem.first) {
                     SET_01 -> {
@@ -114,10 +110,6 @@ class AppSettingsFragment : BaseFragment() {
 
                     SET_09 -> {
                         prefHelper.setBoolean(CDM_CONFIG_OPTION_ENTERED, true)
-
-                        (requireActivity() as HMIDashboardActivity).addNewFragment(
-                            CDMConfigurationFragment()
-                        )
                     }
                 }
             }
@@ -146,8 +138,8 @@ class AppSettingsFragment : BaseFragment() {
             SET_05 to getString(R.string.lbl_local_start_or_stop_charging),
             SET_06 to getString(R.string.lbl_test_mode),
             SET_07 to getString(R.string.lbl_notifications),
-            SET_08 to "Charger Commissioning",
-            SET_09 to "CDM Configuration"
+            SET_08 to getString(R.string.charger_commissioning),
+            SET_09 to getString(R.string.cdm_configuration)
         )
 
         if (!AppConfig.SHOW_LOCAL_START_STOP) {

@@ -16,6 +16,7 @@ import com.bacancy.ccs2androidhmi.db.entity.TbAcMeterInfo
 import com.bacancy.ccs2androidhmi.mqtt.ServerConstants
 import com.bacancy.ccs2androidhmi.mqtt.models.ChargerStatusConfirmationRequestBody
 import com.bacancy.ccs2androidhmi.util.CommonUtils
+import com.bacancy.ccs2androidhmi.util.CommonUtils.ACCESS_PARAMETERS
 import com.bacancy.ccs2androidhmi.util.CommonUtils.AC_METER_DATA
 import com.bacancy.ccs2androidhmi.util.CommonUtils.AC_METER_FRAG
 import com.bacancy.ccs2androidhmi.util.CommonUtils.AUTH_PIN_VALUE
@@ -46,6 +47,7 @@ import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_APP_RESTARTED
 import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_CHARGER_ACTIVE
 import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_DUAL_SOCKET_MODE_SELECTED
 import com.bacancy.ccs2androidhmi.util.CommonUtils.RECTIFIERS_DATA
+import com.bacancy.ccs2androidhmi.util.CommonUtils.STORE_DATA_INTO_FLASH
 import com.bacancy.ccs2androidhmi.util.CommonUtils.SYSTEM_AVAILABLE
 import com.bacancy.ccs2androidhmi.util.CommonUtils.SYSTEM_UNAVAILABLE
 import com.bacancy.ccs2androidhmi.util.CommonUtils.UNIT_PRICE
@@ -61,6 +63,7 @@ import com.bacancy.ccs2androidhmi.util.DateTimeUtils.convertDateFormatToDesiredF
 import com.bacancy.ccs2androidhmi.util.DateTimeUtils.convertToUtc
 import com.bacancy.ccs2androidhmi.util.DialogUtils.clearDialogFlags
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showCustomDialog
+import com.bacancy.ccs2androidhmi.util.DialogUtils.showCustomLoadingDialog
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_AUTHENTICATION_DENIED
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_AUTHENTICATION_SUCCESS
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_AUTHENTICATION_TIMEOUT
@@ -120,6 +123,8 @@ import com.bacancy.ccs2androidhmi.util.RegisterAddresses.UPDATE_TEST_MODE
 import com.bacancy.ccs2androidhmi.util.ResponseSizes
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
 import com.bacancy.ccs2androidhmi.viewmodel.MQTTViewModel
+import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
+import com.bacancy.ccs2androidhmi.views.fragment.CDMConfigurationFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -135,6 +140,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 abstract class SerialPortBaseActivityNew : AppCompatActivity() {
 
+    private lateinit var statusCheckingDialog: Dialog
     private lateinit var dialog: Dialog
     private var readStopCount: Int = 0
     private var isGun1PluggedIn: Boolean = false
@@ -184,7 +190,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
 
     private suspend fun readConfigAccessParamsState() {
         Log.i(
-            "TUE_TAG",
+            "###CDMCONFIG",
             "readConfigAccessParamsState: Request Sent - ${
                 ModbusRequestFrames.getConfigAccessParamsStateRequestFrame().toHex()
             }"
@@ -205,43 +211,51 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                     //1234 - to start accessing config parameters
                     //4321 - Store data and access parameters
                     //5678 - CDM default configuration parameters
-                    Log.d("TUE_TAG", "readConfigAccessParamsState: Response = ${it.toHex()}")
+                    Log.d("###CDMCONFIG", "readConfigAccessParamsState: Response = ${it.toHex()}")
                     prefHelper.setBoolean(CDM_CONFIG_OPTION_ENTERED, false)
                     val chargingEndTimeArray = it.getRangedArray(3..4)
                     val mappedArray = chargingEndTimeArray.map { it2 -> it2.getIntValueFromByte() }
                     val accessData = ModbusTypeConverter.decimalArrayToHexArray(mappedArray)
                         .joinToString { it2 -> it2 }.replace(", ", "")
-                    Log.d("TUE_TAG", "readConfigAccessParamsState: Response in hex = $accessData")
+                    Log.d("###CDMCONFIG", "readConfigAccessParamsState: CDM Status = $accessData")
                     when (accessData) {
                         SYSTEM_UNAVAILABLE -> {
                             //system not available for configuration
                             lifecycleScope.launch(Dispatchers.Main) {
-                                showCustomDialog("System not available for configuration, please unplug the gun(s) to continue.", isCancelable = false){
+                                statusCheckingDialog.dismiss()
+                                val dialog = showCustomDialog(getString(R.string.msg_system_busy), isCancelable = false){
                                     lifecycleScope.launch {
                                         readMiscInfo()
                                     }
                                 }
+                                dialog.show()
+                                clearDialogFlags(dialog)
                             }
                         }
 
                         SYSTEM_AVAILABLE -> {
+                            statusCheckingDialog.dismiss()
+                            (this as HMIDashboardActivity).addNewFragment(CDMConfigurationFragment())
                             //system available for configuration
                             //write "1234" to start accessing config parameters
                             lifecycleScope.launch {
-                                writeForConfigAccessParamsState("1234")
+                                writeForConfigAccessParamsState(ACCESS_PARAMETERS)
                             }
                         }
 
                         else -> {
+                            statusCheckingDialog.dismiss()
                             lifecycleScope.launch {
                                 readMiscInfo()
                             }
                         }
                     }
                 } else {
+                    statusCheckingDialog.dismiss()
                     Log.e("TUE_TAG", "readConfigAccessParamsState: Error Response - ${it.toHex()}")
                 }
             }, onReadStopped = {
+                statusCheckingDialog.dismiss()
                 showReadStoppedUI()
                 Log.e("TUE_TAG", "readConfigAccessParamsState: OnReadStopped Called")
                 lifecycleScope.launch {
@@ -252,7 +266,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
 
     private suspend fun writeForConfigAccessParamsState(accessStartCode: String) {
         Log.i(
-            "TUE_TAG",
+            "###CDMCONFIG",
             "writeForConfigAccessParamsState: Request Code - $accessStartCode"
         )
         lifecycleScope.launch(Dispatchers.IO) {
@@ -261,7 +275,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 mInputStream,
                 KEY_ACCESS_PARAMETER,
                 accessStartCode.hexStringToDecimal(), {
-                    Log.d("TUE_TAG", "writeForConfigAccessParamsState: Response Got")
+                    Log.d("###CDMCONFIG", "writeForConfigAccessParamsState: Response Got")
                     lifecycleScope.launch {
                         getConfigurationParameters()
                     }
@@ -296,40 +310,49 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
 
     private fun startReading() {
         lifecycleScope.launch {
-            delay(mCommonDelay)
+
             if (prefHelper.getBoolean(CDM_CONFIG_OPTION_ENTERED, false)) {
+                statusCheckingDialog = showCustomLoadingDialog(getString(R.string.msg_checking_cdm_status))
+                statusCheckingDialog.show()
+                clearDialogFlags(statusCheckingDialog)
                 readConfigAccessParamsState()
             } else if (prefHelper.getBoolean(CDM_CHARGER_UPDATED, false)) {
+                delay(mCommonDelay)
                 if (prefHelper.getStringValue(CHARGER_DATA, "").isNotEmpty()) {
                     writeForCDMFields(1,
                         prefHelper.getStringValue(CHARGER_DATA, "").fromJson<List<Int>>()
                     )
                 }
             } else if (prefHelper.getBoolean(CDM_RECTIFIERS_UPDATED, false)) {
+                delay(mCommonDelay)
                 if (prefHelper.getStringValue(RECTIFIERS_DATA, "").isNotEmpty()) {
                     writeForCDMFields(2,
                         prefHelper.getStringValue(RECTIFIERS_DATA, "").fromJson<List<Int>>()
                     )
                 }
             } else if (prefHelper.getBoolean(CDM_AC_METER_UPDATED, false)) {
+                delay(mCommonDelay)
                 if (prefHelper.getStringValue(AC_METER_DATA, "").isNotEmpty()) {
                     writeForCDMFields(3,
                         prefHelper.getStringValue(AC_METER_DATA, "").fromJson<List<Int>>()
                     )
                 }
             } else if (prefHelper.getBoolean(CDM_DC_METER_UPDATED, false)) {
+                delay(mCommonDelay)
                 if (prefHelper.getStringValue(DC_METER_DATA, "").isNotEmpty()) {
                     writeForCDMFields(4,
                         prefHelper.getStringValue(DC_METER_DATA, "").fromJson<List<Int>>()
                     )
                 }
             } else if (prefHelper.getBoolean(CDM_FAULT_DETECTION_UPDATED, false)) {
+                delay(mCommonDelay)
                 if (prefHelper.getStringValue(FAULT_DETECTION_DATA, "").isNotEmpty()) {
                     writeForCDMFields(5,
                         prefHelper.getStringValue(FAULT_DETECTION_DATA, "").fromJson<List<Int>>()
                     )
                 }
             } else {
+                delay(mCommonDelay)
                 val isChargerActiveDeactiveMessageRecd =
                     prefHelper.getBoolean(CommonUtils.CHARGER_ACTIVE_DEACTIVE_MESSAGE_RECD, false)
                 if (isChargerActiveDeactiveMessageRecd) {
@@ -438,7 +461,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
 
     private suspend fun getConfigurationParameters() {
         Log.i(
-            TAG,
+            "###CDMCONFIG",
             "getConfigurationParameters: Request Sent - ${
                 ModbusRequestFrames.getConfigurationParametersRequestFrame().toHex()
             }"
@@ -457,15 +480,15 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                     lifecycleScope.launch {
                         startReading()
                     }
-                    Log.d(TAG, "getConfigurationParameters: Response = ${it.toHex()}")
+                    Log.d("###CDMCONFIG", "getConfigurationParameters: Response = ${it.toHex()}")
                 } else {
                     lifecycleScope.launch {
                         startReading()
                     }
-                    Log.e(TAG, "getConfigurationParameters: Error Response - ${it.toHex()}")
+                    Log.e("###CDMCONFIG", "getConfigurationParameters: Error Response - ${it.toHex()}")
                 }
             }, onReadStopped = {
-                Log.e(TAG, "getConfigurationParameters: OnReadStopped Called")
+                Log.e("###CDMCONFIG", "getConfigurationParameters: OnReadStopped Called")
                 showReadStoppedUI()
                 lifecycleScope.launch {
                     startReading()
@@ -1238,7 +1261,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
     }
 
     private fun writeForCDMFields(fieldCode: Int, values: List<Int>) {
-        Log.i(TAG, "writeForCDMFields Request Started - $fieldCode")
+        Log.i("###CDMCONFIG", "writeForCDMFields Request Started - $fieldCode")
         lifecycleScope.launch(Dispatchers.IO) {
             delay(500)
             ReadWriteUtil.writeToMultipleHoldingRegister(
@@ -1246,14 +1269,14 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 mInputStream,
                 getCDMFieldStartingAddress(fieldCode),
                 values, {
-                    Log.d(TAG, "writeForCDMFields: Response Got - $fieldCode")
+                    Log.d("###CDMCONFIG", "writeForCDMFields: Response Got - $fieldCode")
                     resetCDMPrefs(fieldCode)
                     lifecycleScope.launch {
                         //write config access key as 4321 to save the updated value to mcu
-                        writeForConfigAccessParamsState("4321")
+                        writeForConfigAccessParamsState(STORE_DATA_INTO_FLASH)
                     }
                 }, {
-                    Log.d(TAG, "writeForCDMFields: Error Response")
+                    Log.d("###CDMCONFIG", "writeForCDMFields: Error Response")
                     lifecycleScope.launch {
                         startReading()
                     }
