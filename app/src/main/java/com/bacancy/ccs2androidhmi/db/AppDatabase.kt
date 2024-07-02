@@ -2,8 +2,10 @@ package com.bacancy.ccs2androidhmi.db
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.bacancy.ccs2androidhmi.db.converters.HMITypeConverters
 import com.bacancy.ccs2androidhmi.db.dao.AppDao
 import com.bacancy.ccs2androidhmi.db.entity.TbAcMeterInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbChargingHistory
@@ -20,6 +22,7 @@ import com.bacancy.ccs2androidhmi.db.entity.TbNotifications
                TbErrorCodes::class, TbNotifications::class, TbConfigurationParameters::class],
     version = 7
 )
+@TypeConverters(HMITypeConverters::class)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun appDao(): AppDao

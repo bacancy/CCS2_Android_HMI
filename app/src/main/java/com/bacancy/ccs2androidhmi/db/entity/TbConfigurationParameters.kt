@@ -2,6 +2,8 @@ package com.bacancy.ccs2androidhmi.db.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.bacancy.ccs2androidhmi.db.model.ACMeterUserDefinedFields
+import com.bacancy.ccs2androidhmi.db.model.DCMeterUserDefinedFields
 
 @Entity(tableName = "tbConfigurationParameters")
 data class TbConfigurationParameters(
@@ -29,4 +31,6 @@ data class TbConfigurationParameters(
     var gunTemperatureThresholdValue: Int,
     var phaseLowDetectionVoltage: Int,
     var phaseHighDetectionVoltage: Int,
+    var acMeterUserDefinedFields: ACMeterUserDefinedFields,
+    var dcMeterUserDefinedFields: DCMeterUserDefinedFields
 )

@@ -293,93 +293,214 @@
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
 
-        <LinearLayout
-            android:id="@+id/lnrACMeter"
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="@dimen/_10sdp"
-            android:visibility="gone">
+            android:layout_height="wrap_content">
 
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/lnrACMeter"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/lbl_ac_meter_selection"
-                android:textSize="@dimen/_8ssp" />
+                android:orientation="vertical"
+                android:padding="@dimen/_10sdp"
+                android:visibility="gone">
 
-            <Spinner
-                android:id="@+id/spnACMeterSelection"
-                android:layout_width="@dimen/_100sdp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:background="?attr/dialogBackground"
-                android:padding="@dimen/_10sdp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/lbl_ac_meter_selection"
+                    android:textSize="@dimen/_8ssp" />
 
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/switchACMeterMandatory"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:text="@string/lbl_ac_meter_mandatory"
-                android:textSize="@dimen/_8ssp"
-                app:switchPadding="@dimen/_10sdp" />
+                <Spinner
+                    android:id="@+id/spnACMeterSelection"
+                    android:layout_width="@dimen/_100sdp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:background="?attr/dialogBackground"
+                    android:padding="@dimen/_10sdp" />
 
-            <Button
-                android:id="@+id/btnSubmitACMeter"
-                style="@style/CommonButtonTheme"
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/_20sdp"
-                android:layout_gravity="end"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:paddingHorizontal="@dimen/_10sdp"
-                android:text="@string/lbl_submit"
-                android:textSize="@dimen/_8ssp" />
+                <GridLayout
+                    android:id="@+id/gridLayoutACMeter"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:columnCount="3"
+                    android:useDefaultMargins="true"
+                    android:visibility="gone">
 
-        </LinearLayout>
+                    <include
+                        android:id="@+id/incVoltageV1N"
+                        layout="@layout/common_ac_dc_meter_input_layout" />
 
-        <LinearLayout
-            android:id="@+id/lnrDCMeter"
+                    <include
+                        android:id="@+id/incVoltageV2N"
+                        layout="@layout/common_ac_dc_meter_input_layout" />
+
+                    <include
+                        android:id="@+id/incVoltageV3N"
+                        layout="@layout/common_ac_dc_meter_input_layout" />
+
+                    <include
+                        android:id="@+id/incAvgVoltageLN"
+                        layout="@layout/common_ac_dc_meter_input_layout" />
+
+                    <include
+                        android:id="@+id/incFrequency"
+                        layout="@layout/common_ac_dc_meter_input_layout" />
+
+                    <include
+                        android:id="@+id/incAvgPF"
+                        layout="@layout/common_ac_dc_meter_input_layout" />
+
+                    <include
+                        android:id="@+id/incCurrentL1"
+                        layout="@layout/common_ac_dc_meter_input_layout" />
+
+                    <include
+                        android:id="@+id/incCurrentL2"
+                        layout="@layout/common_ac_dc_meter_input_layout" />
+
+                    <include
+                        android:id="@+id/incCurrentL3"
+                        layout="@layout/common_ac_dc_meter_input_layout" />
+
+                    <include
+                        android:id="@+id/incAvgCurrent"
+                        layout="@layout/common_ac_dc_meter_input_layout" />
+
+                    <include
+                        android:id="@+id/incActivePower"
+                        layout="@layout/common_ac_dc_meter_input_layout" />
+
+                    <include
+                        android:id="@+id/incTotalEnergy"
+                        layout="@layout/common_ac_dc_meter_input_layout" />
+
+                    <include
+                        android:id="@+id/incTotalReactiveEnergy"
+                        layout="@layout/common_ac_dc_meter_input_layout" />
+
+                </GridLayout>
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/switchACMeterMandatory"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:text="@string/lbl_ac_meter_mandatory"
+                    android:textSize="@dimen/_8ssp"
+                    app:switchPadding="@dimen/_10sdp" />
+
+                <Button
+                    android:id="@+id/btnSubmitACMeter"
+                    style="@style/CommonButtonTheme"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/_20sdp"
+                    android:layout_gravity="end"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:paddingHorizontal="@dimen/_10sdp"
+                    android:text="@string/lbl_submit"
+                    android:textSize="@dimen/_8ssp" />
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="@dimen/_10sdp"
-            android:visibility="gone">
+            android:layout_height="wrap_content">
 
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/lnrDCMeter"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/lbl_dc_meter_selection"
-                android:textSize="@dimen/_8ssp" />
+                android:orientation="vertical"
+                android:padding="@dimen/_10sdp"
+                android:visibility="gone">
 
-            <Spinner
-                android:id="@+id/spnDCMeterSelection"
-                android:layout_width="@dimen/_100sdp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:background="?attr/dialogBackground"
-                android:padding="@dimen/_10sdp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/lbl_dc_meter_selection"
+                    android:textSize="@dimen/_8ssp" />
 
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/switchDCMeterMandatory"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:text="@string/lbl_dc_meter_mandatory"
-                android:textSize="@dimen/_8ssp"
-                app:switchPadding="@dimen/_10sdp" />
+                <Spinner
+                    android:id="@+id/spnDCMeterSelection"
+                    android:layout_width="@dimen/_100sdp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:background="?attr/dialogBackground"
+                    android:padding="@dimen/_10sdp" />
 
-            <Button
-                android:id="@+id/btnSubmitDCMeter"
-                style="@style/CommonButtonTheme"
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/_20sdp"
-                android:layout_gravity="end"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:paddingHorizontal="@dimen/_10sdp"
-                android:text="@string/lbl_submit"
-                android:textSize="@dimen/_8ssp" />
+                <GridLayout
+                    android:id="@+id/gridLayoutDCMeter"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:columnCount="3"
+                    android:orientation="horizontal"
+                    android:useDefaultMargins="true"
+                    android:visibility="gone">
 
-        </LinearLayout>
+                    <include
+                        android:id="@+id/incVoltageParameter"
+                        layout="@layout/common_ac_dc_meter_input_layout" />
+
+                    <include
+                        android:id="@+id/incCurrentParameter"
+                        layout="@layout/common_ac_dc_meter_input_layout" />
+
+                    <include
+                        android:id="@+id/incPowerParameter"
+                        layout="@layout/common_ac_dc_meter_input_layout" />
+
+                    <include
+                        android:id="@+id/incImportEnergyParameter"
+                        layout="@layout/common_ac_dc_meter_input_layout" />
+
+                    <include
+                        android:id="@+id/incExportEnergyParameter"
+                        layout="@layout/common_ac_dc_meter_input_layout" />
+
+                    <include
+                        android:id="@+id/incMaxVoltageParameter"
+                        layout="@layout/common_ac_dc_meter_input_layout" />
+
+                    <include
+                        android:id="@+id/incMinVoltageParameter"
+                        layout="@layout/common_ac_dc_meter_input_layout" />
+
+                    <include
+                        android:id="@+id/incMaxCurrent"
+                        layout="@layout/common_ac_dc_meter_input_layout" />
+
+                    <include
+                        android:id="@+id/incMinCurrent"
+                        layout="@layout/common_ac_dc_meter_input_layout" />
+
+                </GridLayout>
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/switchDCMeterMandatory"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:text="@string/lbl_dc_meter_mandatory"
+                    android:textSize="@dimen/_8ssp"
+                    app:switchPadding="@dimen/_10sdp" />
+
+                <Button
+                    android:id="@+id/btnSubmitDCMeter"
+                    style="@style/CommonButtonTheme"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/_20sdp"
+                    android:layout_gravity="end"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:paddingHorizontal="@dimen/_10sdp"
+                    android:text="@string/lbl_submit"
+                    android:textSize="@dimen/_8ssp" />
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"

@@ -14,6 +14,8 @@ import com.bacancy.ccs2androidhmi.db.entity.TbGunsDcMeterInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsLastChargingSummary
 import com.bacancy.ccs2androidhmi.db.entity.TbMiscInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbNotifications
+import com.bacancy.ccs2androidhmi.db.model.ACMeterUserDefinedFields
+import com.bacancy.ccs2androidhmi.db.model.DCMeterUserDefinedFields
 import com.bacancy.ccs2androidhmi.models.ErrorCodes
 import com.bacancy.ccs2androidhmi.repository.MainRepository
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_CHARGING_END_TIME
@@ -473,7 +475,32 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
             isolationFaultDetection = ConfigurationParametersUtils.getIsolationFaultDetection(it),
             gunTemperatureThresholdValue = ConfigurationParametersUtils.getDCGunTemperatureThresholdValue(it).hexStringToDecimal(),
             phaseLowDetectionVoltage = ConfigurationParametersUtils.getPhaseLowDetectionVoltage(it).hexStringToDecimal(),
-            phaseHighDetectionVoltage = ConfigurationParametersUtils.getPhaseHighDetectionVoltage(it).hexStringToDecimal()
+            phaseHighDetectionVoltage = ConfigurationParametersUtils.getPhaseHighDetectionVoltage(it).hexStringToDecimal(),
+            acMeterUserDefinedFields = ACMeterUserDefinedFields(
+                voltageV1N = ConfigurationParametersUtils.getVoltageV1NRegisterAddress(it),
+                voltageV2N = ConfigurationParametersUtils.getVoltageV2NRegisterAddress(it),
+                voltageV3N = ConfigurationParametersUtils.getVoltageV3NRegisterAddress(it),
+                avgVoltageLN = ConfigurationParametersUtils.getAvgVoltageLNRegisterAddress(it),
+                frequency = ConfigurationParametersUtils.getFrequencyRegisterAddress(it),
+                avgPF = ConfigurationParametersUtils.getAvgPFRegisterAddress(it),
+                currentL1 = ConfigurationParametersUtils.getCurrentL1RegisterAddress(it),
+                currentL2 = ConfigurationParametersUtils.getCurrentL2RegisterAddress(it),
+                currentL3 = ConfigurationParametersUtils.getCurrentL3RegisterAddress(it),
+                avgCurrent = ConfigurationParametersUtils.getAvgCurrentRegisterAddress(it),
+                activePower = ConfigurationParametersUtils.getActivePowerRegisterAddress(it),
+                totalEnergy = ConfigurationParametersUtils.getTotalEnergyRegisterAddress(it),
+                totalReactiveEnergy = ConfigurationParametersUtils.getTotalReactiveEnergyRegisterAddress(it)
+            ),
+            dcMeterUserDefinedFields = DCMeterUserDefinedFields(
+                voltageParameter = ConfigurationParametersUtils.getVoltageRegisterAddress(it),
+                currentParameter = ConfigurationParametersUtils.getCurrentRegisterAddress(it),
+                powerParameter = ConfigurationParametersUtils.getPowerRegisterAddress(it),
+                importEnergyParameter = ConfigurationParametersUtils.getImportEnergyRegisterAddress(it),
+                exportEnergyParameter = ConfigurationParametersUtils.getExportEnergyRegisterAddress(it),
+                maxVoltageParameter = ConfigurationParametersUtils.getMaxVoltageRegisterAddress(it),
+                minVoltageParameter = ConfigurationParametersUtils.getMinVoltageRegisterAddress(it),
+                maxCurrent = ConfigurationParametersUtils.getMaxCurrentRegisterAddress(it),
+                minCurrent = ConfigurationParametersUtils.getMinCurrentRegisterAddress(it))
         )
 
         viewModelScope.launch {
@@ -505,6 +532,11 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
         Log.d("CDM_TAG","LED Module Fault Detection = ${ConfigurationParametersUtils.getLEDModuleFaultDetection(it)}")
         Log.d("CDM_TAG","Gun Temp Fault Detection = ${ConfigurationParametersUtils.getGunTemperatureFaultDetection(it)}")
         Log.d("CDM_TAG","Isolation Fault Detection = ${ConfigurationParametersUtils.getIsolationFaultDetection(it)}")
+
+        Log.d("CDM_TAG","Voltage V1N = ${ConfigurationParametersUtils.getVoltageV1NRegisterAddress(it).hexStringToDecimal()}")
+        Log.d("CDM_TAG","Voltage V2N = ${ConfigurationParametersUtils.getVoltageV2NRegisterAddress(it).hexStringToDecimal()}")
+        Log.d("CDM_TAG","Voltage V3N = ${ConfigurationParametersUtils.getVoltageV3NRegisterAddress(it).hexStringToDecimal()}")
+
 
     }
 
