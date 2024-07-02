@@ -72,19 +72,19 @@ class CDMConfigurationFragment : BaseFragment() {
             val min = 0
             val max = 65535
             val fields = listOf(
-                Pair(incVoltageV1N, "Voltage V1N"),
-                Pair(incVoltageV2N, "Voltage V2N"),
-                Pair(incVoltageV3N, "Voltage V3N"),
-                Pair(incAvgVoltageLN, "Average Voltage LN"),
-                Pair(incFrequency, "Frequency"),
-                Pair(incAvgPF, "Average PF"),
-                Pair(incCurrentL1, "Current L1"),
-                Pair(incCurrentL2, "Current L2"),
-                Pair(incCurrentL3, "Current L3"),
-                Pair(incAvgCurrent, "Average Current"),
-                Pair(incActivePower, "Active Power"),
-                Pair(incTotalEnergy, "Total Energy"),
-                Pair(incTotalReactiveEnergy, "Total Reactive Energy")
+                Pair(incVoltageV1N, getString(R.string.lbl_voltage_v1n)),
+                Pair(incVoltageV2N, getString(R.string.lbl_voltage_v2n)),
+                Pair(incVoltageV3N, getString(R.string.lbl_voltage_v3n)),
+                Pair(incAvgVoltageLN, getString(R.string.lbl_avg_voltage_ln)),
+                Pair(incFrequency, getString(R.string.lbl_frequency)),
+                Pair(incAvgPF, getString(R.string.lbl_average_pf)),
+                Pair(incCurrentL1, getString(R.string.lbl_current_i1)),
+                Pair(incCurrentL2, getString(R.string.lbl_current_i2)),
+                Pair(incCurrentL3, getString(R.string.lbl_current_i3)),
+                Pair(incAvgCurrent, getString(R.string.lbl_avg_current)),
+                Pair(incActivePower, getString(R.string.lbl_active_power)),
+                Pair(incTotalEnergy, getString(R.string.lbl_total_energy)),
+                Pair(incTotalReactiveEnergy, getString(R.string.lbl_total_reactive_energy))
             )
 
             for ((view, label) in fields) {
@@ -103,15 +103,15 @@ class CDMConfigurationFragment : BaseFragment() {
             val min = 0
             val max = 65535
             val fields = listOf(
-                Pair(incVoltageParameter, "Voltage Parameter"),
-                Pair(incCurrentParameter, "Current Parameter"),
-                Pair(incPowerParameter, "Power Parameter"),
-                Pair(incImportEnergyParameter, "Import Energy Parameter"),
-                Pair(incExportEnergyParameter, "Export Energy Parameter"),
-                Pair(incMaxVoltageParameter, "Max Voltage Parameter"),
-                Pair(incMinVoltageParameter, "Min Voltage Parameter"),
-                Pair(incMaxCurrent, "Max Current"),
-                Pair(incMinCurrent, "Min Current")
+                Pair(incVoltageParameter, getString(R.string.lbl_voltage_parameter)),
+                Pair(incCurrentParameter, getString(R.string.lbl_current_parameter)),
+                Pair(incPowerParameter, getString(R.string.lbl_power_parameter)),
+                Pair(incImportEnergyParameter, getString(R.string.lbl_import_energy_parameter)),
+                Pair(incExportEnergyParameter, getString(R.string.lbl_export_energy_parameter)),
+                Pair(incMaxVoltageParameter, getString(R.string.lbl_max_voltage_parameter)),
+                Pair(incMinVoltageParameter, getString(R.string.lbl_min_voltage_parameter)),
+                Pair(incMaxCurrent, getString(R.string.lbl_max_current)),
+                Pair(incMinCurrent, getString(R.string.lbl_min_current))
             )
 
             for ((view, label) in fields) {
@@ -181,6 +181,7 @@ class CDMConfigurationFragment : BaseFragment() {
 
     private fun checkACMeterDataAndSubmit() {
         binding.apply {
+            var isAllValid = true
             val selectedACMeter = spnACMeterSelection.selectedItemPosition
             val isACMeterMandatory = if (switchACMeterMandatory.isChecked) 1 else 0
             Log.d(
@@ -193,19 +194,73 @@ class CDMConfigurationFragment : BaseFragment() {
             ) + isACMeterMandatory.toString()
             Log.d("CDMConfigurationFragment", "Binary String: $binaryString")
             val decimal = Integer.parseInt(binaryString, 2)
-            val acMeterList = mutableListOf<Int>()
-            acMeterList.apply {
-                add(selectedACMeter)
-                add(decimal)
+
+            if (selectedACMeter == 0) {
+                isAllValid = areAllACMeterUserDefinedFieldsValid()
             }
-            Log.d("CDMConfigurationFragment", "Ac Meter List: $acMeterList")
-            prefHelper.setBoolean(CDM_AC_METER_UPDATED, true)
-            prefHelper.setStringValue(AC_METER_DATA, acMeterList.toJsonString())
+
+            if (isAllValid) {
+                val acMeterList = mutableListOf<Int>()
+                acMeterList.apply {
+                    add(selectedACMeter)
+                    add(decimal)
+                    if(selectedACMeter == 0){
+                        add(incVoltageV1N.edtInputValue.text.toString().toInt())
+                        add(incVoltageV2N.edtInputValue.text.toString().toInt())
+                        add(incVoltageV3N.edtInputValue.text.toString().toInt())
+                        add(incAvgVoltageLN.edtInputValue.text.toString().toInt())
+                        add(incFrequency.edtInputValue.text.toString().toInt())
+                        add(incAvgPF.edtInputValue.text.toString().toInt())
+                        add(incCurrentL1.edtInputValue.text.toString().toInt())
+                        add(incCurrentL2.edtInputValue.text.toString().toInt())
+                        add(incCurrentL3.edtInputValue.text.toString().toInt())
+                        add(incAvgCurrent.edtInputValue.text.toString().toInt())
+                        add(incActivePower.edtInputValue.text.toString().toInt())
+                        add(incTotalEnergy.edtInputValue.text.toString().toInt())
+                        //TO-DO - The address of total reactive energy is far from other parameters.
+                        //add(incTotalReactiveEnergy.edtInputValue.text.toString().toInt())
+                    }
+                }
+                Log.d("CDMConfigurationFragment", "Ac Meter List: $acMeterList")
+                prefHelper.setBoolean(CDM_AC_METER_UPDATED, true)
+                prefHelper.setStringValue(AC_METER_DATA, acMeterList.toJsonString())
+            }
         }
+    }
+
+    private fun areAllACMeterUserDefinedFieldsValid(): Boolean {
+        var isAllValid = true
+        binding.apply {
+            val fieldsToValidate = listOf(
+                incVoltageV1N,
+                incVoltageV2N,
+                incVoltageV3N,
+                incAvgVoltageLN,
+                incFrequency,
+                incAvgPF,
+                incCurrentL1,
+                incCurrentL2,
+                incCurrentL3,
+                incAvgCurrent,
+                incActivePower,
+                incTotalEnergy,
+                incTotalReactiveEnergy
+            )
+
+            fieldsToValidate.forEach { field ->
+                val editText = field.edtInputValue
+                if (editText.text.isEmpty() || editText.text.toString().toInt() !in 0..65535) {
+                    isAllValid = false
+                    editText.error = getString(R.string.msg_please_enter_value_between_0_65535)
+                }
+            }
+        }
+        return isAllValid
     }
 
     private fun checkDCMeterDataAndSubmit() {
         binding.apply {
+            var isAllValid = true
             val selectedDCMeter = spnDCMeterSelection.selectedItemPosition
             val isDCMeterMandatory = if (switchDCMeterMandatory.isChecked) 1 else 0
             val binaryString = currentConfigParameters.dcMeterDataConfiguration.substring(
@@ -213,15 +268,59 @@ class CDMConfigurationFragment : BaseFragment() {
                 4
             ) + isDCMeterMandatory.toString()
             val decimal = Integer.parseInt(binaryString, 2)
-            val dcMeterList = mutableListOf<Int>()
-            dcMeterList.apply {
-                add(decimal)
-                add(selectedDCMeter)
+
+            if (selectedDCMeter == 0) {
+                isAllValid = areAllDCMeterUserDefinedFieldsValid()
             }
-            Log.d("CDMConfigurationFragment", "checkDCMeterDataAndSubmit: $dcMeterList")
-            prefHelper.setBoolean(CDM_DC_METER_UPDATED, true)
-            prefHelper.setStringValue(DC_METER_DATA, dcMeterList.toJsonString())
+
+            if (isAllValid) {
+                val dcMeterList = mutableListOf<Int>()
+                dcMeterList.apply {
+                    add(selectedDCMeter)
+                    add(decimal)
+                    if(selectedDCMeter == 0){
+                        add(incVoltageParameter.edtInputValue.text.toString().toInt())
+                        add(incCurrentParameter.edtInputValue.text.toString().toInt())
+                        add(incPowerParameter.edtInputValue.text.toString().toInt())
+                        add(incImportEnergyParameter.edtInputValue.text.toString().toInt())
+                        add(incExportEnergyParameter.edtInputValue.text.toString().toInt())
+                        add(incMaxVoltageParameter.edtInputValue.text.toString().toInt())
+                        add(incMinVoltageParameter.edtInputValue.text.toString().toInt())
+                        add(incMaxCurrent.edtInputValue.text.toString().toInt())
+                        add(incMinCurrent.edtInputValue.text.toString().toInt())
+                    }
+                }
+                Log.d("CDMConfigurationFragment", "checkDCMeterDataAndSubmit: $dcMeterList")
+                prefHelper.setBoolean(CDM_DC_METER_UPDATED, true)
+                prefHelper.setStringValue(DC_METER_DATA, dcMeterList.toJsonString())
+            }
         }
+    }
+
+    private fun areAllDCMeterUserDefinedFieldsValid(): Boolean {
+        var isAllValid = true
+        binding.apply {
+            val fieldsToValidate = listOf(
+                incVoltageParameter,
+                incCurrentParameter,
+                incPowerParameter,
+                incImportEnergyParameter,
+                incExportEnergyParameter,
+                incMaxVoltageParameter,
+                incMinVoltageParameter,
+                incMaxCurrent,
+                incMinCurrent
+            )
+
+            fieldsToValidate.forEach { field ->
+                val editText = field.edtInputValue
+                if (editText.text.isEmpty() || editText.text.toString().toInt() !in 0..65535) {
+                    isAllValid = false
+                    editText.error = getString(R.string.msg_please_enter_value_between_0_65535)
+                }
+            }
+        }
+        return isAllValid
     }
 
     private fun checkFaultDetectionDataAndSubmit() {
@@ -246,7 +345,8 @@ class CDMConfigurationFragment : BaseFragment() {
                     .toInt() !in 0..850
             ) {
                 isAllValid = false
-                edtDcGunTemperatureThresholdValue.error = "Please enter value between 0-850"
+                edtDcGunTemperatureThresholdValue.error =
+                    getString(R.string.msg_please_enter_value_between_0_850)
             } else {
                 gunTemperatureThresholdValue =
                     edtDcGunTemperatureThresholdValue.text.toString().toInt()
@@ -256,7 +356,8 @@ class CDMConfigurationFragment : BaseFragment() {
                     .toInt() !in 0..400
             ) {
                 isAllValid = false
-                edtPhaseLowDetectionVoltage.error = "Please enter value between 0-400"
+                edtPhaseLowDetectionVoltage.error =
+                    getString(R.string.msg_please_enter_value_between_0_400)
             } else {
                 phaseLowDetectionVoltage = edtPhaseLowDetectionVoltage.text.toString().toInt()
             }
@@ -265,7 +366,8 @@ class CDMConfigurationFragment : BaseFragment() {
                     .toInt() !in 0..600
             ) {
                 isAllValid = false
-                edtPhaseHighDetectionVoltage.error = "Please enter value between 0-600"
+                edtPhaseHighDetectionVoltage.error =
+                    getString(R.string.msg_please_enter_value_between_0_600)
             } else {
                 phaseHighDetectionVoltage = edtPhaseHighDetectionVoltage.text.toString().toInt()
             }
@@ -298,7 +400,7 @@ class CDMConfigurationFragment : BaseFragment() {
                     .toInt() !in 1..8
             ) {
                 isAllValid = false
-                edtRectifierPerGroup.error = "Please enter value between 1-8"
+                edtRectifierPerGroup.error = getString(R.string.msg_please_enter_value_between_1_8)
             } else {
                 rectifierPerGroup = edtRectifierPerGroup.text.toString().toInt()
             }
@@ -307,7 +409,7 @@ class CDMConfigurationFragment : BaseFragment() {
                     .toInt() !in 1..50
             ) {
                 isAllValid = false
-                edtRectifierMaxPower.error = "Please enter value between 1-50"
+                edtRectifierMaxPower.error = getString(R.string.msg_please_enter_value_between_1_50)
             } else {
                 rectifierMaxPower = edtRectifierMaxPower.text.toString().toInt()
             }
@@ -316,7 +418,8 @@ class CDMConfigurationFragment : BaseFragment() {
                     .toInt() !in 200..1000
             ) {
                 isAllValid = false
-                edtRectifierMaxVoltage.error = "Please enter value between 200-1000"
+                edtRectifierMaxVoltage.error =
+                    getString(R.string.msg_please_enter_value_between_200_1000)
             } else {
                 rectifierMaxVoltage = edtRectifierMaxVoltage.text.toString().toInt()
             }
@@ -325,7 +428,8 @@ class CDMConfigurationFragment : BaseFragment() {
                     .toInt() !in 1..100
             ) {
                 isAllValid = false
-                edtRectifierMaxCurrent.error = "Please enter value between 1-100"
+                edtRectifierMaxCurrent.error =
+                    getString(R.string.msg_please_enter_value_between_1_100)
             } else {
                 rectifierMaxCurrent = edtRectifierMaxCurrent.text.toString().toInt()
             }
@@ -395,12 +499,44 @@ class CDMConfigurationFragment : BaseFragment() {
     private fun setupDCMeterData(tbConfigurationParameters: TbConfigurationParameters) {
         binding.apply {
             switchDCMeterMandatory.isChecked = tbConfigurationParameters.isDCMeterMandatory == 1
+            if (tbConfigurationParameters.selectedDCMeter == 0) {
+                val dcMeterUserDefinedFields = tbConfigurationParameters.dcMeterUserDefinedFields
+                dcMeterUserDefinedFields?.apply {
+                    incVoltageParameter.edtInputValue.setText(voltageParameter.toString())
+                    incCurrentParameter.edtInputValue.setText(currentParameter.toString())
+                    incPowerParameter.edtInputValue.setText(powerParameter.toString())
+                    incImportEnergyParameter.edtInputValue.setText(importEnergyParameter.toString())
+                    incExportEnergyParameter.edtInputValue.setText(exportEnergyParameter.toString())
+                    incMaxVoltageParameter.edtInputValue.setText(maxVoltageParameter.toString())
+                    incMinVoltageParameter.edtInputValue.setText(minVoltageParameter.toString())
+                    incMaxCurrent.edtInputValue.setText(maxCurrent.toString())
+                    incMinCurrent.edtInputValue.setText(minCurrent.toString())
+                }
+            }
         }
     }
 
     private fun setupACMeterData(tbConfigurationParameters: TbConfigurationParameters) {
         binding.apply {
             switchACMeterMandatory.isChecked = tbConfigurationParameters.isACMeterMandatory == 1
+            if (tbConfigurationParameters.selectedACMeter == 0) {
+                val acMeterUserDefinedFields = tbConfigurationParameters.acMeterUserDefinedFields
+                acMeterUserDefinedFields?.apply {
+                    incVoltageV1N.edtInputValue.setText(voltageV1N.toString())
+                    incVoltageV2N.edtInputValue.setText(voltageV2N.toString())
+                    incVoltageV3N.edtInputValue.setText(voltageV3N.toString())
+                    incAvgVoltageLN.edtInputValue.setText(avgVoltageLN.toString())
+                    incFrequency.edtInputValue.setText(frequency.toString())
+                    incAvgPF.edtInputValue.setText(avgPF.toString())
+                    incCurrentL1.edtInputValue.setText(currentL1.toString())
+                    incCurrentL2.edtInputValue.setText(currentL2.toString())
+                    incCurrentL3.edtInputValue.setText(currentL3.toString())
+                    incAvgCurrent.edtInputValue.setText(avgCurrent.toString())
+                    incActivePower.edtInputValue.setText(activePower.toString())
+                    incTotalEnergy.edtInputValue.setText(totalEnergy.toString())
+                    incTotalReactiveEnergy.edtInputValue.setText(totalReactiveEnergy.toString())
+                }
+            }
         }
     }
 

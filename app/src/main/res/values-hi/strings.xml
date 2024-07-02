@@ -302,5 +302,23 @@
     <string name="range_rectifier_max_voltage">(200–1000)</string>
     <string name="range_rectifier_max_power">(1–50)</string>
     <string name="range_rectifier_per_group">(1–8)</string>
+    <string name="lbl_total_reactive_energy">कुल प्रतिक्रियाशील ऊर्जा</string>
+    <string name="lbl_average_pf">औसत पीएफ</string>
+    <string name="lbl_frequency">आवृत्ति</string>
+    <string name="lbl_voltage_parameter">वोल्टेज पैरामीटर</string>
+    <string name="lbl_current_parameter">वर्तमान पैरामीटर</string>
+    <string name="lbl_power_parameter">शक्ति पैरामीटर</string>
+    <string name="lbl_import_energy_parameter">आयात ऊर्जा पैरामीटर</string>
+    <string name="lbl_export_energy_parameter">निर्यात ऊर्जा पैरामीटर</string>
+    <string name="lbl_max_voltage_parameter">अधिकतम वोल्टेज पैरामीटर</string>
+    <string name="lbl_min_voltage_parameter">न्यूनतम वोल्टेज पैरामीटर</string>
+    <string name="msg_please_enter_value_between_0_65535">कृपया 0–65535 के बीच मान दर्ज करें</string>
+    <string name="msg_please_enter_value_between_0_850">कृपया 0–850 के बीच मान दर्ज करें</string>
+    <string name="msg_please_enter_value_between_0_400">कृपया 0–400 के बीच मान दर्ज करें</string>
+    <string name="msg_please_enter_value_between_0_600">कृपया 0–600 के बीच मान दर्ज करें</string>
+    <string name="msg_please_enter_value_between_1_8">कृपया 1–8 के बीच मान दर्ज करें</string>
+    <string name="msg_please_enter_value_between_1_50">कृपया 1–50 के बीच मान दर्ज करें</string>
+    <string name="msg_please_enter_value_between_200_1000">कृपया 200–1000 के बीच मान दर्ज करें</string>
+    <string name="msg_please_enter_value_between_1_100">कृपया 1–100 के बीच मान दर्ज करें</string>
 
 </resources>

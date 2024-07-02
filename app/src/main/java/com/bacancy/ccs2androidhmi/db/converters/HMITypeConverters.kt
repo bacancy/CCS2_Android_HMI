@@ -12,24 +12,24 @@ class HMITypeConverters {
 
     // Type converter for ACMeterUserDefinedFields
     @TypeConverter
-    fun fromACMeterUserDefinedFields(fields: ACMeterUserDefinedFields): String {
+    fun fromACMeterUserDefinedFields(fields: ACMeterUserDefinedFields?): String {
         return gson.toJson(fields)
     }
 
     @TypeConverter
-    fun toACMeterUserDefinedFields(data: String): ACMeterUserDefinedFields {
+    fun toACMeterUserDefinedFields(data: String): ACMeterUserDefinedFields? {
         val type = object : TypeToken<ACMeterUserDefinedFields>() {}.type
         return gson.fromJson(data, type)
     }
 
     // Type converter for DCMeterUserDefinedFields
     @TypeConverter
-    fun fromDCMeterUserDefinedFields(fields: DCMeterUserDefinedFields): String {
+    fun fromDCMeterUserDefinedFields(fields: DCMeterUserDefinedFields?): String {
         return gson.toJson(fields)
     }
 
     @TypeConverter
-    fun toDCMeterUserDefinedFields(data: String): DCMeterUserDefinedFields {
+    fun toDCMeterUserDefinedFields(data: String): DCMeterUserDefinedFields? {
         val type = object : TypeToken<DCMeterUserDefinedFields>() {}.type
         return gson.fromJson(data, type)
     }

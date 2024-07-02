@@ -31,6 +31,6 @@ data class TbConfigurationParameters(
     var gunTemperatureThresholdValue: Int,
     var phaseLowDetectionVoltage: Int,
     var phaseHighDetectionVoltage: Int,
-    var acMeterUserDefinedFields: ACMeterUserDefinedFields,
-    var dcMeterUserDefinedFields: DCMeterUserDefinedFields
+    var acMeterUserDefinedFields: ACMeterUserDefinedFields?,
+    var dcMeterUserDefinedFields: DCMeterUserDefinedFields?
 )

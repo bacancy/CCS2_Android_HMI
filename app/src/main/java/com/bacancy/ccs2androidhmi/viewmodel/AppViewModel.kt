@@ -476,31 +476,32 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
             gunTemperatureThresholdValue = ConfigurationParametersUtils.getDCGunTemperatureThresholdValue(it).hexStringToDecimal(),
             phaseLowDetectionVoltage = ConfigurationParametersUtils.getPhaseLowDetectionVoltage(it).hexStringToDecimal(),
             phaseHighDetectionVoltage = ConfigurationParametersUtils.getPhaseHighDetectionVoltage(it).hexStringToDecimal(),
-            acMeterUserDefinedFields = ACMeterUserDefinedFields(
-                voltageV1N = ConfigurationParametersUtils.getVoltageV1NRegisterAddress(it),
-                voltageV2N = ConfigurationParametersUtils.getVoltageV2NRegisterAddress(it),
-                voltageV3N = ConfigurationParametersUtils.getVoltageV3NRegisterAddress(it),
-                avgVoltageLN = ConfigurationParametersUtils.getAvgVoltageLNRegisterAddress(it),
-                frequency = ConfigurationParametersUtils.getFrequencyRegisterAddress(it),
-                avgPF = ConfigurationParametersUtils.getAvgPFRegisterAddress(it),
-                currentL1 = ConfigurationParametersUtils.getCurrentL1RegisterAddress(it),
-                currentL2 = ConfigurationParametersUtils.getCurrentL2RegisterAddress(it),
-                currentL3 = ConfigurationParametersUtils.getCurrentL3RegisterAddress(it),
-                avgCurrent = ConfigurationParametersUtils.getAvgCurrentRegisterAddress(it),
-                activePower = ConfigurationParametersUtils.getActivePowerRegisterAddress(it),
-                totalEnergy = ConfigurationParametersUtils.getTotalEnergyRegisterAddress(it),
-                totalReactiveEnergy = ConfigurationParametersUtils.getTotalReactiveEnergyRegisterAddress(it)
-            ),
-            dcMeterUserDefinedFields = DCMeterUserDefinedFields(
-                voltageParameter = ConfigurationParametersUtils.getVoltageRegisterAddress(it),
-                currentParameter = ConfigurationParametersUtils.getCurrentRegisterAddress(it),
-                powerParameter = ConfigurationParametersUtils.getPowerRegisterAddress(it),
-                importEnergyParameter = ConfigurationParametersUtils.getImportEnergyRegisterAddress(it),
-                exportEnergyParameter = ConfigurationParametersUtils.getExportEnergyRegisterAddress(it),
-                maxVoltageParameter = ConfigurationParametersUtils.getMaxVoltageRegisterAddress(it),
-                minVoltageParameter = ConfigurationParametersUtils.getMinVoltageRegisterAddress(it),
-                maxCurrent = ConfigurationParametersUtils.getMaxCurrentRegisterAddress(it),
-                minCurrent = ConfigurationParametersUtils.getMinCurrentRegisterAddress(it))
+            acMeterUserDefinedFields = if(ConfigurationParametersUtils.getACMeterSelection(it).hexStringToDecimal() == 0) ACMeterUserDefinedFields(
+                voltageV1N = ConfigurationParametersUtils.getVoltageV1NRegisterAddress(it).toInt(),
+                voltageV2N = ConfigurationParametersUtils.getVoltageV2NRegisterAddress(it).toInt(),
+                voltageV3N = ConfigurationParametersUtils.getVoltageV3NRegisterAddress(it).toInt(),
+                avgVoltageLN = ConfigurationParametersUtils.getAvgVoltageLNRegisterAddress(it).toInt(),
+                frequency = ConfigurationParametersUtils.getFrequencyRegisterAddress(it).toInt(),
+                avgPF = ConfigurationParametersUtils.getAvgPFRegisterAddress(it).toInt(),
+                currentL1 = ConfigurationParametersUtils.getCurrentL1RegisterAddress(it).toInt(),
+                currentL2 = ConfigurationParametersUtils.getCurrentL2RegisterAddress(it).toInt(),
+                currentL3 = ConfigurationParametersUtils.getCurrentL3RegisterAddress(it).toInt(),
+                avgCurrent = ConfigurationParametersUtils.getAvgCurrentRegisterAddress(it).toInt(),
+                activePower = ConfigurationParametersUtils.getActivePowerRegisterAddress(it).toInt(),
+                totalEnergy = ConfigurationParametersUtils.getTotalEnergyRegisterAddress(it).toInt(),
+                totalReactiveEnergy = ConfigurationParametersUtils.getTotalReactiveEnergyRegisterAddress(it).toInt()
+            ) else null,
+            dcMeterUserDefinedFields = if(ConfigurationParametersUtils.getDCMeterSelection(it).hexStringToDecimal() == 0) DCMeterUserDefinedFields(
+                voltageParameter = ConfigurationParametersUtils.getVoltageRegisterAddress(it).toInt(),
+                currentParameter = ConfigurationParametersUtils.getCurrentRegisterAddress(it).toInt(),
+                powerParameter = ConfigurationParametersUtils.getPowerRegisterAddress(it).toInt(),
+                importEnergyParameter = ConfigurationParametersUtils.getImportEnergyRegisterAddress(it).toInt(),
+                exportEnergyParameter = ConfigurationParametersUtils.getExportEnergyRegisterAddress(it).toInt(),
+                maxVoltageParameter = ConfigurationParametersUtils.getMaxVoltageRegisterAddress(it).toInt(),
+                minVoltageParameter = ConfigurationParametersUtils.getMinVoltageRegisterAddress(it).toInt(),
+                maxCurrent = ConfigurationParametersUtils.getMaxCurrentRegisterAddress(it).toInt(),
+                minCurrent = ConfigurationParametersUtils.getMinCurrentRegisterAddress(it).toInt()
+            ) else null
         )
 
         viewModelScope.launch {

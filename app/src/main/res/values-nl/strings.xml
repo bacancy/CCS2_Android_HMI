@@ -300,5 +300,23 @@
     <string name="range_rectifier_max_voltage">(200–1000)</string>
     <string name="range_rectifier_max_power">(1–50)</string>
     <string name="range_rectifier_per_group">(1–8)</string>
+    <string name="lbl_total_reactive_energy">Totale Reactieve Energie</string>
+    <string name="lbl_average_pf">Gemiddelde PF</string>
+    <string name="lbl_frequency">Frequentie</string>
+    <string name="lbl_voltage_parameter">Spanningsparameter</string>
+    <string name="lbl_current_parameter">Stroomparameter</string>
+    <string name="lbl_power_parameter">Vermogensparameter</string>
+    <string name="lbl_import_energy_parameter">Import Energieparameter</string>
+    <string name="lbl_export_energy_parameter">Export Energieparameter</string>
+    <string name="lbl_max_voltage_parameter">Maximale Spanningsparameter</string>
+    <string name="lbl_min_voltage_parameter">Minimale Spanningsparameter</string>
+    <string name="msg_please_enter_value_between_0_65535">Voer een waarde tussen 0–65535 in</string>
+    <string name="msg_please_enter_value_between_0_850">Voer een waarde tussen 0–850 in</string>
+    <string name="msg_please_enter_value_between_0_400">Voer een waarde tussen 0–400 in</string>
+    <string name="msg_please_enter_value_between_0_600">Voer een waarde tussen 0–600 in</string>
+    <string name="msg_please_enter_value_between_1_8">Voer een waarde tussen 1–8 in</string>
+    <string name="msg_please_enter_value_between_1_50">Voer een waarde tussen 1–50 in</string>
+    <string name="msg_please_enter_value_between_200_1000">Voer een waarde tussen 200–1000 in</string>
+    <string name="msg_please_enter_value_between_1_100">Voer een waarde tussen 1–100 in</string>
 
 </resources>

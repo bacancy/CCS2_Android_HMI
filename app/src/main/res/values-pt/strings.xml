@@ -300,5 +300,23 @@
     <string name="range_rectifier_max_voltage">(200–1000)</string>
     <string name="range_rectifier_max_power">(1–50)</string>
     <string name="range_rectifier_per_group">(1–8)</string>
+    <string name="lbl_total_reactive_energy">Energia Reativa Total</string>
+    <string name="lbl_average_pf">PF Médio</string>
+    <string name="lbl_frequency">Frequência</string>
+    <string name="lbl_voltage_parameter">Parâmetro de Tensão</string>
+    <string name="lbl_current_parameter">Parâmetro de Corrente</string>
+    <string name="lbl_power_parameter">Parâmetro de Potência</string>
+    <string name="lbl_import_energy_parameter">Parâmetro de Energia Importada</string>
+    <string name="lbl_export_energy_parameter">Parâmetro de Energia Exportada</string>
+    <string name="lbl_max_voltage_parameter">Parâmetro de Tensão Máxima</string>
+    <string name="lbl_min_voltage_parameter">Parâmetro de Tensão Mínima</string>
+    <string name="msg_please_enter_value_between_0_65535">Por favor, insira um valor entre 0–65535</string>
+    <string name="msg_please_enter_value_between_0_850">Por favor, insira um valor entre 0–850</string>
+    <string name="msg_please_enter_value_between_0_400">Por favor, insira um valor entre 0–400</string>
+    <string name="msg_please_enter_value_between_0_600">Por favor, insira um valor entre 0–600</string>
+    <string name="msg_please_enter_value_between_1_8">Por favor, insira um valor entre 1–8</string>
+    <string name="msg_please_enter_value_between_1_50">Por favor, insira um valor entre 1–50</string>
+    <string name="msg_please_enter_value_between_200_1000">Por favor, insira um valor entre 200–1000</string>
+    <string name="msg_please_enter_value_between_1_100">Por favor, insira um valor entre 1–100</string>
 
 </resources>

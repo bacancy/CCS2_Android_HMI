@@ -1,13 +1,13 @@
 package com.bacancy.ccs2androidhmi.db.model
 
 data class DCMeterUserDefinedFields(
-    val voltageParameter: String,
-    val currentParameter: String,
-    val powerParameter: String,
-    val importEnergyParameter: String,
-    val exportEnergyParameter: String,
-    val maxVoltageParameter: String,
-    val minVoltageParameter: String,
-    val maxCurrent: String,
-    val minCurrent: String
+    val voltageParameter: Int = 0,
+    val currentParameter: Int = 0,
+    val powerParameter: Int = 0,
+    val importEnergyParameter: Int = 0,
+    val exportEnergyParameter: Int = 0,
+    val maxVoltageParameter: Int = 0,
+    val minVoltageParameter: Int = 0,
+    val maxCurrent: Int = 0,
+    val minCurrent: Int = 0
 )
