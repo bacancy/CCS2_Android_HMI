@@ -29,6 +29,12 @@ import com.bacancy.ccs2androidhmi.util.CommonUtils.CDM_RECTIFIERS_UPDATED
 import com.bacancy.ccs2androidhmi.util.CommonUtils.CHARGER_DATA
 import com.bacancy.ccs2androidhmi.util.CommonUtils.CHARGER_OUTPUTS
 import com.bacancy.ccs2androidhmi.util.CommonUtils.CHARGER_RATINGS
+import com.bacancy.ccs2androidhmi.util.CommonUtils.CODE_AC_METER
+import com.bacancy.ccs2androidhmi.util.CommonUtils.CODE_CHARGER
+import com.bacancy.ccs2androidhmi.util.CommonUtils.CODE_DC_METER
+import com.bacancy.ccs2androidhmi.util.CommonUtils.CODE_FAULT_DETECTION
+import com.bacancy.ccs2androidhmi.util.CommonUtils.CODE_RECTIFIERS
+import com.bacancy.ccs2androidhmi.util.CommonUtils.CODE_TOTAL_REACTIVE_ENERGY
 import com.bacancy.ccs2androidhmi.util.CommonUtils.DC_METER_DATA
 import com.bacancy.ccs2androidhmi.util.CommonUtils.DEVICE_MAC_ADDRESS
 import com.bacancy.ccs2androidhmi.util.CommonUtils.FAULT_DETECTION_DATA
@@ -103,6 +109,7 @@ import com.bacancy.ccs2androidhmi.util.RegisterAddresses.CDM_CHARGER
 import com.bacancy.ccs2androidhmi.util.RegisterAddresses.CDM_DC_METER
 import com.bacancy.ccs2androidhmi.util.RegisterAddresses.CDM_FAULT_DETECTION
 import com.bacancy.ccs2androidhmi.util.RegisterAddresses.CDM_RECTIFIER
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.CDM_TOTAL_REACTIVE_ENERGY
 import com.bacancy.ccs2androidhmi.util.RegisterAddresses.CHARGER_ACTIVE_DEACTIVE
 import com.bacancy.ccs2androidhmi.util.RegisterAddresses.ENABLE_DISABLE_DUAL_SOCKET
 import com.bacancy.ccs2androidhmi.util.RegisterAddresses.GUN1_CURRENT
@@ -223,7 +230,10 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                             //system not available for configuration
                             lifecycleScope.launch(Dispatchers.Main) {
                                 statusCheckingDialog.dismiss()
-                                val dialog = showCustomDialog(getString(R.string.msg_system_busy), isCancelable = false){
+                                val dialog = showCustomDialog(
+                                    getString(R.string.msg_system_busy),
+                                    isCancelable = false
+                                ) {
                                     lifecycleScope.launch {
                                         readMiscInfo()
                                     }
@@ -312,42 +322,48 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
         lifecycleScope.launch {
 
             if (prefHelper.getBoolean(CDM_CONFIG_OPTION_ENTERED, false)) {
-                statusCheckingDialog = showCustomLoadingDialog(getString(R.string.msg_checking_cdm_status))
+                statusCheckingDialog =
+                    showCustomLoadingDialog(getString(R.string.msg_checking_cdm_status))
                 statusCheckingDialog.show()
                 clearDialogFlags(statusCheckingDialog)
                 readConfigAccessParamsState()
             } else if (prefHelper.getBoolean(CDM_CHARGER_UPDATED, false)) {
                 delay(mCommonDelay)
                 if (prefHelper.getStringValue(CHARGER_DATA, "").isNotEmpty()) {
-                    writeForCDMFields(1,
+                    writeForCDMFields(
+                        CODE_CHARGER,
                         prefHelper.getStringValue(CHARGER_DATA, "").fromJson<List<Int>>()
                     )
                 }
             } else if (prefHelper.getBoolean(CDM_RECTIFIERS_UPDATED, false)) {
                 delay(mCommonDelay)
                 if (prefHelper.getStringValue(RECTIFIERS_DATA, "").isNotEmpty()) {
-                    writeForCDMFields(2,
+                    writeForCDMFields(
+                        CODE_RECTIFIERS,
                         prefHelper.getStringValue(RECTIFIERS_DATA, "").fromJson<List<Int>>()
                     )
                 }
             } else if (prefHelper.getBoolean(CDM_AC_METER_UPDATED, false)) {
                 delay(mCommonDelay)
                 if (prefHelper.getStringValue(AC_METER_DATA, "").isNotEmpty()) {
-                    writeForCDMFields(3,
+                    writeForCDMFields(
+                        CODE_AC_METER,
                         prefHelper.getStringValue(AC_METER_DATA, "").fromJson<List<Int>>()
                     )
                 }
             } else if (prefHelper.getBoolean(CDM_DC_METER_UPDATED, false)) {
                 delay(mCommonDelay)
                 if (prefHelper.getStringValue(DC_METER_DATA, "").isNotEmpty()) {
-                    writeForCDMFields(4,
+                    writeForCDMFields(
+                        CODE_DC_METER,
                         prefHelper.getStringValue(DC_METER_DATA, "").fromJson<List<Int>>()
                     )
                 }
             } else if (prefHelper.getBoolean(CDM_FAULT_DETECTION_UPDATED, false)) {
                 delay(mCommonDelay)
                 if (prefHelper.getStringValue(FAULT_DETECTION_DATA, "").isNotEmpty()) {
-                    writeForCDMFields(5,
+                    writeForCDMFields(
+                        CODE_FAULT_DETECTION,
                         prefHelper.getStringValue(FAULT_DETECTION_DATA, "").fromJson<List<Int>>()
                     )
                 }
@@ -485,7 +501,10 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                     lifecycleScope.launch {
                         startReading()
                     }
-                    Log.e("###CDMCONFIG", "getConfigurationParameters: Error Response - ${it.toHex()}")
+                    Log.e(
+                        "###CDMCONFIG",
+                        "getConfigurationParameters: Error Response - ${it.toHex()}"
+                    )
                 }
             }, onReadStopped = {
                 Log.e("###CDMCONFIG", "getConfigurationParameters: OnReadStopped Called")
@@ -1268,12 +1287,17 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 mOutputStream,
                 mInputStream,
                 getCDMFieldStartingAddress(fieldCode),
-                values, {
+                values.take(values.size - 1), {
                     Log.d("###CDMCONFIG", "writeForCDMFields: Response Got - $fieldCode")
                     resetCDMPrefs(fieldCode)
                     lifecycleScope.launch {
-                        //write config access key as 4321 to save the updated value to mcu
-                        writeForConfigAccessParamsState(STORE_DATA_INTO_FLASH)
+                        //write again for the last field i.e 'Total Reactive Energy' in the user defined list of ac meter
+                        if (fieldCode == CODE_AC_METER) {
+                            writeForCDMFields(CODE_TOTAL_REACTIVE_ENERGY, listOf(values.last()))
+                        } else {
+                            //write config access key as 4321 to save the updated value to mcu
+                            writeForConfigAccessParamsState(STORE_DATA_INTO_FLASH)
+                        }
                     }
                 }, {
                     Log.d("###CDMCONFIG", "writeForCDMFields: Error Response")
@@ -1286,11 +1310,12 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
 
     private fun getCDMFieldStartingAddress(fieldCode: Int): Int {
         return when (fieldCode) {
-            1 -> CDM_CHARGER
-            2 -> CDM_RECTIFIER
-            3 -> CDM_AC_METER
-            4 -> CDM_DC_METER
-            5 -> CDM_FAULT_DETECTION
+            CODE_CHARGER -> CDM_CHARGER
+            CODE_RECTIFIERS -> CDM_RECTIFIER
+            CODE_AC_METER -> CDM_AC_METER
+            CODE_DC_METER -> CDM_DC_METER
+            CODE_FAULT_DETECTION -> CDM_FAULT_DETECTION
+            CODE_TOTAL_REACTIVE_ENERGY -> CDM_TOTAL_REACTIVE_ENERGY
             else -> 0
         }
     }

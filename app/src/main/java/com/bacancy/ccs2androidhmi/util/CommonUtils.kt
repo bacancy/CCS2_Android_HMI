@@ -66,6 +66,12 @@ object CommonUtils {
     const val SYSTEM_UNAVAILABLE = "2222"
     const val STORE_DATA_INTO_FLASH = "4321"
     const val ACCESS_PARAMETERS = "1234"
+    const val CODE_CHARGER = 1
+    const val CODE_RECTIFIERS = 2
+    const val CODE_AC_METER = 3
+    const val CODE_DC_METER = 4
+    const val CODE_FAULT_DETECTION = 5
+    const val CODE_TOTAL_REACTIVE_ENERGY = 6
 
     private fun swapAdjacentElements(array: MutableList<Int>): MutableList<Int> {
         for (i in 0 until array.size - 1 step 2) {

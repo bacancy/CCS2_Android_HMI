@@ -209,16 +209,15 @@ class CDMConfigurationFragment : BaseFragment() {
                         add(incVoltageV2N.edtInputValue.text.toString().toInt())
                         add(incVoltageV3N.edtInputValue.text.toString().toInt())
                         add(incAvgVoltageLN.edtInputValue.text.toString().toInt())
-                        add(incFrequency.edtInputValue.text.toString().toInt())
-                        add(incAvgPF.edtInputValue.text.toString().toInt())
                         add(incCurrentL1.edtInputValue.text.toString().toInt())
                         add(incCurrentL2.edtInputValue.text.toString().toInt())
                         add(incCurrentL3.edtInputValue.text.toString().toInt())
                         add(incAvgCurrent.edtInputValue.text.toString().toInt())
                         add(incActivePower.edtInputValue.text.toString().toInt())
                         add(incTotalEnergy.edtInputValue.text.toString().toInt())
-                        //TO-DO - The address of total reactive energy is far from other parameters.
-                        //add(incTotalReactiveEnergy.edtInputValue.text.toString().toInt())
+                        add(incFrequency.edtInputValue.text.toString().toInt())
+                        add(incAvgPF.edtInputValue.text.toString().toInt())
+                        add(incTotalReactiveEnergy.edtInputValue.text.toString().toInt())
                     }
                 }
                 Log.d("CDMConfigurationFragment", "Ac Meter List: $acMeterList")

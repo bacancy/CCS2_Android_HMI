@@ -24,5 +24,6 @@ object RegisterAddresses {
     const val CDM_RECTIFIER = 401
     const val CDM_CHARGER = 441
     const val CDM_AC_METER = 407
+    const val CDM_TOTAL_REACTIVE_ENERGY = 443
     const val CDM_DC_METER = 421
 }
