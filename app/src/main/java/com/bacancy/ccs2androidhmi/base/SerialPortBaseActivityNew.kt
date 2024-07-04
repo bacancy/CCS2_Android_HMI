@@ -235,6 +235,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                                     isCancelable = false
                                 ) {
                                     lifecycleScope.launch {
+                                        delay(mCommonDelay)
                                         readMiscInfo()
                                     }
                                 }
@@ -249,6 +250,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                             //system available for configuration
                             //write "1234" to start accessing config parameters
                             lifecycleScope.launch {
+                                delay(mCommonDelay)
                                 writeForConfigAccessParamsState(ACCESS_PARAMETERS)
                             }
                         }
@@ -256,6 +258,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                         else -> {
                             statusCheckingDialog.dismiss()
                             lifecycleScope.launch {
+                                delay(mCommonDelay)
                                 readMiscInfo()
                             }
                         }
@@ -269,6 +272,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 showReadStoppedUI()
                 Log.e("TUE_TAG", "readConfigAccessParamsState: OnReadStopped Called")
                 lifecycleScope.launch {
+                    delay(mCommonDelay)
                     startReading()
                 }
             })
@@ -287,6 +291,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 accessStartCode.hexStringToDecimal(), {
                     Log.d("###CDMCONFIG", "writeForConfigAccessParamsState: Response Got")
                     lifecycleScope.launch {
+                        delay(mCommonDelay)
                         getConfigurationParameters()
                     }
                 }, {
@@ -326,6 +331,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                     showCustomLoadingDialog(getString(R.string.msg_checking_cdm_status))
                 statusCheckingDialog.show()
                 clearDialogFlags(statusCheckingDialog)
+                delay(mCommonDelay)
                 readConfigAccessParamsState()
             } else if (prefHelper.getBoolean(CDM_CHARGER_UPDATED, false)) {
                 delay(mCommonDelay)
@@ -1293,8 +1299,10 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                     lifecycleScope.launch {
                         //write again for the last field i.e 'Total Reactive Energy' in the user defined list of ac meter
                         if (fieldCode == CODE_AC_METER) {
+                            delay(mCommonDelay)
                             writeForCDMFields(CODE_TOTAL_REACTIVE_ENERGY, listOf(values.last()))
                         } else {
+                            delay(mCommonDelay)
                             //write config access key as 4321 to save the updated value to mcu
                             writeForConfigAccessParamsState(STORE_DATA_INTO_FLASH)
                         }
