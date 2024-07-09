@@ -526,7 +526,9 @@ class GunsHomeScreenFragment : BaseFragment() {
                                         prefHelper.setStringValue(GUN_1_CHARGING_END_TIME, "")
                                     }
                                     summaryDialogGun1.show()
-                                    requireActivity().clearDialogFlags(summaryDialogGun1)
+                                    if(isAdded){
+                                        requireActivity().clearDialogFlags(summaryDialogGun1)
+                                    }
                                 }
                             } else {
                                 if (shouldShowGun2SummaryDialog) {
@@ -540,7 +542,9 @@ class GunsHomeScreenFragment : BaseFragment() {
                                         prefHelper.setStringValue(GUN_2_CHARGING_END_TIME, "")
                                     }
                                     summaryDialogGun2.show()
-                                    requireActivity().clearDialogFlags(summaryDialogGun2)
+                                    if(isAdded){
+                                        requireActivity().clearDialogFlags(summaryDialogGun1)
+                                    }
                                 }
                             }
                         }

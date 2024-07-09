@@ -81,6 +81,7 @@ import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_ISOLATION_FAIL
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_MAINS_FAIL
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_PLC_FAULT
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_PRECHARGE_FAIL
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_PREPARING_FOR_CHARGING
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_RECTIFIER_FAULT
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_RESERVED
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_SMOKE_FAULT
@@ -804,7 +805,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                             openGun1LastChargingSummary()
                         }
 
-                        LBL_CHARGING -> {
+                        LBL_PREPARING_FOR_CHARGING -> {
                             if (prefHelper.getStringValue(GUN_1_CHARGING_START_TIME, "")
                                     .isEmpty()
                             ) {
@@ -816,6 +817,11 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                                         )
                                 )
                             }
+                            isGun1PluggedIn = true
+                            openGun1LastChargingSummary()
+                        }
+
+                        LBL_CHARGING -> {
                             isGun1PluggedIn = true
                             openGun1LastChargingSummary()
                         }
@@ -1100,7 +1106,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                             openGun2LastChargingSummary()
                         }
 
-                        LBL_CHARGING -> {
+                        LBL_PREPARING_FOR_CHARGING -> {
                             if (prefHelper.getStringValue(GUN_2_CHARGING_START_TIME, "")
                                     .isEmpty()
                             ) {
@@ -1112,6 +1118,11 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                                         )
                                 )
                             }
+                            isGun2PluggedIn = true
+                            openGun2LastChargingSummary()
+                        }
+
+                        LBL_CHARGING -> {
                             isGun2PluggedIn = true
                             openGun2LastChargingSummary()
                         }
