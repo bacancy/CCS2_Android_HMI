@@ -1022,6 +1022,8 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
         } else if (prefHelper.getStringValue(AUTH_PIN_VALUE, "").isNotEmpty()) {
             writeForPinAuthorization(prefHelper.getStringValue(AUTH_PIN_VALUE, ""))
         } else {
+            clearGun1SessionModePrefs()
+            clearGun2SessionModePrefs()
             setupTestMode()
         }
     }
@@ -1474,24 +1476,36 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                     Log.d(TAG, "writeForSelectedSessionModeValue: Response Got")
                     lifecycleScope.launch {
                         if (isGun1) {
-                            prefHelper.setBoolean(CommonUtils.IS_GUN_1_SESSION_MODE_SELECTED, false)
-                            prefHelper.setIntValue(CommonUtils.GUN_1_SELECTED_SESSION_MODE, 0)
-                            prefHelper.setStringValue(
-                                CommonUtils.GUN_1_SELECTED_SESSION_MODE_VALUE,
-                                ""
-                            )
+                            clearGun1SessionModePrefs()
                         } else {
-                            prefHelper.setBoolean(CommonUtils.IS_GUN_2_SESSION_MODE_SELECTED, false)
-                            prefHelper.setIntValue(CommonUtils.GUN_2_SELECTED_SESSION_MODE, 0)
-                            prefHelper.setStringValue(
-                                CommonUtils.GUN_2_SELECTED_SESSION_MODE_VALUE,
-                                ""
-                            )
+                            clearGun2SessionModePrefs()
                         }
                         readMiscInfo()
                     }
-                }, {})
+                }, {
+                    Log.e(TAG, "writeForSelectedSessionModeValue: Error Response Got")
+                    lifecycleScope.launch {
+                        if (isGun1) {
+                            clearGun1SessionModePrefs()
+                        } else {
+                            clearGun2SessionModePrefs()
+                        }
+                        readMiscInfo()
+                    }
+                })
         }
+    }
+
+    private fun clearGun2SessionModePrefs() {
+        prefHelper.setBoolean(CommonUtils.IS_GUN_2_SESSION_MODE_SELECTED, false)
+        prefHelper.setIntValue(CommonUtils.GUN_2_SELECTED_SESSION_MODE, 0)
+        prefHelper.setStringValue(CommonUtils.GUN_2_SELECTED_SESSION_MODE_VALUE, "")
+    }
+
+    private fun clearGun1SessionModePrefs() {
+        prefHelper.setBoolean(CommonUtils.IS_GUN_1_SESSION_MODE_SELECTED, false)
+        prefHelper.setIntValue(CommonUtils.GUN_1_SELECTED_SESSION_MODE, 0)
+        prefHelper.setStringValue(CommonUtils.GUN_1_SELECTED_SESSION_MODE_VALUE, "")
     }
 
     private fun writeForLocalStartStop(gunsStartStopData: Int = 1) {

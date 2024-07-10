@@ -306,6 +306,7 @@ object DialogUtils {
         dialog.setCanceledOnTouchOutside(false)
 
         binding.apply {
+            edtSessionModeValue.text.clear()
             edtSessionModeValue.gone()
             btnSubmit.setOnClickListener {
                 if (!radioByAuto.isChecked && edtSessionModeValue.text.isEmpty()) {
