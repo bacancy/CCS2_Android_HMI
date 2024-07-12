@@ -13,6 +13,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.os.SystemClock
 import android.util.Log
 import android.view.KeyEvent
 import android.view.WindowManager
@@ -84,6 +85,8 @@ import java.util.Locale
 @AndroidEntryPoint
 class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener {
 
+    private var lastClickTime = 0L
+    private val minClickInterval = 500L
     private lateinit var networkCallback: ConnectivityManager.NetworkCallback
     private lateinit var connectivityManager: ConnectivityManager
     private lateinit var serverPopup: Dialog
@@ -136,6 +139,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         if (!prefHelper.getBoolean(IS_APP_PINNED, false)) {
             requestDeviceAdminPermissions()
         } else {
+            getSystemService(Context.ACTIVITY_SERVICE)
             startLockTask()
         }
     }
@@ -561,7 +565,11 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         binding.lnrChargerInoperative.setOnClickListener {}
 
         binding.incToolbar.ivSwitchDarkMode.setOnClickListener {
-            toggleTheme()
+            val now = SystemClock.uptimeMillis()
+            if (now - lastClickTime > minClickInterval) {
+                lastClickTime = now
+                toggleTheme()
+            }
         }
 
         binding.incToolbar.imgBack.setOnClickListener {
