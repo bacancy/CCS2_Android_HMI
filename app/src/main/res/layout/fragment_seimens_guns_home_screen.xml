@@ -9,12 +9,13 @@
 
     <ImageView
         android:id="@+id/ivLogo"
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/_15sdp"
+        android:layout_width="@dimen/_100sdp"
+        android:layout_height="@dimen/_80sdp"
         android:adjustViewBounds="true"
         android:gravity="center"
+        android:scaleType="centerCrop"
         android:importantForAccessibility="no"
-        android:src="@drawable/ic_seimens_logo"
+        android:src="@drawable/ic_tata_power_logo"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -48,6 +49,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_width="wrap_content"
         tools:text="Unit Cost = Rs. 10/kWh"
+        android:visibility="gone"
         android:padding="@dimen/_3sdp"
         android:textSize="@dimen/_8ssp"
         android:background="@drawable/bg_white_round_rect"
