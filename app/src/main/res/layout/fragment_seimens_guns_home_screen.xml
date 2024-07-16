@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     android:background="@drawable/bg_seimens_home_screen"
     android:padding="@dimen/_10sdp">
 
@@ -13,14 +13,27 @@
         android:layout_height="@dimen/_80sdp"
         android:adjustViewBounds="true"
         android:gravity="center"
-        android:scaleType="centerCrop"
         android:importantForAccessibility="no"
+        android:scaleType="centerCrop"
         android:src="@drawable/ic_tata_power_logo"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/ivSingleGun"
+        android:id="@+id/ivGun1"
+        android:layout_width="@dimen/_100sdp"
+        android:layout_height="@dimen/_100sdp"
+        android:layout_marginStart="@dimen/_20sdp"
+        android:layout_marginBottom="@dimen/_80sdp"
+        android:importantForAccessibility="no"
+        android:src="@drawable/ic_single_gun_unplugged"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/ivGun2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/ivGun2"
         android:layout_width="@dimen/_100sdp"
         android:layout_height="@dimen/_100sdp"
         android:layout_marginBottom="@dimen/_80sdp"
@@ -28,56 +41,56 @@
         android:src="@drawable/ic_single_gun_unplugged"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/ivGun1"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        app:layout_constraintTop_toBottomOf="@id/ivSingleGun"
         android:layout_width="wrap_content"
-        app:layout_constraintStart_toStartOf="@id/ivSingleGun"
-        app:layout_constraintEnd_toEndOf="@id/ivSingleGun"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_9sdp"
+        android:layout_marginTop="@dimen/_22sdp"
         android:text="@string/lbl_tap_to_charge"
         android:textColor="@color/white"
-        android:layout_marginStart="@dimen/_9sdp"
         android:textSize="@dimen/_7ssp"
-        android:layout_marginTop="@dimen/_22sdp"
-        android:layout_height="wrap_content"/>
+        app:layout_constraintEnd_toStartOf="@id/ivGun2"
+        app:layout_constraintStart_toEndOf="@id/ivGun1"
+        app:layout_constraintTop_toBottomOf="@id/ivGun1" />
 
     <TextView
         android:id="@+id/tvUnitCost"
-        app:layout_constraintTop_toTopOf="@id/ivSingleGun"
-        app:layout_constraintEnd_toEndOf="parent"
         android:layout_width="wrap_content"
-        tools:text="Unit Cost = Rs. 10/kWh"
-        android:visibility="gone"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_white_round_rect"
         android:padding="@dimen/_3sdp"
         android:textSize="@dimen/_8ssp"
-        android:background="@drawable/bg_white_round_rect"
-        android:layout_height="wrap_content"/>
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/ivGun1"
+        tools:text="Unit Cost = Rs. 10/kWh" />
 
     <TextView
         android:id="@+id/tvModelName"
-        android:layout_marginTop="@dimen/_5sdp"
-        app:layout_constraintTop_toBottomOf="@id/tvUnitCost"
-        app:layout_constraintEnd_toEndOf="parent"
         android:layout_width="wrap_content"
-        android:text="@string/lbl_controller_model_name"
-        android:padding="@dimen/_3sdp"
-        android:textStyle="bold"
-        android:textSize="@dimen/_9ssp"
-        android:textColor="@color/mid_blue"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_5sdp"
         android:background="@drawable/bg_white_round_rect"
-        android:layout_height="wrap_content"/>
+        android:padding="@dimen/_3sdp"
+        android:text="@string/lbl_controller_model_name"
+        android:textColor="@color/mid_blue"
+        android:textSize="@dimen/_9ssp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvUnitCost" />
 
     <LinearLayout
         android:id="@+id/lnrGunStates"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_60sdp"
-        android:gravity="top"
         android:baselineAligned="false"
+        android:gravity="top"
         android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@id/ivSingleGun">
+        app:layout_constraintTop_toBottomOf="@id/ivGun1">
 
         <LinearLayout
             android:layout_width="0dp"

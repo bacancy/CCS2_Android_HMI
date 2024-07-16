@@ -56,7 +56,9 @@ import javax.inject.Inject
 class SeimensGunsHomeScreenFragment : BaseFragment() {
 
     private var isGun1ChargingStarted: Boolean = false
+    private var isGun2ChargingStarted: Boolean = false
     private var shouldShowGun1SummaryDialog: Boolean = false
+    private var shouldShowGun2SummaryDialog: Boolean = false
     private lateinit var binding: FragmentSeimensGunsHomeScreenBinding
     private var fragmentChangeListener: FragmentChangeListener? = null
     private val appViewModel: AppViewModel by viewModels()
@@ -109,28 +111,33 @@ class SeimensGunsHomeScreenFragment : BaseFragment() {
                 updateGun1UI(it)
             }
         }
+        appViewModel.getUpdatedGunsChargingInfo(2).observe(requireActivity()) {
+            it?.let {
+                updateGun2UI(it)
+            }
+        }
     }
 
     private fun updateGun1UI(tbGunsChargingInfo: TbGunsChargingInfo) {
         when (tbGunsChargingInfo.gunChargingState) {
             UNPLUGGED -> {
                 shouldShowGun1SummaryDialog = false
-                binding.ivSingleGun.setImageResource(R.drawable.ic_single_gun_unplugged)
+                binding.ivGun1.setImageResource(R.drawable.ic_single_gun_unplugged)
             }
 
             PLUGGED_IN -> {
                 shouldShowGun1SummaryDialog = false
-                binding.ivSingleGun.setImageResource(R.drawable.ic_single_gun_plugged)
+                binding.ivGun1.setImageResource(R.drawable.ic_single_gun_plugged)
             }
 
             CHARGING -> {
                 shouldShowGun1SummaryDialog = false
                 isGun1ChargingStarted = true
-                binding.ivSingleGun.setImageResource(R.drawable.ic_single_gun_charging_in_process)
+                binding.ivGun1.setImageResource(R.drawable.ic_single_gun_charging_in_process)
             }
 
             COMPLETE -> {
-                binding.ivSingleGun.setImageResource(R.drawable.ic_single_gun_charging_completed)
+                binding.ivGun1.setImageResource(R.drawable.ic_single_gun_charging_completed)
             }
 
             PLC_FAULT,
@@ -140,7 +147,7 @@ class SeimensGunsHomeScreenFragment : BaseFragment() {
             SMOKE_FAULT,
             TAMPER_FAULT,
             EMERGENCY_STOP -> {
-                binding.ivSingleGun.setImageResource(R.drawable.ic_single_gun_fault)
+                binding.ivGun1.setImageResource(R.drawable.ic_single_gun_fault)
             }
         }
 
@@ -165,28 +172,103 @@ class SeimensGunsHomeScreenFragment : BaseFragment() {
                 if (!shouldShowGun1SummaryDialog && isGun1ChargingStarted) {
                     isGun1ChargingStarted = false
                     shouldShowGun1SummaryDialog = true
-                    observeGunsLastChargingSummary()
+                    observeGunsLastChargingSummary(1)
                 }
 
             }
         }
     }
 
-    private fun observeGunsLastChargingSummary() {
+    private fun updateGun2UI(tbGunsChargingInfo: TbGunsChargingInfo) {
+        when (tbGunsChargingInfo.gunChargingState) {
+            UNPLUGGED -> {
+                shouldShowGun2SummaryDialog = false
+                binding.ivGun2.setImageResource(R.drawable.ic_single_gun_unplugged)
+            }
+
+            PLUGGED_IN -> {
+                shouldShowGun2SummaryDialog = false
+                binding.ivGun2.setImageResource(R.drawable.ic_single_gun_plugged)
+            }
+
+            CHARGING -> {
+                shouldShowGun2SummaryDialog = false
+                isGun2ChargingStarted = true
+                binding.ivGun2.setImageResource(R.drawable.ic_single_gun_charging_in_process)
+            }
+
+            COMPLETE -> {
+                binding.ivGun2.setImageResource(R.drawable.ic_single_gun_charging_completed)
+            }
+
+            PLC_FAULT,
+            RECTIFIER_FAULT,
+            TEMPERATURE_FAULT,
+            SPD_FAULT,
+            SMOKE_FAULT,
+            TAMPER_FAULT,
+            EMERGENCY_STOP -> {
+                binding.ivGun2.setImageResource(R.drawable.ic_single_gun_fault)
+            }
+        }
+
+        when (tbGunsChargingInfo.gunChargingState) {
+            COMPLETE,
+            COMMUNICATION_ERROR,
+            AUTHENTICATION_TIMEOUT,
+            PLC_FAULT,
+            RECTIFIER_FAULT,
+            AUTHENTICATION_DENIED,
+            PRECHARGE_FAIL,
+            ISOLATION_FAIL,
+            TEMPERATURE_FAULT,
+            SPD_FAULT,
+            SMOKE_FAULT,
+            TAMPER_FAULT,
+            MAINS_FAIL,
+            UNAVAILABLE,
+            RESERVED,
+            EMERGENCY_STOP,
+            -> {
+                if (!shouldShowGun2SummaryDialog && isGun2ChargingStarted) {
+                    isGun2ChargingStarted = false
+                    shouldShowGun2SummaryDialog = true
+                    observeGunsLastChargingSummary(2)
+                }
+
+            }
+        }
+    }
+
+    private fun observeGunsLastChargingSummary(gunNumber: Int) {
         lifecycleScope.launch {
             delay(2000)
             try {
-                appViewModel.getGunsLastChargingSummary(1)
+                appViewModel.getGunsLastChargingSummary(gunNumber)
                     .observe(requireActivity()) {
                         it?.let {
                             val isDarkTheme = prefHelper.getBoolean(IS_DARK_THEME, false)
-                            if (shouldShowGun1SummaryDialog) {
-                                shouldShowGun1SummaryDialog = false
-                                requireContext().showChargingSummaryDialog(
-                                    true,
-                                    it,
-                                    isDarkTheme
-                                ) {}
+                            when(gunNumber){
+                                1 -> {
+                                    if (shouldShowGun1SummaryDialog) {
+                                        shouldShowGun1SummaryDialog = false
+                                        requireContext().showChargingSummaryDialog(
+                                            true,
+                                            it,
+                                            isDarkTheme
+                                        ) {}
+                                    }
+                                }
+                                2 -> {
+                                    if (shouldShowGun2SummaryDialog) {
+                                        shouldShowGun2SummaryDialog = false
+                                        requireContext().showChargingSummaryDialog(
+                                            true,
+                                            it,
+                                            isDarkTheme
+                                        ) {}
+                                    }
+                                }
                             }
                         }
                     }
@@ -197,14 +279,17 @@ class SeimensGunsHomeScreenFragment : BaseFragment() {
     }
 
     override fun handleClicks() {
-        binding.ivSingleGun.setOnClickListener {
-            openGunsMoreInfoFragment()
+        binding.ivGun1.setOnClickListener {
+            openGunsMoreInfoFragment(1)
+        }
+        binding.ivGun2.setOnClickListener {
+            openGunsMoreInfoFragment(2)
         }
     }
 
-    private fun openGunsMoreInfoFragment() {
+    private fun openGunsMoreInfoFragment(gunNumber: Int) {
         val bundle = Bundle()
-        bundle.putInt(SELECTED_GUN, 1)
+        bundle.putInt(SELECTED_GUN, gunNumber)
         val fragment = GunsMoreInformationFragment()
         fragment.arguments = bundle
         fragmentChangeListener?.replaceFragment(fragment)
