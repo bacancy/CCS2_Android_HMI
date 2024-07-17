@@ -7,7 +7,7 @@
     android:background="@drawable/bg_seimens_home_screen"
     android:padding="@dimen/_10sdp">
 
-    <ImageView
+   <!-- <ImageView
         android:id="@+id/ivLogo"
         android:layout_width="@dimen/_100sdp"
         android:layout_height="@dimen/_80sdp"
@@ -16,6 +16,17 @@
         android:importantForAccessibility="no"
         android:scaleType="centerCrop"
         android:src="@drawable/ic_tata_power_logo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />-->
+
+    <ImageView
+        android:id="@+id/ivLogo"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/_15sdp"
+        android:adjustViewBounds="true"
+        android:gravity="center"
+        android:importantForAccessibility="no"
+        android:src="@drawable/ic_seimens_logo"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -28,9 +39,17 @@
         android:importantForAccessibility="no"
         android:src="@drawable/ic_single_gun_unplugged"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/ivGun2"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/gunsDivider"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/gunsDivider"
+        android:layout_width="@dimen/_50sdp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_height="wrap_content"/>
 
     <ImageView
         android:id="@+id/ivGun2"
@@ -40,8 +59,7 @@
         android:importantForAccessibility="no"
         android:src="@drawable/ic_single_gun_unplugged"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/ivGun1"
+        app:layout_constraintStart_toEndOf="@id/gunsDivider"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -63,7 +81,7 @@
         android:background="@drawable/bg_white_round_rect"
         android:padding="@dimen/_3sdp"
         android:textSize="@dimen/_8ssp"
-        android:visibility="gone"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/ivGun1"
         tools:text="Unit Cost = Rs. 10/kWh" />
