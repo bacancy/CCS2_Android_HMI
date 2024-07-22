@@ -206,6 +206,7 @@ class GunsMoreInformationFragment : BaseFragment() {
                 if(btnStartStopCharging.text == getString(R.string.lbl_start)){
                     if(sessionModeDialog.isShowing.not()){
                         sessionModeDialog.show()
+                        requireActivity().clearDialogFlags(sessionModeDialog)
                     }
                 } else {
                     showStartStopChargingDialog(false)

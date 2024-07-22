@@ -326,8 +326,8 @@ object DialogUtils {
                 val radioButtonMap = mapOf(
                     radioByAuto to 0,
                     radioByTime to 1,
-                    radioByEnergy to 3,
-                    radioBySoc to 2
+                    radioBySoc to 2,
+                    radioByEnergy to 3
                 )
 
                 val selectedRadioButton = radioButtonMap.entries.find { it.key.isChecked }?.value ?: 0

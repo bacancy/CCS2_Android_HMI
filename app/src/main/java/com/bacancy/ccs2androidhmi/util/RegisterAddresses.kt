@@ -6,9 +6,13 @@ object RegisterAddresses {
     const val AUTHENTICATE_GUN = 30
     const val ENABLE_DISABLE_DUAL_SOCKET = 86
     const val GUN1_SESSION_MODE = 122
-    const val GUN1_SESSION_MODE_VALUE = 123
+    const val GUN1_SESSION_MODE_TIME_VALUE = 123
+    const val GUN1_SESSION_MODE_SOC_VALUE = 124
+    const val GUN1_SESSION_MODE_ENERGY_VALUE = 125
     const val GUN2_SESSION_MODE = 222
-    const val GUN2_SESSION_MODE_VALUE = 223
+    const val GUN2_SESSION_MODE_TIME_VALUE = 223
+    const val GUN2_SESSION_MODE_SOC_VALUE = 224
+    const val GUN2_SESSION_MODE_ENERGY_VALUE = 225
     const val LOCAL_START_STOP = 48
     const val TEST_MODE_ON_OFF = 350
     const val UPDATE_TEST_MODE = 351

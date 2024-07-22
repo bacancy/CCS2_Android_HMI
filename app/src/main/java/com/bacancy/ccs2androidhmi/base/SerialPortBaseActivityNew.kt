@@ -116,12 +116,16 @@ import com.bacancy.ccs2androidhmi.util.RegisterAddresses.ENABLE_DISABLE_DUAL_SOC
 import com.bacancy.ccs2androidhmi.util.RegisterAddresses.GUN1_CURRENT
 import com.bacancy.ccs2androidhmi.util.RegisterAddresses.GUN1_OUTPUT_ON_OFF
 import com.bacancy.ccs2androidhmi.util.RegisterAddresses.GUN1_SESSION_MODE
-import com.bacancy.ccs2androidhmi.util.RegisterAddresses.GUN1_SESSION_MODE_VALUE
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.GUN1_SESSION_MODE_ENERGY_VALUE
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.GUN1_SESSION_MODE_SOC_VALUE
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.GUN1_SESSION_MODE_TIME_VALUE
 import com.bacancy.ccs2androidhmi.util.RegisterAddresses.GUN1_VOLTAGE
 import com.bacancy.ccs2androidhmi.util.RegisterAddresses.GUN2_CURRENT
 import com.bacancy.ccs2androidhmi.util.RegisterAddresses.GUN2_OUTPUT_ON_OFF
 import com.bacancy.ccs2androidhmi.util.RegisterAddresses.GUN2_SESSION_MODE
-import com.bacancy.ccs2androidhmi.util.RegisterAddresses.GUN2_SESSION_MODE_VALUE
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.GUN2_SESSION_MODE_ENERGY_VALUE
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.GUN2_SESSION_MODE_SOC_VALUE
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.GUN2_SESSION_MODE_TIME_VALUE
 import com.bacancy.ccs2androidhmi.util.RegisterAddresses.GUN2_VOLTAGE
 import com.bacancy.ccs2androidhmi.util.RegisterAddresses.KEY_ACCESS_PARAMETER
 import com.bacancy.ccs2androidhmi.util.RegisterAddresses.LOCAL_START_STOP
@@ -137,7 +141,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.io.InputStream
 import java.io.OutputStream
 import java.nio.ByteBuffer
@@ -1440,38 +1443,42 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 selectedSessionMode, {
                     Log.d(TAG, "writeForSelectedSessionMode: Response Got")
                     lifecycleScope.launch {
-                        if (isGun1) {
+                        if (selectedSessionMode != 0) {
                             writeForSelectedSessionModeValue(
-                                prefHelper.getStringValue(
-                                    CommonUtils.GUN_1_SELECTED_SESSION_MODE_VALUE,
-                                    ""
-                                ), true
+                                isGun1, selectedSessionMode
                             )
                         } else {
-                            writeForSelectedSessionModeValue(
-                                prefHelper.getStringValue(
-                                    CommonUtils.GUN_2_SELECTED_SESSION_MODE_VALUE,
-                                    ""
-                                ), false
-                            )
+                            readMiscInfo()
                         }
                     }
-                }, {})
+                }, {
+                    lifecycleScope.launch {
+                        readMiscInfo()
+                    }
+                })
         }
     }
 
     private fun writeForSelectedSessionModeValue(
-        selectedSessionModeValue: String,
-        isGun1: Boolean
+        isGun1: Boolean,
+        selectedSessionMode: Int
     ) {
+        val selectedSessionModeValue = prefHelper.getStringValue(
+            if (isGun1) CommonUtils.GUN_1_SELECTED_SESSION_MODE_VALUE else CommonUtils.GUN_2_SELECTED_SESSION_MODE_VALUE,
+            ""
+        )
         val floatBytes: ByteArray = ByteBuffer.allocate(4).order(ByteOrder.BIG_ENDIAN)
             .putFloat(selectedSessionModeValue.toFloat()).array()
-        Log.i(TAG, "Gun $selectedSessionModeValue writeForSelectedSessionModeValue Request Started")
+        Log.i(
+            TAG,
+            "Gun-${if (isGun1) 1 else 2} Value - $selectedSessionModeValue writeForSelectedSessionModeValue Request Started"
+        )
+        Log.d(TAG,"Session Mode Value Address = ${getSelectedSessionModeValueAddress(isGun1, selectedSessionMode)}")
         lifecycleScope.launch(Dispatchers.IO) {
             ReadWriteUtil.writeToSingleHoldingRegisterNew(
                 mOutputStream,
                 mInputStream,
-                if (isGun1) GUN1_SESSION_MODE_VALUE else GUN2_SESSION_MODE_VALUE,
+                getSelectedSessionModeValueAddress(isGun1, selectedSessionMode),
                 selectedSessionModeValue.toInt(), {
                     Log.d(TAG, "writeForSelectedSessionModeValue: Response Got")
                     lifecycleScope.launch {
@@ -1493,6 +1500,15 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                         readMiscInfo()
                     }
                 })
+        }
+    }
+
+    private fun getSelectedSessionModeValueAddress(isGun1: Boolean, selectedSessionMode: Int): Int {
+        return when (selectedSessionMode) {
+            1 -> if (isGun1) GUN1_SESSION_MODE_TIME_VALUE else GUN2_SESSION_MODE_TIME_VALUE
+            2 -> if (isGun1) GUN1_SESSION_MODE_SOC_VALUE else GUN2_SESSION_MODE_SOC_VALUE
+            3 -> if (isGun1) GUN1_SESSION_MODE_ENERGY_VALUE else GUN2_SESSION_MODE_ENERGY_VALUE
+            else -> 0
         }
     }
 
