@@ -25,6 +25,7 @@ import com.bacancy.ccs2androidhmi.util.DialogUtils.clearDialogFlags
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showCustomDialog
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showPinAuthorizationDialog
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showSessionModeDialog
+import com.bacancy.ccs2androidhmi.util.DialogUtils.showStartStopChargingDialog
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.SELECTED_GUN
 import com.bacancy.ccs2androidhmi.util.NetworkUtils.isInternetConnected
@@ -87,11 +88,22 @@ class GunsMoreInformationFragment : BaseFragment() {
                     prefHelper.setIntValue(GUN_2_SELECTED_SESSION_MODE, selectedRadioButton)
                     prefHelper.setStringValue(GUN_2_SELECTED_SESSION_MODE_VALUE, sessionModeValue)
                 }
-                val dialog = requireActivity().showCustomDialog(getString(R.string.msg_convey_user_to_start_charging_session)) {}
-                dialog.show()
-                requireActivity().clearDialogFlags(dialog)
+                showStartStopChargingDialog(true)
             }
         return binding.root
+    }
+
+    private fun showStartStopChargingDialog(isStartCharging: Boolean) {
+        val startStopChargingDialog = requireActivity().showStartStopChargingDialog(isStartCharging,onOTPClick = {
+            showPinAuthDialog()
+        }) {
+            val dialogInfo =
+                requireActivity().showCustomDialog(getString(R.string.msg_tap_rfid_to_start_charging), buttonLabel = getString(R.string.lbl_ok)) {}
+            dialogInfo.show()
+            requireActivity().clearDialogFlags(dialogInfo)
+        }
+        startStopChargingDialog.show()
+        requireActivity().clearDialogFlags(startStopChargingDialog)
     }
 
     private fun observeGunsChargingInfo() {
@@ -126,43 +138,21 @@ class GunsMoreInformationFragment : BaseFragment() {
 
                 when (gunChargingStateToSave) {
                     GunsChargingInfoUtils.PLUGGED_IN -> {
-                        ivSessionMode.visible()
-                        if (!isSessionModeDialogShownOnce && !sessionModeDialog.isShowing) {
-                            val sessionModeKey = when (selectedGunNumber) {
-                                1 -> IS_GUN_1_SESSION_MODE_SELECTED
-                                2 -> IS_GUN_2_SESSION_MODE_SELECTED
-                                else -> null
-                            }
-
-                            if (sessionModeKey != null && !prefHelper.getBoolean(sessionModeKey, false)) {
-                                isSessionModeDialogShownOnce = true
-                                sessionModeDialog.show()
-                                requireActivity().clearDialogFlags(sessionModeDialog)
-                            }
-                        }
-                        if (SHOW_PIN_AUTHORIZATION) {
-                            ivPinAuthorization.visible()
-                        }
+                        handleStartStopButtonVisibility(shouldDisplayShow = true,isCharging = false)
                     }
 
                     GunsChargingInfoUtils.LBL_CHARGING -> {
-                        ivSessionMode.gone()
-                        isSessionModeDialogShownOnce = false
+                        handleStartStopButtonVisibility(shouldDisplayShow = true,isCharging = true)
                         if(sessionModeDialog.isShowing){
                             sessionModeDialog.dismiss()
-                        }
-                        if (SHOW_PIN_AUTHORIZATION) {
-                            ivPinAuthorization.visible()
                         }
                     }
 
                     else -> {
-                        ivSessionMode.gone()
-                        isSessionModeDialogShownOnce = false
+                        handleStartStopButtonVisibility(shouldDisplayShow = false,isCharging = false)
                         if(sessionModeDialog.isShowing){
                             sessionModeDialog.dismiss()
                         }
-                        ivPinAuthorization.gone()
                     }
                 }
 
@@ -192,8 +182,35 @@ class GunsMoreInformationFragment : BaseFragment() {
         }
     }
 
+    private fun handleStartStopButtonVisibility(shouldDisplayShow: Boolean, isCharging: Boolean){
+        binding.apply {
+            if (shouldDisplayShow) {
+                btnStartStopCharging.visible()
+                if(isCharging){
+                    btnStartStopCharging.text = getString(R.string.lbl_stop)
+                    btnStartStopCharging.setBackgroundResource(R.drawable.stop_rounded_rect_selected)
+                } else {
+                    btnStartStopCharging.text = getString(R.string.lbl_start)
+                    btnStartStopCharging.setBackgroundResource(R.drawable.start_rounded_rect_selected)
+                }
+            } else {
+                btnStartStopCharging.gone()
+            }
+        }
+    }
+
     override fun handleClicks() {
         binding.apply {
+
+            btnStartStopCharging.setOnClickListener {
+                if(btnStartStopCharging.text == getString(R.string.lbl_start)){
+                    if(sessionModeDialog.isShowing.not()){
+                        sessionModeDialog.show()
+                    }
+                } else {
+                    showStartStopChargingDialog(false)
+                }
+            }
 
             btnACMeterInfo.setOnClickListener {
                 acMeterInfoFragment = ACMeterInfoFragment()
@@ -228,14 +245,7 @@ class GunsMoreInformationFragment : BaseFragment() {
             }
 
             ivPinAuthorization.setOnClickListener {
-                showPinAuthorizationDialog({
-                    prefHelper.setStringValue(AUTH_PIN_VALUE, it)
-                }, {
-                    requireContext().showCustomToast(
-                        getString(R.string.message_invalid_empty_pin),
-                        false
-                    )
-                })
+                showPinAuthDialog()
             }
 
             ivSessionMode.setOnClickListener {
@@ -246,6 +256,17 @@ class GunsMoreInformationFragment : BaseFragment() {
             }
 
         }
+    }
+
+    private fun showPinAuthDialog() {
+        showPinAuthorizationDialog({
+            prefHelper.setStringValue(AUTH_PIN_VALUE, it)
+        }, {
+            requireContext().showCustomToast(
+                getString(R.string.message_invalid_empty_pin),
+                false
+            )
+        })
     }
 
     private fun getBundleToPass(): Bundle {

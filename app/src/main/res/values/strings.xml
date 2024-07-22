@@ -268,6 +268,16 @@
     <string name="lbl_dutch_default">Nederlands</string>
     <string name="lbl_turkish_default">Türkçe</string>
 
+    <string name="msg_tap_rfid_to_start_charging">Once your RFID card has been tapped, click \'OK'.</string>
+    <string name="lbl_ok">OK</string>
+    <string name="lbl_start_charging">Start Charging</string>
+    <string name="lbl_stop_charging">Stop Charging</string>
+    <string name="lbl_enter_otp">Enter OTP</string>
+    <string name="lbl_tap_rfid">Tap RFID</string>
+    <string name="lbl_start">START</string>
+    <string name="lbl_stop">STOP</string>
+
+
     <string name="lbl_charger">Charger</string>
     <string name="lbl_rectifier">Rectifier</string>
     <string name="lbl_dc_meter">DC Meter</string>
