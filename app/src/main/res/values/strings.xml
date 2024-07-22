@@ -168,6 +168,7 @@
     <string name="online">Online</string>
     <string name="offline">Offline</string>
     <string name="lbl_controller_model_name">Model:\nSICHARGE RC 30 W</string>
+    <string name="lbl_controller_model_name_dual_gun">Model:\nSICHARGE\nRC 120 D</string>
     <string name="lbl_unit_cost">Unit Cost = ₹%s/kWh</string>
     <string name="lbl_tap_to_charge">Tap to charge</string>
     <string name="lbl_charger_ninoperative">CHARGER\nINOPERATIVE</string>

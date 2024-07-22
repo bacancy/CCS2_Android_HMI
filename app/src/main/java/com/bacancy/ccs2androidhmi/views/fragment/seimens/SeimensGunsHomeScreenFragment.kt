@@ -279,10 +279,10 @@ class SeimensGunsHomeScreenFragment : BaseFragment() {
     }
 
     override fun handleClicks() {
-        binding.ivGun1.setOnClickListener {
+        binding.frmLayoutGun1.setOnClickListener {
             openGunsMoreInfoFragment(1)
         }
-        binding.ivGun2.setOnClickListener {
+        binding.frmLayoutGun2.setOnClickListener {
             openGunsMoreInfoFragment(2)
         }
     }
