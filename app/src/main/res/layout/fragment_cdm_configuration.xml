@@ -1,0 +1,699 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:padding="@dimen/_10sdp"
+    tools:context=".views.fragment.CDMConfigurationFragment">
+
+    <include
+        android:id="@+id/incHeader"
+        layout="@layout/common_header" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:background="?attr/dialogBackground"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tvCharger"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:padding="@dimen/_5sdp"
+                android:text="@string/lbl_charger"
+                android:textColor="@color/green"
+                android:textSize="@dimen/_9ssp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvRectifier"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:padding="@dimen/_5sdp"
+                android:text="@string/lbl_rectifier"
+                android:textSize="@dimen/_9ssp" />
+
+            <TextView
+                android:id="@+id/tvACMeter"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:padding="@dimen/_5sdp"
+                android:text="@string/lbl_ac_meter"
+                android:textSize="@dimen/_9ssp" />
+
+            <TextView
+                android:id="@+id/tvDCMeter"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:padding="@dimen/_5sdp"
+                android:text="@string/lbl_dc_meter"
+                android:textSize="@dimen/_9ssp" />
+
+            <TextView
+                android:id="@+id/tvFaultDetection"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:padding="@dimen/_5sdp"
+                android:text="@string/lbl_fault_detection"
+                android:textSize="@dimen/_9ssp" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/selected_radio_color" />
+
+        <LinearLayout
+            android:id="@+id/lnrCharger"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/_10sdp"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/lbl_charge_control_mode"
+                android:textSize="@dimen/_8ssp" />
+
+            <Spinner
+                android:id="@+id/spnChargeControlMode"
+                android:layout_width="@dimen/_100sdp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:background="?attr/dialogBackground"
+                android:padding="@dimen/_10sdp" />
+
+            <Button
+                android:id="@+id/btnSubmitCharger"
+                style="@style/CommonButtonTheme"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_20sdp"
+                android:layout_gravity="end"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:paddingHorizontal="@dimen/_10sdp"
+                android:text="@string/lbl_submit"
+                android:textSize="@dimen/_8ssp" />
+
+        </LinearLayout>
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/lnrRectifier"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/_10sdp"
+                android:visibility="gone">
+
+                <GridLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:columnCount="3"
+                    android:orientation="horizontal"
+                    android:useDefaultMargins="true">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/lbl_rectifier_selection"
+                            android:textSize="@dimen/_8ssp" />
+
+                        <Spinner
+                            android:id="@+id/spnRectifierSelection"
+                            android:layout_width="@dimen/_100sdp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_5sdp"
+                            android:background="?attr/dialogBackground"
+                            android:padding="@dimen/_11sdp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/lbl_rectifier_per_group"
+                            android:textSize="@dimen/_8ssp" />
+
+                        <EditText
+                            android:id="@+id/edtRectifierPerGroup"
+                            android:layout_width="@dimen/_100sdp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_5sdp"
+                            android:background="?attr/dialogBackground"
+                            android:digits="12345678"
+                            android:hint="@string/range_rectifier_per_group"
+                            android:imeOptions="actionDone"
+                            android:importantForAutofill="no"
+                            android:inputType="number"
+                            android:maxLength="1"
+                            android:padding="@dimen/_10sdp"
+                            android:singleLine="true"
+                            android:textColorHint="@color/light_grey"
+                            android:textSize="@dimen/_8ssp"
+                            android:visibility="visible" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/lbl_rectifier_max_power_kw"
+                            android:textSize="@dimen/_8ssp" />
+
+                        <EditText
+                            android:id="@+id/edtRectifierMaxPower"
+                            android:layout_width="@dimen/_100sdp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_5sdp"
+                            android:background="?attr/dialogBackground"
+                            android:digits="1234567890"
+                            android:hint="@string/range_rectifier_max_power"
+                            android:imeOptions="actionDone"
+                            android:importantForAutofill="no"
+                            android:inputType="number"
+                            android:maxLength="3"
+                            android:padding="@dimen/_10sdp"
+                            android:singleLine="true"
+                            android:textColorHint="@color/light_grey"
+                            android:textSize="@dimen/_8ssp"
+                            android:visibility="visible" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_10sdp"
+                            android:text="@string/lbl_rectifier_max_voltage_v"
+                            android:textSize="@dimen/_8ssp" />
+
+                        <EditText
+                            android:id="@+id/edtRectifierMaxVoltage"
+                            android:layout_width="@dimen/_100sdp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_5sdp"
+                            android:background="?attr/dialogBackground"
+                            android:digits="1234567890"
+                            android:hint="@string/range_rectifier_max_voltage"
+                            android:imeOptions="actionDone"
+                            android:importantForAutofill="no"
+                            android:inputType="number"
+                            android:maxLength="4"
+                            android:padding="@dimen/_10sdp"
+                            android:singleLine="true"
+                            android:textColorHint="@color/light_grey"
+                            android:textSize="@dimen/_8ssp"
+                            android:visibility="visible" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_10sdp"
+                            android:text="@string/lbl_rectifier_max_current_a"
+                            android:textSize="@dimen/_8ssp" />
+
+                        <EditText
+                            android:id="@+id/edtRectifierMaxCurrent"
+                            android:layout_width="@dimen/_100sdp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_5sdp"
+                            android:background="?attr/dialogBackground"
+                            android:digits="1234567890"
+                            android:hint="@string/range_rectifier_max_current"
+                            android:imeOptions="actionDone"
+                            android:importantForAutofill="no"
+                            android:inputType="number"
+                            android:maxLength="3"
+                            android:padding="@dimen/_10sdp"
+                            android:singleLine="true"
+                            android:textColorHint="@color/light_grey"
+                            android:textSize="@dimen/_8ssp"
+                            android:visibility="visible" />
+                    </LinearLayout>
+                </GridLayout>
+
+                <Button
+                    android:id="@+id/btnSubmitRectifier"
+                    style="@style/CommonButtonTheme"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/_20sdp"
+                    android:layout_gravity="end"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:paddingHorizontal="@dimen/_10sdp"
+                    android:text="@string/lbl_submit"
+                    android:textSize="@dimen/_8ssp" />
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/lnrACMeter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/_10sdp"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/lbl_ac_meter_selection"
+                    android:textSize="@dimen/_8ssp" />
+
+                <Spinner
+                    android:id="@+id/spnACMeterSelection"
+                    android:layout_width="@dimen/_100sdp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:background="?attr/dialogBackground"
+                    android:padding="@dimen/_10sdp" />
+
+                <GridLayout
+                    android:id="@+id/gridLayoutACMeter"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:columnCount="3"
+                    android:useDefaultMargins="true"
+                    android:visibility="gone">
+
+                    <include
+                        android:id="@+id/incVoltageV1N"
+                        layout="@layout/common_ac_dc_meter_input_layout" />
+
+                    <include
+                        android:id="@+id/incVoltageV2N"
+                        layout="@layout/common_ac_dc_meter_input_layout" />
+
+                    <include
+                        android:id="@+id/incVoltageV3N"
+                        layout="@layout/common_ac_dc_meter_input_layout" />
+
+                    <include
+                        android:id="@+id/incAvgVoltageLN"
+                        layout="@layout/common_ac_dc_meter_input_layout" />
+
+                    <include
+                        android:id="@+id/incFrequency"
+                        layout="@layout/common_ac_dc_meter_input_layout" />
+
+                    <include
+                        android:id="@+id/incAvgPF"
+                        layout="@layout/common_ac_dc_meter_input_layout" />
+
+                    <include
+                        android:id="@+id/incCurrentL1"
+                        layout="@layout/common_ac_dc_meter_input_layout" />
+
+                    <include
+                        android:id="@+id/incCurrentL2"
+                        layout="@layout/common_ac_dc_meter_input_layout" />
+
+                    <include
+                        android:id="@+id/incCurrentL3"
+                        layout="@layout/common_ac_dc_meter_input_layout" />
+
+                    <include
+                        android:id="@+id/incAvgCurrent"
+                        layout="@layout/common_ac_dc_meter_input_layout" />
+
+                    <include
+                        android:id="@+id/incActivePower"
+                        layout="@layout/common_ac_dc_meter_input_layout" />
+
+                    <include
+                        android:id="@+id/incTotalEnergy"
+                        layout="@layout/common_ac_dc_meter_input_layout" />
+
+                    <include
+                        android:id="@+id/incTotalReactiveEnergy"
+                        layout="@layout/common_ac_dc_meter_input_layout" />
+
+                </GridLayout>
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/switchACMeterMandatory"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:text="@string/lbl_ac_meter_mandatory"
+                    android:textSize="@dimen/_8ssp"
+                    app:switchPadding="@dimen/_10sdp" />
+
+                <Button
+                    android:id="@+id/btnSubmitACMeter"
+                    style="@style/CommonButtonTheme"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/_20sdp"
+                    android:layout_gravity="end"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:paddingHorizontal="@dimen/_10sdp"
+                    android:text="@string/lbl_submit"
+                    android:textSize="@dimen/_8ssp" />
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/lnrDCMeter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/_10sdp"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/lbl_dc_meter_selection"
+                    android:textSize="@dimen/_8ssp" />
+
+                <Spinner
+                    android:id="@+id/spnDCMeterSelection"
+                    android:layout_width="@dimen/_100sdp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:background="?attr/dialogBackground"
+                    android:padding="@dimen/_10sdp" />
+
+                <GridLayout
+                    android:id="@+id/gridLayoutDCMeter"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:columnCount="3"
+                    android:orientation="horizontal"
+                    android:useDefaultMargins="true"
+                    android:visibility="gone">
+
+                    <include
+                        android:id="@+id/incVoltageParameter"
+                        layout="@layout/common_ac_dc_meter_input_layout" />
+
+                    <include
+                        android:id="@+id/incCurrentParameter"
+                        layout="@layout/common_ac_dc_meter_input_layout" />
+
+                    <include
+                        android:id="@+id/incPowerParameter"
+                        layout="@layout/common_ac_dc_meter_input_layout" />
+
+                    <include
+                        android:id="@+id/incImportEnergyParameter"
+                        layout="@layout/common_ac_dc_meter_input_layout" />
+
+                    <include
+                        android:id="@+id/incExportEnergyParameter"
+                        layout="@layout/common_ac_dc_meter_input_layout" />
+
+                    <include
+                        android:id="@+id/incMaxVoltageParameter"
+                        layout="@layout/common_ac_dc_meter_input_layout" />
+
+                    <include
+                        android:id="@+id/incMinVoltageParameter"
+                        layout="@layout/common_ac_dc_meter_input_layout" />
+
+                    <include
+                        android:id="@+id/incMaxCurrent"
+                        layout="@layout/common_ac_dc_meter_input_layout" />
+
+                    <include
+                        android:id="@+id/incMinCurrent"
+                        layout="@layout/common_ac_dc_meter_input_layout" />
+
+                </GridLayout>
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/switchDCMeterMandatory"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:text="@string/lbl_dc_meter_mandatory"
+                    android:textSize="@dimen/_8ssp"
+                    app:switchPadding="@dimen/_10sdp" />
+
+                <Button
+                    android:id="@+id/btnSubmitDCMeter"
+                    style="@style/CommonButtonTheme"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/_20sdp"
+                    android:layout_gravity="end"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:paddingHorizontal="@dimen/_10sdp"
+                    android:text="@string/lbl_submit"
+                    android:textSize="@dimen/_8ssp" />
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/lnrFaultDetection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/_10sdp"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/switchSPDFaultDetection"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/lbl_spd_fault_detection"
+                        android:textSize="@dimen/_8ssp"
+                        app:switchPadding="@dimen/_10sdp" />
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/switchSmokeFaultDetection"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="@dimen/_30sdp"
+                        android:layout_weight="1"
+                        android:text="@string/lbl_smoke_fault_detection"
+                        android:textSize="@dimen/_8ssp"
+                        app:switchPadding="@dimen/_10sdp" />
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/switchTamperFaultDetection"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/lbl_tamper_fault_detection"
+                        android:textSize="@dimen/_8ssp"
+                        app:switchPadding="@dimen/_10sdp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp">
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/switchLEDFaultDetection"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/lbl_led_module_fault_detection"
+                        android:textSize="@dimen/_8ssp"
+                        app:switchPadding="@dimen/_10sdp" />
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/switchGunTemperatureFaultDetection"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="@dimen/_30sdp"
+                        android:layout_weight="1"
+                        android:text="@string/lbl_gun_temperature_fault_detection"
+                        android:textSize="@dimen/_8ssp"
+                        app:switchPadding="@dimen/_1sdp" />
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/switchIsolationFaultDetection"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/lbl_isolation_fault_detection"
+                        android:textSize="@dimen/_8ssp"
+                        app:switchPadding="@dimen/_10sdp" />
+
+                </LinearLayout>
+
+                <GridLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:columnCount="3"
+                    android:orientation="horizontal"
+                    android:useDefaultMargins="true">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/lbl_dc_gun_temperature_threshold_value_c"
+                            android:textSize="@dimen/_8ssp" />
+
+                        <EditText
+                            android:id="@+id/edtDcGunTemperatureThresholdValue"
+                            android:layout_width="@dimen/_100sdp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_5sdp"
+                            android:background="?attr/dialogBackground"
+                            android:digits="1234567890"
+                            android:hint="@string/range_gun_temp_threshold"
+                            android:importantForAutofill="no"
+                            android:inputType="number"
+                            android:maxLength="3"
+                            android:padding="@dimen/_10sdp"
+                            android:singleLine="true"
+                            android:textColorHint="@color/light_grey"
+                            android:textSize="@dimen/_8ssp"
+                            android:visibility="visible" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/lbl_phase_low_detection_voltage_v"
+                            android:textSize="@dimen/_8ssp" />
+
+                        <EditText
+                            android:id="@+id/edtPhaseLowDetectionVoltage"
+                            android:layout_width="@dimen/_100sdp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_5sdp"
+                            android:background="?attr/dialogBackground"
+                            android:digits="1234567890"
+                            android:hint="@string/range_phase_low"
+                            android:importantForAutofill="no"
+                            android:inputType="number"
+                            android:maxLength="3"
+                            android:padding="@dimen/_10sdp"
+                            android:singleLine="true"
+                            android:textColorHint="@color/light_grey"
+                            android:textSize="@dimen/_8ssp"
+                            android:visibility="visible" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/lbl_phase_high_detection_voltage_v"
+                            android:textSize="@dimen/_8ssp" />
+
+                        <EditText
+                            android:id="@+id/edtPhaseHighDetectionVoltage"
+                            android:layout_width="@dimen/_100sdp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_5sdp"
+                            android:background="?attr/dialogBackground"
+                            android:digits="1234567890"
+                            android:hint="@string/range_phase_high"
+                            android:importantForAutofill="no"
+                            android:inputType="number"
+                            android:maxLength="3"
+                            android:padding="@dimen/_10sdp"
+                            android:singleLine="true"
+                            android:textColorHint="@color/light_grey"
+                            android:textSize="@dimen/_8ssp"
+                            android:visibility="visible" />
+                    </LinearLayout>
+                </GridLayout>
+
+                <Button
+                    android:id="@+id/btnSubmitFaultDetection"
+                    style="@style/CommonButtonTheme"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/_20sdp"
+                    android:layout_gravity="end"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:paddingHorizontal="@dimen/_10sdp"
+                    android:text="@string/lbl_submit"
+                    android:textSize="@dimen/_8ssp" />
+
+            </LinearLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
+    </LinearLayout>
+
+</LinearLayout>

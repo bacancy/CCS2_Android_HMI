@@ -57,6 +57,34 @@ object ModBusUtils {
         return finalByteArray
     }
 
+    fun createWriteMultipleRegistersRequest(
+        startAddress: Int,
+        data: List<Int>,
+        slaveAddress: Int = 1
+    ): ByteArray {
+        val quantity = data.size
+        val byteCount = quantity * 2 // Each register is 2 bytes
+        val frame = ByteArray(9 + byteCount)
+        frame[0] = slaveAddress.toByte()
+        frame[1] = WRITE_MULTIPLE_REGISTERS_FUNCTION_CODE
+        frame[2] = (startAddress shr 8).toByte()
+        frame[3] = startAddress.toByte()
+        frame[4] = (quantity shr 8).toByte()
+        frame[5] = quantity.toByte()
+        frame[6] = byteCount.toByte()
+        for (i in data.indices) {
+            frame[7 + i * 2] = (data[i] shr 8).toByte() // Register value high byte
+            frame[8 + i * 2] = (data[i] and 0xFF).toByte() // Register value low byte
+        }
+
+        val newCRC = calculateCRC(frame.dropLast(2).toByteArray())
+
+        frame[frame.size - 2] = newCRC[0]
+        frame[frame.size - 1] = newCRC[1]
+        Log.d("TAG", "createWriteMultipleRegistersRequest: FINAL HEX = ${frame.toHex()}")
+        return frame
+    }
+
     /**
      * This method is used to create request frame for writing to multiple registers
      * Request frame example:

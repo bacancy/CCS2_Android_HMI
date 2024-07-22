@@ -2,11 +2,14 @@ package com.bacancy.ccs2androidhmi.db
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.bacancy.ccs2androidhmi.db.converters.HMITypeConverters
 import com.bacancy.ccs2androidhmi.db.dao.AppDao
 import com.bacancy.ccs2androidhmi.db.entity.TbAcMeterInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbChargingHistory
+import com.bacancy.ccs2androidhmi.db.entity.TbConfigurationParameters
 import com.bacancy.ccs2androidhmi.db.entity.TbErrorCodes
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsDcMeterInfo
@@ -16,9 +19,10 @@ import com.bacancy.ccs2androidhmi.db.entity.TbNotifications
 
 @Database(
     entities = [TbChargingHistory::class, TbAcMeterInfo::class, TbMiscInfo::class, TbGunsDcMeterInfo::class, TbGunsChargingInfo::class, TbGunsLastChargingSummary::class,
-               TbErrorCodes::class, TbNotifications::class],
-    version = 6
+               TbErrorCodes::class, TbNotifications::class, TbConfigurationParameters::class],
+    version = 7
 )
+@TypeConverters(HMITypeConverters::class)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun appDao(): AppDao
@@ -57,6 +61,23 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        val MIGRATION_6_7 = object : Migration(6, 7) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS tbConfigurationParameters (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                        chargeControlMode INTEGER NOT NULL, 
+                        selectedRectifier INTEGER NOT NULL, 
+                        numberOfRectifierPerGroup INTEGER NOT NULL, 
+                        rectifierMaxPower INTEGER NOT NULL, 
+                        rectifierMaxVoltage INTEGER NOT NULL, 
+                        rectifierMaxCurrent INTEGER NOT NULL
+                    )
+                    """.trimIndent()
+                )
+            }
+        }
 
     }
 

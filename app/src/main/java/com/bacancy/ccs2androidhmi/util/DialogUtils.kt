@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.databinding.CustomDialogAreYouSureBinding
 import com.bacancy.ccs2androidhmi.databinding.CustomDialogBinding
+import com.bacancy.ccs2androidhmi.databinding.CustomLoadingDialogBinding
 import com.bacancy.ccs2androidhmi.databinding.DialogGunsChargingSummaryBinding
 import com.bacancy.ccs2androidhmi.databinding.DialogPasswordPromptBinding
 import com.bacancy.ccs2androidhmi.databinding.DialogPinAuthorizationBinding
@@ -34,6 +35,24 @@ import com.bacancy.ccs2androidhmi.util.LanguageConfig.getLanguagesList
 import com.bacancy.ccs2androidhmi.views.adapters.LanguageListAdapter
 
 object DialogUtils {
+
+    fun Activity.showCustomLoadingDialog(
+        message: String,
+        isCancelable: Boolean = false,
+    ): Dialog {
+        val dialog = Dialog(this, R.style.CustomAlertDialog)
+        dialog.setupWithoutTitle()
+        val binding = CustomLoadingDialogBinding.inflate(layoutInflater)
+        dialog.setContentView(binding.root)
+
+        binding.apply {
+            tvMessage.text = message
+        }
+
+        dialog.setCancelable(isCancelable)
+        dialog.setupDialogFlags()
+        return dialog
+    }
 
     fun Activity.showCustomDialog(
         message: String,
@@ -290,6 +309,7 @@ object DialogUtils {
         dialog.setCanceledOnTouchOutside(false)
 
         binding.apply {
+            edtSessionModeValue.text.clear()
             edtSessionModeValue.gone()
             btnSubmit.setOnClickListener {
                 if (!radioByAuto.isChecked && edtSessionModeValue.text.isEmpty()) {

@@ -16,11 +16,28 @@ import com.bacancy.ccs2androidhmi.db.entity.TbAcMeterInfo
 import com.bacancy.ccs2androidhmi.mqtt.ServerConstants
 import com.bacancy.ccs2androidhmi.mqtt.models.ChargerStatusConfirmationRequestBody
 import com.bacancy.ccs2androidhmi.util.CommonUtils
+import com.bacancy.ccs2androidhmi.util.CommonUtils.ACCESS_PARAMETERS
+import com.bacancy.ccs2androidhmi.util.CommonUtils.AC_METER_DATA
 import com.bacancy.ccs2androidhmi.util.CommonUtils.AC_METER_FRAG
 import com.bacancy.ccs2androidhmi.util.CommonUtils.AUTH_PIN_VALUE
+import com.bacancy.ccs2androidhmi.util.CommonUtils.CDM_AC_METER_UPDATED
+import com.bacancy.ccs2androidhmi.util.CommonUtils.CDM_CHARGER_UPDATED
+import com.bacancy.ccs2androidhmi.util.CommonUtils.CDM_CONFIG_OPTION_ENTERED
+import com.bacancy.ccs2androidhmi.util.CommonUtils.CDM_DC_METER_UPDATED
+import com.bacancy.ccs2androidhmi.util.CommonUtils.CDM_FAULT_DETECTION_UPDATED
+import com.bacancy.ccs2androidhmi.util.CommonUtils.CDM_RECTIFIERS_UPDATED
+import com.bacancy.ccs2androidhmi.util.CommonUtils.CHARGER_DATA
 import com.bacancy.ccs2androidhmi.util.CommonUtils.CHARGER_OUTPUTS
 import com.bacancy.ccs2androidhmi.util.CommonUtils.CHARGER_RATINGS
+import com.bacancy.ccs2androidhmi.util.CommonUtils.CODE_AC_METER
+import com.bacancy.ccs2androidhmi.util.CommonUtils.CODE_CHARGER
+import com.bacancy.ccs2androidhmi.util.CommonUtils.CODE_DC_METER
+import com.bacancy.ccs2androidhmi.util.CommonUtils.CODE_FAULT_DETECTION
+import com.bacancy.ccs2androidhmi.util.CommonUtils.CODE_RECTIFIERS
+import com.bacancy.ccs2androidhmi.util.CommonUtils.CODE_TOTAL_REACTIVE_ENERGY
+import com.bacancy.ccs2androidhmi.util.CommonUtils.DC_METER_DATA
 import com.bacancy.ccs2androidhmi.util.CommonUtils.DEVICE_MAC_ADDRESS
+import com.bacancy.ccs2androidhmi.util.CommonUtils.FAULT_DETECTION_DATA
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_CHARGING_END_TIME
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_CHARGING_START_TIME
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_DC_METER_FRAG
@@ -35,8 +52,13 @@ import com.bacancy.ccs2androidhmi.util.CommonUtils.INSIDE_LOCAL_START_STOP_SCREE
 import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_APP_RESTARTED
 import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_CHARGER_ACTIVE
 import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_DUAL_SOCKET_MODE_SELECTED
+import com.bacancy.ccs2androidhmi.util.CommonUtils.RECTIFIERS_DATA
+import com.bacancy.ccs2androidhmi.util.CommonUtils.STORE_DATA_INTO_FLASH
+import com.bacancy.ccs2androidhmi.util.CommonUtils.SYSTEM_AVAILABLE
+import com.bacancy.ccs2androidhmi.util.CommonUtils.SYSTEM_UNAVAILABLE
 import com.bacancy.ccs2androidhmi.util.CommonUtils.UNIT_PRICE
 import com.bacancy.ccs2androidhmi.util.CommonUtils.addColonsToMacAddress
+import com.bacancy.ccs2androidhmi.util.CommonUtils.fromJson
 import com.bacancy.ccs2androidhmi.util.CommonUtils.generateRandomNumber
 import com.bacancy.ccs2androidhmi.util.CommonUtils.getCleanedMacAddress
 import com.bacancy.ccs2androidhmi.util.CommonUtils.toJsonString
@@ -47,6 +69,7 @@ import com.bacancy.ccs2androidhmi.util.DateTimeUtils.convertDateFormatToDesiredF
 import com.bacancy.ccs2androidhmi.util.DateTimeUtils.convertToUtc
 import com.bacancy.ccs2androidhmi.util.DialogUtils.clearDialogFlags
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showCustomDialog
+import com.bacancy.ccs2androidhmi.util.DialogUtils.showCustomLoadingDialog
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_AUTHENTICATION_DENIED
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_AUTHENTICATION_SUCCESS
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_AUTHENTICATION_TIMEOUT
@@ -58,6 +81,7 @@ import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_ISOLATION_FAIL
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_MAINS_FAIL
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_PLC_FAULT
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_PRECHARGE_FAIL
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_PREPARING_FOR_CHARGING
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_RECTIFIER_FAULT
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_RESERVED
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_SMOKE_FAULT
@@ -65,19 +89,28 @@ import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_SPD_FAULT
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_TAMPER_FAULT
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_TEMPERATURE_FAULT
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_UNAVAILABLE
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.SELECTED_GUN
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_UNPLUGGED
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.PLUGGED_IN
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.SELECTED_GUN
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.getGunChargingState
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils
 import com.bacancy.ccs2androidhmi.util.ModBusUtils
 import com.bacancy.ccs2androidhmi.util.ModbusRequestFrames
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter
+import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.getIntValueFromByte
+import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.getRangedArray
+import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.hexStringToDecimal
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.toHex
 import com.bacancy.ccs2androidhmi.util.NetworkUtils.isInternetConnected
 import com.bacancy.ccs2androidhmi.util.PrefHelper
 import com.bacancy.ccs2androidhmi.util.ReadWriteUtil
 import com.bacancy.ccs2androidhmi.util.RegisterAddresses.AUTHENTICATE_GUN
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.CDM_AC_METER
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.CDM_CHARGER
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.CDM_DC_METER
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.CDM_FAULT_DETECTION
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.CDM_RECTIFIER
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.CDM_TOTAL_REACTIVE_ENERGY
 import com.bacancy.ccs2androidhmi.util.RegisterAddresses.CHARGER_ACTIVE_DEACTIVE
 import com.bacancy.ccs2androidhmi.util.RegisterAddresses.ENABLE_DISABLE_DUAL_SOCKET
 import com.bacancy.ccs2androidhmi.util.RegisterAddresses.GUN1_CURRENT
@@ -90,6 +123,7 @@ import com.bacancy.ccs2androidhmi.util.RegisterAddresses.GUN2_OUTPUT_ON_OFF
 import com.bacancy.ccs2androidhmi.util.RegisterAddresses.GUN2_SESSION_MODE
 import com.bacancy.ccs2androidhmi.util.RegisterAddresses.GUN2_SESSION_MODE_VALUE
 import com.bacancy.ccs2androidhmi.util.RegisterAddresses.GUN2_VOLTAGE
+import com.bacancy.ccs2androidhmi.util.RegisterAddresses.KEY_ACCESS_PARAMETER
 import com.bacancy.ccs2androidhmi.util.RegisterAddresses.LOCAL_START_STOP
 import com.bacancy.ccs2androidhmi.util.RegisterAddresses.PIN_AUTHORIZATION
 import com.bacancy.ccs2androidhmi.util.RegisterAddresses.TEST_MODE_ON_OFF
@@ -97,10 +131,13 @@ import com.bacancy.ccs2androidhmi.util.RegisterAddresses.UPDATE_TEST_MODE
 import com.bacancy.ccs2androidhmi.util.ResponseSizes
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
 import com.bacancy.ccs2androidhmi.viewmodel.MQTTViewModel
+import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
+import com.bacancy.ccs2androidhmi.views.fragment.CDMConfigurationFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.InputStream
 import java.io.OutputStream
 import java.nio.ByteBuffer
@@ -111,6 +148,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 abstract class SerialPortBaseActivityNew : AppCompatActivity() {
 
+    private lateinit var statusCheckingDialog: Dialog
     private lateinit var dialog: Dialog
     private var readStopCount: Int = 0
     private var isGun1PluggedIn: Boolean = false
@@ -158,6 +196,113 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
         startReading()
     }
 
+    private suspend fun readConfigAccessParamsState() {
+        Log.i(
+            "###CDMCONFIG",
+            "readConfigAccessParamsState: Request Sent - ${
+                ModbusRequestFrames.getConfigAccessParamsStateRequestFrame().toHex()
+            }"
+        )
+        ReadWriteUtil.writeRequestAndReadResponse(
+            mOutputStream,
+            mInputStream,
+            ResponseSizes.SINGLE_REGISTER_RESPONSE_SIZE,
+            ModbusRequestFrames.getConfigAccessParamsStateRequestFrame(),
+            onDataReceived = {
+                if (it.toHex()
+                        .startsWith(ModBusUtils.HOLDING_REGISTERS_CORRECT_RESPONSE_BITS)
+                ) {
+                    resetReadStopCount()
+                    //010302 (2222/1111/1234/4321/5678) 20fd
+                    //1111 - system available for configuration
+                    //2222 - system not available for configuration
+                    //1234 - to start accessing config parameters
+                    //4321 - Store data and access parameters
+                    //5678 - CDM default configuration parameters
+                    Log.d("###CDMCONFIG", "readConfigAccessParamsState: Response = ${it.toHex()}")
+                    prefHelper.setBoolean(CDM_CONFIG_OPTION_ENTERED, false)
+                    val chargingEndTimeArray = it.getRangedArray(3..4)
+                    val mappedArray = chargingEndTimeArray.map { it2 -> it2.getIntValueFromByte() }
+                    val accessData = ModbusTypeConverter.decimalArrayToHexArray(mappedArray)
+                        .joinToString { it2 -> it2 }.replace(", ", "")
+                    Log.d("###CDMCONFIG", "readConfigAccessParamsState: CDM Status = $accessData")
+                    when (accessData) {
+                        SYSTEM_UNAVAILABLE -> {
+                            //system not available for configuration
+                            lifecycleScope.launch(Dispatchers.Main) {
+                                statusCheckingDialog.dismiss()
+                                val dialog = showCustomDialog(
+                                    getString(R.string.msg_system_busy),
+                                    isCancelable = false
+                                ) {
+                                    lifecycleScope.launch {
+                                        delay(mCommonDelay)
+                                        readMiscInfo()
+                                    }
+                                }
+                                dialog.show()
+                                clearDialogFlags(dialog)
+                            }
+                        }
+
+                        SYSTEM_AVAILABLE -> {
+                            statusCheckingDialog.dismiss()
+                            (this as HMIDashboardActivity).addNewFragment(CDMConfigurationFragment())
+                            //system available for configuration
+                            //write "1234" to start accessing config parameters
+                            lifecycleScope.launch {
+                                delay(mCommonDelay)
+                                writeForConfigAccessParamsState(ACCESS_PARAMETERS)
+                            }
+                        }
+
+                        else -> {
+                            statusCheckingDialog.dismiss()
+                            lifecycleScope.launch {
+                                delay(mCommonDelay)
+                                readMiscInfo()
+                            }
+                        }
+                    }
+                } else {
+                    statusCheckingDialog.dismiss()
+                    Log.e("TUE_TAG", "readConfigAccessParamsState: Error Response - ${it.toHex()}")
+                }
+            }, onReadStopped = {
+                statusCheckingDialog.dismiss()
+                showReadStoppedUI()
+                Log.e("TUE_TAG", "readConfigAccessParamsState: OnReadStopped Called")
+                lifecycleScope.launch {
+                    delay(mCommonDelay)
+                    startReading()
+                }
+            })
+    }
+
+    private suspend fun writeForConfigAccessParamsState(accessStartCode: String) {
+        Log.i(
+            "###CDMCONFIG",
+            "writeForConfigAccessParamsState: Request Code - $accessStartCode"
+        )
+        lifecycleScope.launch(Dispatchers.IO) {
+            ReadWriteUtil.writeToSingleHoldingRegisterNew(
+                mOutputStream,
+                mInputStream,
+                KEY_ACCESS_PARAMETER,
+                accessStartCode.hexStringToDecimal(), {
+                    Log.d("###CDMCONFIG", "writeForConfigAccessParamsState: Response Got")
+                    lifecycleScope.launch {
+                        delay(mCommonDelay)
+                        getConfigurationParameters()
+                    }
+                }, {
+                    lifecycleScope.launch {
+                        startReading()
+                    }
+                })
+        }
+    }
+
     private fun makeFullScreen() {
         val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
         windowInsetsController.let {
@@ -181,26 +326,76 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
 
     private fun startReading() {
         lifecycleScope.launch {
-            delay(mCommonDelay)
-            val isChargerActiveDeactiveMessageRecd =
-                prefHelper.getBoolean(CommonUtils.CHARGER_ACTIVE_DEACTIVE_MESSAGE_RECD, false)
-            if (isChargerActiveDeactiveMessageRecd) {
-                prefHelper.setBoolean(CommonUtils.CHARGER_ACTIVE_DEACTIVE_MESSAGE_RECD, false)
-                val isChargerActive = prefHelper.getBoolean(IS_CHARGER_ACTIVE, true)
-                Log.i(
-                    TAG,
-                    "startReading: MAKING CHARGER - ${if (isChargerActive) "OPERATIVE" else "INOPERATIVE"}"
-                )
-                writeForChargerActiveDeactive()
+
+            if (prefHelper.getBoolean(CDM_CONFIG_OPTION_ENTERED, false)) {
+                statusCheckingDialog =
+                    showCustomLoadingDialog(getString(R.string.msg_checking_cdm_status))
+                statusCheckingDialog.show()
+                clearDialogFlags(statusCheckingDialog)
+                delay(mCommonDelay)
+                readConfigAccessParamsState()
+            } else if (prefHelper.getBoolean(CDM_CHARGER_UPDATED, false)) {
+                delay(mCommonDelay)
+                if (prefHelper.getStringValue(CHARGER_DATA, "").isNotEmpty()) {
+                    writeForCDMFields(
+                        CODE_CHARGER,
+                        prefHelper.getStringValue(CHARGER_DATA, "").fromJson<List<Int>>()
+                    )
+                }
+            } else if (prefHelper.getBoolean(CDM_RECTIFIERS_UPDATED, false)) {
+                delay(mCommonDelay)
+                if (prefHelper.getStringValue(RECTIFIERS_DATA, "").isNotEmpty()) {
+                    writeForCDMFields(
+                        CODE_RECTIFIERS,
+                        prefHelper.getStringValue(RECTIFIERS_DATA, "").fromJson<List<Int>>()
+                    )
+                }
+            } else if (prefHelper.getBoolean(CDM_AC_METER_UPDATED, false)) {
+                delay(mCommonDelay)
+                if (prefHelper.getStringValue(AC_METER_DATA, "").isNotEmpty()) {
+                    writeForCDMFields(
+                        CODE_AC_METER,
+                        prefHelper.getStringValue(AC_METER_DATA, "").fromJson<List<Int>>()
+                    )
+                }
+            } else if (prefHelper.getBoolean(CDM_DC_METER_UPDATED, false)) {
+                delay(mCommonDelay)
+                if (prefHelper.getStringValue(DC_METER_DATA, "").isNotEmpty()) {
+                    writeForCDMFields(
+                        CODE_DC_METER,
+                        prefHelper.getStringValue(DC_METER_DATA, "").fromJson<List<Int>>()
+                    )
+                }
+            } else if (prefHelper.getBoolean(CDM_FAULT_DETECTION_UPDATED, false)) {
+                delay(mCommonDelay)
+                if (prefHelper.getStringValue(FAULT_DETECTION_DATA, "").isNotEmpty()) {
+                    writeForCDMFields(
+                        CODE_FAULT_DETECTION,
+                        prefHelper.getStringValue(FAULT_DETECTION_DATA, "").fromJson<List<Int>>()
+                    )
+                }
             } else {
-                //readChargerActiveDeactiveState()
-                writeForDualSocketMode(
-                    if (prefHelper.getBoolean(
-                            IS_DUAL_SOCKET_MODE_SELECTED,
-                            false
-                        )
-                    ) 1 else 0
-                )
+                delay(mCommonDelay)
+                val isChargerActiveDeactiveMessageRecd =
+                    prefHelper.getBoolean(CommonUtils.CHARGER_ACTIVE_DEACTIVE_MESSAGE_RECD, false)
+                if (isChargerActiveDeactiveMessageRecd) {
+                    prefHelper.setBoolean(CommonUtils.CHARGER_ACTIVE_DEACTIVE_MESSAGE_RECD, false)
+                    val isChargerActive = prefHelper.getBoolean(IS_CHARGER_ACTIVE, true)
+                    Log.i(
+                        TAG,
+                        "startReading: MAKING CHARGER - ${if (isChargerActive) "OPERATIVE" else "INOPERATIVE"}"
+                    )
+                    writeForChargerActiveDeactive()
+                } else {
+                    //readChargerActiveDeactiveState()
+                    writeForDualSocketMode(
+                        if (prefHelper.getBoolean(
+                                IS_DUAL_SOCKET_MODE_SELECTED,
+                                false
+                            )
+                        ) 1 else 0
+                    )
+                }
             }
         }
     }
@@ -283,6 +478,46 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 Log.e(TAG, "readChargerActiveDeactiveState: OnReadStopped Called")
                 lifecycleScope.launch {
                     readMiscInfo()
+                }
+            })
+    }
+
+    private suspend fun getConfigurationParameters() {
+        Log.i(
+            "###CDMCONFIG",
+            "getConfigurationParameters: Request Sent - ${
+                ModbusRequestFrames.getConfigurationParametersRequestFrame().toHex()
+            }"
+        )
+        ReadWriteUtil.writeRequestAndReadResponse(
+            mOutputStream,
+            mInputStream,
+            ResponseSizes.CONFIGURATION_PARAMETERS_RESPONSE_SIZE,
+            ModbusRequestFrames.getConfigurationParametersRequestFrame(),
+            onDataReceived = {
+                if (it.toHex()
+                        .startsWith(ModBusUtils.HOLDING_REGISTERS_CORRECT_RESPONSE_BITS)
+                ) {
+                    resetReadStopCount()
+                    appViewModel.insertConfigurationParametersInDB(it)
+                    lifecycleScope.launch {
+                        startReading()
+                    }
+                    Log.d("###CDMCONFIG", "getConfigurationParameters: Response = ${it.toHex()}")
+                } else {
+                    lifecycleScope.launch {
+                        startReading()
+                    }
+                    Log.e(
+                        "###CDMCONFIG",
+                        "getConfigurationParameters: Error Response - ${it.toHex()}"
+                    )
+                }
+            }, onReadStopped = {
+                Log.e("###CDMCONFIG", "getConfigurationParameters: OnReadStopped Called")
+                showReadStoppedUI()
+                lifecycleScope.launch {
+                    startReading()
                 }
             })
     }
@@ -570,11 +805,23 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                             openGun1LastChargingSummary()
                         }
 
-                        LBL_CHARGING -> {
-                            if(prefHelper.getStringValue(GUN_1_CHARGING_START_TIME,"").isEmpty()){
-                                prefHelper.setStringValue(GUN_1_CHARGING_START_TIME, DateTimeUtils.getCurrentDateTime().convertDateFormatToDesiredFormat(
-                                    DATE_TIME_FORMAT, DATE_TIME_FORMAT_FROM_CHARGER))
+                        LBL_PREPARING_FOR_CHARGING -> {
+                            if (prefHelper.getStringValue(GUN_1_CHARGING_START_TIME, "")
+                                    .isEmpty()
+                            ) {
+                                prefHelper.setStringValue(
+                                    GUN_1_CHARGING_START_TIME,
+                                    DateTimeUtils.getCurrentDateTime()
+                                        .convertDateFormatToDesiredFormat(
+                                            DATE_TIME_FORMAT, DATE_TIME_FORMAT_FROM_CHARGER
+                                        )
+                                )
                             }
+                            isGun1PluggedIn = true
+                            openGun1LastChargingSummary()
+                        }
+
+                        LBL_CHARGING -> {
                             isGun1PluggedIn = true
                             openGun1LastChargingSummary()
                         }
@@ -598,7 +845,9 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                         -> {
                             if (isGun1PluggedIn) {
                                 isGun1PluggedIn = false
-                                if(prefHelper.getStringValue(GUN_1_CHARGING_END_TIME,"").isEmpty()) {
+                                if (prefHelper.getStringValue(GUN_1_CHARGING_END_TIME, "")
+                                        .isEmpty()
+                                ) {
                                     prefHelper.setStringValue(
                                         GUN_1_CHARGING_END_TIME,
                                         DateTimeUtils.getCurrentDateTime()
@@ -773,6 +1022,8 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
         } else if (prefHelper.getStringValue(AUTH_PIN_VALUE, "").isNotEmpty()) {
             writeForPinAuthorization(prefHelper.getStringValue(AUTH_PIN_VALUE, ""))
         } else {
+            clearGun1SessionModePrefs()
+            clearGun2SessionModePrefs()
             setupTestMode()
         }
     }
@@ -857,8 +1108,10 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                             openGun2LastChargingSummary()
                         }
 
-                        LBL_CHARGING -> {
-                            if(prefHelper.getStringValue(GUN_2_CHARGING_START_TIME,"").isEmpty()) {
+                        LBL_PREPARING_FOR_CHARGING -> {
+                            if (prefHelper.getStringValue(GUN_2_CHARGING_START_TIME, "")
+                                    .isEmpty()
+                            ) {
                                 prefHelper.setStringValue(
                                     GUN_2_CHARGING_START_TIME,
                                     DateTimeUtils.getCurrentDateTime()
@@ -867,6 +1120,11 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                                         )
                                 )
                             }
+                            isGun2PluggedIn = true
+                            openGun2LastChargingSummary()
+                        }
+
+                        LBL_CHARGING -> {
                             isGun2PluggedIn = true
                             openGun2LastChargingSummary()
                         }
@@ -889,7 +1147,9 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                         LBL_EMERGENCY_STOP,
                         -> {
                             if (isGun2PluggedIn) {
-                                if(prefHelper.getStringValue(GUN_2_CHARGING_END_TIME,"").isEmpty()) {
+                                if (prefHelper.getStringValue(GUN_2_CHARGING_END_TIME, "")
+                                        .isEmpty()
+                                ) {
                                     prefHelper.setStringValue(
                                         GUN_2_CHARGING_END_TIME,
                                         DateTimeUtils.getCurrentDateTime()
@@ -1038,6 +1298,80 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
         }
     }
 
+    private fun writeForCDMFields(fieldCode: Int, values: List<Int>) {
+        Log.i("###CDMCONFIG", "writeForCDMFields Request Started - $fieldCode")
+        lifecycleScope.launch(Dispatchers.IO) {
+            delay(500)
+            ReadWriteUtil.writeToMultipleHoldingRegister(
+                mOutputStream,
+                mInputStream,
+                getCDMFieldStartingAddress(fieldCode),
+                values.take(values.size - 1), {
+                    Log.d("###CDMCONFIG", "writeForCDMFields: Response Got - $fieldCode")
+                    resetCDMPrefs(fieldCode)
+                    lifecycleScope.launch {
+                        //write again for the last field i.e 'Total Reactive Energy' in the user defined list of ac meter
+                        if (fieldCode == CODE_AC_METER) {
+                            delay(mCommonDelay)
+                            writeForCDMFields(CODE_TOTAL_REACTIVE_ENERGY, listOf(values.last()))
+                        } else {
+                            delay(mCommonDelay)
+                            //write config access key as 4321 to save the updated value to mcu
+                            writeForConfigAccessParamsState(STORE_DATA_INTO_FLASH)
+                        }
+                    }
+                }, {
+                    Log.d("###CDMCONFIG", "writeForCDMFields: Error Response")
+                    lifecycleScope.launch {
+                        startReading()
+                    }
+                })
+        }
+    }
+
+    private fun getCDMFieldStartingAddress(fieldCode: Int): Int {
+        return when (fieldCode) {
+            CODE_CHARGER -> CDM_CHARGER
+            CODE_RECTIFIERS -> CDM_RECTIFIER
+            CODE_AC_METER -> CDM_AC_METER
+            CODE_DC_METER -> CDM_DC_METER
+            CODE_FAULT_DETECTION -> CDM_FAULT_DETECTION
+            CODE_TOTAL_REACTIVE_ENERGY -> CDM_TOTAL_REACTIVE_ENERGY
+            else -> 0
+        }
+    }
+
+    private fun resetCDMPrefs(fieldCode: Int) {
+        when (fieldCode) {
+            1 -> {
+                prefHelper.setBoolean(CDM_CHARGER_UPDATED, false)
+                prefHelper.setStringValue(CHARGER_DATA, "")
+            }
+
+            2 -> {
+                prefHelper.setBoolean(CDM_RECTIFIERS_UPDATED, false)
+                prefHelper.setStringValue(RECTIFIERS_DATA, "")
+            }
+
+            3 -> {
+                prefHelper.setBoolean(CDM_AC_METER_UPDATED, false)
+                prefHelper.setStringValue(AC_METER_DATA, "")
+            }
+
+            4 -> {
+                prefHelper.setBoolean(CDM_DC_METER_UPDATED, false)
+                prefHelper.setStringValue(DC_METER_DATA, "")
+            }
+
+            5 -> {
+                prefHelper.setBoolean(CDM_FAULT_DETECTION_UPDATED, false)
+                prefHelper.setStringValue(FAULT_DETECTION_DATA, "")
+            }
+
+            else -> {}
+        }
+    }
+
     private fun authenticateGun(gunNumber: Int) {
         Log.i(TAG, "Gun $gunNumber authenticateGun Request Started")
         lifecycleScope.launch(Dispatchers.IO) {
@@ -1142,24 +1476,36 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                     Log.d(TAG, "writeForSelectedSessionModeValue: Response Got")
                     lifecycleScope.launch {
                         if (isGun1) {
-                            prefHelper.setBoolean(CommonUtils.IS_GUN_1_SESSION_MODE_SELECTED, false)
-                            prefHelper.setIntValue(CommonUtils.GUN_1_SELECTED_SESSION_MODE, 0)
-                            prefHelper.setStringValue(
-                                CommonUtils.GUN_1_SELECTED_SESSION_MODE_VALUE,
-                                ""
-                            )
+                            clearGun1SessionModePrefs()
                         } else {
-                            prefHelper.setBoolean(CommonUtils.IS_GUN_2_SESSION_MODE_SELECTED, false)
-                            prefHelper.setIntValue(CommonUtils.GUN_2_SELECTED_SESSION_MODE, 0)
-                            prefHelper.setStringValue(
-                                CommonUtils.GUN_2_SELECTED_SESSION_MODE_VALUE,
-                                ""
-                            )
+                            clearGun2SessionModePrefs()
                         }
                         readMiscInfo()
                     }
-                }, {})
+                }, {
+                    Log.e(TAG, "writeForSelectedSessionModeValue: Error Response Got")
+                    lifecycleScope.launch {
+                        if (isGun1) {
+                            clearGun1SessionModePrefs()
+                        } else {
+                            clearGun2SessionModePrefs()
+                        }
+                        readMiscInfo()
+                    }
+                })
         }
+    }
+
+    private fun clearGun2SessionModePrefs() {
+        prefHelper.setBoolean(CommonUtils.IS_GUN_2_SESSION_MODE_SELECTED, false)
+        prefHelper.setIntValue(CommonUtils.GUN_2_SELECTED_SESSION_MODE, 0)
+        prefHelper.setStringValue(CommonUtils.GUN_2_SELECTED_SESSION_MODE_VALUE, "")
+    }
+
+    private fun clearGun1SessionModePrefs() {
+        prefHelper.setBoolean(CommonUtils.IS_GUN_1_SESSION_MODE_SELECTED, false)
+        prefHelper.setIntValue(CommonUtils.GUN_1_SELECTED_SESSION_MODE, 0)
+        prefHelper.setStringValue(CommonUtils.GUN_1_SELECTED_SESSION_MODE_VALUE, "")
     }
 
     private fun writeForLocalStartStop(gunsStartStopData: Int = 1) {
