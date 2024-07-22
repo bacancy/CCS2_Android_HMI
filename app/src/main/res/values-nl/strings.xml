@@ -153,7 +153,7 @@
     <string name="message_please_input_current_between_0_to_100_a">Voer stroom in tussen 0 en 100 A</string>
     <string name="msg_permission_granted">Toestemming verleend</string>
     <string name="msg_permission_not_granted">Opslagtoestemming is vereist om de laadgeschiedenis te exporteren.</string>
-    <string name="csv_row_headers">Sr No.,GunId,EV Mac Address,Charging Start Time,Charging End Time,Total Charging Time(mins),Start SoC(%),End SoC(%),Energy Consumption(kWh),Session End Reason</string>
+    <string name="csv_row_headers" formatted="false">Sr No.,GunId,EV Mac Address,Charging Start Time,Charging End Time,Total Charging Time(mins),Start SoC(%),End SoC(%),Energy Consumption(kWh),Session End Reason</string>
     <string name="msg_file_saved_successfully">Bestand succesvol opgeslagen</string>
     <string name="msg_failed_to_create_file">Bestand kon niet worden gemaakt</string>
     <string name="msg_failed_to_save_file">Bestand opslaan mislukt</string>
@@ -266,7 +266,7 @@
     <string name="lbl_dutch_default">Nederlands</string>
     <string name="lbl_turkish_default">Türkçe</string>
 
-    <string name="msg_tap_rfid_to_start_charging">Nadat je je RFID-kaart hebt getapt, klik op \'OK'.</string>
+    <string name="msg_tap_rfid_to_start_charging">Nadat je je RFID-kaart hebt getapt, klik op \'OK\'.</string>
     <string name="lbl_ok">OK</string>
     <string name="lbl_start_charging">Start met opladen</string>
     <string name="lbl_stop_charging">Stop met opladen</string>

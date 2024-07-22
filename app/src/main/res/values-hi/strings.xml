@@ -154,7 +154,7 @@
     <string name="message_please_input_current_between_0_to_100_a">कृपया 0 से 100 ए के बीच करंट इनपुट करें</string>
     <string name="msg_permission_granted">की अनुमति दी</string>
     <string name="msg_permission_not_granted">चार्जिंग इतिहास निर्यात करने के लिए संग्रहण अनुमति आवश्यक है।</string>
-    <string name="csv_row_headers">Sr No.,GunId,EV Mac Address,Charging Start Time,Charging End Time,Total Charging Time(mins),Start SoC(%),End SoC(%),Energy Consumption(kWh),Session End Reason</string>
+    <string name="csv_row_headers" formatted="false">Sr No.,GunId,EV Mac Address,Charging Start Time,Charging End Time,Total Charging Time(mins),Start SoC(%),End SoC(%),Energy Consumption(kWh),Session End Reason</string>
     <string name="msg_file_saved_successfully">फ़ाइल सफलतापूर्वक सहेजी गई</string>
     <string name="msg_failed_to_create_file">फ़ाइल बनाने में विफल</string>
     <string name="msg_failed_to_save_file">फ़ाइल सहेजने में विफल</string>
@@ -268,7 +268,7 @@
     <string name="lbl_dutch_default">Nederlands</string>
     <string name="lbl_turkish_default">Türkçe</string>
 
-    <string name="msg_tap_rfid_to_start_charging">अपना RFID कार्ड टैप करने के बाद, \'OK' पर क्लिक करें।</string>
+    <string name="msg_tap_rfid_to_start_charging">अपना RFID कार्ड टैप करने के बाद, \'OK\' पर क्लिक करें।</string>
     <string name="lbl_ok">ठीक है</string>
     <string name="lbl_start_charging">चार्जिंग शुरू करें</string>
     <string name="lbl_stop_charging">चार्जिंग रोकें</string>

@@ -153,7 +153,7 @@
     <string name="message_please_input_current_between_0_to_100_a">Veuillez saisir un courant compris entre 0 et 100 A</string>
     <string name="msg_permission_granted">Autorisation accordée</string>
     <string name="msg_permission_not_granted">L\'autorisation de stockage est requise pour exporter l\'historique de charge.</string>
-    <string name="csv_row_headers">Sr No.,GunId,EV Mac Address,Charging Start Time,Charging End Time,Total Charging Time(mins),Start SoC(%),End SoC(%),Energy Consumption(kWh),Session End Reason</string>
+    <string name="csv_row_headers" formatted="false">Sr No.,GunId,EV Mac Address,Charging Start Time,Charging End Time,Total Charging Time(mins),Start SoC(%),End SoC(%),Energy Consumption(kWh),Session End Reason</string>
     <string name="msg_file_saved_successfully">Fichier enregistré avec succès</string>
     <string name="msg_failed_to_create_file">Échec de création du fichier</string>
     <string name="msg_failed_to_save_file">Échec de sauvegarde du fichier</string>
@@ -266,7 +266,7 @@
     <string name="lbl_dutch_default">Nederlands</string>
     <string name="lbl_turkish_default">Türkçe</string>
 
-    <string name="msg_tap_rfid_to_start_charging">Une fois que votre carte RFID a été tapée, cliquez sur \'OK'.</string>
+    <string name="msg_tap_rfid_to_start_charging">Une fois que votre carte RFID a été tapée, cliquez sur \'OK\'.</string>
     <string name="lbl_ok">OK</string>
     <string name="lbl_start_charging">Commencer la charge</string>
     <string name="lbl_stop_charging">Arrêter la charge</string>
