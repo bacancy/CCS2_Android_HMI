@@ -4,17 +4,20 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentAppSettingsBinding
 import com.bacancy.ccs2androidhmi.util.AppConfig
 import com.bacancy.ccs2androidhmi.util.CommonUtils
+import com.bacancy.ccs2androidhmi.util.CommonUtils.CDM_CONFIG_OPTION_ENTERED
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showSelectAppLanguageDialog
 import com.bacancy.ccs2androidhmi.util.LanguageConfig.getLanguageName
 import com.bacancy.ccs2androidhmi.util.LanguageConfig.setAppLanguage
 import com.bacancy.ccs2androidhmi.util.LanguageConfig.setupLanguagesList
 import com.bacancy.ccs2androidhmi.util.PrefHelper
+import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
 import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
 import com.bacancy.ccs2androidhmi.views.adapters.AppSettingsAdapter
 import dagger.hilt.android.AndroidEntryPoint
@@ -24,6 +27,7 @@ import javax.inject.Inject
 class AppSettingsFragment : BaseFragment() {
 
     private lateinit var binding: FragmentAppSettingsBinding
+    val appViewModel: AppViewModel by viewModels()
 
     @Inject
     lateinit var prefHelper: PrefHelper
@@ -53,7 +57,7 @@ class AppSettingsFragment : BaseFragment() {
        requireActivity().setupLanguagesList()
 
         binding.rvSettings.apply {
-            layoutManager = GridLayoutManager(requireContext(), 2)
+            layoutManager = GridLayoutManager(requireContext(), 3)
             adapter = AppSettingsAdapter(getSettingsList()) { selectedItem ->
                 when (selectedItem.first) {
                     SET_01 -> {
@@ -103,6 +107,10 @@ class AppSettingsFragment : BaseFragment() {
                         prefHelper.setBoolean(CommonUtils.IS_APP_PINNED, false)
                         (requireActivity() as HMIDashboardActivity).openEVSEApp()
                     }
+
+                    SET_09 -> {
+                        prefHelper.setBoolean(CDM_CONFIG_OPTION_ENTERED, true)
+                    }
                 }
             }
         }
@@ -130,7 +138,8 @@ class AppSettingsFragment : BaseFragment() {
             SET_05 to getString(R.string.lbl_local_start_or_stop_charging),
             SET_06 to getString(R.string.lbl_test_mode),
             SET_07 to getString(R.string.lbl_notifications),
-            SET_08 to "Charger Commissioning"
+            SET_08 to getString(R.string.charger_commissioning),
+            SET_09 to getString(R.string.cdm_configuration)
         )
 
         if (!AppConfig.SHOW_LOCAL_START_STOP) {
@@ -153,6 +162,7 @@ class AppSettingsFragment : BaseFragment() {
         const val SET_06 = "SET_06"
         const val SET_07 = "SET_07"
         const val SET_08 = "SET_08"
+        const val SET_09 = "SET_09"
         const val ENGLISH = "English"
     }
 }

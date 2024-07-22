@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import com.bacancy.ccs2androidhmi.db.AppDatabase
 import com.bacancy.ccs2androidhmi.db.entity.TbAcMeterInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbChargingHistory
+import com.bacancy.ccs2androidhmi.db.entity.TbConfigurationParameters
 import com.bacancy.ccs2androidhmi.db.entity.TbErrorCodes
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsDcMeterInfo
@@ -88,6 +89,14 @@ class MainRepository @Inject constructor(private val appDatabase: AppDatabase) {
 
     fun getAllNotifications(): LiveData<List<TbNotifications>> {
         return appDatabase.appDao().getAllNotifications()
+    }
+
+    suspend fun insertConfigurationParameters(configurationParameter: TbConfigurationParameters): Long {
+        return appDatabase.appDao().insertConfigurationParameters(configurationParameter)
+    }
+
+    fun getAllConfigurationParameters(): LiveData<List<TbConfigurationParameters>> {
+        return appDatabase.appDao().getAllConfigurationParameters()
     }
 
 }

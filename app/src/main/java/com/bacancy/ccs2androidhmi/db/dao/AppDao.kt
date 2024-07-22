@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.bacancy.ccs2androidhmi.db.entity.TbAcMeterInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbChargingHistory
+import com.bacancy.ccs2androidhmi.db.entity.TbConfigurationParameters
 import com.bacancy.ccs2androidhmi.db.entity.TbErrorCodes
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsDcMeterInfo
@@ -74,5 +75,11 @@ interface AppDao {
 
     @Query("SELECT * FROM tbNotifications ORDER BY notificationId DESC LIMIT 20")
     fun getAllNotifications(): LiveData<List<TbNotifications>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertConfigurationParameters(configurationParameter: TbConfigurationParameters): Long
+
+    @Query("SELECT * FROM tbConfigurationParameters")
+    fun getAllConfigurationParameters(): LiveData<List<TbConfigurationParameters>>
 
 }

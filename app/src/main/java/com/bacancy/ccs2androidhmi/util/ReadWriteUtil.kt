@@ -20,6 +20,65 @@ object ReadWriteUtil {
         mOutputStream: OutputStream?,
         mInputStream: InputStream?,
         startAddress: Int,
+        regValue: List<Int>,
+        onAuthDataReceived: (ByteArray?) -> Unit, onReadStopped: () -> Unit, responseSize: Int = 8
+    ) {
+        withContext(Dispatchers.IO) {
+            try {
+                val bufferedInputStream = BufferedInputStream(mInputStream)
+                val bufferedOutputStream = BufferedOutputStream(mOutputStream)
+
+                val writeRequestFrame: ByteArray =
+                    ModBusUtils.createWriteMultipleRegistersRequest(
+                        startAddress,
+                        regValue
+                    )
+                Log.d(
+                    "###CDMCONFIG",
+                    "writeToMultipleHoldingRegister: Write Request Frame - ${writeRequestFrame.toHex()}"
+                )
+                bufferedOutputStream.write(writeRequestFrame)
+                bufferedOutputStream.flush()
+
+                Log.w(
+                    "TAG",
+                    "writeToMultipleHoldingRegister: BufferedInputStream available bytes - ${bufferedInputStream.available()}"
+                )
+                val startTime = System.currentTimeMillis()
+                while (true) {
+                    val availableBytes = bufferedInputStream.available()
+                    // Check if there's data available or if the timeout has been reached
+                    if (availableBytes == responseSize || System.currentTimeMillis() - startTime > DELAY_FOR_READING_300) {
+                        break
+                    }
+                    // Short sleep to avoid busy-waiting (adjust as needed)
+                    delay(DELAY_FOR_WAITING_100)
+                }
+
+                val responseFrame = ByteArray(responseSize)
+                if (bufferedInputStream.available() > 0) {
+                    bufferedInputStream.read(responseFrame)
+                    Log.w(
+                        "TAG",
+                        "writeToMultipleHoldingRegister: Response Frame - ${responseFrame.toHex()}"
+                    )
+                }
+                onAuthDataReceived(null)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Log.e(
+                    "writeToMultipleHoldingRegister",
+                    "Exception occurred, printing stack trace: ${e.message}"
+                )
+                onAuthDataReceived(null)
+            }
+        }
+    }
+
+    suspend fun writeToMultipleHoldingRegister(
+        mOutputStream: OutputStream?,
+        mInputStream: InputStream?,
+        startAddress: Int,
         regValue: String,
         onAuthDataReceived: (ByteArray?) -> Unit, onReadStopped: () -> Unit, responseSize: Int = 8
     ) {

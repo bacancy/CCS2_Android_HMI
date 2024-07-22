@@ -7,18 +7,22 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bacancy.ccs2androidhmi.db.entity.TbAcMeterInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbChargingHistory
+import com.bacancy.ccs2androidhmi.db.entity.TbConfigurationParameters
 import com.bacancy.ccs2androidhmi.db.entity.TbErrorCodes
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsDcMeterInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsLastChargingSummary
 import com.bacancy.ccs2androidhmi.db.entity.TbMiscInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbNotifications
+import com.bacancy.ccs2androidhmi.db.model.ACMeterUserDefinedFields
+import com.bacancy.ccs2androidhmi.db.model.DCMeterUserDefinedFields
 import com.bacancy.ccs2androidhmi.models.ErrorCodes
 import com.bacancy.ccs2androidhmi.repository.MainRepository
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_CHARGING_END_TIME
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_CHARGING_START_TIME
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_CHARGING_END_TIME
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_CHARGING_START_TIME
+import com.bacancy.ccs2androidhmi.util.ConfigurationParametersUtils
 import com.bacancy.ccs2androidhmi.util.DateTimeUtils
 import com.bacancy.ccs2androidhmi.util.DateTimeUtils.DATE_TIME_FORMAT
 import com.bacancy.ccs2androidhmi.util.DateTimeUtils.DATE_TIME_FORMAT_FOR_UI
@@ -29,6 +33,7 @@ import com.bacancy.ccs2androidhmi.util.LastChargingSummaryUtils
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils
 import com.bacancy.ccs2androidhmi.util.ModBusUtils
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter
+import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.hexStringToDecimal
 import com.bacancy.ccs2androidhmi.util.PrefHelper
 import com.bacancy.ccs2androidhmi.util.StateAndModesUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -436,4 +441,105 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
 
         return errorCodesList
     }
+
+    fun insertConfigurationParametersInDB(it: ByteArray) {
+
+        Log.d("CDM_TAG","Charge Control Mode = ${ConfigurationParametersUtils.getChargeControlMode(it)}")
+
+        Log.d("CDM_TAG","Rectifier Selection = ${ConfigurationParametersUtils.getRectifierSelection(it).hexStringToDecimal()}")
+        Log.d("CDM_TAG","Number of Rectifier Per Group = ${ConfigurationParametersUtils.getNumberOfRectifierPerGroup(it).hexStringToDecimal()}")
+        Log.d("CDM_TAG","Rectifier Max Voltage = ${ConfigurationParametersUtils.getRectifierMaxVoltage(it).hexStringToDecimal()}")
+        Log.d("CDM_TAG","Rectifier Max Power = ${ConfigurationParametersUtils.getRectifierMaxPower(it).hexStringToDecimal()}")
+        Log.d("CDM_TAG","Rectifier Max Current = ${ConfigurationParametersUtils.getRectifierMaxCurrent(it).hexStringToDecimal()}")
+
+        val tbConfigurationParameters = TbConfigurationParameters(
+            id = 1,
+            chargeControlMode = ConfigurationParametersUtils.getChargeControlModeValue(it),
+            selectedRectifier = ConfigurationParametersUtils.getRectifierSelection(it).hexStringToDecimal(),
+            numberOfRectifierPerGroup = ConfigurationParametersUtils.getNumberOfRectifierPerGroup(it).hexStringToDecimal(),
+            maxDCOutputPowerCapacity = ConfigurationParametersUtils.getMaxDCOutputPowerCapacityOfCharger(it).hexStringToDecimal(),
+            rectifierMaxPower = ConfigurationParametersUtils.getRectifierMaxPower(it).hexStringToDecimal(),
+            rectifierMaxVoltage = ConfigurationParametersUtils.getRectifierMaxVoltage(it).hexStringToDecimal(),
+            rectifierMaxCurrent = ConfigurationParametersUtils.getRectifierMaxCurrent(it).hexStringToDecimal(),
+            selectedACMeter = ConfigurationParametersUtils.getACMeterSelection(it).hexStringToDecimal(),
+            acMeterDataConfiguration = ConfigurationParametersUtils.getACMeterDataConfiguration(it),
+            isACMeterMandatory = ConfigurationParametersUtils.getACMeterMandatory(it),
+            selectedDCMeter = ConfigurationParametersUtils.getDCMeterSelection(it).hexStringToDecimal(),
+            dcMeterDataConfiguration = ConfigurationParametersUtils.getDCMeterDataConfiguration(it),
+            isDCMeterMandatory = ConfigurationParametersUtils.getDCMeterMandatory(it),
+            spdFaultDetection = ConfigurationParametersUtils.getSPDFaultDetection(it),
+            smokeFaultDetection = ConfigurationParametersUtils.getSmokeFaultDetection(it),
+            tamperFaultDetection = ConfigurationParametersUtils.getTamperFaultDetection(it),
+            ledModuleFaultDetection = ConfigurationParametersUtils.getLEDModuleFaultDetection(it),
+            gunTempFaultDetection = ConfigurationParametersUtils.getGunTemperatureFaultDetection(it),
+            isolationFaultDetection = ConfigurationParametersUtils.getIsolationFaultDetection(it),
+            gunTemperatureThresholdValue = ConfigurationParametersUtils.getDCGunTemperatureThresholdValue(it).hexStringToDecimal(),
+            phaseLowDetectionVoltage = ConfigurationParametersUtils.getPhaseLowDetectionVoltage(it).hexStringToDecimal(),
+            phaseHighDetectionVoltage = ConfigurationParametersUtils.getPhaseHighDetectionVoltage(it).hexStringToDecimal(),
+            acMeterUserDefinedFields = if(ConfigurationParametersUtils.getACMeterSelection(it).hexStringToDecimal() == 0) ACMeterUserDefinedFields(
+                voltageV1N = ConfigurationParametersUtils.getVoltageV1NRegisterAddress(it).toInt(),
+                voltageV2N = ConfigurationParametersUtils.getVoltageV2NRegisterAddress(it).toInt(),
+                voltageV3N = ConfigurationParametersUtils.getVoltageV3NRegisterAddress(it).toInt(),
+                avgVoltageLN = ConfigurationParametersUtils.getAvgVoltageLNRegisterAddress(it).toInt(),
+                frequency = ConfigurationParametersUtils.getFrequencyRegisterAddress(it).toInt(),
+                avgPF = ConfigurationParametersUtils.getAvgPFRegisterAddress(it).toInt(),
+                currentL1 = ConfigurationParametersUtils.getCurrentL1RegisterAddress(it).toInt(),
+                currentL2 = ConfigurationParametersUtils.getCurrentL2RegisterAddress(it).toInt(),
+                currentL3 = ConfigurationParametersUtils.getCurrentL3RegisterAddress(it).toInt(),
+                avgCurrent = ConfigurationParametersUtils.getAvgCurrentRegisterAddress(it).toInt(),
+                activePower = ConfigurationParametersUtils.getActivePowerRegisterAddress(it).toInt(),
+                totalEnergy = ConfigurationParametersUtils.getTotalEnergyRegisterAddress(it).toInt(),
+                totalReactiveEnergy = ConfigurationParametersUtils.getTotalReactiveEnergyRegisterAddress(it).toInt()
+            ) else null,
+            dcMeterUserDefinedFields = if(ConfigurationParametersUtils.getDCMeterSelection(it).hexStringToDecimal() == 0) DCMeterUserDefinedFields(
+                voltageParameter = ConfigurationParametersUtils.getVoltageRegisterAddress(it).toInt(),
+                currentParameter = ConfigurationParametersUtils.getCurrentRegisterAddress(it).toInt(),
+                powerParameter = ConfigurationParametersUtils.getPowerRegisterAddress(it).toInt(),
+                importEnergyParameter = ConfigurationParametersUtils.getImportEnergyRegisterAddress(it).toInt(),
+                exportEnergyParameter = ConfigurationParametersUtils.getExportEnergyRegisterAddress(it).toInt(),
+                maxVoltageParameter = ConfigurationParametersUtils.getMaxVoltageRegisterAddress(it).toInt(),
+                minVoltageParameter = ConfigurationParametersUtils.getMinVoltageRegisterAddress(it).toInt(),
+                maxCurrent = ConfigurationParametersUtils.getMaxCurrentRegisterAddress(it).toInt(),
+                minCurrent = ConfigurationParametersUtils.getMinCurrentRegisterAddress(it).toInt()
+            ) else null
+        )
+
+        viewModelScope.launch {
+            mainRepository.insertConfigurationParameters(tbConfigurationParameters)
+        }
+
+        Log.d("CDM_TAG","Config Access Params Key = ${ConfigurationParametersUtils.getConfigAccessKey(it)}")
+        Log.d("CDM_TAG","Max DC Output Power Capacity of Charger = ${ConfigurationParametersUtils.getMaxDCOutputPowerCapacityOfCharger(it).hexStringToDecimal()}")
+        Log.d("CDM_TAG","AC Meter Selection = ${ConfigurationParametersUtils.getACMeterSelection(it).hexStringToDecimal()}")
+        Log.d("CDM_TAG","AC Meter Data Configuration = ${ConfigurationParametersUtils.getACMeterDataConfiguration(it)}")
+        Log.d("CDM_TAG","ACMDC Data Type = ${ConfigurationParametersUtils.getACMeterDataType(it)}")
+        Log.d("CDM_TAG","ACMDC Data Endianness = ${ConfigurationParametersUtils.getACMeterDataEndianness(it)}")
+        Log.d("CDM_TAG","ACMDC Read Function = ${ConfigurationParametersUtils.getACMeterReadFunction(it)}")
+        Log.d("CDM_TAG","ACMDC Data in Watt/KW = ${ConfigurationParametersUtils.getACMeterDataTypeInWattOrKW(it)}")
+        Log.d("CDM_TAG","ACMDC Mandatory Yes/No = ${ConfigurationParametersUtils.getACMeterMandatory(it)}")
+
+        Log.d("CDM_TAG","DC Meter Selection = ${ConfigurationParametersUtils.getDCMeterSelection(it).hexStringToDecimal()}")
+        Log.d("CDM_TAG","DC Meter Data Configuration = ${ConfigurationParametersUtils.getDCMeterDataConfiguration(it)}")
+        Log.d("CDM_TAG","DCMDC Data Type = ${ConfigurationParametersUtils.getDCMeterDataType(it)}")
+        Log.d("CDM_TAG","DCMDC Data Endianness = ${ConfigurationParametersUtils.getDCMeterDataEndianness(it)}")
+        Log.d("CDM_TAG","DCMDC Read Function = ${ConfigurationParametersUtils.getDCMeterReadFunction(it)}")
+        Log.d("CDM_TAG","DCMDC Data in Watt/KW = ${ConfigurationParametersUtils.getDCMeterDataTypeInWattOrKW(it)}")
+        Log.d("CDM_TAG","DCMDC Mandatory Yes/No = ${ConfigurationParametersUtils.getDCMeterMandatory(it)}")
+
+        Log.d("CDM_TAG","Fault Detection Enable/Disable = ${ConfigurationParametersUtils.getFaultDetectionEnableDisable(it)}")
+        Log.d("CDM_TAG","SPD Fault Detection = ${ConfigurationParametersUtils.getSPDFaultDetection(it)}")
+        Log.d("CDM_TAG","Smoke Fault Detection = ${ConfigurationParametersUtils.getSmokeFaultDetection(it)}")
+        Log.d("CDM_TAG","Tamper Fault Detection = ${ConfigurationParametersUtils.getTamperFaultDetection(it)}")
+        Log.d("CDM_TAG","LED Module Fault Detection = ${ConfigurationParametersUtils.getLEDModuleFaultDetection(it)}")
+        Log.d("CDM_TAG","Gun Temp Fault Detection = ${ConfigurationParametersUtils.getGunTemperatureFaultDetection(it)}")
+        Log.d("CDM_TAG","Isolation Fault Detection = ${ConfigurationParametersUtils.getIsolationFaultDetection(it)}")
+
+        Log.d("CDM_TAG","Voltage V1N = ${ConfigurationParametersUtils.getVoltageV1NRegisterAddress(it).hexStringToDecimal()}")
+        Log.d("CDM_TAG","Voltage V2N = ${ConfigurationParametersUtils.getVoltageV2NRegisterAddress(it).hexStringToDecimal()}")
+        Log.d("CDM_TAG","Voltage V3N = ${ConfigurationParametersUtils.getVoltageV3NRegisterAddress(it).hexStringToDecimal()}")
+
+
+    }
+
+    val getConfigurationParameters: LiveData<List<TbConfigurationParameters>> = mainRepository.getAllConfigurationParameters()
 }
