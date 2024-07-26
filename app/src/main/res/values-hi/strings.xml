@@ -194,8 +194,8 @@
     <string name="msg_please_enter_value">कृपया मान दर्ज करें</string>
     <string name="msg_value_must_be_in_range">मान सीमा में होना चाहिए</string>
     <string name="msg_enter_time_in_minutes_1_999">समय मिनट में दर्ज करें (1–999)</string>
-    <string name="msg_enter_energy_in_kwh_0_01_999_99">ऊर्जा को kWh में दर्ज करें (0.01–999.99)</string>
-    <string name="msg_enter_soc_in_1_100">SOC को प्रतिशत में दर्ज करें (1–100)</string>
+    <string name="msg_enter_energy_in_kwh_0_01_999_99">ऊर्जा को kWh में दर्ज करें (1–999)</string>
+    <string name="msg_enter_soc_in_1_100">SOC को प्रतिशत में दर्ज करें (1–99)</string>
     <string name="msg_value_must_be_between_and">मान %1$s और %2$s के बीच होना चाहिए</string>
     <string name="lbl_occurred">घटित</string>
     <string name="lbl_resolved">हल</string>

@@ -194,8 +194,8 @@
     <string name="msg_please_enter_value">Please enter value</string>
     <string name="msg_value_must_be_in_range">Value must be in range</string>
     <string name="msg_enter_time_in_minutes_1_999">Enter Time in Minutes (1–999)</string>
-    <string name="msg_enter_energy_in_kwh_0_01_999_99">Enter Energy in kWh (0.01–999.99)</string>
-    <string name="msg_enter_soc_in_1_100">Enter SOC in % (1–100)</string>
+    <string name="msg_enter_energy_in_kwh_0_01_999_99">Enter Energy in kWh (1–999)</string>
+    <string name="msg_enter_soc_in_1_100">Enter SOC in % (1–99)</string>
     <string name="msg_value_must_be_between_and">Value must be between %1$s and %2$s</string>
     <string name="lbl_occurred">Occurred</string>
     <string name="lbl_resolved">Resolved</string>

@@ -193,8 +193,8 @@
     <string name="msg_please_enter_value">Lütfen değer girin</string>
     <string name="msg_value_must_be_in_range">Değer aralıkta olmalıdır</string>
     <string name="msg_enter_time_in_minutes_1_999">Süreyi Dakika Olarak Girin (1–999)</string>
-    <string name="msg_enter_energy_in_kwh_0_01_999_99">Enerjiyi kWh Olarak Girin (0.01–999.99)</string>
-    <string name="msg_enter_soc_in_1_100">SoC\'yi % Olarak Girin (1–100)</string>
+    <string name="msg_enter_energy_in_kwh_0_01_999_99">Enerjiyi kWh Olarak Girin (1–999)</string>
+    <string name="msg_enter_soc_in_1_100">SoC\'yi % Olarak Girin (1–99)</string>
     <string name="msg_value_must_be_between_and">Değer %1$s ile %2$s arasında olmalıdır</string>
     <string name="lbl_occurred">Oluştu</string>
     <string name="lbl_resolved">Çözüldü</string>

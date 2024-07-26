@@ -193,8 +193,8 @@
     <string name="msg_please_enter_value">Voer waarde in</string>
     <string name="msg_value_must_be_in_range">Waarde moet binnen het bereik liggen</string>
     <string name="msg_enter_time_in_minutes_1_999">Voer tijd in minuten in (1–999)</string>
-    <string name="msg_enter_energy_in_kwh_0_01_999_99">Voer energie in kWh in (0,01–999,99)</string>
-    <string name="msg_enter_soc_in_1_100">Voer SOC in % in (1–100)</string>
+    <string name="msg_enter_energy_in_kwh_0_01_999_99">Voer energie in kWh in (1–999)</string>
+    <string name="msg_enter_soc_in_1_100">Voer SOC in % in (1–99)</string>
     <string name="msg_value_must_be_between_and">Waarde moet tussen %1$s en %2$s liggen</string>
     <string name="lbl_occurred">Voorgekomen</string>
     <string name="lbl_resolved">Opgelost</string>

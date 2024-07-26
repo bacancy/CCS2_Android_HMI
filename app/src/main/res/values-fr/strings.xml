@@ -193,8 +193,8 @@
     <string name="msg_please_enter_value">Veuillez saisir une valeur</string>
     <string name="msg_value_must_be_in_range">La valeur doit être comprise dans la plage</string>
     <string name="msg_enter_time_in_minutes_1_999">Entrez le temps en minutes (1–999)</string>
-    <string name="msg_enter_energy_in_kwh_0_01_999_99">Entrez l\'énergie en kWh (0.01–999.99)</string>
-    <string name="msg_enter_soc_in_1_100">Entrez le SoC en % (1–100)</string>
+    <string name="msg_enter_energy_in_kwh_0_01_999_99">Entrez l\'énergie en kWh (1–999)</string>
+    <string name="msg_enter_soc_in_1_100">Entrez le SoC en % (1–99)</string>
     <string name="msg_value_must_be_between_and">La valeur doit être comprise entre %1$s et %2$s</string>
     <string name="lbl_occurred">Produit</string>
     <string name="lbl_resolved">Résolu</string>

@@ -194,8 +194,8 @@
     <string name="msg_please_enter_value">يرجى إدخال القيمة</string>
     <string name="msg_value_must_be_in_range">يجب أن تكون القيمة في النطاق</string>
     <string name="msg_enter_time_in_minutes_1_999">أدخل الوقت بالدقائق (1–999)</string>
-    <string name="msg_enter_energy_in_kwh_0_01_999_99">أدخل الطاقة بالكيلوواط ساعة (0.01–999.99)</string>
-    <string name="msg_enter_soc_in_1_100">أدخل نسبة الشحن (1–100)</string>
+    <string name="msg_enter_energy_in_kwh_0_01_999_99">أدخل الطاقة بالكيلوواط ساعة (1–999)</string>
+    <string name="msg_enter_soc_in_1_100">أدخل نسبة الشحن (1–99)</string>
     <string name="msg_value_must_be_between_and">يجب أن تكون القيمة بين %1$s و %2$s</string>
     <string name="lbl_occurred">حدث</string>
     <string name="lbl_resolved">تم الحل</string>

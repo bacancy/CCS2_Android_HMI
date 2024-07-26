@@ -419,8 +419,8 @@ object DialogUtils {
     private fun DialogSessionModeSelectionBinding.validateSelectedValueRange(): Boolean {
         return when {
             radioByTime.isChecked -> checkValueInRange(1, 999)
-            radioByEnergy.isChecked -> checkValueInRange(0.01, 999.99)
-            radioBySoc.isChecked -> checkValueInRange(1, 100)
+            radioByEnergy.isChecked -> checkValueInRange(1, 999)
+            radioBySoc.isChecked -> checkValueInRange(1, 99)
             else -> true
         }
     }
@@ -462,10 +462,10 @@ object DialogUtils {
                 handleEditTextVisibility(
                     true,
                     context.getString(R.string.msg_enter_energy_in_kwh_0_01_999_99),
-                    InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL,
-                    InputFilter.LengthFilter(6)
+                    InputType.TYPE_CLASS_NUMBER,
+                    InputFilter.LengthFilter(3)
                 ) { text ->
-                    validateTextValue(context,text, 0.01, 999.99)
+                    validateTextValue(context,text, 1, 999)
                 }
             }
 
@@ -474,9 +474,9 @@ object DialogUtils {
                     true,
                     context.getString(R.string.msg_enter_soc_in_1_100),
                     InputType.TYPE_CLASS_NUMBER,
-                    InputFilter.LengthFilter(3)
+                    InputFilter.LengthFilter(2)
                 ) { text ->
-                    validateTextValue(context,text, 1, 100)
+                    validateTextValue(context,text, 1, 99)
                 }
             }
         }
