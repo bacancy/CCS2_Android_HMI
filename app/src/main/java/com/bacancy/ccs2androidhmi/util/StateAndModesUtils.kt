@@ -21,7 +21,7 @@ object StateAndModesUtils {
         ISOLATION_FAIL(14, "Isolation Fail"),
         TEMPERATURE_FAULT(15, "Temperature Fault"),
         SPD_FAULT(16, "SPD Fault"),
-        SMOKE_FAULT(17, "Smoke Fault"),
+        SMOKE_FAULT(17, "Earth Fault"),
         TAMPER_FAULT(18, "Tamper Fault"),
         MAINS_FAIL(19, "Mains Fail"),
         UNAVAILABLE(20, "Unavailable"),

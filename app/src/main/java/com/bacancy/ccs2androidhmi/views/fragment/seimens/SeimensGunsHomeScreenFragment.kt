@@ -122,22 +122,22 @@ class SeimensGunsHomeScreenFragment : BaseFragment() {
         when (tbGunsChargingInfo.gunChargingState) {
             UNPLUGGED -> {
                 shouldShowGun1SummaryDialog = false
-                binding.ivGun1.setImageResource(R.drawable.ic_single_gun_unplugged)
+                binding.ivSingleGun.setImageResource(R.drawable.ic_single_gun_unplugged)
             }
 
             PLUGGED_IN -> {
                 shouldShowGun1SummaryDialog = false
-                binding.ivGun1.setImageResource(R.drawable.ic_single_gun_plugged)
+                binding.ivSingleGun.setImageResource(R.drawable.ic_single_gun_plugged)
             }
 
             CHARGING -> {
                 shouldShowGun1SummaryDialog = false
                 isGun1ChargingStarted = true
-                binding.ivGun1.setImageResource(R.drawable.ic_single_gun_charging_in_process)
+                binding.ivSingleGun.setImageResource(R.drawable.ic_single_gun_charging_in_process)
             }
 
             COMPLETE -> {
-                binding.ivGun1.setImageResource(R.drawable.ic_single_gun_charging_completed)
+                binding.ivSingleGun.setImageResource(R.drawable.ic_single_gun_charging_completed)
             }
 
             PLC_FAULT,
@@ -147,7 +147,7 @@ class SeimensGunsHomeScreenFragment : BaseFragment() {
             SMOKE_FAULT,
             TAMPER_FAULT,
             EMERGENCY_STOP -> {
-                binding.ivGun1.setImageResource(R.drawable.ic_single_gun_fault)
+                binding.ivSingleGun.setImageResource(R.drawable.ic_single_gun_fault)
             }
         }
 
@@ -183,22 +183,22 @@ class SeimensGunsHomeScreenFragment : BaseFragment() {
         when (tbGunsChargingInfo.gunChargingState) {
             UNPLUGGED -> {
                 shouldShowGun2SummaryDialog = false
-                binding.ivGun2.setImageResource(R.drawable.ic_single_gun_unplugged)
+                binding.ivSingleGun.setImageResource(R.drawable.ic_single_gun_unplugged)
             }
 
             PLUGGED_IN -> {
                 shouldShowGun2SummaryDialog = false
-                binding.ivGun2.setImageResource(R.drawable.ic_single_gun_plugged)
+                binding.ivSingleGun.setImageResource(R.drawable.ic_single_gun_plugged)
             }
 
             CHARGING -> {
                 shouldShowGun2SummaryDialog = false
                 isGun2ChargingStarted = true
-                binding.ivGun2.setImageResource(R.drawable.ic_single_gun_charging_in_process)
+                binding.ivSingleGun.setImageResource(R.drawable.ic_single_gun_charging_in_process)
             }
 
             COMPLETE -> {
-                binding.ivGun2.setImageResource(R.drawable.ic_single_gun_charging_completed)
+                binding.ivSingleGun.setImageResource(R.drawable.ic_single_gun_charging_completed)
             }
 
             PLC_FAULT,
@@ -208,7 +208,7 @@ class SeimensGunsHomeScreenFragment : BaseFragment() {
             SMOKE_FAULT,
             TAMPER_FAULT,
             EMERGENCY_STOP -> {
-                binding.ivGun2.setImageResource(R.drawable.ic_single_gun_fault)
+                binding.ivSingleGun.setImageResource(R.drawable.ic_single_gun_fault)
             }
         }
 
@@ -279,11 +279,8 @@ class SeimensGunsHomeScreenFragment : BaseFragment() {
     }
 
     override fun handleClicks() {
-        binding.frmLayoutGun1.setOnClickListener {
+        binding.ivSingleGun.setOnClickListener {
             openGunsMoreInfoFragment(1)
-        }
-        binding.frmLayoutGun2.setOnClickListener {
-            openGunsMoreInfoFragment(2)
         }
     }
 

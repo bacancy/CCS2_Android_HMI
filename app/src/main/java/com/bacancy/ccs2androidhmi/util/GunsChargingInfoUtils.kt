@@ -36,7 +36,7 @@ object GunsChargingInfoUtils {
     const val RECTIFIER_FAULT = "Rectifier Fault"
     const val TEMPERATURE_FAULT = "Temperature Fault"
     const val SPD_FAULT = "SPD Fault"
-    const val SMOKE_FAULT = "Smoke Fault"
+    const val SMOKE_FAULT = "Earth Fault"
     const val TAMPER_FAULT = "Tamper Fault"
     const val COMMUNICATION_ERROR = "Communication Error"
     const val AUTHENTICATION_TIMEOUT = "Authentication Timeout"
