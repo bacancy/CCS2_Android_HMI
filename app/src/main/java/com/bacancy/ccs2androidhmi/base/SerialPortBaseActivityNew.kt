@@ -15,6 +15,7 @@ import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.db.entity.TbAcMeterInfo
 import com.bacancy.ccs2androidhmi.mqtt.ServerConstants
 import com.bacancy.ccs2androidhmi.mqtt.models.ChargerStatusConfirmationRequestBody
+import com.bacancy.ccs2androidhmi.util.AppConfig.IS_SINGLE_GUN
 import com.bacancy.ccs2androidhmi.util.CommonUtils
 import com.bacancy.ccs2androidhmi.util.CommonUtils.AC_METER_FRAG
 import com.bacancy.ccs2androidhmi.util.CommonUtils.AUTH_PIN_VALUE
@@ -982,7 +983,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
 
     private fun determineLocalStartStop(): Int {
         val gun1LocalStart = prefHelper.getBoolean(GUN_1_LOCAL_START, false)
-        val gun2LocalStart = prefHelper.getBoolean(GUN_2_LOCAL_START, false)
+        val gun2LocalStart = if(IS_SINGLE_GUN) false else prefHelper.getBoolean(GUN_2_LOCAL_START, false)
 
         return when {
             gun1LocalStart && !gun2LocalStart -> {

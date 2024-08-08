@@ -30,7 +30,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <FrameLayout
+    <!-- For Dual Gun UI
+      <FrameLayout
         android:id="@+id/frmLayoutGun1"
         android:layout_width="@dimen/_100sdp"
         android:layout_height="@dimen/_100sdp"
@@ -56,12 +57,44 @@
             android:text="A"
             android:textColor="@color/black"
             android:textSize="@dimen/_60ssp" />
+    </FrameLayout>-->
+
+    <!--For Single Gun UI-->
+    <FrameLayout
+        android:id="@+id/frmLayoutGun1"
+        android:layout_width="@dimen/_100sdp"
+        android:layout_height="@dimen/_100sdp"
+        android:layout_marginStart="@dimen/_20sdp"
+        android:layout_marginBottom="@dimen/_80sdp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/ivGun1"
+            android:layout_width="@dimen/_100sdp"
+            android:layout_height="@dimen/_100sdp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/ic_single_gun_unplugged" />
+
+        <TextView
+            android:layout_width="@dimen/_80sdp"
+            android:layout_height="@dimen/_80sdp"
+            android:layout_gravity="center"
+            android:background="#c9e6ec"
+            android:gravity="center"
+            android:text="A"
+            android:visibility="invisible"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_60ssp" />
     </FrameLayout>
 
     <View
         android:id="@+id/gunsDivider"
         android:layout_width="@dimen/_30sdp"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -69,6 +102,7 @@
 
     <FrameLayout
         android:id="@+id/frmLayoutGun2"
+        android:visibility="gone"
         android:layout_width="@dimen/_100sdp"
         android:layout_height="@dimen/_100sdp"
         android:layout_marginBottom="@dimen/_80sdp"
@@ -102,8 +136,8 @@
         android:text="@string/lbl_tap_to_charge"
         android:textColor="@color/white"
         android:textSize="@dimen/_7ssp"
-        app:layout_constraintEnd_toStartOf="@id/frmLayoutGun2"
-        app:layout_constraintStart_toEndOf="@id/frmLayoutGun1"
+        app:layout_constraintStart_toStartOf="@id/frmLayoutGun1"
+        app:layout_constraintEnd_toEndOf="@id/frmLayoutGun1"
         app:layout_constraintTop_toBottomOf="@id/frmLayoutGun1" />
 
     <TextView
@@ -125,7 +159,7 @@
         android:layout_marginTop="@dimen/_5sdp"
         android:background="@drawable/bg_white_round_rect"
         android:padding="@dimen/_3sdp"
-        android:text="@string/lbl_controller_model_name_dual_gun"
+        android:text="@string/lbl_controller_model_name"
         android:textColor="@color/mid_blue"
         android:textSize="@dimen/_9ssp"
         android:textStyle="bold"

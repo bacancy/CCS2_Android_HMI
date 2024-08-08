@@ -13,6 +13,7 @@ import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentGunsHomeScreenBinding
 import com.bacancy.ccs2androidhmi.databinding.FragmentSeimensGunsHomeScreenBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
+import com.bacancy.ccs2androidhmi.util.AppConfig.IS_SINGLE_GUN
 import com.bacancy.ccs2androidhmi.util.CommonUtils.INSIDE_LOCAL_START_STOP_SCREEN
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showChargingSummaryDialog
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_DENIED
@@ -87,6 +88,11 @@ class SeimensGunsHomeScreenFragment : BaseFragment() {
         (requireActivity() as DashboardActivityContract).updateTopBar(true)
         observeLatestMiscInfo()
         observeGunsChargingInfo()
+        if (IS_SINGLE_GUN) {
+            binding.tvModelName.text = getString(R.string.lbl_controller_model_name)
+        } else {
+            binding.tvModelName.text = getString(R.string.lbl_controller_model_name_dual_gun)
+        }
         return binding.root
     }
 
@@ -119,6 +125,9 @@ class SeimensGunsHomeScreenFragment : BaseFragment() {
     }
 
     private fun updateGun1UI(tbGunsChargingInfo: TbGunsChargingInfo) {
+        if (isVisible) {
+            prefHelper.setSelectedGunNumber(SELECTED_GUN, 0)
+        }
         when (tbGunsChargingInfo.gunChargingState) {
             UNPLUGGED -> {
                 shouldShowGun1SummaryDialog = false

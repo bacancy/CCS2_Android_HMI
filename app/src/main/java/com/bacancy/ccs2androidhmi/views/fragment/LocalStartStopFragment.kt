@@ -9,6 +9,7 @@ import androidx.fragment.app.viewModels
 import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentLocalStartStopBinding
+import com.bacancy.ccs2androidhmi.util.AppConfig.IS_SINGLE_GUN
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_LOCAL_START
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_LOCAL_START
 import com.bacancy.ccs2androidhmi.util.CommonUtils.INSIDE_LOCAL_START_STOP_SCREEN
@@ -44,6 +45,9 @@ class LocalStartStopFragment : BaseFragment() {
         observeGunsChargingInfo()
         prefHelper.setBoolean(IS_GUN_1_CLICKED, false)
         prefHelper.setBoolean(IS_GUN_2_CLICKED, false)
+        if(IS_SINGLE_GUN){
+            binding.btnStartStopGun2.visibility = View.GONE
+        }
         return binding.root
     }
 
@@ -61,7 +65,7 @@ class LocalStartStopFragment : BaseFragment() {
                 prefHelper.setBoolean(IS_GUN_1_CLICKED, true)
                 prefHelper.setBoolean(
                     GUN_1_LOCAL_START,
-                    !prefHelper.getBoolean(GUN_1_LOCAL_START, false)
+                    btnStartStopGun1.text == getString(R.string.lbl_start_gun_1)
                 )
                 btnStartStopGun1.text = "Gun - 1 (Loading...)"
                 binding.btnStartStopGun1.isEnabled = false
@@ -73,7 +77,7 @@ class LocalStartStopFragment : BaseFragment() {
                 prefHelper.setBoolean(IS_GUN_2_CLICKED, true)
                 prefHelper.setBoolean(
                     GUN_2_LOCAL_START,
-                    !prefHelper.getBoolean(GUN_2_LOCAL_START, false)
+                    btnStartStopGun2.text == getString(R.string.lbl_start_gun_2)
                 )
                 btnStartStopGun2.text = "Gun - 2 (Loading...)"
                 btnStartStopGun2.isEnabled = false

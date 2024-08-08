@@ -10,6 +10,7 @@ import androidx.fragment.app.viewModels
 import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentTestModeHomeBinding
+import com.bacancy.ccs2androidhmi.util.AppConfig.IS_SINGLE_GUN
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils
 import com.bacancy.ccs2androidhmi.util.PrefHelper
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
@@ -43,6 +44,9 @@ class TestModeHomeFragment : BaseFragment() {
     ): View {
         binding = FragmentTestModeHomeBinding.inflate(layoutInflater)
         (requireActivity() as DashboardActivityContract).updateTopBar(false)
+        if(IS_SINGLE_GUN){
+            binding.btnGun2.visibility = View.GONE
+        }
         return binding.root
     }
 
