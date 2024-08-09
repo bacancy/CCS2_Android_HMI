@@ -547,6 +547,8 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                         RESERVED,
                         EMERGENCY_STOP,
                         -> {
+                            prefHelper.setBoolean(INSIDE_LOCAL_START_STOP_SCREEN, false)
+                            prefHelper.setBoolean(GUN_1_LOCAL_START, false)
                             if (isGun1PluggedIn) {
                                 isGun1PluggedIn = false
                                 openGun1LastChargingSummary(true)
@@ -807,6 +809,8 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                         RESERVED,
                         EMERGENCY_STOP,
                         -> {
+                            prefHelper.setBoolean(INSIDE_LOCAL_START_STOP_SCREEN, false)
+                            prefHelper.setBoolean(GUN_2_LOCAL_START, false)
                             if (isGun2PluggedIn) {
                                 isGun2PluggedIn = false
                                 openGun2LastChargingSummary(true)

@@ -90,7 +90,6 @@ class GunsHomeScreenFragment : BaseFragment() {
 
     override fun onResume() {
         super.onResume()
-        prefHelper.setBoolean(INSIDE_LOCAL_START_STOP_SCREEN, false)
         prefHelper.setBoolean("IS_IN_TEST_MODE", false)
         prefHelper.setBoolean("IS_OUTPUT_ON_OFF_VALUE_CHANGED", false)
     }
