@@ -2,7 +2,6 @@ package com.bacancy.ccs2androidhmi.views.fragment.seimens
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,11 +9,9 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
-import com.bacancy.ccs2androidhmi.databinding.FragmentGunsHomeScreenBinding
 import com.bacancy.ccs2androidhmi.databinding.FragmentSeimensGunsHomeScreenBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
 import com.bacancy.ccs2androidhmi.util.AppConfig.IS_SINGLE_GUN
-import com.bacancy.ccs2androidhmi.util.CommonUtils.INSIDE_LOCAL_START_STOP_SCREEN
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showChargingSummaryDialog
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_DENIED
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_TIMEOUT
@@ -27,7 +24,6 @@ import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.MAINS_FAIL
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.PLC_FAULT
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.PLUGGED_IN
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.PRECHARGE_FAIL
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.PREPARING_FOR_CHARGING
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.RECTIFIER_FAULT
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.RESERVED
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.SELECTED_GUN
@@ -39,12 +35,7 @@ import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.UNAVAILABLE
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.UNPLUGGED
 import com.bacancy.ccs2androidhmi.util.PrefHelper
 import com.bacancy.ccs2androidhmi.util.PrefHelper.Companion.IS_DARK_THEME
-import com.bacancy.ccs2androidhmi.util.TextViewUtils.removeBlinking
-import com.bacancy.ccs2androidhmi.util.TextViewUtils.startBlinking
-import com.bacancy.ccs2androidhmi.util.gone
-import com.bacancy.ccs2androidhmi.util.visible
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
-import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
 import com.bacancy.ccs2androidhmi.views.fragment.GunsMoreInformationFragment
 import com.bacancy.ccs2androidhmi.views.listener.DashboardActivityContract
 import com.bacancy.ccs2androidhmi.views.listener.FragmentChangeListener

@@ -3,11 +3,9 @@ package com.bacancy.ccs2androidhmi
 import android.app.Application
 import android.util.Log
 import android_serialport_api.SerialPort
-import android_serialport_api.SerialPortFinder
+import com.testfairy.TestFairy
 import dagger.hilt.android.HiltAndroidApp
 import java.io.File
-import java.io.IOException
-import java.security.InvalidParameterException
 
 @HiltAndroidApp
 class HMIApp: Application() {
@@ -33,4 +31,8 @@ class HMIApp: Application() {
         }
     }
 
+    override fun onCreate() {
+        super.onCreate()
+        TestFairy.begin(this, "SDK-dKW2D0Ff")
+    }
 }

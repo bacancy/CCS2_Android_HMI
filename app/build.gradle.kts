@@ -77,5 +77,6 @@ dependencies {
     implementation("com.intuit.ssp:ssp-android:$sspVersion")
 
     implementation("com.github.hannesa2:paho.mqtt.android:3.6.4")
+    implementation("com.testfairy:testfairy-android-sdk:1.+@aar")
 
 }

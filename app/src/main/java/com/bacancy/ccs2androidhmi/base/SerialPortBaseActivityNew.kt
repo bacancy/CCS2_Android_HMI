@@ -547,7 +547,6 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                         RESERVED,
                         EMERGENCY_STOP,
                         -> {
-                            prefHelper.setBoolean(INSIDE_LOCAL_START_STOP_SCREEN, false)
                             prefHelper.setBoolean(GUN_1_LOCAL_START, false)
                             if (isGun1PluggedIn) {
                                 isGun1PluggedIn = false
@@ -682,34 +681,8 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
             ) {
                 readGun2DCMeterInfo()
             } else {
-                chooseLocalStartStopOrAuthenticateMethod()
+                writeForLocalStartStop(determineLocalStartStop())
             }
-        }
-    }
-
-    private fun chooseLocalStartStopOrAuthenticateMethod() {
-        Log.i(
-            TAG, "chooseLocalStartStopOrAuthenticateMethod: INSIDE_LOCAL_START_STOP_SCREEN => ${
-                prefHelper.getBoolean(
-                    INSIDE_LOCAL_START_STOP_SCREEN,
-                    false
-                )
-            }"
-        )
-        if (prefHelper.getBoolean(
-                INSIDE_LOCAL_START_STOP_SCREEN,
-                false
-            )
-        ) {
-            writeForLocalStartStop(determineLocalStartStop())
-        } else if (prefHelper.getSelectedGunNumber(SELECTED_GUN, 0) != 0) {
-            val selectedGunNumber =
-                prefHelper.getSelectedGunNumber(SELECTED_GUN, 0)
-            authenticateGun(selectedGunNumber)
-        } else if (prefHelper.getStringValue(AUTH_PIN_VALUE, "").isNotEmpty()) {
-            writeForPinAuthorization(prefHelper.getStringValue(AUTH_PIN_VALUE, ""))
-        } else {
-            setupTestMode()
         }
     }
 
@@ -809,7 +782,6 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                         RESERVED,
                         EMERGENCY_STOP,
                         -> {
-                            prefHelper.setBoolean(INSIDE_LOCAL_START_STOP_SCREEN, false)
                             prefHelper.setBoolean(GUN_2_LOCAL_START, false)
                             if (isGun2PluggedIn) {
                                 isGun2PluggedIn = false
@@ -915,12 +887,12 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                             )
                         }"
                     )
-                    chooseLocalStartStopOrAuthenticateMethod()
+                    writeForLocalStartStop(determineLocalStartStop())
                 }
             }, onReadStopped = {
                 showReadStoppedUI()
                 Log.e(TAG, "readGun2DCMeterInfo: OnReadStopped Called")
-                chooseLocalStartStopOrAuthenticateMethod()
+                writeForLocalStartStop(determineLocalStartStop())
             })
     }
 
@@ -978,17 +950,28 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 48,
                 gunsStartStopData, {
                     Log.d(TAG, "writeForLocalStartStop: Response Got")
-                    lifecycleScope.launch {
-                        startReading()
-                    }
-                }, {})
+                    chooseOtherMethods()
+                }, {
+                    chooseOtherMethods()
+                })
+        }
+    }
+
+    private fun chooseOtherMethods(){
+        if (prefHelper.getSelectedGunNumber(SELECTED_GUN, 0) != 0) {
+            val selectedGunNumber =
+                prefHelper.getSelectedGunNumber(SELECTED_GUN, 0)
+            authenticateGun(selectedGunNumber)
+        } else if (prefHelper.getStringValue(AUTH_PIN_VALUE, "").isNotEmpty()) {
+            writeForPinAuthorization(prefHelper.getStringValue(AUTH_PIN_VALUE, ""))
+        } else {
+            setupTestMode()
         }
     }
 
     private fun determineLocalStartStop(): Int {
         val gun1LocalStart = prefHelper.getBoolean(GUN_1_LOCAL_START, false)
         val gun2LocalStart = if(IS_SINGLE_GUN) false else prefHelper.getBoolean(GUN_2_LOCAL_START, false)
-
         return when {
             gun1LocalStart && !gun2LocalStart -> {
                 1
