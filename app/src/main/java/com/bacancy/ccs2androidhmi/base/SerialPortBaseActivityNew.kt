@@ -519,6 +519,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                     )
                     when (getGunChargingState(it).description) {
                         UNPLUGGED -> {
+                            prefHelper.setBoolean(GUN_1_LOCAL_START, false)
                             isGun1PluggedIn = false
                             openGun1LastChargingSummary()
                         }
@@ -547,8 +548,8 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                         RESERVED,
                         EMERGENCY_STOP,
                         -> {
-                            prefHelper.setBoolean(GUN_1_LOCAL_START, false)
                             if (isGun1PluggedIn) {
+                                prefHelper.setBoolean(GUN_1_LOCAL_START, false)
                                 isGun1PluggedIn = false
                                 openGun1LastChargingSummary(true)
                             } else {
