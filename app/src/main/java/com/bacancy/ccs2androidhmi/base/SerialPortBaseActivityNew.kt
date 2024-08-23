@@ -524,6 +524,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                     )
                     when (getGunChargingState(it).description) {
                         UNPLUGGED -> {
+                            prefHelper.setBoolean(GUN_1_LOCAL_START, false)
                             isGun1PluggedIn = false
                             openGun1LastChargingSummary()
                         }
@@ -562,6 +563,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                         EMERGENCY_STOP,
                         -> {
                             if (isGun1PluggedIn) {
+                                prefHelper.setBoolean(GUN_1_LOCAL_START, false)
                                 isGun1PluggedIn = false
                                 if(prefHelper.getStringValue(GUN_1_CHARGING_END_TIME,"").isEmpty()) {
                                     prefHelper.setStringValue(
@@ -776,6 +778,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                     )
                     when (getGunChargingState(it).description) {
                         UNPLUGGED -> {
+                            prefHelper.setBoolean(GUN_2_LOCAL_START, false)
                             isGun2PluggedIn = false
                             openGun2LastChargingSummary()
                         }
@@ -819,6 +822,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                         EMERGENCY_STOP,
                         -> {
                             if (isGun2PluggedIn) {
+                                prefHelper.setBoolean(GUN_2_LOCAL_START, false)
                                 if(prefHelper.getStringValue(GUN_2_CHARGING_END_TIME,"").isEmpty()) {
                                     prefHelper.setStringValue(
                                         GUN_2_CHARGING_END_TIME,
