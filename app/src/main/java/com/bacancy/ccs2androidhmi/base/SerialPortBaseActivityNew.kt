@@ -27,7 +27,6 @@ import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_LOCAL_START
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_DC_METER_FRAG
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_LAST_CHARGING_SUMMARY_FRAG
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_LOCAL_START
-import com.bacancy.ccs2androidhmi.util.CommonUtils.INSIDE_LOCAL_START_STOP_SCREEN
 import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_APP_RESTARTED
 import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_CHARGER_ACTIVE
 import com.bacancy.ccs2androidhmi.util.CommonUtils.UNIT_PRICE
@@ -518,6 +517,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                     )
                     when (getGunChargingState(it).description) {
                         UNPLUGGED -> {
+                            prefHelper.setBoolean(GUN_1_LOCAL_START, false)
                             isGun1PluggedIn = false
                             openGun1LastChargingSummary()
                         }
@@ -547,6 +547,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                         EMERGENCY_STOP,
                         -> {
                             if (isGun1PluggedIn) {
+                                prefHelper.setBoolean(GUN_1_LOCAL_START, false)
                                 isGun1PluggedIn = false
                                 openGun1LastChargingSummary(true)
                             } else {
@@ -679,34 +680,8 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
             ) {
                 readGun2DCMeterInfo()
             } else {
-                chooseLocalStartStopOrAuthenticateMethod()
+                writeForLocalStartStop(determineLocalStartStop())
             }
-        }
-    }
-
-    private fun chooseLocalStartStopOrAuthenticateMethod() {
-        Log.i(
-            TAG, "chooseLocalStartStopOrAuthenticateMethod: INSIDE_LOCAL_START_STOP_SCREEN => ${
-                prefHelper.getBoolean(
-                    INSIDE_LOCAL_START_STOP_SCREEN,
-                    false
-                )
-            }"
-        )
-        if (prefHelper.getBoolean(
-                INSIDE_LOCAL_START_STOP_SCREEN,
-                false
-            )
-        ) {
-            writeForLocalStartStop(determineLocalStartStop())
-        } else if (prefHelper.getSelectedGunNumber(SELECTED_GUN, 0) != 0) {
-            val selectedGunNumber =
-                prefHelper.getSelectedGunNumber(SELECTED_GUN, 0)
-            authenticateGun(selectedGunNumber)
-        } else if (prefHelper.getStringValue(AUTH_PIN_VALUE, "").isNotEmpty()) {
-            writeForPinAuthorization(prefHelper.getStringValue(AUTH_PIN_VALUE, ""))
-        } else {
-            setupTestMode()
         }
     }
 
@@ -778,6 +753,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                     )
                     when (getGunChargingState(it).description) {
                         UNPLUGGED -> {
+                            prefHelper.setBoolean(GUN_2_LOCAL_START, false)
                             isGun2PluggedIn = false
                             openGun2LastChargingSummary()
                         }
@@ -807,6 +783,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                         EMERGENCY_STOP,
                         -> {
                             if (isGun2PluggedIn) {
+                                prefHelper.setBoolean(GUN_2_LOCAL_START, false)
                                 isGun2PluggedIn = false
                                 openGun2LastChargingSummary(true)
                             } else {
@@ -910,12 +887,12 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                             )
                         }"
                     )
-                    chooseLocalStartStopOrAuthenticateMethod()
+                    writeForLocalStartStop(determineLocalStartStop())
                 }
             }, onReadStopped = {
                 showReadStoppedUI()
                 Log.e(TAG, "readGun2DCMeterInfo: OnReadStopped Called")
-                chooseLocalStartStopOrAuthenticateMethod()
+                writeForLocalStartStop(determineLocalStartStop())
             })
     }
 
@@ -973,10 +950,22 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 48,
                 gunsStartStopData, {
                     Log.d(TAG, "writeForLocalStartStop: Response Got")
-                    lifecycleScope.launch {
-                        startReading()
-                    }
-                }, {})
+                    chooseOtherMethods()
+                }, {
+                    chooseOtherMethods()
+                })
+        }
+    }
+
+    private fun chooseOtherMethods(){
+        if (prefHelper.getSelectedGunNumber(SELECTED_GUN, 0) != 0) {
+            val selectedGunNumber =
+                prefHelper.getSelectedGunNumber(SELECTED_GUN, 0)
+            authenticateGun(selectedGunNumber)
+        } else if (prefHelper.getStringValue(AUTH_PIN_VALUE, "").isNotEmpty()) {
+            writeForPinAuthorization(prefHelper.getStringValue(AUTH_PIN_VALUE, ""))
+        } else {
+            setupTestMode()
         }
     }
 

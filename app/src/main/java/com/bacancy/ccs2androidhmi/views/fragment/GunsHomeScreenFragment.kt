@@ -12,7 +12,6 @@ import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentGunsHomeScreenBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
-import com.bacancy.ccs2androidhmi.util.CommonUtils.INSIDE_LOCAL_START_STOP_SCREEN
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showChargingSummaryDialog
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_DENIED
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_TIMEOUT
@@ -90,7 +89,6 @@ class GunsHomeScreenFragment : BaseFragment() {
 
     override fun onResume() {
         super.onResume()
-        prefHelper.setBoolean(INSIDE_LOCAL_START_STOP_SCREEN, false)
         prefHelper.setBoolean("IS_IN_TEST_MODE", false)
         prefHelper.setBoolean("IS_OUTPUT_ON_OFF_VALUE_CHANGED", false)
     }
