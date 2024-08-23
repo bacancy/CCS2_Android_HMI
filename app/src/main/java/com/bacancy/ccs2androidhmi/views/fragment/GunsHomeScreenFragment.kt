@@ -20,7 +20,6 @@ import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_CHARGING_END_TIME
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_CHARGING_START_TIME
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_CHARGING_END_TIME
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_CHARGING_START_TIME
-import com.bacancy.ccs2androidhmi.util.CommonUtils.INSIDE_LOCAL_START_STOP_SCREEN
 import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_DUAL_SOCKET_MODE_SELECTED
 import com.bacancy.ccs2androidhmi.util.CommonUtils.UNIT_PRICE
 import com.bacancy.ccs2androidhmi.util.DialogUtils.clearDialogFlags
@@ -113,7 +112,6 @@ class GunsHomeScreenFragment : BaseFragment() {
         prefHelper.setBoolean(CDM_CONFIG_OPTION_ENTERED, false)
         (requireActivity() as HMIDashboardActivity).updateDualSocketText(getString(R.string.lbl_dual_socket))
         prefHelper.setBoolean(IS_DUAL_SOCKET_MODE_SELECTED, false)
-        prefHelper.setBoolean(INSIDE_LOCAL_START_STOP_SCREEN, false)
         prefHelper.setBoolean("IS_IN_TEST_MODE", false)
         prefHelper.setBoolean("IS_OUTPUT_ON_OFF_VALUE_CHANGED", false)
     }
