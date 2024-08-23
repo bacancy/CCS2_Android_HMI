@@ -795,6 +795,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                     )
                     when (getGunChargingState(it).descriptionToSave) {
                         LBL_UNPLUGGED -> {
+                            prefHelper.setBoolean(GUN_1_LOCAL_START, false)
                             isGun1PluggedIn = false
                             openGun1LastChargingSummary()
                         }
@@ -846,6 +847,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                         LBL_EMERGENCY_STOP,
                         -> {
                             if (isGun1PluggedIn) {
+                                prefHelper.setBoolean(GUN_1_LOCAL_START, false)
                                 isGun1PluggedIn = false
                                 if (prefHelper.getStringValue(GUN_1_CHARGING_END_TIME, "")
                                         .isEmpty()
@@ -997,7 +999,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
             ) {
                 readGun2DCMeterInfo()
             } else {
-                writeForLocalStartStop()
+                writeForLocalStartStop(determineLocalStartStop())
             }
         }
     }
@@ -1070,6 +1072,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                     )
                     when (getGunChargingState(it).descriptionToSave) {
                         LBL_UNPLUGGED -> {
+                            prefHelper.setBoolean(GUN_2_LOCAL_START, false)
                             isGun2PluggedIn = false
                             openGun2LastChargingSummary()
                         }
@@ -1121,6 +1124,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                         LBL_EMERGENCY_STOP,
                         -> {
                             if (isGun2PluggedIn) {
+                                prefHelper.setBoolean(GUN_2_LOCAL_START, false)
                                 if (prefHelper.getStringValue(GUN_2_CHARGING_END_TIME, "")
                                         .isEmpty()
                                 ) {
@@ -1243,12 +1247,12 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                             )
                         }"
                     )
-                    writeForLocalStartStop()
+                    writeForLocalStartStop(determineLocalStartStop())
                 }
             }, onReadStopped = {
                 showReadStoppedUI()
                 Log.e(TAG, "readGun2DCMeterInfo: OnReadStopped Called")
-                writeForLocalStartStop()
+                writeForLocalStartStop(determineLocalStartStop())
             })
     }
 
