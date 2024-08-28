@@ -57,6 +57,7 @@ import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.MAINS_FAIL
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.PLC_FAULT
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.PLUGGED_IN
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.PRECHARGE_FAIL
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.PREPARING_FOR_CHARGING
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.RECTIFIER_FAULT
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.RESERVED
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.SELECTED_GUN
@@ -531,16 +532,22 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
 
                         PLUGGED_IN,
                         AUTHENTICATION_SUCCESS -> {
+                            prefHelper.setStringValue(GUN_1_CHARGING_START_TIME, "")
+                            prefHelper.setStringValue(GUN_1_CHARGING_END_TIME, "")
+                            isGun1PluggedIn = true
+                            openGun1LastChargingSummary()
+                        }
+
+                        PREPARING_FOR_CHARGING -> {
+                            if(prefHelper.getStringValue(GUN_1_CHARGING_START_TIME,"").isEmpty()){
+                                prefHelper.setStringValue(GUN_1_CHARGING_START_TIME, DateTimeUtils.getCurrentDateTime().convertDateFormatToDesiredFormat(
+                                    DATE_TIME_FORMAT, DATE_TIME_FORMAT_FROM_CHARGER))
+                            }
                             isGun1PluggedIn = true
                             openGun1LastChargingSummary()
                         }
 
                         CHARGING -> {
-                            prefHelper.setStringValue(GUN_1_CHARGING_END_TIME, "")
-                            if(prefHelper.getStringValue(GUN_1_CHARGING_START_TIME,"").isEmpty()){
-                                prefHelper.setStringValue(GUN_1_CHARGING_START_TIME, DateTimeUtils.getCurrentDateTime().convertDateFormatToDesiredFormat(
-                                    DATE_TIME_FORMAT, DATE_TIME_FORMAT_FROM_CHARGER))
-                            }
                             isGun1PluggedIn = true
                             openGun1LastChargingSummary()
                         }
@@ -566,8 +573,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                                 prefHelper.setBoolean(GUN_1_LOCAL_START, false)
                                 isGun1PluggedIn = false
                                 if(prefHelper.getStringValue(GUN_1_CHARGING_END_TIME,"").isEmpty()) {
-                                    prefHelper.setStringValue(
-                                        GUN_1_CHARGING_END_TIME,
+                                    prefHelper.setStringValue(GUN_1_CHARGING_END_TIME,
                                         DateTimeUtils.getCurrentDateTime()
                                             .convertDateFormatToDesiredFormat(
                                                 DATE_TIME_FORMAT, DATE_TIME_FORMAT_FROM_CHARGER
@@ -785,21 +791,26 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
 
                         PLUGGED_IN,
                         AUTHENTICATION_SUCCESS -> {
+                            prefHelper.setStringValue(GUN_2_CHARGING_START_TIME, "")
+                            prefHelper.setStringValue(GUN_2_CHARGING_END_TIME, "")
                             isGun2PluggedIn = true
                             openGun2LastChargingSummary()
                         }
 
-                        CHARGING -> {
-                            prefHelper.setStringValue(GUN_2_CHARGING_END_TIME, "")
+                        PREPARING_FOR_CHARGING -> {
                             if(prefHelper.getStringValue(GUN_2_CHARGING_START_TIME,"").isEmpty()) {
-                                prefHelper.setStringValue(
-                                    GUN_2_CHARGING_START_TIME,
+                                prefHelper.setStringValue(GUN_2_CHARGING_START_TIME,
                                     DateTimeUtils.getCurrentDateTime()
                                         .convertDateFormatToDesiredFormat(
                                             DATE_TIME_FORMAT, DATE_TIME_FORMAT_FROM_CHARGER
                                         )
                                 )
                             }
+                            isGun2PluggedIn = true
+                            openGun2LastChargingSummary()
+                        }
+
+                        CHARGING -> {
                             isGun2PluggedIn = true
                             openGun2LastChargingSummary()
                         }
