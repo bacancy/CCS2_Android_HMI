@@ -106,7 +106,7 @@ object ModbusTypeConverter {
         }
 
         val binaryStringBuilder = StringBuilder()
-        hex.forEach { c ->
+        hex.uppercase().forEach { c ->
             binaryStringBuilder.append(binaryMap[c])
         }
 
