@@ -28,7 +28,6 @@ import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_LOCAL_START
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_DC_METER_FRAG
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_LAST_CHARGING_SUMMARY_FRAG
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_LOCAL_START
-import com.bacancy.ccs2androidhmi.util.CommonUtils.INSIDE_LOCAL_START_STOP_SCREEN
 import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_APP_RESTARTED
 import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_CHARGER_ACTIVE
 import com.bacancy.ccs2androidhmi.util.CommonUtils.UNIT_PRICE
@@ -74,10 +73,8 @@ import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
 import com.bacancy.ccs2androidhmi.viewmodel.MQTTViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withTimeout
 import java.io.InputStream
 import java.io.OutputStream
 import javax.inject.Inject
@@ -755,6 +752,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                     )
                     when (getGunChargingState(it).description) {
                         UNPLUGGED -> {
+                            prefHelper.setBoolean(GUN_2_LOCAL_START, false)
                             isGun2PluggedIn = false
                             openGun2LastChargingSummary()
                         }
@@ -783,8 +781,8 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                         RESERVED,
                         EMERGENCY_STOP,
                         -> {
-                            prefHelper.setBoolean(GUN_2_LOCAL_START, false)
                             if (isGun2PluggedIn) {
+                                prefHelper.setBoolean(GUN_2_LOCAL_START, false)
                                 isGun2PluggedIn = false
                                 openGun2LastChargingSummary(true)
                             } else {

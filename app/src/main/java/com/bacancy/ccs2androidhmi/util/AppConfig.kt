@@ -6,5 +6,5 @@ object AppConfig {
     const val SHOW_TEST_MODE = true
     const val SHOW_EXPORT_CHARGING_HISTORY = true
     const val IS_SEIMENS_CLIENT = true
-    const val IS_SINGLE_GUN = true
+    const val IS_SINGLE_GUN = false
 }

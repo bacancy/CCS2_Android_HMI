@@ -30,7 +30,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- For Dual Gun UI
+    <!-- For Dual Gun UI-->
       <FrameLayout
         android:id="@+id/frmLayoutGun1"
         android:layout_width="@dimen/_100sdp"
@@ -57,10 +57,10 @@
             android:text="A"
             android:textColor="@color/black"
             android:textSize="@dimen/_60ssp" />
-    </FrameLayout>-->
+    </FrameLayout>
 
     <!--For Single Gun UI-->
-    <FrameLayout
+    <!--<FrameLayout
         android:id="@+id/frmLayoutGun1"
         android:layout_width="@dimen/_100sdp"
         android:layout_height="@dimen/_100sdp"
@@ -87,21 +87,23 @@
             android:visibility="invisible"
             android:textColor="@color/black"
             android:textSize="@dimen/_60ssp" />
-    </FrameLayout>
+    </FrameLayout>-->
 
+    <!--For Single Gun Make this gone-->
     <View
         android:id="@+id/gunsDivider"
         android:layout_width="@dimen/_30sdp"
         android:layout_height="wrap_content"
-        android:visibility="gone"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!--For Single Gun Make this gone-->
     <FrameLayout
         android:id="@+id/frmLayoutGun2"
-        android:visibility="gone"
+        android:visibility="visible"
         android:layout_width="@dimen/_100sdp"
         android:layout_height="@dimen/_100sdp"
         android:layout_marginBottom="@dimen/_80sdp"
