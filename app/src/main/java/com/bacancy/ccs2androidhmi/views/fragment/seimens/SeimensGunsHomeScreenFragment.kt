@@ -35,6 +35,9 @@ import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.UNAVAILABLE
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.UNPLUGGED
 import com.bacancy.ccs2androidhmi.util.PrefHelper
 import com.bacancy.ccs2androidhmi.util.PrefHelper.Companion.IS_DARK_THEME
+import com.bacancy.ccs2androidhmi.util.gone
+import com.bacancy.ccs2androidhmi.util.invisible
+import com.bacancy.ccs2androidhmi.util.visible
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
 import com.bacancy.ccs2androidhmi.views.fragment.GunsMoreInformationFragment
 import com.bacancy.ccs2androidhmi.views.listener.DashboardActivityContract
@@ -80,8 +83,16 @@ class SeimensGunsHomeScreenFragment : BaseFragment() {
         observeLatestMiscInfo()
         observeGunsChargingInfo()
         if (IS_SINGLE_GUN) {
+            binding.frmLayoutSingleGun.visible()
+            binding.frmLayoutGun1.invisible()
+            binding.frmLayoutGun2.invisible()
+            binding.gunsDivider.invisible()
             binding.tvModelName.text = getString(R.string.lbl_controller_model_name)
         } else {
+            binding.frmLayoutSingleGun.gone()
+            binding.frmLayoutGun1.visible()
+            binding.frmLayoutGun2.visible()
+            binding.gunsDivider.visible()
             binding.tvModelName.text = getString(R.string.lbl_controller_model_name_dual_gun)
         }
         return binding.root
@@ -278,6 +289,9 @@ class SeimensGunsHomeScreenFragment : BaseFragment() {
     }
 
     override fun handleClicks() {
+        binding.frmLayoutSingleGun.setOnClickListener {
+            openGunsMoreInfoFragment(1)
+        }
         binding.frmLayoutGun1.setOnClickListener {
             openGunsMoreInfoFragment(1)
         }
