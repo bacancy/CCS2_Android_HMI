@@ -17,7 +17,6 @@ object CommonUtils {
     const val GUN_2_DC_METER_FRAG = "GUN_2_DC_METER_FRAG"
     const val GUN_1_LAST_CHARGING_SUMMARY_FRAG = "GUN_1_LAST_CHARGING_SUMMARY_FRAG"
     const val GUN_2_LAST_CHARGING_SUMMARY_FRAG = "GUN_2_LAST_CHARGING_SUMMARY_FRAG"
-    const val INSIDE_LOCAL_START_STOP_SCREEN = "INSIDE_LOCAL_START_STOP_SCREEN"
     const val IS_GUN_1_CLICKED = "IS_GUN_1_CLICKED"
     const val IS_GUN_2_CLICKED = "IS_GUN_2_CLICKED"
     const val GUN_1_LOCAL_START = "GUN_1_LOCAL_START"
@@ -35,6 +34,10 @@ object CommonUtils {
     const val UNIT_PRICE = "UNIT_PRICE"
     const val IS_CHARGER_ACTIVE="IS_CHARGER_ACTIVE"
     const val CHARGER_ACTIVE_DEACTIVE_MESSAGE_RECD = "CHARGER_MSG_RECD"
+    const val GUN_1_CHARGING_START_TIME="GUN_1_CHARGING_START_TIME"
+    const val GUN_1_CHARGING_END_TIME="GUN_1_CHARGING_END_TIME"
+    const val GUN_2_CHARGING_START_TIME="GUN_2_CHARGING_START_TIME"
+    const val GUN_2_CHARGING_END_TIME="GUN_2_CHARGING_END_TIME"
 
     private fun swapAdjacentElements(array: MutableList<Int>): MutableList<Int> {
         for (i in 0 until array.size - 1 step 2) {

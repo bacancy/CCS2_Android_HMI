@@ -12,6 +12,10 @@ import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentGunsHomeScreenBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
+import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_CHARGING_END_TIME
+import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_CHARGING_START_TIME
+import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_CHARGING_END_TIME
+import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_CHARGING_START_TIME
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showChargingSummaryDialog
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_DENIED
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.AUTHENTICATION_TIMEOUT
@@ -393,7 +397,10 @@ class GunsHomeScreenFragment : BaseFragment() {
                                         true,
                                         it,
                                         isDarkTheme
-                                    ) {}
+                                    ) {
+                                        prefHelper.setStringValue(GUN_1_CHARGING_START_TIME,"")
+                                        prefHelper.setStringValue(GUN_1_CHARGING_END_TIME,"")
+                                    }
                                 }
                             } else {
                                 if (shouldShowGun2SummaryDialog) {
@@ -402,7 +409,10 @@ class GunsHomeScreenFragment : BaseFragment() {
                                         false,
                                         it,
                                         isDarkTheme
-                                    ) {}
+                                    ) {
+                                        prefHelper.setStringValue(GUN_2_CHARGING_START_TIME,"")
+                                        prefHelper.setStringValue(GUN_2_CHARGING_END_TIME,"")
+                                    }
                                 }
                             }
                         }
