@@ -14,6 +14,7 @@ import com.bacancy.ccs2androidhmi.db.entity.TbGunsDcMeterInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsLastChargingSummary
 import com.bacancy.ccs2androidhmi.db.entity.TbMiscInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbNotifications
+import com.bacancy.ccs2androidhmi.db.entity.TbRectifierFaults
 import com.bacancy.ccs2androidhmi.db.model.ACMeterUserDefinedFields
 import com.bacancy.ccs2androidhmi.db.model.DCMeterUserDefinedFields
 import com.bacancy.ccs2androidhmi.models.ErrorCodes
@@ -35,6 +36,7 @@ import com.bacancy.ccs2androidhmi.util.ModBusUtils
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.hexStringToDecimal
 import com.bacancy.ccs2androidhmi.util.PrefHelper
+import com.bacancy.ccs2androidhmi.util.RectifierFaultsUtils
 import com.bacancy.ccs2androidhmi.util.StateAndModesUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -50,6 +52,7 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
     val latestAcMeterInfo: LiveData<TbAcMeterInfo> = mainRepository.getLatestAcMeterInfo()
 
     val latestMiscInfo: LiveData<TbMiscInfo> = mainRepository.getLatestMiscInfo()
+    val allRectifierFaults: LiveData<TbRectifierFaults> = mainRepository.getRectifierFaults()
 
     val allErrorCodes: LiveData<List<TbErrorCodes>> = mainRepository.getAllErrorCodes()
     val allNotifications: LiveData<List<TbNotifications>> = mainRepository.getAllNotifications()
@@ -542,4 +545,30 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
     }
 
     val getConfigurationParameters: LiveData<List<TbConfigurationParameters>> = mainRepository.getAllConfigurationParameters()
+
+    fun insertRectifierFaultsInDB(it: ByteArray) {
+        insertRectifierFaults(
+            TbRectifierFaults(
+                1,
+                rectifier5Fault = RectifierFaultsUtils.getRectifier5Fault(it),
+                rectifier6Fault = RectifierFaultsUtils.getRectifier6Fault(it),
+                rectifier7Fault = RectifierFaultsUtils.getRectifier7Fault(it),
+                rectifier8Fault = RectifierFaultsUtils.getRectifier8Fault(it),
+                rectifier9Fault = RectifierFaultsUtils.getRectifier9Fault(it),
+                rectifier10Fault = RectifierFaultsUtils.getRectifier10Fault(it),
+                rectifier11Fault = RectifierFaultsUtils.getRectifier11Fault(it),
+                rectifier12Fault = RectifierFaultsUtils.getRectifier12Fault(it),
+                rectifier13Fault = RectifierFaultsUtils.getRectifier13Fault(it),
+                rectifier14Fault = RectifierFaultsUtils.getRectifier14Fault(it),
+                rectifier15Fault = RectifierFaultsUtils.getRectifier15Fault(it),
+                rectifier16Fault = RectifierFaultsUtils.getRectifier16Fault(it)
+            )
+        )
+    }
+
+    private fun insertRectifierFaults(tbRectifierFaults: TbRectifierFaults) {
+        viewModelScope.launch {
+            mainRepository.insertRectifierFaults(tbRectifierFaults)
+        }
+    }
 }

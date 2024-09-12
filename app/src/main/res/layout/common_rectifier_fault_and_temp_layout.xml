@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/_5sdp"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <TextView
+        android:id="@+id/tvRectifierLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/_15sdp"
+        android:ellipsize="end"
+        android:lines="1"
+        tools:text="@string/lbl_rectifier_1"
+        android:textSize="@dimen/_10ssp" />
+
+    <TextView
+        android:id="@+id/tvRectifierFault"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?attr/dialogBackground"
+        android:gravity="center"
+        android:lines="1"
+        android:paddingHorizontal="@dimen/_30sdp"
+        android:paddingVertical="@dimen/_5sdp"
+        android:textSize="@dimen/_7ssp" />
+
+    <TextView
+        android:id="@+id/tvRectifierTemperature"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?attr/dialogBackground"
+        android:gravity="center"
+        android:lines="1"
+        android:layout_marginStart="@dimen/_5sdp"
+        android:paddingHorizontal="@dimen/_30sdp"
+        android:paddingVertical="@dimen/_5sdp"
+        android:textSize="@dimen/_7ssp" />
+
+</LinearLayout>

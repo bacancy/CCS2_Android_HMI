@@ -16,10 +16,12 @@ import com.bacancy.ccs2androidhmi.db.entity.TbGunsDcMeterInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsLastChargingSummary
 import com.bacancy.ccs2androidhmi.db.entity.TbMiscInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbNotifications
+import com.bacancy.ccs2androidhmi.db.entity.TbRectifierFaults
+import com.bacancy.ccs2androidhmi.db.entity.TbRectifierTemperature
 
 @Database(
     entities = [TbChargingHistory::class, TbAcMeterInfo::class, TbMiscInfo::class, TbGunsDcMeterInfo::class, TbGunsChargingInfo::class, TbGunsLastChargingSummary::class,
-               TbErrorCodes::class, TbNotifications::class, TbConfigurationParameters::class],
+               TbErrorCodes::class, TbNotifications::class, TbConfigurationParameters::class, TbRectifierFaults::class, TbRectifierTemperature::class],
     version = 7
 )
 @TypeConverters(HMITypeConverters::class)

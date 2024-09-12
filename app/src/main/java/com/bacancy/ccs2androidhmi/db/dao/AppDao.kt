@@ -14,6 +14,7 @@ import com.bacancy.ccs2androidhmi.db.entity.TbGunsDcMeterInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsLastChargingSummary
 import com.bacancy.ccs2androidhmi.db.entity.TbMiscInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbNotifications
+import com.bacancy.ccs2androidhmi.db.entity.TbRectifierFaults
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -81,5 +82,11 @@ interface AppDao {
 
     @Query("SELECT * FROM tbConfigurationParameters")
     fun getAllConfigurationParameters(): LiveData<List<TbConfigurationParameters>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertRectifierFaults(tbRectifierFaults: TbRectifierFaults): Long
+
+    @Query("SELECT * FROM tbRectifierFaults WHERE id = 1")
+    fun getRectifierFaults(): LiveData<TbRectifierFaults>
 
 }

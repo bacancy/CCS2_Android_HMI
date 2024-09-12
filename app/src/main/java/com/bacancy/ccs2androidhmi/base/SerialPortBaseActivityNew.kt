@@ -569,6 +569,82 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
 
     }
 
+    private suspend fun readRectifierFaults5to16() {
+        Log.i(
+            TAG,
+            "readRectifierFaults5to16: Request Sent - ${
+                ModbusRequestFrames.getRectifierFault5to16RequestFrame().toHex()
+            }"
+        )
+        ReadWriteUtil.writeRequestAndReadResponse(
+            mOutputStream,
+            mInputStream,
+            ResponseSizes.RECTIFIER_FAULTS_5_TO_16_RESPONSE_SIZE,
+            ModbusRequestFrames.getRectifierFault5to16RequestFrame(),
+            onDataReceived = {
+                if (it.toHex()
+                        .startsWith(ModBusUtils.HOLDING_REGISTERS_CORRECT_RESPONSE_BITS)
+                ) {
+                    resetReadStopCount()
+                    Log.d(TAG, "readRectifierFaults5to16: Response = ${it.toHex()}")
+                    lifecycleScope.launch {
+                        appViewModel.insertRectifierFaultsInDB(it)
+                    }
+                } else {
+                    lifecycleScope.launch {
+                        readRectifierTemperature1to16()
+                    }
+                    Log.e(TAG, "readRectifierFaults5to16: Error Response - ${it.toHex()}")
+                }
+                lifecycleScope.launch {
+                    readRectifierTemperature1to16()
+                }
+            }, onReadStopped = {
+                Log.e(TAG, "readRectifierFaults5to16: OnReadStopped Called")
+                showReadStoppedUI()
+                lifecycleScope.launch {
+                    readRectifierTemperature1to16()
+                }
+            })
+    }
+
+    private suspend fun readRectifierTemperature1to16() {
+        Log.i(
+            TAG,
+            "readRectifierTemperature1to16: Request Sent - ${
+                ModbusRequestFrames.getRectifierTemperatureRequestFrame().toHex()
+            }"
+        )
+        ReadWriteUtil.writeRequestAndReadResponse(
+            mOutputStream,
+            mInputStream,
+            ResponseSizes.RECTIFIER_TEMP_1_TO_16_RESPONSE_SIZE,
+            ModbusRequestFrames.getRectifierTemperatureRequestFrame(),
+            onDataReceived = {
+                if (it.toHex()
+                        .startsWith(ModBusUtils.HOLDING_REGISTERS_CORRECT_RESPONSE_BITS)
+                ) {
+                    resetReadStopCount()
+                    Log.d(TAG, "readRectifierTemperature1to16: Response = ${it.toHex()}")
+                    //Insert in DB - TODO
+                } else {
+                    lifecycleScope.launch {
+                        //Next Method to read - TODO
+                    }
+                    Log.e(TAG, "readRectifierTemperature1to16: Error Response - ${it.toHex()}")
+                }
+                lifecycleScope.launch {
+                    //Next Method to read - TODO
+                }
+            }, onReadStopped = {
+                Log.e(TAG, "readRectifierTemperature1to16: OnReadStopped Called")
+                showReadStoppedUI()
+                lifecycleScope.launch {
+                    //Next Method to read - TODO
+                }
+            })
+    }
+
     private fun resetReadStopCount() {
         readStopCount = 0
         if (this::dialog.isInitialized && dialog.isShowing) {

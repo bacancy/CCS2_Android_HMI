@@ -99,4 +99,18 @@ object ModbusRequestFrames {
     ): ByteArray {
         return ModBusUtils.createReadHoldingRegistersRequest(startAddress, quantity)
     }
+
+    fun getRectifierFault5to16RequestFrame(
+        startAddress: Int = 176,
+        quantity: Int = 24
+    ): ByteArray {
+        return ModBusUtils.createReadHoldingRegistersRequest(startAddress, quantity)
+    }
+
+    fun getRectifierTemperatureRequestFrame(
+        startAddress: Int = 276,
+        quantity: Int = 16
+    ): ByteArray {
+        return ModBusUtils.createReadHoldingRegistersRequest(startAddress, quantity)
+    }
 }

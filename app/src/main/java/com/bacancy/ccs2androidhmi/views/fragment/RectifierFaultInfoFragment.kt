@@ -11,6 +11,7 @@ import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentGunsHomeScreenBinding
 import com.bacancy.ccs2androidhmi.databinding.FragmentRectifierFaultsBinding
+import com.bacancy.ccs2androidhmi.databinding.FragmentRectifierFaultsNewBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbMiscInfo
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
 import com.google.gson.Gson
@@ -19,7 +20,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class RectifierFaultInfoFragment : BaseFragment() {
 
-    private lateinit var binding: FragmentRectifierFaultsBinding
+    private lateinit var binding: FragmentRectifierFaultsNewBinding
     private val appViewModel: AppViewModel by viewModels()
 
 
@@ -27,7 +28,7 @@ class RectifierFaultInfoFragment : BaseFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentRectifierFaultsBinding.inflate(layoutInflater)
+        binding = FragmentRectifierFaultsNewBinding.inflate(layoutInflater)
         observeRectifierFaults()
         return binding.root
     }
@@ -38,14 +39,17 @@ class RectifierFaultInfoFragment : BaseFragment() {
                 updateRectifierFaultUI(latestMiscInfo)
             }
         }
+        appViewModel.allRectifierFaults.observe(viewLifecycleOwner) { allRectifierFaults ->
+            Log.d("RectifierFaultInfoFragment", "observeRectifierFaults: ${Gson().toJson(allRectifierFaults)}")
+        }
     }
 
     private fun updateRectifierFaultUI(latestMiscInfo: TbMiscInfo) {
         binding.apply {
-            tvRectifier1Value.text = latestMiscInfo.rectifier1Fault
-            tvRectifier2Value.text = latestMiscInfo.rectifier2Fault
-            tvRectifier3Value.text = latestMiscInfo.rectifier3Fault
-            tvRectifier4Value.text = latestMiscInfo.rectifier4Fault
+            binding.incRectifier1.tvRectifierFault.text = latestMiscInfo.rectifier1Fault
+            binding.incRectifier2.tvRectifierFault.text = latestMiscInfo.rectifier2Fault
+            binding.incRectifier3.tvRectifierFault.text = latestMiscInfo.rectifier3Fault
+            binding.incRectifier4.tvRectifierFault.text = latestMiscInfo.rectifier4Fault
         }
     }
 
