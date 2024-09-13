@@ -19,7 +19,8 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center_horizontal"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/_5sdp">
 
             <include
                 android:id="@+id/incRectifier1"
@@ -37,13 +38,21 @@
                 android:id="@+id/incRectifier4"
                 layout="@layout/common_rectifier_fault_and_temp_layout" />
 
-            <include layout="@layout/common_rectifier_fault_and_temp_layout" />
+            <include
+                android:id="@+id/incRectifier5"
+                layout="@layout/common_rectifier_fault_and_temp_layout" />
 
-            <include layout="@layout/common_rectifier_fault_and_temp_layout" />
+            <include
+                android:id="@+id/incRectifier6"
+                layout="@layout/common_rectifier_fault_and_temp_layout" />
 
-            <include layout="@layout/common_rectifier_fault_and_temp_layout" />
+            <include
+                android:id="@+id/incRectifier7"
+                layout="@layout/common_rectifier_fault_and_temp_layout" />
 
-            <include layout="@layout/common_rectifier_fault_and_temp_layout" />
+            <include
+                android:id="@+id/incRectifier8"
+                layout="@layout/common_rectifier_fault_and_temp_layout" />
 
 
         </LinearLayout>
@@ -58,23 +67,40 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center_horizontal"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/_5sdp">
 
-            <include layout="@layout/common_rectifier_fault_and_temp_layout" />
+            <include
+                android:id="@+id/incRectifier9"
+                layout="@layout/common_rectifier_fault_and_temp_layout" />
 
-            <include layout="@layout/common_rectifier_fault_and_temp_layout" />
+            <include
+                android:id="@+id/incRectifier10"
+                layout="@layout/common_rectifier_fault_and_temp_layout" />
 
-            <include layout="@layout/common_rectifier_fault_and_temp_layout" />
+            <include
+                android:id="@+id/incRectifier11"
+                layout="@layout/common_rectifier_fault_and_temp_layout" />
 
-            <include layout="@layout/common_rectifier_fault_and_temp_layout" />
+            <include
+                android:id="@+id/incRectifier12"
+                layout="@layout/common_rectifier_fault_and_temp_layout" />
 
-            <include layout="@layout/common_rectifier_fault_and_temp_layout" />
+            <include
+                android:id="@+id/incRectifier13"
+                layout="@layout/common_rectifier_fault_and_temp_layout" />
 
-            <include layout="@layout/common_rectifier_fault_and_temp_layout" />
+            <include
+                android:id="@+id/incRectifier14"
+                layout="@layout/common_rectifier_fault_and_temp_layout" />
 
-            <include layout="@layout/common_rectifier_fault_and_temp_layout" />
+            <include
+                android:id="@+id/incRectifier15"
+                layout="@layout/common_rectifier_fault_and_temp_layout" />
 
-            <include layout="@layout/common_rectifier_fault_and_temp_layout" />
+            <include
+                android:id="@+id/incRectifier16"
+                layout="@layout/common_rectifier_fault_and_temp_layout" />
 
         </LinearLayout>
     </LinearLayout>

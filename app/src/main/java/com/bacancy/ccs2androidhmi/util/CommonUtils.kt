@@ -12,6 +12,7 @@ object CommonUtils {
     const val CLOCK_DATE_AND_TIME_FORMAT = "dd/MM/yyyy EEE HH:mm:ss"
 
     //Screen Constants
+    const val RECTIFIER_FAULTS_FRAGMENT = "RECTIFIER_FAULTS_FRAGMENT"
     const val AC_METER_FRAG = "AC_METER_FRAGMENT"
     const val GUN_1_DC_METER_FRAG = "GUN_1_DC_METER_FRAG"
     const val GUN_2_DC_METER_FRAG = "GUN_2_DC_METER_FRAG"
@@ -71,6 +72,12 @@ object CommonUtils {
     const val CODE_DC_METER = 4
     const val CODE_FAULT_DETECTION = 5
     const val CODE_TOTAL_REACTIVE_ENERGY = 6
+
+    const val GUN_1_TEMP_COUNTER = "GUN_1_TEMP_COUNTER"
+    const val GUN_2_TEMP_COUNTER = "GUN_2_TEMP_COUNTER"
+    const val SYSTEM_TEMP_COUNTER = "SYSTEM_TEMP_COUNTER"
+    const val MAINS_LOW_COUNTER = "MAINS_LOW_COUNTER"
+    const val MAINS_HIGH_COUNTER = "MAINS_HIGH_COUNTER"
 
     private fun swapAdjacentElements(array: MutableList<Int>): MutableList<Int> {
         for (i in 0 until array.size - 1 step 2) {

@@ -111,6 +111,12 @@ class AppSettingsFragment : BaseFragment() {
                     SET_09 -> {
                         prefHelper.setBoolean(CDM_CONFIG_OPTION_ENTERED, true)
                     }
+
+                    SET_10 -> {
+                        (requireActivity() as HMIDashboardActivity).addNewFragment(
+                            FaultsAlarmCounterFragment()
+                        )
+                    }
                 }
             }
         }
@@ -139,7 +145,8 @@ class AppSettingsFragment : BaseFragment() {
             SET_06 to getString(R.string.lbl_test_mode),
             SET_07 to getString(R.string.lbl_notifications),
             SET_08 to getString(R.string.charger_commissioning),
-            SET_09 to getString(R.string.cdm_configuration)
+            SET_09 to getString(R.string.cdm_configuration),
+            SET_10 to getString(R.string.lbl_faults_alarm_counter)
         )
 
         if (!AppConfig.SHOW_LOCAL_START_STOP) {
@@ -163,6 +170,7 @@ class AppSettingsFragment : BaseFragment() {
         const val SET_07 = "SET_07"
         const val SET_08 = "SET_08"
         const val SET_09 = "SET_09"
+        const val SET_10 = "SET_10"
         const val ENGLISH = "English"
     }
 }

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="@dimen/_10sdp">
+
+    <include
+        android:id="@+id/incHeader"
+        layout="@layout/common_header" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <include
+            android:id="@+id/incGun1TempAlarm"
+            layout="@layout/common_faults_counter_layout" />
+
+        <include
+            android:id="@+id/incGun2TempAlarm"
+            layout="@layout/common_faults_counter_layout" />
+
+        <include
+            android:id="@+id/incSystemTempHighAlarm"
+            layout="@layout/common_faults_counter_layout" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <include
+            android:id="@+id/incMainsLowAlarm"
+            layout="@layout/common_faults_counter_layout" />
+
+        <include
+            android:id="@+id/incMainsHighAlarm"
+            layout="@layout/common_faults_counter_layout" />
+    </LinearLayout>
+</LinearLayout>

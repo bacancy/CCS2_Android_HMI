@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="@dimen/_5sdp"
     xmlns:tools="http://schemas.android.com/tools">
@@ -17,7 +17,8 @@
 
     <TextView
         android:id="@+id/tvRectifierFault"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
+        android:layout_weight="1"
         android:layout_height="wrap_content"
         android:background="?attr/dialogBackground"
         android:gravity="center"
@@ -28,7 +29,8 @@
 
     <TextView
         android:id="@+id/tvRectifierTemperature"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
+        android:layout_weight="1"
         android:layout_height="wrap_content"
         android:background="?attr/dialogBackground"
         android:gravity="center"

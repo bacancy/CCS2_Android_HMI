@@ -329,5 +329,7 @@
     <string name="msg_please_enter_value_between_1_50">कृपया 1–50 के बीच मान दर्ज करें</string>
     <string name="msg_please_enter_value_between_200_1000">कृपया 200–1000 के बीच मान दर्ज करें</string>
     <string name="msg_please_enter_value_between_1_100">कृपया 1–100 के बीच मान दर्ज करें</string>
+    <string name="lbl_rectifier_temperature_with_celcius">%1$d °C</string>
+    <string name="lbl_faults_alarm_counter">Faults Alarm Counter</string>
 
 </resources>

@@ -327,5 +327,7 @@
     <string name="msg_please_enter_value_between_1_50">Veuillez entrer une valeur entre 1 et 50</string>
     <string name="msg_please_enter_value_between_200_1000">Veuillez entrer une valeur entre 200 et 1000</string>
     <string name="msg_please_enter_value_between_1_100">Veuillez entrer une valeur entre 1 et 100</string>
+    <string name="lbl_rectifier_temperature_with_celcius">%1$d °C</string>
+    <string name="lbl_faults_alarm_counter">Faults Alarm Counter</string>
 
 </resources>

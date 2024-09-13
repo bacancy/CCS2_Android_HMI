@@ -12,6 +12,7 @@ import com.bacancy.ccs2androidhmi.db.entity.TbGunsLastChargingSummary
 import com.bacancy.ccs2androidhmi.db.entity.TbMiscInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbNotifications
 import com.bacancy.ccs2androidhmi.db.entity.TbRectifierFaults
+import com.bacancy.ccs2androidhmi.db.entity.TbRectifierTemperature
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -106,6 +107,14 @@ class MainRepository @Inject constructor(private val appDatabase: AppDatabase) {
 
     fun getRectifierFaults(): LiveData<TbRectifierFaults> {
         return appDatabase.appDao().getRectifierFaults()
+    }
+
+    suspend fun insertRectifierTemperature(tbRectifierTemperature: TbRectifierTemperature){
+        appDatabase.appDao().insertRectifierTemperature(tbRectifierTemperature)
+    }
+
+    fun getRectifierTemperature(): LiveData<TbRectifierTemperature> {
+        return appDatabase.appDao().getRectifierTemperature()
     }
 
 }

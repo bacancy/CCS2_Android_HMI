@@ -179,7 +179,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
             }
         }
 
-        binding.incToolbar.ivLogo.setImageResource(R.drawable.img_servotech_logo)//replace with sample_logo
+        binding.incToolbar.ivLogo.setImageResource(R.drawable.ic_statiq_logo)//replace with sample_logo
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -194,7 +194,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
     override fun onResume() {
         super.onResume()
-        loadClientLogoFromDownloads()//remove this when kiosk mode app is built
+        //loadClientLogoFromDownloads()//remove this when kiosk mode app is built
         observeDeviceInternetStates()
         startClockTimer()
         //manageKioskMode()
@@ -683,12 +683,12 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         }
 
         binding.incToolbar.ivSettings.setOnClickListener {
-            //addNewFragment(AppSettingsFragment())
-            showPasswordPromptDialog(getString(R.string.title_authorize_for_settings),isCancelable = true, {
+            addNewFragment(AppSettingsFragment())
+            /*showPasswordPromptDialog(getString(R.string.title_authorize_for_settings),isCancelable = true, {
                 addNewFragment(AppSettingsFragment())
             }, {
                 showCustomToast(getString(R.string.msg_invalid_password), false)
-            }, password = APP_SETTINGS_PIN)
+            }, password = APP_SETTINGS_PIN)*/
         }
 
         binding.incToolbar.imgBack.setOnClickListener {

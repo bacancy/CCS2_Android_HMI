@@ -52,6 +52,7 @@ import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_APP_RESTARTED
 import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_CHARGER_ACTIVE
 import com.bacancy.ccs2androidhmi.util.CommonUtils.IS_DUAL_SOCKET_MODE_SELECTED
 import com.bacancy.ccs2androidhmi.util.CommonUtils.RECTIFIERS_DATA
+import com.bacancy.ccs2androidhmi.util.CommonUtils.RECTIFIER_FAULTS_FRAGMENT
 import com.bacancy.ccs2androidhmi.util.CommonUtils.STORE_DATA_INTO_FLASH
 import com.bacancy.ccs2androidhmi.util.CommonUtils.SYSTEM_AVAILABLE
 import com.bacancy.ccs2androidhmi.util.CommonUtils.SYSTEM_UNAVAILABLE
@@ -589,20 +590,21 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                     Log.d(TAG, "readRectifierFaults5to16: Response = ${it.toHex()}")
                     lifecycleScope.launch {
                         appViewModel.insertRectifierFaultsInDB(it)
+                        delay(mCommonDelay)
+                        readRectifierTemperature1to16()
                     }
                 } else {
                     lifecycleScope.launch {
+                        delay(mCommonDelay)
                         readRectifierTemperature1to16()
                     }
                     Log.e(TAG, "readRectifierFaults5to16: Error Response - ${it.toHex()}")
-                }
-                lifecycleScope.launch {
-                    readRectifierTemperature1to16()
                 }
             }, onReadStopped = {
                 Log.e(TAG, "readRectifierFaults5to16: OnReadStopped Called")
                 showReadStoppedUI()
                 lifecycleScope.launch {
+                    delay(mCommonDelay)
                     readRectifierTemperature1to16()
                 }
             })
@@ -626,21 +628,24 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 ) {
                     resetReadStopCount()
                     Log.d(TAG, "readRectifierTemperature1to16: Response = ${it.toHex()}")
-                    //Insert in DB - TODO
+                    lifecycleScope.launch {
+                        appViewModel.insertRectifierTemperatureInDB(it)
+                        delay(mCommonDelay)
+                        readGun1Info()
+                    }
                 } else {
                     lifecycleScope.launch {
-                        //Next Method to read - TODO
+                        delay(mCommonDelay)
+                        readGun1Info()
                     }
                     Log.e(TAG, "readRectifierTemperature1to16: Error Response - ${it.toHex()}")
-                }
-                lifecycleScope.launch {
-                    //Next Method to read - TODO
                 }
             }, onReadStopped = {
                 Log.e(TAG, "readRectifierTemperature1to16: OnReadStopped Called")
                 showReadStoppedUI()
                 lifecycleScope.launch {
-                    //Next Method to read - TODO
+                    delay(mCommonDelay)
+                    readGun1Info()
                 }
             })
     }
@@ -786,6 +791,21 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
                 )
             ) {
                 readAcMeterInfo()
+            } else {
+                openRectifierFaultInfo()
+            }
+        }
+    }
+
+    private fun openRectifierFaultInfo() {
+        lifecycleScope.launch {
+            delay(mCommonDelay)
+            if (prefHelper.getScreenVisible(
+                    RECTIFIER_FAULTS_FRAGMENT,
+                    false
+                )
+            ) {
+                readRectifierFaults5to16()
             } else {
                 readGun1Info()
             }
@@ -1524,7 +1544,15 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
             TAG,
             "Gun-${if (isGun1) 1 else 2} Value - $selectedSessionModeValue writeForSelectedSessionModeValue Request Started"
         )
-        Log.d(TAG,"Session Mode Value Address = ${getSelectedSessionModeValueAddress(isGun1, selectedSessionMode)}")
+        Log.d(
+            TAG,
+            "Session Mode Value Address = ${
+                getSelectedSessionModeValueAddress(
+                    isGun1,
+                    selectedSessionMode
+                )
+            }"
+        )
         lifecycleScope.launch(Dispatchers.IO) {
             ReadWriteUtil.writeToSingleHoldingRegisterNew(
                 mOutputStream,
@@ -1596,7 +1624,7 @@ abstract class SerialPortBaseActivityNew : AppCompatActivity() {
         }
     }
 
-    private fun chooseOtherMethods(){
+    private fun chooseOtherMethods() {
         if (prefHelper.getSelectedGunNumber(SELECTED_GUN, 0) != 0) {
             val selectedGunNumber =
                 prefHelper.getSelectedGunNumber(SELECTED_GUN, 0)

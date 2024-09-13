@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="lbl_rectifier_temperature_with_celcius">%1$d °C</string>
+    <string name="lbl_faults_alarm_counter">Faults Alarm Counter</string>
+</resources>

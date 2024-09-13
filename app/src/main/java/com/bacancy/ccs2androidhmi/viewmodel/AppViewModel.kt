@@ -3,6 +3,7 @@ package com.bacancy.ccs2androidhmi.viewmodel
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bacancy.ccs2androidhmi.db.entity.TbAcMeterInfo
@@ -15,14 +16,21 @@ import com.bacancy.ccs2androidhmi.db.entity.TbGunsLastChargingSummary
 import com.bacancy.ccs2androidhmi.db.entity.TbMiscInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbNotifications
 import com.bacancy.ccs2androidhmi.db.entity.TbRectifierFaults
+import com.bacancy.ccs2androidhmi.db.entity.TbRectifierTemperature
 import com.bacancy.ccs2androidhmi.db.model.ACMeterUserDefinedFields
 import com.bacancy.ccs2androidhmi.db.model.DCMeterUserDefinedFields
 import com.bacancy.ccs2androidhmi.models.ErrorCodes
+import com.bacancy.ccs2androidhmi.models.FaultCounters
 import com.bacancy.ccs2androidhmi.repository.MainRepository
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_CHARGING_END_TIME
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_CHARGING_START_TIME
+import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_TEMP_COUNTER
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_CHARGING_END_TIME
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_CHARGING_START_TIME
+import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_TEMP_COUNTER
+import com.bacancy.ccs2androidhmi.util.CommonUtils.MAINS_HIGH_COUNTER
+import com.bacancy.ccs2androidhmi.util.CommonUtils.MAINS_LOW_COUNTER
+import com.bacancy.ccs2androidhmi.util.CommonUtils.SYSTEM_TEMP_COUNTER
 import com.bacancy.ccs2androidhmi.util.ConfigurationParametersUtils
 import com.bacancy.ccs2androidhmi.util.DateTimeUtils
 import com.bacancy.ccs2androidhmi.util.DateTimeUtils.DATE_TIME_FORMAT
@@ -37,6 +45,7 @@ import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.hexStringToDecimal
 import com.bacancy.ccs2androidhmi.util.PrefHelper
 import com.bacancy.ccs2androidhmi.util.RectifierFaultsUtils
+import com.bacancy.ccs2androidhmi.util.RectifierTemperatureUtils
 import com.bacancy.ccs2androidhmi.util.StateAndModesUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -44,15 +53,66 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class AppViewModel @Inject constructor(private val mainRepository: MainRepository, private val prefHelper: PrefHelper) : ViewModel() {
+class AppViewModel @Inject constructor(
+    private val mainRepository: MainRepository,
+    private val prefHelper: PrefHelper
+) : ViewModel() {
+
+    private val _faultCounters = MutableLiveData(FaultCounters())
+    val faultCounters: LiveData<FaultCounters> = _faultCounters
+
+    private val _basicNumber = MutableLiveData(0)
+    val basicNumber: LiveData<Int> = _basicNumber
+
+    private fun updateBasicNumber(){
+        Log.d("WINTAG","updateBasicNumber Called")
+       viewModelScope.launch(Dispatchers.Main) {
+           _basicNumber.value = _basicNumber.value?.toInt()?.plus(1)
+           Log.d("WINTAG","Updated - ${_basicNumber.value}")
+       }
+    }
+
+    private fun incrementCounter(counterType: String) {
+        viewModelScope.launch {
+            val currentCounters = _faultCounters.value ?: FaultCounters()
+            val updatedCounters = when (counterType) {
+                GUN_1_TEMP_COUNTER -> currentCounters.copy(gun1TempCounter = currentCounters.gun1TempCounter + 1)
+                GUN_2_TEMP_COUNTER -> currentCounters.copy(gun2TempCounter = currentCounters.gun2TempCounter + 1)
+                SYSTEM_TEMP_COUNTER -> currentCounters.copy(systemTempCounter = currentCounters.systemTempCounter + 1)
+                MAINS_LOW_COUNTER -> currentCounters.copy(mainsLowCounter = currentCounters.mainsLowCounter + 1)
+                MAINS_HIGH_COUNTER -> currentCounters.copy(mainsHighCounter = currentCounters.mainsHighCounter + 1)
+                else -> currentCounters
+            }
+            prefHelper.setIntValue(counterType, updatedCounters.getCounterValue(counterType))
+            Log.d("FRITAG", "incrementCounter: $updatedCounters")
+            Log.d("FRITAG", "Old value: ${_faultCounters.value}, New value: $updatedCounters")
+            withContext(Dispatchers.Main) {
+                _faultCounters.value = updatedCounters
+            }
+        }
+    }
+
+    private fun FaultCounters.getCounterValue(counterType: String): Int {
+        return when (counterType) {
+            GUN_1_TEMP_COUNTER -> gun1TempCounter
+            GUN_2_TEMP_COUNTER -> gun2TempCounter
+            SYSTEM_TEMP_COUNTER -> systemTempCounter
+            MAINS_LOW_COUNTER -> mainsLowCounter
+            MAINS_HIGH_COUNTER -> mainsHighCounter
+            else -> 0
+        }
+    }
 
     val latestAcMeterInfo: LiveData<TbAcMeterInfo> = mainRepository.getLatestAcMeterInfo()
 
     val latestMiscInfo: LiveData<TbMiscInfo> = mainRepository.getLatestMiscInfo()
     val allRectifierFaults: LiveData<TbRectifierFaults> = mainRepository.getRectifierFaults()
+    val allRectifierTemperature: LiveData<TbRectifierTemperature> =
+        mainRepository.getRectifierTemperature()
 
     val allErrorCodes: LiveData<List<TbErrorCodes>> = mainRepository.getAllErrorCodes()
     val allNotifications: LiveData<List<TbNotifications>> = mainRepository.getAllNotifications()
@@ -60,7 +120,7 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
     private val _deviceMacAddress = MutableStateFlow("")
     val deviceMacAddress = _deviceMacAddress.asStateFlow()
 
-    fun updateDeviceMacAddress(macAddress: String){
+    fun updateDeviceMacAddress(macAddress: String) {
         _deviceMacAddress.value = macAddress
     }
 
@@ -79,7 +139,8 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
         }
     }
 
-    fun getChargingHistoryByGunNumber(gunNumber: Int) = mainRepository.getGunsChargingHistory(gunNumber)
+    fun getChargingHistoryByGunNumber(gunNumber: Int) =
+        mainRepository.getGunsChargingHistory(gunNumber)
 
     fun deleteChargingHistoryByGunId(gunNumber: Int) {
         viewModelScope.launch {
@@ -137,7 +198,7 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
     }
 
     fun insertMiscInfoInDB(it: ByteArray) {
-        Log.d("observeLatestMiscInfo", "insertMiscInfoInDB -> "+MiscInfoUtils.getRFIDTagState(it))
+        Log.d("observeLatestMiscInfo", "insertMiscInfoInDB -> " + MiscInfoUtils.getRFIDTagState(it))
         insertMiscInfo(
             TbMiscInfo(
                 1,
@@ -196,11 +257,17 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
                     } else {
                         //If we get error codes to not avoid then we will make the comparison and insert them in the DB
                         if (reversedString[index] == '1') {
+                            incrementCounter(GUN_1_TEMP_COUNTER)
+                            updateBasicNumber()
+                            Log.d("FRITAG", "processChargerErrorCodes: $gunsErrorCode")
+                            Log.d("WINTAG", "processChargerErrorCodes: $gunsErrorCode")
                             if (errorCodeList.isEmpty()) {
                                 insertErrorCodesWithValues(errorSource, gunsErrorCode.name, 1)
+                                updateFaultCounters(gunsErrorCode.value, errorSource)
                             } else {
                                 if (errorCodeList[errorCodeList.size - 1].sourceErrorValue == 0) {
                                     insertErrorCodesWithValues(errorSource, gunsErrorCode.name, 1)
+                                    updateFaultCounters(gunsErrorCode.value, errorSource)
                                 }
                             }
                         } else if (reversedString[index] == '0' && errorCodeList.isNotEmpty() && errorCodeList[errorCodeList.size - 1].sourceErrorValue == 1) {
@@ -208,6 +275,30 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
                         }
                     }
                 }
+            }
+        }
+    }
+
+    private fun updateFaultCounters(value: Int, errorSource: Int) {
+        when (value) {
+            1 -> {
+                if (errorSource == 1) {
+                    incrementCounter(GUN_1_TEMP_COUNTER)
+                } else if (errorSource == 2) {
+                    incrementCounter(GUN_2_TEMP_COUNTER)
+                }
+            }
+
+            3 -> {
+                incrementCounter(MAINS_LOW_COUNTER)
+            }
+
+            4 -> {
+                incrementCounter(MAINS_HIGH_COUNTER)
+            }
+
+            12 -> {
+                incrementCounter(SYSTEM_TEMP_COUNTER)
             }
         }
     }
@@ -239,7 +330,11 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
                 gunId = 1,
                 gunChargingState = "",
                 gunChargingStateToSave = GunsChargingInfoUtils.getGunChargingState(it).descriptionToSave,
-                gunChargingStateToShow = context.getString(GunsChargingInfoUtils.getGunChargingState(it).descriptionToShow),
+                gunChargingStateToShow = context.getString(
+                    GunsChargingInfoUtils.getGunChargingState(
+                        it
+                    ).descriptionToShow
+                ),
                 initialSoc = GunsChargingInfoUtils.getInitialSoc(it),
                 chargingSoc = GunsChargingInfoUtils.getChargingSoc(it),
                 demandVoltage = GunsChargingInfoUtils.getDemandVoltage(it),
@@ -266,10 +361,12 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
         val chargingSummary = TbChargingHistory(
             gunNumber = 1,
             evMacAddress = LastChargingSummaryUtils.getEVMacAddress(it),
-            chargingStartTime = prefHelper.getStringValue(GUN_1_CHARGING_START_TIME,""),
-            chargingEndTime = prefHelper.getStringValue(GUN_1_CHARGING_END_TIME,""),
-            totalChargingTime = calculateDifferenceInMinutes(prefHelper.getStringValue(GUN_1_CHARGING_START_TIME,""),
-                prefHelper.getStringValue(GUN_1_CHARGING_END_TIME,"")),
+            chargingStartTime = prefHelper.getStringValue(GUN_1_CHARGING_START_TIME, ""),
+            chargingEndTime = prefHelper.getStringValue(GUN_1_CHARGING_END_TIME, ""),
+            totalChargingTime = calculateDifferenceInMinutes(
+                prefHelper.getStringValue(GUN_1_CHARGING_START_TIME, ""),
+                prefHelper.getStringValue(GUN_1_CHARGING_END_TIME, "")
+            ),
             startSoc = LastChargingSummaryUtils.getStartSoc(it),
             endSoc = LastChargingSummaryUtils.getEndSoc(it),
             energyConsumption = LastChargingSummaryUtils.getEnergyConsumption(it),
@@ -285,10 +382,12 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
             TbGunsLastChargingSummary(
                 gunId = 1,
                 evMacAddress = LastChargingSummaryUtils.getEVMacAddress(it),
-                chargingDuration = calculateDifferenceInMinutes(prefHelper.getStringValue(GUN_1_CHARGING_START_TIME,""),
-                    prefHelper.getStringValue(GUN_1_CHARGING_END_TIME,"")),
-                chargingStartDateTime = prefHelper.getStringValue(GUN_1_CHARGING_START_TIME,""),
-                chargingEndDateTime = prefHelper.getStringValue(GUN_1_CHARGING_END_TIME,""),
+                chargingDuration = calculateDifferenceInMinutes(
+                    prefHelper.getStringValue(GUN_1_CHARGING_START_TIME, ""),
+                    prefHelper.getStringValue(GUN_1_CHARGING_END_TIME, "")
+                ),
+                chargingStartDateTime = prefHelper.getStringValue(GUN_1_CHARGING_START_TIME, ""),
+                chargingEndDateTime = prefHelper.getStringValue(GUN_1_CHARGING_END_TIME, ""),
                 startSoc = LastChargingSummaryUtils.getStartSoc(it),
                 endSoc = LastChargingSummaryUtils.getEndSoc(it),
                 energyConsumption = LastChargingSummaryUtils.getEnergyConsumption(
@@ -328,7 +427,11 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
                 gunId = 2,
                 gunChargingState = "",
                 gunChargingStateToSave = GunsChargingInfoUtils.getGunChargingState(it).descriptionToSave,
-                gunChargingStateToShow = context.getString(GunsChargingInfoUtils.getGunChargingState(it).descriptionToShow),
+                gunChargingStateToShow = context.getString(
+                    GunsChargingInfoUtils.getGunChargingState(
+                        it
+                    ).descriptionToShow
+                ),
                 initialSoc = GunsChargingInfoUtils.getInitialSoc(it),
                 chargingSoc = GunsChargingInfoUtils.getChargingSoc(it),
                 demandVoltage = GunsChargingInfoUtils.getDemandVoltage(it),
@@ -355,10 +458,12 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
         val chargingSummary = TbChargingHistory(
             gunNumber = 2,
             evMacAddress = LastChargingSummaryUtils.getEVMacAddress(it),
-            chargingStartTime = prefHelper.getStringValue(GUN_2_CHARGING_START_TIME,""),
-            chargingEndTime = prefHelper.getStringValue(GUN_2_CHARGING_END_TIME,""),
-            totalChargingTime = calculateDifferenceInMinutes(prefHelper.getStringValue(GUN_2_CHARGING_START_TIME,""),
-                prefHelper.getStringValue(GUN_2_CHARGING_END_TIME,"")),
+            chargingStartTime = prefHelper.getStringValue(GUN_2_CHARGING_START_TIME, ""),
+            chargingEndTime = prefHelper.getStringValue(GUN_2_CHARGING_END_TIME, ""),
+            totalChargingTime = calculateDifferenceInMinutes(
+                prefHelper.getStringValue(GUN_2_CHARGING_START_TIME, ""),
+                prefHelper.getStringValue(GUN_2_CHARGING_END_TIME, "")
+            ),
             startSoc = LastChargingSummaryUtils.getStartSoc(it),
             endSoc = LastChargingSummaryUtils.getEndSoc(it),
             energyConsumption = LastChargingSummaryUtils.getEnergyConsumption(it),
@@ -374,10 +479,12 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
             TbGunsLastChargingSummary(
                 gunId = 2,
                 evMacAddress = LastChargingSummaryUtils.getEVMacAddress(it),
-                chargingDuration = calculateDifferenceInMinutes(prefHelper.getStringValue(GUN_2_CHARGING_START_TIME,""),
-                    prefHelper.getStringValue(GUN_2_CHARGING_END_TIME,"")),
-                chargingStartDateTime = prefHelper.getStringValue(GUN_2_CHARGING_START_TIME,""),
-                chargingEndDateTime = prefHelper.getStringValue(GUN_2_CHARGING_END_TIME,""),
+                chargingDuration = calculateDifferenceInMinutes(
+                    prefHelper.getStringValue(GUN_2_CHARGING_START_TIME, ""),
+                    prefHelper.getStringValue(GUN_2_CHARGING_END_TIME, "")
+                ),
+                chargingStartDateTime = prefHelper.getStringValue(GUN_2_CHARGING_START_TIME, ""),
+                chargingEndDateTime = prefHelper.getStringValue(GUN_2_CHARGING_END_TIME, ""),
                 startSoc = LastChargingSummaryUtils.getStartSoc(it),
                 endSoc = LastChargingSummaryUtils.getEndSoc(it),
                 energyConsumption = LastChargingSummaryUtils.getEnergyConsumption(
@@ -447,27 +554,64 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
 
     fun insertConfigurationParametersInDB(it: ByteArray) {
 
-        Log.d("CDM_TAG","Charge Control Mode = ${ConfigurationParametersUtils.getChargeControlMode(it)}")
+        Log.d(
+            "CDM_TAG",
+            "Charge Control Mode = ${ConfigurationParametersUtils.getChargeControlMode(it)}"
+        )
 
-        Log.d("CDM_TAG","Rectifier Selection = ${ConfigurationParametersUtils.getRectifierSelection(it).hexStringToDecimal()}")
-        Log.d("CDM_TAG","Number of Rectifier Per Group = ${ConfigurationParametersUtils.getNumberOfRectifierPerGroup(it).hexStringToDecimal()}")
-        Log.d("CDM_TAG","Rectifier Max Voltage = ${ConfigurationParametersUtils.getRectifierMaxVoltage(it).hexStringToDecimal()}")
-        Log.d("CDM_TAG","Rectifier Max Power = ${ConfigurationParametersUtils.getRectifierMaxPower(it).hexStringToDecimal()}")
-        Log.d("CDM_TAG","Rectifier Max Current = ${ConfigurationParametersUtils.getRectifierMaxCurrent(it).hexStringToDecimal()}")
+        Log.d(
+            "CDM_TAG",
+            "Rectifier Selection = ${
+                ConfigurationParametersUtils.getRectifierSelection(it).hexStringToDecimal()
+            }"
+        )
+        Log.d(
+            "CDM_TAG",
+            "Number of Rectifier Per Group = ${
+                ConfigurationParametersUtils.getNumberOfRectifierPerGroup(it).hexStringToDecimal()
+            }"
+        )
+        Log.d(
+            "CDM_TAG",
+            "Rectifier Max Voltage = ${
+                ConfigurationParametersUtils.getRectifierMaxVoltage(it).hexStringToDecimal()
+            }"
+        )
+        Log.d(
+            "CDM_TAG",
+            "Rectifier Max Power = ${
+                ConfigurationParametersUtils.getRectifierMaxPower(it).hexStringToDecimal()
+            }"
+        )
+        Log.d(
+            "CDM_TAG",
+            "Rectifier Max Current = ${
+                ConfigurationParametersUtils.getRectifierMaxCurrent(it).hexStringToDecimal()
+            }"
+        )
 
         val tbConfigurationParameters = TbConfigurationParameters(
             id = 1,
             chargeControlMode = ConfigurationParametersUtils.getChargeControlModeValue(it),
-            selectedRectifier = ConfigurationParametersUtils.getRectifierSelection(it).hexStringToDecimal(),
-            numberOfRectifierPerGroup = ConfigurationParametersUtils.getNumberOfRectifierPerGroup(it).hexStringToDecimal(),
-            maxDCOutputPowerCapacity = ConfigurationParametersUtils.getMaxDCOutputPowerCapacityOfCharger(it).hexStringToDecimal(),
-            rectifierMaxPower = ConfigurationParametersUtils.getRectifierMaxPower(it).hexStringToDecimal(),
-            rectifierMaxVoltage = ConfigurationParametersUtils.getRectifierMaxVoltage(it).hexStringToDecimal(),
-            rectifierMaxCurrent = ConfigurationParametersUtils.getRectifierMaxCurrent(it).hexStringToDecimal(),
-            selectedACMeter = ConfigurationParametersUtils.getACMeterSelection(it).hexStringToDecimal(),
+            selectedRectifier = ConfigurationParametersUtils.getRectifierSelection(it)
+                .hexStringToDecimal(),
+            numberOfRectifierPerGroup = ConfigurationParametersUtils.getNumberOfRectifierPerGroup(it)
+                .hexStringToDecimal(),
+            maxDCOutputPowerCapacity = ConfigurationParametersUtils.getMaxDCOutputPowerCapacityOfCharger(
+                it
+            ).hexStringToDecimal(),
+            rectifierMaxPower = ConfigurationParametersUtils.getRectifierMaxPower(it)
+                .hexStringToDecimal(),
+            rectifierMaxVoltage = ConfigurationParametersUtils.getRectifierMaxVoltage(it)
+                .hexStringToDecimal(),
+            rectifierMaxCurrent = ConfigurationParametersUtils.getRectifierMaxCurrent(it)
+                .hexStringToDecimal(),
+            selectedACMeter = ConfigurationParametersUtils.getACMeterSelection(it)
+                .hexStringToDecimal(),
             acMeterDataConfiguration = ConfigurationParametersUtils.getACMeterDataConfiguration(it),
             isACMeterMandatory = ConfigurationParametersUtils.getACMeterMandatory(it),
-            selectedDCMeter = ConfigurationParametersUtils.getDCMeterSelection(it).hexStringToDecimal(),
+            selectedDCMeter = ConfigurationParametersUtils.getDCMeterSelection(it)
+                .hexStringToDecimal(),
             dcMeterDataConfiguration = ConfigurationParametersUtils.getDCMeterDataConfiguration(it),
             isDCMeterMandatory = ConfigurationParametersUtils.getDCMeterMandatory(it),
             spdFaultDetection = ConfigurationParametersUtils.getSPDFaultDetection(it),
@@ -476,32 +620,53 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
             ledModuleFaultDetection = ConfigurationParametersUtils.getLEDModuleFaultDetection(it),
             gunTempFaultDetection = ConfigurationParametersUtils.getGunTemperatureFaultDetection(it),
             isolationFaultDetection = ConfigurationParametersUtils.getIsolationFaultDetection(it),
-            gunTemperatureThresholdValue = ConfigurationParametersUtils.getDCGunTemperatureThresholdValue(it).hexStringToDecimal(),
-            phaseLowDetectionVoltage = ConfigurationParametersUtils.getPhaseLowDetectionVoltage(it).hexStringToDecimal(),
-            phaseHighDetectionVoltage = ConfigurationParametersUtils.getPhaseHighDetectionVoltage(it).hexStringToDecimal(),
-            acMeterUserDefinedFields = if(ConfigurationParametersUtils.getACMeterSelection(it).hexStringToDecimal() == 0) ACMeterUserDefinedFields(
+            gunTemperatureThresholdValue = ConfigurationParametersUtils.getDCGunTemperatureThresholdValue(
+                it
+            ).hexStringToDecimal(),
+            phaseLowDetectionVoltage = ConfigurationParametersUtils.getPhaseLowDetectionVoltage(it)
+                .hexStringToDecimal(),
+            phaseHighDetectionVoltage = ConfigurationParametersUtils.getPhaseHighDetectionVoltage(it)
+                .hexStringToDecimal(),
+            acMeterUserDefinedFields = if (ConfigurationParametersUtils.getACMeterSelection(it)
+                    .hexStringToDecimal() == 0
+            ) ACMeterUserDefinedFields(
                 voltageV1N = ConfigurationParametersUtils.getVoltageV1NRegisterAddress(it).toInt(),
                 voltageV2N = ConfigurationParametersUtils.getVoltageV2NRegisterAddress(it).toInt(),
                 voltageV3N = ConfigurationParametersUtils.getVoltageV3NRegisterAddress(it).toInt(),
-                avgVoltageLN = ConfigurationParametersUtils.getAvgVoltageLNRegisterAddress(it).toInt(),
+                avgVoltageLN = ConfigurationParametersUtils.getAvgVoltageLNRegisterAddress(it)
+                    .toInt(),
                 frequency = ConfigurationParametersUtils.getFrequencyRegisterAddress(it).toInt(),
                 avgPF = ConfigurationParametersUtils.getAvgPFRegisterAddress(it).toInt(),
                 currentL1 = ConfigurationParametersUtils.getCurrentL1RegisterAddress(it).toInt(),
                 currentL2 = ConfigurationParametersUtils.getCurrentL2RegisterAddress(it).toInt(),
                 currentL3 = ConfigurationParametersUtils.getCurrentL3RegisterAddress(it).toInt(),
                 avgCurrent = ConfigurationParametersUtils.getAvgCurrentRegisterAddress(it).toInt(),
-                activePower = ConfigurationParametersUtils.getActivePowerRegisterAddress(it).toInt(),
-                totalEnergy = ConfigurationParametersUtils.getTotalEnergyRegisterAddress(it).toInt(),
-                totalReactiveEnergy = ConfigurationParametersUtils.getTotalReactiveEnergyRegisterAddress(it).toInt()
+                activePower = ConfigurationParametersUtils.getActivePowerRegisterAddress(it)
+                    .toInt(),
+                totalEnergy = ConfigurationParametersUtils.getTotalEnergyRegisterAddress(it)
+                    .toInt(),
+                totalReactiveEnergy = ConfigurationParametersUtils.getTotalReactiveEnergyRegisterAddress(
+                    it
+                ).toInt()
             ) else null,
-            dcMeterUserDefinedFields = if(ConfigurationParametersUtils.getDCMeterSelection(it).hexStringToDecimal() == 0) DCMeterUserDefinedFields(
-                voltageParameter = ConfigurationParametersUtils.getVoltageRegisterAddress(it).toInt(),
-                currentParameter = ConfigurationParametersUtils.getCurrentRegisterAddress(it).toInt(),
+            dcMeterUserDefinedFields = if (ConfigurationParametersUtils.getDCMeterSelection(it)
+                    .hexStringToDecimal() == 0
+            ) DCMeterUserDefinedFields(
+                voltageParameter = ConfigurationParametersUtils.getVoltageRegisterAddress(it)
+                    .toInt(),
+                currentParameter = ConfigurationParametersUtils.getCurrentRegisterAddress(it)
+                    .toInt(),
                 powerParameter = ConfigurationParametersUtils.getPowerRegisterAddress(it).toInt(),
-                importEnergyParameter = ConfigurationParametersUtils.getImportEnergyRegisterAddress(it).toInt(),
-                exportEnergyParameter = ConfigurationParametersUtils.getExportEnergyRegisterAddress(it).toInt(),
-                maxVoltageParameter = ConfigurationParametersUtils.getMaxVoltageRegisterAddress(it).toInt(),
-                minVoltageParameter = ConfigurationParametersUtils.getMinVoltageRegisterAddress(it).toInt(),
+                importEnergyParameter = ConfigurationParametersUtils.getImportEnergyRegisterAddress(
+                    it
+                ).toInt(),
+                exportEnergyParameter = ConfigurationParametersUtils.getExportEnergyRegisterAddress(
+                    it
+                ).toInt(),
+                maxVoltageParameter = ConfigurationParametersUtils.getMaxVoltageRegisterAddress(it)
+                    .toInt(),
+                minVoltageParameter = ConfigurationParametersUtils.getMinVoltageRegisterAddress(it)
+                    .toInt(),
                 maxCurrent = ConfigurationParametersUtils.getMaxCurrentRegisterAddress(it).toInt(),
                 minCurrent = ConfigurationParametersUtils.getMinCurrentRegisterAddress(it).toInt()
             ) else null
@@ -511,40 +676,138 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
             mainRepository.insertConfigurationParameters(tbConfigurationParameters)
         }
 
-        Log.d("CDM_TAG","Config Access Params Key = ${ConfigurationParametersUtils.getConfigAccessKey(it)}")
-        Log.d("CDM_TAG","Max DC Output Power Capacity of Charger = ${ConfigurationParametersUtils.getMaxDCOutputPowerCapacityOfCharger(it).hexStringToDecimal()}")
-        Log.d("CDM_TAG","AC Meter Selection = ${ConfigurationParametersUtils.getACMeterSelection(it).hexStringToDecimal()}")
-        Log.d("CDM_TAG","AC Meter Data Configuration = ${ConfigurationParametersUtils.getACMeterDataConfiguration(it)}")
-        Log.d("CDM_TAG","ACMDC Data Type = ${ConfigurationParametersUtils.getACMeterDataType(it)}")
-        Log.d("CDM_TAG","ACMDC Data Endianness = ${ConfigurationParametersUtils.getACMeterDataEndianness(it)}")
-        Log.d("CDM_TAG","ACMDC Read Function = ${ConfigurationParametersUtils.getACMeterReadFunction(it)}")
-        Log.d("CDM_TAG","ACMDC Data in Watt/KW = ${ConfigurationParametersUtils.getACMeterDataTypeInWattOrKW(it)}")
-        Log.d("CDM_TAG","ACMDC Mandatory Yes/No = ${ConfigurationParametersUtils.getACMeterMandatory(it)}")
+        Log.d(
+            "CDM_TAG",
+            "Config Access Params Key = ${ConfigurationParametersUtils.getConfigAccessKey(it)}"
+        )
+        Log.d(
+            "CDM_TAG",
+            "Max DC Output Power Capacity of Charger = ${
+                ConfigurationParametersUtils.getMaxDCOutputPowerCapacityOfCharger(it)
+                    .hexStringToDecimal()
+            }"
+        )
+        Log.d(
+            "CDM_TAG",
+            "AC Meter Selection = ${
+                ConfigurationParametersUtils.getACMeterSelection(it).hexStringToDecimal()
+            }"
+        )
+        Log.d(
+            "CDM_TAG",
+            "AC Meter Data Configuration = ${
+                ConfigurationParametersUtils.getACMeterDataConfiguration(it)
+            }"
+        )
+        Log.d("CDM_TAG", "ACMDC Data Type = ${ConfigurationParametersUtils.getACMeterDataType(it)}")
+        Log.d(
+            "CDM_TAG",
+            "ACMDC Data Endianness = ${ConfigurationParametersUtils.getACMeterDataEndianness(it)}"
+        )
+        Log.d(
+            "CDM_TAG",
+            "ACMDC Read Function = ${ConfigurationParametersUtils.getACMeterReadFunction(it)}"
+        )
+        Log.d(
+            "CDM_TAG",
+            "ACMDC Data in Watt/KW = ${ConfigurationParametersUtils.getACMeterDataTypeInWattOrKW(it)}"
+        )
+        Log.d(
+            "CDM_TAG",
+            "ACMDC Mandatory Yes/No = ${ConfigurationParametersUtils.getACMeterMandatory(it)}"
+        )
 
-        Log.d("CDM_TAG","DC Meter Selection = ${ConfigurationParametersUtils.getDCMeterSelection(it).hexStringToDecimal()}")
-        Log.d("CDM_TAG","DC Meter Data Configuration = ${ConfigurationParametersUtils.getDCMeterDataConfiguration(it)}")
-        Log.d("CDM_TAG","DCMDC Data Type = ${ConfigurationParametersUtils.getDCMeterDataType(it)}")
-        Log.d("CDM_TAG","DCMDC Data Endianness = ${ConfigurationParametersUtils.getDCMeterDataEndianness(it)}")
-        Log.d("CDM_TAG","DCMDC Read Function = ${ConfigurationParametersUtils.getDCMeterReadFunction(it)}")
-        Log.d("CDM_TAG","DCMDC Data in Watt/KW = ${ConfigurationParametersUtils.getDCMeterDataTypeInWattOrKW(it)}")
-        Log.d("CDM_TAG","DCMDC Mandatory Yes/No = ${ConfigurationParametersUtils.getDCMeterMandatory(it)}")
+        Log.d(
+            "CDM_TAG",
+            "DC Meter Selection = ${
+                ConfigurationParametersUtils.getDCMeterSelection(it).hexStringToDecimal()
+            }"
+        )
+        Log.d(
+            "CDM_TAG",
+            "DC Meter Data Configuration = ${
+                ConfigurationParametersUtils.getDCMeterDataConfiguration(it)
+            }"
+        )
+        Log.d("CDM_TAG", "DCMDC Data Type = ${ConfigurationParametersUtils.getDCMeterDataType(it)}")
+        Log.d(
+            "CDM_TAG",
+            "DCMDC Data Endianness = ${ConfigurationParametersUtils.getDCMeterDataEndianness(it)}"
+        )
+        Log.d(
+            "CDM_TAG",
+            "DCMDC Read Function = ${ConfigurationParametersUtils.getDCMeterReadFunction(it)}"
+        )
+        Log.d(
+            "CDM_TAG",
+            "DCMDC Data in Watt/KW = ${ConfigurationParametersUtils.getDCMeterDataTypeInWattOrKW(it)}"
+        )
+        Log.d(
+            "CDM_TAG",
+            "DCMDC Mandatory Yes/No = ${ConfigurationParametersUtils.getDCMeterMandatory(it)}"
+        )
 
-        Log.d("CDM_TAG","Fault Detection Enable/Disable = ${ConfigurationParametersUtils.getFaultDetectionEnableDisable(it)}")
-        Log.d("CDM_TAG","SPD Fault Detection = ${ConfigurationParametersUtils.getSPDFaultDetection(it)}")
-        Log.d("CDM_TAG","Smoke Fault Detection = ${ConfigurationParametersUtils.getSmokeFaultDetection(it)}")
-        Log.d("CDM_TAG","Tamper Fault Detection = ${ConfigurationParametersUtils.getTamperFaultDetection(it)}")
-        Log.d("CDM_TAG","LED Module Fault Detection = ${ConfigurationParametersUtils.getLEDModuleFaultDetection(it)}")
-        Log.d("CDM_TAG","Gun Temp Fault Detection = ${ConfigurationParametersUtils.getGunTemperatureFaultDetection(it)}")
-        Log.d("CDM_TAG","Isolation Fault Detection = ${ConfigurationParametersUtils.getIsolationFaultDetection(it)}")
+        Log.d(
+            "CDM_TAG",
+            "Fault Detection Enable/Disable = ${
+                ConfigurationParametersUtils.getFaultDetectionEnableDisable(it)
+            }"
+        )
+        Log.d(
+            "CDM_TAG",
+            "SPD Fault Detection = ${ConfigurationParametersUtils.getSPDFaultDetection(it)}"
+        )
+        Log.d(
+            "CDM_TAG",
+            "Smoke Fault Detection = ${ConfigurationParametersUtils.getSmokeFaultDetection(it)}"
+        )
+        Log.d(
+            "CDM_TAG",
+            "Tamper Fault Detection = ${ConfigurationParametersUtils.getTamperFaultDetection(it)}"
+        )
+        Log.d(
+            "CDM_TAG",
+            "LED Module Fault Detection = ${
+                ConfigurationParametersUtils.getLEDModuleFaultDetection(it)
+            }"
+        )
+        Log.d(
+            "CDM_TAG",
+            "Gun Temp Fault Detection = ${
+                ConfigurationParametersUtils.getGunTemperatureFaultDetection(it)
+            }"
+        )
+        Log.d(
+            "CDM_TAG",
+            "Isolation Fault Detection = ${
+                ConfigurationParametersUtils.getIsolationFaultDetection(it)
+            }"
+        )
 
-        Log.d("CDM_TAG","Voltage V1N = ${ConfigurationParametersUtils.getVoltageV1NRegisterAddress(it).hexStringToDecimal()}")
-        Log.d("CDM_TAG","Voltage V2N = ${ConfigurationParametersUtils.getVoltageV2NRegisterAddress(it).hexStringToDecimal()}")
-        Log.d("CDM_TAG","Voltage V3N = ${ConfigurationParametersUtils.getVoltageV3NRegisterAddress(it).hexStringToDecimal()}")
+        Log.d(
+            "CDM_TAG",
+            "Voltage V1N = ${
+                ConfigurationParametersUtils.getVoltageV1NRegisterAddress(it).hexStringToDecimal()
+            }"
+        )
+        Log.d(
+            "CDM_TAG",
+            "Voltage V2N = ${
+                ConfigurationParametersUtils.getVoltageV2NRegisterAddress(it).hexStringToDecimal()
+            }"
+        )
+        Log.d(
+            "CDM_TAG",
+            "Voltage V3N = ${
+                ConfigurationParametersUtils.getVoltageV3NRegisterAddress(it).hexStringToDecimal()
+            }"
+        )
 
 
     }
 
-    val getConfigurationParameters: LiveData<List<TbConfigurationParameters>> = mainRepository.getAllConfigurationParameters()
+    val getConfigurationParameters: LiveData<List<TbConfigurationParameters>> =
+        mainRepository.getAllConfigurationParameters()
 
     fun insertRectifierFaultsInDB(it: ByteArray) {
         insertRectifierFaults(
@@ -569,6 +832,52 @@ class AppViewModel @Inject constructor(private val mainRepository: MainRepositor
     private fun insertRectifierFaults(tbRectifierFaults: TbRectifierFaults) {
         viewModelScope.launch {
             mainRepository.insertRectifierFaults(tbRectifierFaults)
+        }
+    }
+
+    fun insertRectifierTemperatureInDB(it: ByteArray) {
+        insertRectifierTemperature(
+            TbRectifierTemperature(
+                1,
+                rectifier1Temp = RectifierTemperatureUtils.getRectifier1Temp(it)
+                    .hexStringToDecimal(),
+                rectifier2Temp = RectifierTemperatureUtils.getRectifier2Temp(it)
+                    .hexStringToDecimal(),
+                rectifier3Temp = RectifierTemperatureUtils.getRectifier3Temp(it)
+                    .hexStringToDecimal(),
+                rectifier4Temp = RectifierTemperatureUtils.getRectifier4Temp(it)
+                    .hexStringToDecimal(),
+                rectifier5Temp = RectifierTemperatureUtils.getRectifier5Temp(it)
+                    .hexStringToDecimal(),
+                rectifier6Temp = RectifierTemperatureUtils.getRectifier6Temp(it)
+                    .hexStringToDecimal(),
+                rectifier7Temp = RectifierTemperatureUtils.getRectifier7Temp(it)
+                    .hexStringToDecimal(),
+                rectifier8Temp = RectifierTemperatureUtils.getRectifier8Temp(it)
+                    .hexStringToDecimal(),
+                rectifier9Temp = RectifierTemperatureUtils.getRectifier9Temp(it)
+                    .hexStringToDecimal(),
+                rectifier10Temp = RectifierTemperatureUtils.getRectifier10Temp(it)
+                    .hexStringToDecimal(),
+                rectifier11Temp = RectifierTemperatureUtils.getRectifier11Temp(it)
+                    .hexStringToDecimal(),
+                rectifier12Temp = RectifierTemperatureUtils.getRectifier12Temp(it)
+                    .hexStringToDecimal(),
+                rectifier13Temp = RectifierTemperatureUtils.getRectifier13Temp(it)
+                    .hexStringToDecimal(),
+                rectifier14Temp = RectifierTemperatureUtils.getRectifier14Temp(it)
+                    .hexStringToDecimal(),
+                rectifier15Temp = RectifierTemperatureUtils.getRectifier15Temp(it)
+                    .hexStringToDecimal(),
+                rectifier16Temp = RectifierTemperatureUtils.getRectifier16Temp(it)
+                    .hexStringToDecimal()
+            )
+        )
+    }
+
+    private fun insertRectifierTemperature(tbRectifierTemperature: TbRectifierTemperature) {
+        viewModelScope.launch {
+            mainRepository.insertRectifierTemperature(tbRectifierTemperature)
         }
     }
 }
