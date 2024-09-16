@@ -328,6 +328,13 @@
     <string name="msg_please_enter_value_between_200_1000">Voer een waarde tussen 200–1000 in</string>
     <string name="msg_please_enter_value_between_1_100">Voer een waarde tussen 1–100 in</string>
     <string name="lbl_rectifier_temperature_with_celcius">%1$d °C</string>
-    <string name="lbl_faults_alarm_counter">Faults Alarm Counter</string>
+    <string name="lbl_faults_alarm_counter">Fouten Alarmteller</string>
+    <string name="lbl_charger_serial_id">Serienummer Lader - %1$s</string>
+    <string name="lbl_bluetooth_mac_address">Bluetooth MAC-adres - %1$s</string>
+    <string name="lbl_gun_1_temperature">Temperatuur Pistool-1</string>
+    <string name="lbl_gun_2_temperature">Temperatuur Pistool-2</string>
+    <string name="lbl_system_temperature">Systeemtemperatuur</string>
+    <string name="lbl_mains_low">Netspanning Laag</string>
+    <string name="lbl_mains_high">Netspanning Hoog</string>
 
 </resources>

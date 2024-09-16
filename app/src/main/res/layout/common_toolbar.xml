@@ -26,6 +26,15 @@
             app:tint="?attr/viewThemeColor"
             android:src="@drawable/ic_settings" />
 
+        <TextView
+            android:id="@+id/tvAmbientTemperature"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="@dimen/_3sdp"
+            android:textSize="@dimen/_12ssp"
+            android:textStyle="bold"
+            tools:text="25.3 C" />
+
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/ivChangeAppLanguage"
             android:layout_width="@dimen/_16sdp"

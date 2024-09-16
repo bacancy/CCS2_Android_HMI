@@ -328,6 +328,13 @@
     <string name="msg_please_enter_value_between_200_1000">Lütfen 200–1000 arasında bir değer girin</string>
     <string name="msg_please_enter_value_between_1_100">Lütfen 1–100 arasında bir değer girin</string>
     <string name="lbl_rectifier_temperature_with_celcius">%1$d °C</string>
-    <string name="lbl_faults_alarm_counter">Faults Alarm Counter</string>
+    <string name="lbl_faults_alarm_counter">Arıza Alarm Sayacı</string>
+    <string name="lbl_charger_serial_id">Şarj Seri Kimliği - %1$s</string>
+    <string name="lbl_bluetooth_mac_address">Bluetooth Mac Adresi - %1$s</string>
+    <string name="lbl_gun_1_temperature">Tabanca-1 Sıcaklığı</string>
+    <string name="lbl_gun_2_temperature">Tabanca-2 Sıcaklığı</string>
+    <string name="lbl_system_temperature">Sistem Sıcaklığı</string>
+    <string name="lbl_mains_low">Düşük Ana Akım</string>
+    <string name="lbl_mains_high">Yüksek Ana Akım</string>
 
 </resources>

@@ -3,13 +3,13 @@ package com.bacancy.ccs2androidhmi.viewmodel
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bacancy.ccs2androidhmi.db.entity.TbAcMeterInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbChargingHistory
 import com.bacancy.ccs2androidhmi.db.entity.TbConfigurationParameters
 import com.bacancy.ccs2androidhmi.db.entity.TbErrorCodes
+import com.bacancy.ccs2androidhmi.db.entity.TbFaultCounters
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsDcMeterInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsLastChargingSummary
@@ -20,17 +20,11 @@ import com.bacancy.ccs2androidhmi.db.entity.TbRectifierTemperature
 import com.bacancy.ccs2androidhmi.db.model.ACMeterUserDefinedFields
 import com.bacancy.ccs2androidhmi.db.model.DCMeterUserDefinedFields
 import com.bacancy.ccs2androidhmi.models.ErrorCodes
-import com.bacancy.ccs2androidhmi.models.FaultCounters
 import com.bacancy.ccs2androidhmi.repository.MainRepository
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_CHARGING_END_TIME
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_CHARGING_START_TIME
-import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_TEMP_COUNTER
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_CHARGING_END_TIME
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_CHARGING_START_TIME
-import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_2_TEMP_COUNTER
-import com.bacancy.ccs2androidhmi.util.CommonUtils.MAINS_HIGH_COUNTER
-import com.bacancy.ccs2androidhmi.util.CommonUtils.MAINS_LOW_COUNTER
-import com.bacancy.ccs2androidhmi.util.CommonUtils.SYSTEM_TEMP_COUNTER
 import com.bacancy.ccs2androidhmi.util.ConfigurationParametersUtils
 import com.bacancy.ccs2androidhmi.util.DateTimeUtils
 import com.bacancy.ccs2androidhmi.util.DateTimeUtils.DATE_TIME_FORMAT
@@ -53,7 +47,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -62,58 +55,11 @@ class AppViewModel @Inject constructor(
     private val prefHelper: PrefHelper
 ) : ViewModel() {
 
-    private val _faultCounters = MutableLiveData(FaultCounters())
-    val faultCounters: LiveData<FaultCounters> = _faultCounters
-
-    private val _basicNumber = MutableLiveData(0)
-    val basicNumber: LiveData<Int> = _basicNumber
-
-    private fun updateBasicNumber(){
-        Log.d("WINTAG","updateBasicNumber Called")
-       viewModelScope.launch(Dispatchers.Main) {
-           _basicNumber.value = _basicNumber.value?.toInt()?.plus(1)
-           Log.d("WINTAG","Updated - ${_basicNumber.value}")
-       }
-    }
-
-    private fun incrementCounter(counterType: String) {
-        viewModelScope.launch {
-            val currentCounters = _faultCounters.value ?: FaultCounters()
-            val updatedCounters = when (counterType) {
-                GUN_1_TEMP_COUNTER -> currentCounters.copy(gun1TempCounter = currentCounters.gun1TempCounter + 1)
-                GUN_2_TEMP_COUNTER -> currentCounters.copy(gun2TempCounter = currentCounters.gun2TempCounter + 1)
-                SYSTEM_TEMP_COUNTER -> currentCounters.copy(systemTempCounter = currentCounters.systemTempCounter + 1)
-                MAINS_LOW_COUNTER -> currentCounters.copy(mainsLowCounter = currentCounters.mainsLowCounter + 1)
-                MAINS_HIGH_COUNTER -> currentCounters.copy(mainsHighCounter = currentCounters.mainsHighCounter + 1)
-                else -> currentCounters
-            }
-            prefHelper.setIntValue(counterType, updatedCounters.getCounterValue(counterType))
-            Log.d("FRITAG", "incrementCounter: $updatedCounters")
-            Log.d("FRITAG", "Old value: ${_faultCounters.value}, New value: $updatedCounters")
-            withContext(Dispatchers.Main) {
-                _faultCounters.value = updatedCounters
-            }
-        }
-    }
-
-    private fun FaultCounters.getCounterValue(counterType: String): Int {
-        return when (counterType) {
-            GUN_1_TEMP_COUNTER -> gun1TempCounter
-            GUN_2_TEMP_COUNTER -> gun2TempCounter
-            SYSTEM_TEMP_COUNTER -> systemTempCounter
-            MAINS_LOW_COUNTER -> mainsLowCounter
-            MAINS_HIGH_COUNTER -> mainsHighCounter
-            else -> 0
-        }
-    }
-
     val latestAcMeterInfo: LiveData<TbAcMeterInfo> = mainRepository.getLatestAcMeterInfo()
-
     val latestMiscInfo: LiveData<TbMiscInfo> = mainRepository.getLatestMiscInfo()
     val allRectifierFaults: LiveData<TbRectifierFaults> = mainRepository.getRectifierFaults()
-    val allRectifierTemperature: LiveData<TbRectifierTemperature> =
-        mainRepository.getRectifierTemperature()
-
+    val allRectifierTemperature: LiveData<TbRectifierTemperature> = mainRepository.getRectifierTemperature()
+    val faultCounters: LiveData<TbFaultCounters> = mainRepository.getFaultCounterWithLiveData(1)
     val allErrorCodes: LiveData<List<TbErrorCodes>> = mainRepository.getAllErrorCodes()
     val allNotifications: LiveData<List<TbNotifications>> = mainRepository.getAllNotifications()
 
@@ -232,7 +178,10 @@ class AppViewModel @Inject constructor(
                 ),
                 unitPrice = MiscInfoUtils.getUnitPrice(it),
                 emergencyButtonStatus = MiscInfoUtils.getEmergencyButtonStatus(it),
-                rfidTagState = MiscInfoUtils.getRFIDTagState(it)
+                rfidTagState = MiscInfoUtils.getRFIDTagState(it),
+                chargerSerialID = MiscInfoUtils.getChargerSerialIdAscii(it),
+                bluetoothMacAddress = MiscInfoUtils.getBluetoothMacAddress(it),
+                ambientTemperature = MiscInfoUtils.getAmbientTemperature(it)
             )
         )
 
@@ -253,24 +202,27 @@ class AppViewModel @Inject constructor(
                         //If we get error code from the list of error codes to avoid, then we will directly insert them in the DB
                         if (reversedString[index] == '1' && errorCodeList.isEmpty()) {
                             insertErrorCodesWithValues(errorSource, gunsErrorCode.name, 1)
+                            if (gunsErrorCode.value in listOf(1, 3, 4, 12)) {
+                                updateFaultCounters(gunsErrorCode.value, errorSource)
+                            }
                         }
                     } else {
                         //If we get error codes to not avoid then we will make the comparison and insert them in the DB
-                        if (reversedString[index] == '1') {
-                            incrementCounter(GUN_1_TEMP_COUNTER)
-                            updateBasicNumber()
-                            Log.d("FRITAG", "processChargerErrorCodes: $gunsErrorCode")
-                            Log.d("WINTAG", "processChargerErrorCodes: $gunsErrorCode")
+                        if (reversedString[index] == '1') {//ERROR OCCURRED
                             if (errorCodeList.isEmpty()) {
                                 insertErrorCodesWithValues(errorSource, gunsErrorCode.name, 1)
-                                updateFaultCounters(gunsErrorCode.value, errorSource)
+                                if (gunsErrorCode.value in listOf(1, 3, 4, 12)) {
+                                    updateFaultCounters(gunsErrorCode.value, errorSource)
+                                }
                             } else {
                                 if (errorCodeList[errorCodeList.size - 1].sourceErrorValue == 0) {
                                     insertErrorCodesWithValues(errorSource, gunsErrorCode.name, 1)
-                                    updateFaultCounters(gunsErrorCode.value, errorSource)
+                                    if (gunsErrorCode.value in listOf(1, 3, 4, 12)) {
+                                        updateFaultCounters(gunsErrorCode.value, errorSource)
+                                    }
                                 }
                             }
-                        } else if (reversedString[index] == '0' && errorCodeList.isNotEmpty() && errorCodeList[errorCodeList.size - 1].sourceErrorValue == 1) {
+                        } else if (reversedString[index] == '0' && errorCodeList.isNotEmpty() && errorCodeList[errorCodeList.size - 1].sourceErrorValue == 1) {//ERROR RESOLVED
                             insertErrorCodesWithValues(errorSource, gunsErrorCode.name, 0)
                         }
                     }
@@ -280,26 +232,42 @@ class AppViewModel @Inject constructor(
     }
 
     private fun updateFaultCounters(value: Int, errorSource: Int) {
+        var faultCounter = mainRepository.getFaultCounter(1)
+
+        if (faultCounter == null) {
+            faultCounter = TbFaultCounters(
+                id = 1,
+                gun1TempCounter = 0,
+                gun2TempCounter = 0,
+                systemTempCounter = 0,
+                mainsLowCounter = 0,
+                mainsHighCounter = 0
+            )
+        }
+
         when (value) {
             1 -> {
                 if (errorSource == 1) {
-                    incrementCounter(GUN_1_TEMP_COUNTER)
+                    faultCounter.gun1TempCounter += 1
                 } else if (errorSource == 2) {
-                    incrementCounter(GUN_2_TEMP_COUNTER)
+                    faultCounter.gun2TempCounter += 1
                 }
             }
 
             3 -> {
-                incrementCounter(MAINS_LOW_COUNTER)
+                faultCounter.mainsLowCounter += 1
             }
 
             4 -> {
-                incrementCounter(MAINS_HIGH_COUNTER)
+                faultCounter.mainsHighCounter += 1
             }
 
             12 -> {
-                incrementCounter(SYSTEM_TEMP_COUNTER)
+                faultCounter.systemTempCounter += 1
             }
+        }
+        viewModelScope.launch {
+            mainRepository.insertFaultCounters(faultCounter)
         }
     }
 

@@ -2,6 +2,7 @@ package com.bacancy.ccs2androidhmi.util
 
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.ByteRanges.AMBIENT_TEMPERATURE_BITS
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.ByteRanges.BLUETOOTH_MAC_ADDRESS
+import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.ByteRanges.CHARGER_SERIAL_ID
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.ByteRanges.COMMUNICATION_ERROR_CODES
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.ByteRanges.DEVICE_PHYSICAL_CONNECTION_STATUS
 import com.bacancy.ccs2androidhmi.util.MiscInfoUtils.ByteRanges.EMERGENCY_BUTTON_STATUS
@@ -51,6 +52,7 @@ object MiscInfoUtils {
         val GSM_STATUS_BITS = 3..6
         val ETHERNET_STATUS_BITS = 7..7
         val SERVER_STATUS_BITS = 8..10
+        val CHARGER_SERIAL_ID = 103..128
         val BLUETOOTH_MAC_ADDRESS = 135..140
     }
 
@@ -76,6 +78,12 @@ object MiscInfoUtils {
 
     fun getAmbientTemperature(response: ByteArray): Float {
         return ModbusTypeConverter.byteArrayToFloat(response.getRangedArray(AMBIENT_TEMPERATURE_BITS))
+    }
+
+    fun getChargerSerialIdAscii(response: ByteArray): String {
+        return response.getRangedArray(CHARGER_SERIAL_ID).filter { it != 0.toByte() }
+            .toByteArray()
+            .toString(Charsets.US_ASCII)
     }
 
     fun getBluetoothMacAddress(response: ByteArray): String {

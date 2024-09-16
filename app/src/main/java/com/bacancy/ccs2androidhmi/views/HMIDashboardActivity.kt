@@ -683,12 +683,12 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         }
 
         binding.incToolbar.ivSettings.setOnClickListener {
-            addNewFragment(AppSettingsFragment())
-            /*showPasswordPromptDialog(getString(R.string.title_authorize_for_settings),isCancelable = true, {
+            //addNewFragment(AppSettingsFragment())
+            showPasswordPromptDialog(getString(R.string.title_authorize_for_settings),isCancelable = true, {
                 addNewFragment(AppSettingsFragment())
             }, {
                 showCustomToast(getString(R.string.msg_invalid_password), false)
-            }, password = APP_SETTINGS_PIN)*/
+            }, password = APP_SETTINGS_PIN)
         }
 
         binding.incToolbar.imgBack.setOnClickListener {
@@ -802,6 +802,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
     private fun observeLatestMiscInfo() {
         appViewModel.latestMiscInfo.observe(this) { latestMiscInfo ->
             if (latestMiscInfo != null) {
+                binding.incToolbar.tvAmbientTemperature.text = "${latestMiscInfo.ambientTemperature} °C"
                 updateServerStatus(latestMiscInfo.serverConnectedWith)
                 updateEthernetStatus(latestMiscInfo.ethernetStatus)
                 adjustGSMLevel(latestMiscInfo.gsmLevel)

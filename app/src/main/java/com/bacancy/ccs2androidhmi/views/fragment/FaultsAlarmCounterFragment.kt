@@ -29,44 +29,31 @@ class FaultsAlarmCounterFragment : BaseFragment() {
     ): View {
         binding = FragmentFaultsAlarmCounterBinding.inflate(layoutInflater)
         setupFaultAlarmLabels()
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-    }
-
-    override fun onResume() {
-        super.onResume()
         setupFaultAlarmCounters()
+        return binding.root
     }
 
     private fun setupFaultAlarmLabels() {
         binding.apply {
-            incGun1TempAlarm.tvFaultName.text = "Gun 1 Temperature"
-            incGun2TempAlarm.tvFaultName.text = "Gun 2 Temperature"
-            incSystemTempHighAlarm.tvFaultName.text = "System Temperature"
-            incMainsLowAlarm.tvFaultName.text = "Mains Low"
-            incMainsHighAlarm.tvFaultName.text = "Mains High"
+            incGun1TempAlarm.tvFaultName.text = getString(R.string.lbl_gun_1_temperature)
+            incGun2TempAlarm.tvFaultName.text = getString(R.string.lbl_gun_2_temperature)
+            incSystemTempHighAlarm.tvFaultName.text = getString(R.string.lbl_system_temperature)
+            incMainsLowAlarm.tvFaultName.text = getString(R.string.lbl_mains_low)
+            incMainsHighAlarm.tvFaultName.text = getString(R.string.lbl_mains_high)
         }
     }
 
     private fun setupFaultAlarmCounters() {
-        Log.d("FRITAG", "Lifecycle state when setting observer: ${viewLifecycleOwner.lifecycle.currentState}")
-
-        /*appViewModel.faultCounters.observe(viewLifecycleOwner) {
-            Log.d("FRITAG", "setupFaultAlarmCounters: $it")
-            *//*binding.apply {
-                incGun1TempAlarm.tvFaultCounter.text = it.gun1TempCounter.toString()
-                incGun2TempAlarm.tvFaultCounter.text = it.gun2TempCounter.toString()
-                incSystemTempHighAlarm.tvFaultCounter.text = it.systemTempCounter.toString()
-                incMainsLowAlarm.tvFaultCounter.text = it.mainsLowCounter.toString()
-                incMainsHighAlarm.tvFaultCounter.text = it.mainsHighCounter.toString()
-            }*//*
-        }*/
-
-        appViewModel.basicNumber.observe(viewLifecycleOwner) { it ->
-            Log.d("WINTAG","$it")
+        appViewModel.faultCounters.observe(requireActivity()) {
+            binding.apply {
+                if(it!=null){
+                    incGun1TempAlarm.tvFaultCounter.text = it.gun1TempCounter.toString()
+                    incGun2TempAlarm.tvFaultCounter.text = it.gun2TempCounter.toString()
+                    incSystemTempHighAlarm.tvFaultCounter.text = it.systemTempCounter.toString()
+                    incMainsLowAlarm.tvFaultCounter.text = it.mainsLowCounter.toString()
+                    incMainsHighAlarm.tvFaultCounter.text = it.mainsHighCounter.toString()
+                }
+            }
         }
     }
 

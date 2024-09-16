@@ -330,6 +330,13 @@
     <string name="msg_please_enter_value_between_200_1000">يرجى إدخال قيمة بين 200-1000</string>
     <string name="msg_please_enter_value_between_1_100">يرجى إدخال قيمة بين 1-100</string>
     <string name="lbl_rectifier_temperature_with_celcius">%1$d °C</string>
-    <string name="lbl_faults_alarm_counter">Faults Alarm Counter</string>
+    <string name="lbl_faults_alarm_counter">عداد إنذارات الأعطال</string>
+    <string name="lbl_charger_serial_id">معرّف الشاحن التسلسلي - %1$s</string>
+    <string name="lbl_bluetooth_mac_address">عنوان بلوتوث ماك - %1$s</string>
+    <string name="lbl_gun_1_temperature">درجة حرارة البندقية 1</string>
+    <string name="lbl_gun_2_temperature">درجة حرارة البندقية 2</string>
+    <string name="lbl_system_temperature">درجة حرارة النظام</string>
+    <string name="lbl_mains_low">التيار المنخفض</string>
+    <string name="lbl_mains_high">التيار العالي</string>
 
 </resources>

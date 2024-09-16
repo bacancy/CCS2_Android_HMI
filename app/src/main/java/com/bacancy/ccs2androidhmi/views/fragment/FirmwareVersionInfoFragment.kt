@@ -55,6 +55,8 @@ class FirmwareVersionInfoFragment : BaseFragment() {
             tvLEDVersion.text = latestMiscInfo.ledFirmwareVersion
             tvPLC1Version.text = latestMiscInfo.plc1FirmwareVersion
             tvPLC2Version.text = latestMiscInfo.plc2FirmwareVersion
+            tvChargerSerialID.text = getString(R.string.lbl_charger_serial_id, latestMiscInfo.chargerSerialID)
+            tvBluetoothMacAddress.text = getString(R.string.lbl_bluetooth_mac_address, latestMiscInfo.bluetoothMacAddress)
         }
     }
 }

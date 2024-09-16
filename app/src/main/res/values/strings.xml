@@ -333,4 +333,11 @@
     <string name="msg_please_enter_value_between_1_100">Please enter value between 1–100</string>
     <string name="lbl_rectifier_temperature_with_celcius">%1$d °C</string>
     <string name="lbl_faults_alarm_counter">Faults Alarm Counter</string>
+    <string name="lbl_charger_serial_id">Charge Serial ID - %1$s</string>
+    <string name="lbl_bluetooth_mac_address">Bluetooth Mac Address - %1$s</string>
+    <string name="lbl_gun_1_temperature">Gun-1 Temperature</string>
+    <string name="lbl_gun_2_temperature">Gun-2 Temperature</string>
+    <string name="lbl_system_temperature">System Temperature</string>
+    <string name="lbl_mains_low">Mains Low</string>
+    <string name="lbl_mains_high">Mains High</string>
 </resources>

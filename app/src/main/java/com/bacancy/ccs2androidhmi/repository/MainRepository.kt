@@ -6,6 +6,7 @@ import com.bacancy.ccs2androidhmi.db.entity.TbAcMeterInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbChargingHistory
 import com.bacancy.ccs2androidhmi.db.entity.TbConfigurationParameters
 import com.bacancy.ccs2androidhmi.db.entity.TbErrorCodes
+import com.bacancy.ccs2androidhmi.db.entity.TbFaultCounters
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsDcMeterInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsLastChargingSummary
@@ -115,6 +116,18 @@ class MainRepository @Inject constructor(private val appDatabase: AppDatabase) {
 
     fun getRectifierTemperature(): LiveData<TbRectifierTemperature> {
         return appDatabase.appDao().getRectifierTemperature()
+    }
+
+    suspend fun insertFaultCounters(tbFaultCounters: TbFaultCounters){
+        appDatabase.appDao().insertOrUpdate(tbFaultCounters)
+    }
+
+    fun getFaultCounterWithLiveData(id: Int): LiveData<TbFaultCounters> {
+        return appDatabase.appDao().getFaultCounterWithLiveData(id)
+    }
+
+    fun getFaultCounter(id: Int): TbFaultCounters {
+        return appDatabase.appDao().getFaultCounter(id)
     }
 
 }

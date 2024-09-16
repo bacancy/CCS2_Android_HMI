@@ -328,6 +328,13 @@
     <string name="msg_please_enter_value_between_200_1000">Veuillez entrer une valeur entre 200 et 1000</string>
     <string name="msg_please_enter_value_between_1_100">Veuillez entrer une valeur entre 1 et 100</string>
     <string name="lbl_rectifier_temperature_with_celcius">%1$d °C</string>
-    <string name="lbl_faults_alarm_counter">Faults Alarm Counter</string>
+    <string name="lbl_faults_alarm_counter">Compteur d\'Alarme de Défauts</string>
+    <string name="lbl_charger_serial_id">ID Série du Chargeur - %1$s</string>
+    <string name="lbl_bluetooth_mac_address">Adresse MAC Bluetooth - %1$s</string>
+    <string name="lbl_gun_1_temperature">Température du Pistolet 1</string>
+    <string name="lbl_gun_2_temperature">Température du Pistolet 2</string>
+    <string name="lbl_system_temperature">Température du Système</string>
+    <string name="lbl_mains_low">Tension Basse</string>
+    <string name="lbl_mains_high">Tension Haute</string>
 
 </resources>

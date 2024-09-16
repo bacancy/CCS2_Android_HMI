@@ -330,6 +330,13 @@
     <string name="msg_please_enter_value_between_200_1000">कृपया 200–1000 के बीच मान दर्ज करें</string>
     <string name="msg_please_enter_value_between_1_100">कृपया 1–100 के बीच मान दर्ज करें</string>
     <string name="lbl_rectifier_temperature_with_celcius">%1$d °C</string>
-    <string name="lbl_faults_alarm_counter">Faults Alarm Counter</string>
+    <string name="lbl_faults_alarm_counter">फॉल्ट्स अलार्म काउंटर</string>
+    <string name="lbl_charger_serial_id">चार्जर सीरियल आईडी - %1$s</string>
+    <string name="lbl_bluetooth_mac_address">ब्लूटूथ मैक एड्रेस - %1$s</string>
+    <string name="lbl_gun_1_temperature">गन-1 तापमान</string>
+    <string name="lbl_gun_2_temperature">गन-2 तापमान</string>
+    <string name="lbl_system_temperature">सिस्टम तापमान</string>
+    <string name="lbl_mains_low">मेंस लो</string>
+    <string name="lbl_mains_high">मेंस हाई</string>
 
 </resources>

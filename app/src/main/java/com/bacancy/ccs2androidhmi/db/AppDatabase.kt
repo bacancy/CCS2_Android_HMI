@@ -11,6 +11,7 @@ import com.bacancy.ccs2androidhmi.db.entity.TbAcMeterInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbChargingHistory
 import com.bacancy.ccs2androidhmi.db.entity.TbConfigurationParameters
 import com.bacancy.ccs2androidhmi.db.entity.TbErrorCodes
+import com.bacancy.ccs2androidhmi.db.entity.TbFaultCounters
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsDcMeterInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsLastChargingSummary
@@ -21,8 +22,8 @@ import com.bacancy.ccs2androidhmi.db.entity.TbRectifierTemperature
 
 @Database(
     entities = [TbChargingHistory::class, TbAcMeterInfo::class, TbMiscInfo::class, TbGunsDcMeterInfo::class, TbGunsChargingInfo::class, TbGunsLastChargingSummary::class,
-               TbErrorCodes::class, TbNotifications::class, TbConfigurationParameters::class, TbRectifierFaults::class, TbRectifierTemperature::class],
-    version = 7
+               TbErrorCodes::class, TbNotifications::class, TbConfigurationParameters::class, TbRectifierFaults::class, TbRectifierTemperature::class, TbFaultCounters::class],
+    version = 1
 )
 @TypeConverters(HMITypeConverters::class)
 abstract class AppDatabase : RoomDatabase() {

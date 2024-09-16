@@ -9,6 +9,7 @@ import com.bacancy.ccs2androidhmi.db.entity.TbAcMeterInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbChargingHistory
 import com.bacancy.ccs2androidhmi.db.entity.TbConfigurationParameters
 import com.bacancy.ccs2androidhmi.db.entity.TbErrorCodes
+import com.bacancy.ccs2androidhmi.db.entity.TbFaultCounters
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsDcMeterInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsLastChargingSummary
@@ -95,4 +96,13 @@ interface AppDao {
 
     @Query("SELECT * FROM tbRectifierTemperature WHERE id = 1")
     fun getRectifierTemperature(): LiveData<TbRectifierTemperature>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertOrUpdate(faultCounter: TbFaultCounters)
+
+    @Query("SELECT * FROM tbFaultCounters WHERE id = :id LIMIT 1")
+    fun getFaultCounterWithLiveData(id: Int): LiveData<TbFaultCounters>
+
+    @Query("SELECT * FROM tbFaultCounters WHERE id = :id LIMIT 1")
+    fun getFaultCounter(id: Int): TbFaultCounters
 }

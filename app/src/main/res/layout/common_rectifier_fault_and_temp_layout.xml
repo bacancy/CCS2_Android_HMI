@@ -7,9 +7,9 @@
 
     <TextView
         android:id="@+id/tvRectifierLabel"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
+        android:layout_weight="0.75"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/_15sdp"
         android:ellipsize="end"
         android:lines="1"
         tools:text="@string/lbl_rectifier_1"
@@ -23,7 +23,7 @@
         android:background="?attr/dialogBackground"
         android:gravity="center"
         android:lines="1"
-        android:paddingHorizontal="@dimen/_30sdp"
+        tools:text="12345678"
         android:paddingVertical="@dimen/_5sdp"
         android:textSize="@dimen/_7ssp" />
 
@@ -35,8 +35,8 @@
         android:background="?attr/dialogBackground"
         android:gravity="center"
         android:lines="1"
+        tools:text = "32.99 °C"
         android:layout_marginStart="@dimen/_5sdp"
-        android:paddingHorizontal="@dimen/_30sdp"
         android:paddingVertical="@dimen/_5sdp"
         android:textSize="@dimen/_7ssp" />
 

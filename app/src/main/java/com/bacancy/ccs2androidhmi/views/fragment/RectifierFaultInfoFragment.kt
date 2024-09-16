@@ -1,16 +1,13 @@
 package com.bacancy.ccs2androidhmi.views.fragment
 
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
-import com.bacancy.ccs2androidhmi.databinding.FragmentGunsHomeScreenBinding
-import com.bacancy.ccs2androidhmi.databinding.FragmentRectifierFaultsBinding
+import com.bacancy.ccs2androidhmi.databinding.CommonRectifierFaultAndTempLayoutBinding
 import com.bacancy.ccs2androidhmi.databinding.FragmentRectifierFaultsNewBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbMiscInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbRectifierFaults
@@ -18,7 +15,6 @@ import com.bacancy.ccs2androidhmi.db.entity.TbRectifierTemperature
 import com.bacancy.ccs2androidhmi.util.CommonUtils.RECTIFIER_FAULTS_FRAGMENT
 import com.bacancy.ccs2androidhmi.util.PrefHelper
 import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
-import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -36,72 +32,26 @@ class RectifierFaultInfoFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentRectifierFaultsNewBinding.inflate(layoutInflater)
+        prefHelper.setBoolean(RECTIFIER_FAULTS_FRAGMENT, true)
         setupRectifiersLabel()
-        setupRectifiersSampleTemp()
         observeRectifierFaults()
         observeRectifierTemperature()
         return binding.root
     }
 
-    override fun onResume() {
-        super.onResume()
-        prefHelper.setBoolean(RECTIFIER_FAULTS_FRAGMENT,true)
+    override fun setScreenHeaderViews() {
+        binding.incHeader.tvHeader.text = getString(R.string.lbl_rectifier_fault_information)
     }
+
+    override fun setupViews() {}
+
+    override fun handleClicks() {}
 
     private fun setupRectifiersLabel() {
         binding.apply {
-            val rectifiers = listOf(
-                incRectifier1,
-                incRectifier2,
-                incRectifier3,
-                incRectifier4,
-                incRectifier5,
-                incRectifier6,
-                incRectifier7,
-                incRectifier8,
-                incRectifier9,
-                incRectifier10,
-                incRectifier11,
-                incRectifier12,
-                incRectifier13,
-                incRectifier14,
-                incRectifier15,
-                incRectifier16
-            )
-
-            rectifiers.forEachIndexed { index, rectifier ->
-                if(index == 8){
-                    rectifier.tvRectifierLabel.text = "Rectifier   ${index + 1}"
-                }else{
-                    rectifier.tvRectifierLabel.text = "Rectifier ${index + 1}"
-                }
-            }
-        }
-    }
-
-    private fun setupRectifiersSampleTemp() {
-        binding.apply {
-            val rectifiers = listOf(
-                incRectifier1,
-                incRectifier2,
-                incRectifier3,
-                incRectifier4,
-                incRectifier5,
-                incRectifier6,
-                incRectifier7,
-                incRectifier8,
-                incRectifier9,
-                incRectifier10,
-                incRectifier11,
-                incRectifier12,
-                incRectifier13,
-                incRectifier14,
-                incRectifier15,
-                incRectifier16
-            )
-
-            rectifiers.forEachIndexed { index, rectifier ->
-                rectifier.tvRectifierTemperature.text = "0.0 °C"
+            getRectifiersIncludeList().forEachIndexed { index, rectifier ->
+                rectifier.tvRectifierLabel.text =
+                    "${getString(R.string.lbl_rectifier)} ${index + 1}"
             }
         }
     }
@@ -113,7 +63,6 @@ class RectifierFaultInfoFragment : BaseFragment() {
             }
         }
         appViewModel.allRectifierFaults.observe(viewLifecycleOwner) { allRectifierFaults ->
-            Log.d("RectifierFaultInfoFragment", "observeRectifierFaults: ${Gson().toJson(allRectifierFaults)}")
             allRectifierFaults?.let {
                 updateRectifier5to16FaultUI(allRectifierFaults)
             }
@@ -122,7 +71,6 @@ class RectifierFaultInfoFragment : BaseFragment() {
 
     private fun observeRectifierTemperature() {
         appViewModel.allRectifierTemperature.observe(viewLifecycleOwner) { allRectifierTemperature ->
-            Log.d("RectifierFaultInfoFragment", "observeRectifierTemperature: ${Gson().toJson(allRectifierTemperature)}")
             allRectifierTemperature?.let {
                 updateRectifierTemperatureUI(allRectifierTemperature)
             }
@@ -167,26 +115,7 @@ class RectifierFaultInfoFragment : BaseFragment() {
                 tbRectifierTemperature.rectifier16Temp
             )
 
-            val rectifiers = listOf(
-                incRectifier1,
-                incRectifier2,
-                incRectifier3,
-                incRectifier4,
-                incRectifier5,
-                incRectifier6,
-                incRectifier7,
-                incRectifier8,
-                incRectifier9,
-                incRectifier10,
-                incRectifier11,
-                incRectifier12,
-                incRectifier13,
-                incRectifier14,
-                incRectifier15,
-                incRectifier16
-            )
-
-            rectifiers.forEachIndexed { index, rectifier ->
+            getRectifiersIncludeList().forEachIndexed { index, rectifier ->
                 rectifier.tvRectifierTemperature.text = getString(
                     R.string.lbl_rectifier_temperature_with_celcius,
                     rectifierTemps[index]
@@ -204,11 +133,25 @@ class RectifierFaultInfoFragment : BaseFragment() {
         }
     }
 
-    override fun setScreenHeaderViews() {
-        binding.incHeader.tvHeader.text = getString(R.string.lbl_rectifier_fault_information)
+    private fun getRectifiersIncludeList(): List<CommonRectifierFaultAndTempLayoutBinding> {
+        return listOf(
+            binding.incRectifier1,
+            binding.incRectifier2,
+            binding.incRectifier3,
+            binding.incRectifier4,
+            binding.incRectifier5,
+            binding.incRectifier6,
+            binding.incRectifier7,
+            binding.incRectifier8,
+            binding.incRectifier9,
+            binding.incRectifier10,
+            binding.incRectifier11,
+            binding.incRectifier12,
+            binding.incRectifier13,
+            binding.incRectifier14,
+            binding.incRectifier15,
+            binding.incRectifier16
+        )
     }
 
-    override fun setupViews() {}
-
-    override fun handleClicks() {}
 }

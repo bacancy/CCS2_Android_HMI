@@ -328,6 +328,13 @@
     <string name="msg_please_enter_value_between_200_1000">Por favor, introduzca un valor entre 200–1000</string>
     <string name="msg_please_enter_value_between_1_100">Por favor, introduzca un valor entre 1–100</string>
     <string name="lbl_rectifier_temperature_with_celcius">%1$d °C</string>
-    <string name="lbl_faults_alarm_counter">Faults Alarm Counter</string>
+    <string name="lbl_faults_alarm_counter">Contador de Alarmas de Fallos</string>
+    <string name="lbl_charger_serial_id">ID de Serie del Cargador - %1$s</string>
+    <string name="lbl_bluetooth_mac_address">Dirección MAC de Bluetooth - %1$s</string>
+    <string name="lbl_gun_1_temperature">Temperatura del Arma-1</string>
+    <string name="lbl_gun_2_temperature">Temperatura del Arma-2</string>
+    <string name="lbl_system_temperature">Temperatura del Sistema</string>
+    <string name="lbl_mains_low">Corriente Baja</string>
+    <string name="lbl_mains_high">Corriente Alta</string>
 
 </resources>
