@@ -330,7 +330,7 @@
     <string name="lbl_rectifier_temperature_with_celcius">%1$d °C</string>
     <string name="lbl_faults_alarm_counter">Compteur d\'Alarme de Défauts</string>
     <string name="lbl_charger_serial_id">ID Série du Chargeur - %1$s</string>
-    <string name="lbl_bluetooth_mac_address">Adresse MAC Bluetooth - %1$s</string>
+    <string name="lbl_bluetooth_mac_address">Adresse MAC de l\'Appareil - %1$s</string>
     <string name="lbl_gun_1_temperature">Température du Pistolet 1</string>
     <string name="lbl_gun_2_temperature">Température du Pistolet 2</string>
     <string name="lbl_system_temperature">Température du Système</string>

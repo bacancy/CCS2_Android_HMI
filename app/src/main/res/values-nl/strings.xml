@@ -330,7 +330,7 @@
     <string name="lbl_rectifier_temperature_with_celcius">%1$d °C</string>
     <string name="lbl_faults_alarm_counter">Fouten Alarmteller</string>
     <string name="lbl_charger_serial_id">Serienummer Lader - %1$s</string>
-    <string name="lbl_bluetooth_mac_address">Bluetooth MAC-adres - %1$s</string>
+    <string name="lbl_bluetooth_mac_address">MAC-adres van het Apparaat - %1$s</string>
     <string name="lbl_gun_1_temperature">Temperatuur Pistool-1</string>
     <string name="lbl_gun_2_temperature">Temperatuur Pistool-2</string>
     <string name="lbl_system_temperature">Systeemtemperatuur</string>

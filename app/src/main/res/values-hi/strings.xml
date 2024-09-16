@@ -332,7 +332,7 @@
     <string name="lbl_rectifier_temperature_with_celcius">%1$d °C</string>
     <string name="lbl_faults_alarm_counter">फॉल्ट्स अलार्म काउंटर</string>
     <string name="lbl_charger_serial_id">चार्जर सीरियल आईडी - %1$s</string>
-    <string name="lbl_bluetooth_mac_address">ब्लूटूथ मैक एड्रेस - %1$s</string>
+    <string name="lbl_bluetooth_mac_address">डिवाइस मैक एड्रेस - %1$s</string>
     <string name="lbl_gun_1_temperature">गन-1 तापमान</string>
     <string name="lbl_gun_2_temperature">गन-2 तापमान</string>
     <string name="lbl_system_temperature">सिस्टम तापमान</string>

@@ -26,6 +26,14 @@
             app:tint="?attr/viewThemeColor"
             android:src="@drawable/ic_settings" />
 
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/ivAmbientTemperature"
+            android:layout_width="@dimen/_16sdp"
+            android:layout_height="@dimen/_16sdp"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:contentDescription="@string/lbl_settings"
+            android:src="@drawable/ic_ambient_temp" />
+
         <TextView
             android:id="@+id/tvAmbientTemperature"
             android:layout_width="wrap_content"
@@ -33,6 +41,7 @@
             android:paddingHorizontal="@dimen/_3sdp"
             android:textSize="@dimen/_12ssp"
             android:textStyle="bold"
+            android:textColor="#1066bc"
             tools:text="25.3 C" />
 
         <androidx.appcompat.widget.AppCompatImageView
@@ -147,7 +156,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:contentDescription="@string/cd_servotech_logo" />
+        android:contentDescription="Statiq Logo" />
 
     <LinearLayout
         android:id="@+id/lnrNetworkStatus"
