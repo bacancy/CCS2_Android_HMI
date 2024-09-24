@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:padding="@dimen/_15sdp"
+    tools:context=".views.fragment.GunsHomeScreenFragment">
+
+    <ImageView
+        android:id="@+id/ivGun1"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:src="@drawable/ic_gun1_unplugged"
+        android:scaleType="centerCrop"
+        app:layout_constraintEnd_toStartOf="@id/ivGun2"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/ivGun2"
+        android:layout_width="0dp"
+        android:scaleType="centerCrop"
+        android:layout_height="match_parent"
+        android:src="@drawable/ic_gun2_unplugged"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/ivGun1" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

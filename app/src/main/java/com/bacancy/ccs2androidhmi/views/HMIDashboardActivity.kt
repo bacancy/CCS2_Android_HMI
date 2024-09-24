@@ -82,6 +82,7 @@ import com.bacancy.ccs2androidhmi.views.fragment.AppSettingsFragment
 import com.bacancy.ccs2androidhmi.views.fragment.DualSocketGunsMoreInformationFragment
 import com.bacancy.ccs2androidhmi.views.fragment.FirmwareVersionInfoFragment
 import com.bacancy.ccs2androidhmi.views.fragment.GunsHomeScreenFragment
+import com.bacancy.ccs2androidhmi.views.fragment.GunsHomeScreenNwFragment
 import com.bacancy.ccs2androidhmi.views.fragment.LocalStartStopFragment
 import com.bacancy.ccs2androidhmi.views.fragment.NewFaultInfoFragment
 import com.bacancy.ccs2androidhmi.views.fragment.TestModeHomeFragment
@@ -102,7 +103,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
     private lateinit var networkCallback: ConnectivityManager.NetworkCallback
     private lateinit var connectivityManager: ConnectivityManager
     private lateinit var serverPopup: Dialog
-    private lateinit var gunsHomeScreenFragment: GunsHomeScreenFragment
+    private lateinit var gunsHomeScreenFragment: GunsHomeScreenNwFragment
     private lateinit var binding: ActivityHmiDashboardBinding
     val handler = Handler(Looper.getMainLooper())
     private var sentErrorsList = mutableListOf<ErrorCodes>()
@@ -115,7 +116,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainer)
         if (currentFragment == null) {
             lifecycleScope.launch {
-                gunsHomeScreenFragment = GunsHomeScreenFragment()
+                gunsHomeScreenFragment = GunsHomeScreenNwFragment()
                 addNewFragment(gunsHomeScreenFragment)
             }
         }
