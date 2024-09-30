@@ -164,7 +164,7 @@ class GunsHomeScreenNwFragment : BaseFragment() {
                 //binding.tvGun1State.removeBlinking()
                 isGun1ChargingStarted = true
                 shouldShowGun1SummaryDialog = false
-                //binding.ivGun1Half.setImageResource(R.drawable.img_gun1_charging_completed)
+                binding.ivGun1.setImageResource(R.drawable.ic_gun1_charging)
             }
 
             LBL_PREPARING_FOR_CHARGING -> {
@@ -178,7 +178,7 @@ class GunsHomeScreenNwFragment : BaseFragment() {
             LBL_COMPLETE -> {
                 isGun1PluggedIn = false
                 //binding.tvGun1State.removeBlinking()
-                //binding.ivGun1Half.setImageResource(R.drawable.img_gun1_charging)
+                binding.ivGun1.setImageResource(R.drawable.ic_gun1_charging_completed)
             }
 
             LBL_PLC_FAULT,
@@ -189,7 +189,7 @@ class GunsHomeScreenNwFragment : BaseFragment() {
             LBL_TAMPER_FAULT -> {
                 isGun1PluggedIn = false
                 //binding.tvGun1State.startBlinking(requireContext())
-                //binding.ivGun1Half.setImageResource(R.drawable.img_gun1_fault)
+                binding.ivGun1.setImageResource(R.drawable.ic_gun1_fault)
             }
 
             LBL_EMERGENCY_STOP -> {
@@ -263,7 +263,6 @@ class GunsHomeScreenNwFragment : BaseFragment() {
             LBL_UNPLUGGED -> {
                 hideGunsSummaryDialog(false)
                 isGun2PluggedIn = false
-                //binding.tvGun2State.removeBlinking()
                 shouldShowGun2SummaryDialog = false
                 binding.ivGun2.setImageResource(R.drawable.ic_gun2_unplugged)
             }
@@ -274,13 +273,43 @@ class GunsHomeScreenNwFragment : BaseFragment() {
                 //binding.tvGun2State.removeBlinking()
                 shouldShowGun2SummaryDialog = false
                 binding.ivGun2.setImageResource(R.drawable.ic_gun2_plugged)
-                //binding.tvGun2State.text = getString(R.string.lbl_plugged_in)
+            }
+
+            LBL_CHARGING -> {
+                hideGunsSummaryDialog(false)
+                isGun2PluggedIn = false
+                isGun2ChargingStarted = true
+                shouldShowGun2SummaryDialog = false
+                binding.ivGun2.setImageResource(R.drawable.ic_gun2_charging)
+            }
+
+            LBL_PREPARING_FOR_CHARGING -> {
+                hideGunsSummaryDialog(false)
+                isGun2PluggedIn = false
+                shouldShowGun2SummaryDialog = false
+            }
+
+            LBL_COMPLETE -> {
+                isGun2PluggedIn = false
+                binding.ivGun2.setImageResource(R.drawable.ic_gun2_charging_completed)
+            }
+
+            LBL_PLC_FAULT,
+            LBL_RECTIFIER_FAULT,
+            LBL_TEMPERATURE_FAULT,
+            LBL_SPD_FAULT,
+            LBL_SMOKE_FAULT,
+            LBL_TAMPER_FAULT -> {
+                isGun1PluggedIn = false
+                binding.ivGun2.setImageResource(R.drawable.ic_gun2_fault)
+            }
+
+            LBL_EMERGENCY_STOP -> {
+                isGun1PluggedIn = false
             }
 
             else -> {
                 isGun2PluggedIn = false
-                //binding.tvGun2State.startBlinking(requireContext())
-                //binding.tvGun2State.text = "(${tbGunsChargingInfo.gunChargingStateToShow})"
             }
         }
 

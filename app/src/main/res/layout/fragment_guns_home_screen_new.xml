@@ -13,16 +13,16 @@
         android:id="@+id/ivGun1"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:src="@drawable/ic_gun1_unplugged"
         android:scaleType="centerCrop"
+        android:src="@drawable/ic_gun1_unplugged"
         app:layout_constraintEnd_toStartOf="@id/ivGun2"
         app:layout_constraintStart_toStartOf="parent" />
 
     <ImageView
         android:id="@+id/ivGun2"
         android:layout_width="0dp"
-        android:scaleType="centerCrop"
         android:layout_height="match_parent"
+        android:scaleType="centerCrop"
         android:src="@drawable/ic_gun2_unplugged"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/ivGun1" />
