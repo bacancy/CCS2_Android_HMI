@@ -79,7 +79,7 @@ class GunsHomeScreenFragment : BaseFragment() {
     @Inject
     lateinit var prefHelper: PrefHelper
 
-    private val mqttViewModel: MQTTViewModel by activityViewModels()
+    private val mqttViewModel: MQTTViewModel by viewModels()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
