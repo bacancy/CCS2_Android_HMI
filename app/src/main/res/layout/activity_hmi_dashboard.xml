@@ -32,6 +32,7 @@
         android:textColor="@color/white"
         android:textSize="@dimen/_8ssp"
         android:textStyle="bold"
+        android:visibility="gone"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         android:text="@string/lbl_dual_socket" />

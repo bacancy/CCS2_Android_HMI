@@ -6,5 +6,7 @@ object AppConfig {
     const val SHOW_LOCAL_START_STOP = true
     const val SHOW_TEST_MODE = true
     const val SHOW_EXPORT_CHARGING_HISTORY = true
+    const val SHOW_DUAL_SOCKET = false
+    const val SHOW_SESSION_MODE = false
 
 }

@@ -43,6 +43,7 @@ import com.bacancy.ccs2androidhmi.mqtt.ServerConstants.getTopicBtoA
 import com.bacancy.ccs2androidhmi.mqtt.models.ActiveDeactiveChargerMessageBody
 import com.bacancy.ccs2androidhmi.mqtt.models.ShowPopupMessageBody
 import com.bacancy.ccs2androidhmi.receiver.MyDeviceAdminReceiver
+import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_DUAL_SOCKET
 import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_LOCAL_START_STOP
 import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_TEST_MODE
 import com.bacancy.ccs2androidhmi.util.CommonUtils
@@ -129,6 +130,10 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         binding = ActivityHmiDashboardBinding.inflate(layoutInflater)
         setContentView(binding.root)
         prefHelper.setBoolean(IS_APP_RESTARTED, true)
+
+        if(SHOW_DUAL_SOCKET){
+            binding.tvDualSocket.visible()
+        }
 
         handleClicks()
 
@@ -778,10 +783,12 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
     }
 
     fun showHideDualSocketButton(showDualSocket: Boolean = false) {
-        if (showDualSocket) {
-            binding.tvDualSocket.visible()
-        } else {
-            binding.tvDualSocket.invisible()
+        if(SHOW_DUAL_SOCKET){
+            if (showDualSocket) {
+                binding.tvDualSocket.visible()
+            } else {
+                binding.tvDualSocket.invisible()
+            }
         }
     }
 
