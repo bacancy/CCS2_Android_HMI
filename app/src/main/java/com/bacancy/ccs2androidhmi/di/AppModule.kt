@@ -5,6 +5,7 @@ import com.bacancy.ccs2androidhmi.db.AppDatabase
 import com.bacancy.ccs2androidhmi.mqtt.MQTTClient
 import com.bacancy.ccs2androidhmi.mqtt.ServerConstants.MQTT_CLIENT_ID
 import com.bacancy.ccs2androidhmi.mqtt.ServerConstants.MQTT_SERVER_URI
+import com.bacancy.ccs2androidhmi.network.ApiService
 import com.bacancy.ccs2androidhmi.repository.MainRepository
 import com.bacancy.ccs2androidhmi.util.PrefHelper
 import dagger.Module
@@ -20,8 +21,8 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideMainRepository(appDatabase: AppDatabase): MainRepository {
-        return MainRepository(appDatabase)
+    fun provideMainRepository(appDatabase: AppDatabase, apiService: ApiService): MainRepository {
+        return MainRepository(appDatabase, apiService)
     }
 
     @Provides

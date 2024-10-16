@@ -11,10 +11,14 @@ import com.bacancy.ccs2androidhmi.db.entity.TbGunsDcMeterInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsLastChargingSummary
 import com.bacancy.ccs2androidhmi.db.entity.TbMiscInfo
 import com.bacancy.ccs2androidhmi.db.entity.TbNotifications
+import com.bacancy.ccs2androidhmi.network.ApiService
+import com.bacancy.ccs2androidhmi.network.models.LoginRequest
+import com.bacancy.ccs2androidhmi.network.models.LoginResponse
 import kotlinx.coroutines.flow.Flow
+import retrofit2.Response
 import javax.inject.Inject
 
-class MainRepository @Inject constructor(private val appDatabase: AppDatabase) {
+class MainRepository @Inject constructor(private val appDatabase: AppDatabase, private val apiService: ApiService) {
 
     suspend fun insertChargingSummary(chargingSummary: TbChargingHistory){
         appDatabase.appDao().insertSummary(chargingSummary)
@@ -97,6 +101,10 @@ class MainRepository @Inject constructor(private val appDatabase: AppDatabase) {
 
     fun getAllConfigurationParameters(): LiveData<List<TbConfigurationParameters>> {
         return appDatabase.appDao().getAllConfigurationParameters()
+    }
+
+    suspend fun login(loginRequest: LoginRequest): Response<LoginResponse> {
+        return apiService.login(loginRequest)
     }
 
 }

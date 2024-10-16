@@ -4,14 +4,20 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentAppSettingsBinding
+import com.bacancy.ccs2androidhmi.network.models.LoginRequest
 import com.bacancy.ccs2androidhmi.util.AppConfig
 import com.bacancy.ccs2androidhmi.util.CommonUtils
 import com.bacancy.ccs2androidhmi.util.CommonUtils.CDM_CONFIG_OPTION_ENTERED
+import com.bacancy.ccs2androidhmi.util.CommonUtils.LOADING
+import com.bacancy.ccs2androidhmi.util.CommonUtils.SUCCESS
+import com.bacancy.ccs2androidhmi.util.DialogUtils.showLoginDialog
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showSelectAppLanguageDialog
 import com.bacancy.ccs2androidhmi.util.LanguageConfig.getLanguageName
 import com.bacancy.ccs2androidhmi.util.LanguageConfig.setAppLanguage
@@ -21,6 +27,9 @@ import com.bacancy.ccs2androidhmi.viewmodel.AppViewModel
 import com.bacancy.ccs2androidhmi.views.HMIDashboardActivity
 import com.bacancy.ccs2androidhmi.views.adapters.AppSettingsAdapter
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -54,7 +63,7 @@ class AppSettingsFragment : BaseFragment() {
 
     private fun setupSettingsList() {
 
-       requireActivity().setupLanguagesList()
+        requireActivity().setupLanguagesList()
 
         binding.rvSettings.apply {
             layoutManager = GridLayoutManager(requireContext(), 3)
@@ -72,33 +81,27 @@ class AppSettingsFragment : BaseFragment() {
                     }
 
                     SET_03 -> {
-                        (requireActivity() as HMIDashboardActivity).addNewFragment(
-                            NewFaultInfoFragment()
-                        )
+                        openNewSettings(NewFaultInfoFragment())
                     }
 
                     SET_04 -> {
-                        (requireActivity() as HMIDashboardActivity).addNewFragment(
-                            FirmwareVersionInfoFragment()
-                        )
+                        openNewSettings(FirmwareVersionInfoFragment())
                     }
 
                     SET_05 -> {
-                        (requireActivity() as HMIDashboardActivity).addNewFragment(
-                            LocalStartStopFragment()
-                        )
+                        validateUserAndOpenFragment {
+                            openNewSettings(LocalStartStopFragment())
+                        }
                     }
 
                     SET_06 -> {
-                        (requireActivity() as HMIDashboardActivity).addNewFragment(
-                            TestModeHomeFragment()
-                        )
+                        validateUserAndOpenFragment {
+                            openNewSettings(TestModeHomeFragment())
+                        }
                     }
 
                     SET_07 -> {
-                        (requireActivity() as HMIDashboardActivity).addNewFragment(
-                            AppNotificationsFragment()
-                        )
+                        openNewSettings(AppNotificationsFragment())
                     }
 
                     SET_08 -> {
@@ -109,7 +112,46 @@ class AppSettingsFragment : BaseFragment() {
                     }
 
                     SET_09 -> {
-                        prefHelper.setBoolean(CDM_CONFIG_OPTION_ENTERED, true)
+                        validateUserAndOpenFragment {
+                            prefHelper.setBoolean(CDM_CONFIG_OPTION_ENTERED, true)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun openNewSettings(fragment: Fragment) {
+        (requireActivity() as HMIDashboardActivity).addNewFragment(
+            fragment
+        )
+    }
+
+    private fun validateUserAndOpenFragment(onSuccess: () -> Unit) {
+        requireActivity().showLoginDialog { dialog, loginBinding, username, password ->
+            lifecycleScope.launch(Dispatchers.IO) {
+                appViewModel.login(LoginRequest(username, password))
+                withContext(Dispatchers.Main) {
+                    appViewModel.loginResponse.collect { response ->
+                        when (response) {
+                            LOADING -> {
+                                loginBinding.tvPopupTitle.text = getString(R.string.lbl_loading)
+                                loginBinding.btnSubmit.isEnabled = false
+                            }
+
+                            SUCCESS -> {
+                                loginBinding.tvPopupTitle.text = getString(R.string.lbl_login)
+                                loginBinding.btnSubmit.isEnabled = true
+                                dialog.dismiss()
+                                onSuccess()
+                            }
+
+                            else -> {
+                                loginBinding.tvPopupTitle.text =
+                                    getString(R.string.msg_login_failed)
+                                loginBinding.btnSubmit.isEnabled = true
+                            }
+                        }
                     }
                 }
             }
@@ -118,7 +160,10 @@ class AppSettingsFragment : BaseFragment() {
 
     private fun getSettingsList(): List<Pair<String, String>> {
 
-        val appLanguageTitle = getString(R.string.lbl_change_app_language, requireActivity().getLanguageName(prefHelper))
+        val appLanguageTitle = getString(
+            R.string.lbl_change_app_language,
+            requireActivity().getLanguageName(prefHelper)
+        )
 
         val switchModeTitle = if (prefHelper.getBoolean(
                 PrefHelper.IS_DARK_THEME,

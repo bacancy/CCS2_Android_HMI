@@ -58,6 +58,8 @@ dependencies {
     val hiltCompilerVersion = "1.1.0"
     val sdpVersion = "1.0.6"
     val sspVersion = "1.0.6"
+    val retrofitVersion = "2.9.0"
+    val okhttpVersion = "4.10.0"
 
     //Room Database
     implementation("androidx.room:room-runtime:$roomVersion")
@@ -72,7 +74,12 @@ dependencies {
     //For using "by viewModels()"
     implementation("androidx.fragment:fragment-ktx:1.6.2")
 
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    //For making HTTP API calls
+    implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
+    implementation("com.squareup.retrofit2:converter-gson:$retrofitVersion")
+    implementation("com.squareup.okhttp3:okhttp:$okhttpVersion")
+    implementation("com.squareup.okhttp3:logging-interceptor:$okhttpVersion")
+
 
     //SDP and SSP for responsive design
     implementation("com.intuit.sdp:sdp-android:$sdpVersion")

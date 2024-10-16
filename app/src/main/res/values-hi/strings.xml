@@ -329,5 +329,11 @@
     <string name="msg_please_enter_value_between_1_50">कृपया 1–50 के बीच मान दर्ज करें</string>
     <string name="msg_please_enter_value_between_200_1000">कृपया 200–1000 के बीच मान दर्ज करें</string>
     <string name="msg_please_enter_value_between_1_100">कृपया 1–100 के बीच मान दर्ज करें</string>
-
+    <string name="lbl_login">लॉग इन करें</string>
+    <string name="hint_username">उपयोगकर्ता नाम</string>
+    <string name="hint_password">पासवर्ड</string>
+    <string name="msg_please_enter_username">कृपया मान्य उपयोगकर्ता नाम दर्ज करें</string>
+    <string name="msg_please_enter_password">कृपया मान्य पासवर्ड दर्ज करें</string>
+    <string name="lbl_loading">लोड हो रहा है…</string>
+    <string name="msg_login_failed">लॉगिन विफल</string>
 </resources>

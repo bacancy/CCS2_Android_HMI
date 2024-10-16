@@ -329,5 +329,11 @@
     <string name="msg_please_enter_value_between_1_50">يرجى إدخال قيمة بين 1-50</string>
     <string name="msg_please_enter_value_between_200_1000">يرجى إدخال قيمة بين 200-1000</string>
     <string name="msg_please_enter_value_between_1_100">يرجى إدخال قيمة بين 1-100</string>
-
+    <string name="lbl_login">تسجيل الدخول</string>
+    <string name="hint_username">اسم المستخدم</string>
+    <string name="hint_password">كلمة المرور</string>
+    <string name="msg_please_enter_username">يرجى إدخال اسم مستخدم صالح</string>
+    <string name="msg_please_enter_password">يرجى إدخال كلمة مرور صالحة</string>
+    <string name="lbl_loading">جار التحميل…</string>
+    <string name="msg_login_failed">فشل تسجيل الدخول</string>
 </resources>

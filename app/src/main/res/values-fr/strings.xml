@@ -327,5 +327,11 @@
     <string name="msg_please_enter_value_between_1_50">Veuillez entrer une valeur entre 1 et 50</string>
     <string name="msg_please_enter_value_between_200_1000">Veuillez entrer une valeur entre 200 et 1000</string>
     <string name="msg_please_enter_value_between_1_100">Veuillez entrer une valeur entre 1 et 100</string>
-
+    <string name="lbl_login">Connexion</string>
+    <string name="hint_username">Nom d\'utilisateur</string>
+    <string name="hint_password">Mot de passe</string>
+    <string name="msg_please_enter_username">Veuillez entrer un nom d\'utilisateur valide</string>
+    <string name="msg_please_enter_password">Veuillez entrer un mot de passe valide</string>
+    <string name="lbl_loading">Chargement…</string>
+    <string name="msg_login_failed">Échec de la connexion</string>
 </resources>

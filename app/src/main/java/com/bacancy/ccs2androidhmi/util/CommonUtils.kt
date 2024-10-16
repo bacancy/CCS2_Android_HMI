@@ -72,6 +72,13 @@ object CommonUtils {
     const val CODE_FAULT_DETECTION = 5
     const val CODE_TOTAL_REACTIVE_ENERGY = 6
 
+    //Network Constants
+    const val BASE_URL = "https://backend.evbac.com/api/v1/"
+    const val LOGIN_ENDPOINT = "users/login"
+    const val LOADING = "Loading"
+    const val SUCCESS = "Success"
+    const val FAILED = "Failed"
+
     private fun swapAdjacentElements(array: MutableList<Int>): MutableList<Int> {
         for (i in 0 until array.size - 1 step 2) {
             // Swap adjacent elements

@@ -13,6 +13,7 @@ import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentGunsMoreInfoScreenBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbGunsChargingInfo
 import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_PIN_AUTHORIZATION
+import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_SESSION_MODE
 import com.bacancy.ccs2androidhmi.util.CommonUtils
 import com.bacancy.ccs2androidhmi.util.CommonUtils.AUTH_PIN_VALUE
 import com.bacancy.ccs2androidhmi.util.CommonUtils.GUN_1_SELECTED_SESSION_MODE
@@ -183,18 +184,20 @@ class GunsMoreInformationFragment : BaseFragment() {
     }
 
     private fun handleStartStopButtonVisibility(shouldDisplayShow: Boolean, isCharging: Boolean){
-        binding.apply {
-            if (shouldDisplayShow) {
-                btnStartStopCharging.visible()
-                if(isCharging){
-                    btnStartStopCharging.text = getString(R.string.lbl_stop)
-                    btnStartStopCharging.setBackgroundResource(R.drawable.stop_rounded_rect_selected)
+        if(SHOW_SESSION_MODE){
+            binding.apply {
+                if (shouldDisplayShow) {
+                    btnStartStopCharging.visible()
+                    if(isCharging){
+                        btnStartStopCharging.text = getString(R.string.lbl_stop)
+                        btnStartStopCharging.setBackgroundResource(R.drawable.stop_rounded_rect_selected)
+                    } else {
+                        btnStartStopCharging.text = getString(R.string.lbl_start)
+                        btnStartStopCharging.setBackgroundResource(R.drawable.start_rounded_rect_selected)
+                    }
                 } else {
-                    btnStartStopCharging.text = getString(R.string.lbl_start)
-                    btnStartStopCharging.setBackgroundResource(R.drawable.start_rounded_rect_selected)
+                    btnStartStopCharging.gone()
                 }
-            } else {
-                btnStartStopCharging.gone()
             }
         }
     }

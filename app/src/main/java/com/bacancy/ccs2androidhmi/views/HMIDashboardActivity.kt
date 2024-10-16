@@ -43,6 +43,7 @@ import com.bacancy.ccs2androidhmi.mqtt.ServerConstants.getTopicBtoA
 import com.bacancy.ccs2androidhmi.mqtt.models.ActiveDeactiveChargerMessageBody
 import com.bacancy.ccs2androidhmi.mqtt.models.ShowPopupMessageBody
 import com.bacancy.ccs2androidhmi.receiver.MyDeviceAdminReceiver
+import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_DUAL_SOCKET
 import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_LOCAL_START_STOP
 import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_TEST_MODE
 import com.bacancy.ccs2androidhmi.util.CommonUtils
@@ -140,7 +141,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
         showHideHomeIcon()
 
-        showHideDualSocketButton(true)
+        showHideDualSocketButton()
 
         startMQTTConnection()
 
@@ -153,15 +154,21 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
     private fun loadClientLogoFromDownloads() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-            != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 101)
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                101
+            )
         } else {
             loadImage()
         }
     }
 
     private fun loadImage(imageName: String = "ccs2_hmi_logo") {
-        val downloadsDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+        val downloadsDirectory =
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
 
         val potentialFilePaths = listOf(
             File(downloadsDirectory, "$imageName.jpg"),
@@ -182,10 +189,15 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         binding.incToolbar.ivLogo.setImageResource(R.drawable.sample_logo)//replace with sample_logo
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == 101 && grantResults.isNotEmpty() &&
-            grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            grantResults[0] == PackageManager.PERMISSION_GRANTED
+        ) {
             loadImage()
         } else {
             showToast("Enable permission to load client logo")
@@ -314,8 +326,10 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
                         )
                     )
                 }
-                val abnormalErrorsList = errorCodeDomainList.filter { it.errorCodeValue == 1 }.toMutableList()
-                val resolvedErrorsList = errorCodeDomainList.filter { it.errorCodeValue == 0 }.toMutableList()
+                val abnormalErrorsList =
+                    errorCodeDomainList.filter { it.errorCodeValue == 1 }.toMutableList()
+                val resolvedErrorsList =
+                    errorCodeDomainList.filter { it.errorCodeValue == 0 }.toMutableList()
 
                 if (abnormalErrorsList.size == resolvedErrorsList.size || abnormalErrorsList.isEmpty()) {
                     sentErrorsList = mutableListOf()
@@ -650,27 +664,31 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
     private fun handleClicks() {
 
         binding.tvDualSocket.setOnClickListener {
-            if(binding.tvDualSocket.tag == "DISABLED"){
+            if (binding.tvDualSocket.tag == "DISABLED") {
                 val dialog = showCustomDialog(
                     getString(R.string.msg_to_inform_about_dual_socket),
                     "info"
                 ) {}
                 dialog.show()
                 clearDialogFlags(dialog)
-            }else{
+            } else {
                 if (binding.tvDualSocket.text == getString(R.string.lbl_dual_socket)) {
                     showCustomDialogForAreYouSure(
-                        getString(R.string.msg_to_confirm_to_switch_to_dual_socket),isCancelable = false,
+                        getString(R.string.msg_to_confirm_to_switch_to_dual_socket),
+                        isCancelable = false,
                         {
                             prefHelper.setBoolean(IS_DUAL_SOCKET_MODE_SELECTED, true)
                             addNewFragment(DualSocketGunsMoreInformationFragment())
-                        }, {})
+                        },
+                        {})
                 } else if (binding.tvDualSocket.text == getString(R.string.single_socket)) {
                     showCustomDialogForAreYouSure(
-                        getString(R.string.msg_to_confirm_to_switch_to_single_socket),isCancelable = false,
+                        getString(R.string.msg_to_confirm_to_switch_to_single_socket),
+                        isCancelable = false,
                         {
                             goBack()
-                        }, {})
+                        },
+                        {})
                 }
             }
 
@@ -683,12 +701,12 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         }
 
         binding.incToolbar.ivSettings.setOnClickListener {
-            //addNewFragment(AppSettingsFragment())
-            showPasswordPromptDialog(getString(R.string.title_authorize_for_settings),isCancelable = true, {
+            addNewFragment(AppSettingsFragment())
+            /*showPasswordPromptDialog(getString(R.string.title_authorize_for_settings),isCancelable = true, {
                 addNewFragment(AppSettingsFragment())
             }, {
                 showCustomToast(getString(R.string.msg_invalid_password), false)
-            }, password = APP_SETTINGS_PIN)
+            }, password = APP_SETTINGS_PIN)*/
         }
 
         binding.incToolbar.imgBack.setOnClickListener {
@@ -704,19 +722,27 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         }
 
         binding.incToolbar.ivLocalStartStop.setOnClickListener {
-            showPasswordPromptDialog(getString(R.string.title_authorize_for_local_start_stop),isCancelable = true, {
-                addNewFragment(LocalStartStopFragment())
-            }, {
-                showCustomToast(getString(R.string.msg_invalid_password), false)
-            })
+            showPasswordPromptDialog(
+                getString(R.string.title_authorize_for_local_start_stop),
+                isCancelable = true,
+                {
+                    addNewFragment(LocalStartStopFragment())
+                },
+                {
+                    showCustomToast(getString(R.string.msg_invalid_password), false)
+                })
         }
 
         binding.incToolbar.ivTestMode.setOnClickListener {
-            showPasswordPromptDialog(getString(R.string.title_authorize_for_test_mode),isCancelable = true, {
-                addNewFragment(TestModeHomeFragment())
-            }, {
-                showCustomToast(getString(R.string.msg_invalid_password), false)
-            })
+            showPasswordPromptDialog(
+                getString(R.string.title_authorize_for_test_mode),
+                isCancelable = true,
+                {
+                    addNewFragment(TestModeHomeFragment())
+                },
+                {
+                    showCustomToast(getString(R.string.msg_invalid_password), false)
+                })
         }
 
         binding.incToolbar.ivFaultInfo.setOnClickListener {
@@ -777,8 +803,8 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
         }
     }
 
-    fun showHideDualSocketButton(showDualSocket: Boolean = false) {
-        if (showDualSocket) {
+    private fun showHideDualSocketButton() {
+        if (SHOW_DUAL_SOCKET) {
             binding.tvDualSocket.visible()
         } else {
             binding.tvDualSocket.invisible()
@@ -832,7 +858,8 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
     private fun updateTimerUI() {
         val currentTime = Calendar.getInstance().time
-        val locale = if(resources.configuration.locales.size()>0) resources.configuration.locales[0] else Locale.ENGLISH
+        val locale =
+            if (resources.configuration.locales.size() > 0) resources.configuration.locales[0] else Locale.ENGLISH
         val dateFormat = SimpleDateFormat(CommonUtils.CLOCK_DATE_AND_TIME_FORMAT, locale)
         val formattedDate = dateFormat.format(currentTime)
         binding.incToolbar.tvDateTime.text = formattedDate.uppercase()

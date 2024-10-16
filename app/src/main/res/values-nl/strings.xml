@@ -327,5 +327,11 @@
     <string name="msg_please_enter_value_between_1_50">Voer een waarde tussen 1–50 in</string>
     <string name="msg_please_enter_value_between_200_1000">Voer een waarde tussen 200–1000 in</string>
     <string name="msg_please_enter_value_between_1_100">Voer een waarde tussen 1–100 in</string>
-
+    <string name="lbl_login">Inloggen</string>
+    <string name="hint_username">Gebruikersnaam</string>
+    <string name="hint_password">Wachtwoord</string>
+    <string name="msg_please_enter_username">Voer een geldige gebruikersnaam in</string>
+    <string name="msg_please_enter_password">Voer een geldig wachtwoord in</string>
+    <string name="lbl_loading">Bezig met laden…</string>
+    <string name="msg_login_failed">Inloggen mislukt</string>
 </resources>

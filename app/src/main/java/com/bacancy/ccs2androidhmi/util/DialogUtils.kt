@@ -7,6 +7,7 @@ import android.os.Build
 import android.text.Editable
 import android.text.InputFilter
 import android.text.InputType
+import android.text.TextUtils
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
@@ -22,6 +23,7 @@ import com.bacancy.ccs2androidhmi.databinding.CustomDialogAreYouSureBinding
 import com.bacancy.ccs2androidhmi.databinding.CustomDialogBinding
 import com.bacancy.ccs2androidhmi.databinding.CustomLoadingDialogBinding
 import com.bacancy.ccs2androidhmi.databinding.DialogGunsChargingSummaryBinding
+import com.bacancy.ccs2androidhmi.databinding.DialogLoginBinding
 import com.bacancy.ccs2androidhmi.databinding.DialogPasswordPromptBinding
 import com.bacancy.ccs2androidhmi.databinding.DialogPinAuthorizationBinding
 import com.bacancy.ccs2androidhmi.databinding.DialogSelectAppLanguageBinding
@@ -74,10 +76,12 @@ object DialogUtils {
                     ivMessageType.visible()
                     ivMessageType.setImageResource(R.drawable.ic_info)
                 }
+
                 "warning" -> {
                     ivMessageType.visible()
                     ivMessageType.setImageResource(R.drawable.ic_warning)
                 }
+
                 else -> {
                     ivMessageType.invisible()
                 }
@@ -93,7 +97,12 @@ object DialogUtils {
         return dialog
     }
 
-    fun Activity.showCustomDialogForAreYouSure(message: String,isCancelable: Boolean = false, onYesClicked: () -> Unit, onNoClicked: () -> Unit) {
+    fun Activity.showCustomDialogForAreYouSure(
+        message: String,
+        isCancelable: Boolean = false,
+        onYesClicked: () -> Unit,
+        onNoClicked: () -> Unit
+    ) {
         val dialog = Dialog(this, R.style.CustomAlertDialog)
         dialog.setupWithoutTitle()
         val binding = CustomDialogAreYouSureBinding.inflate(layoutInflater)
@@ -190,7 +199,10 @@ object DialogUtils {
                 incEndSOC.tvSummaryValue.text = endSoc
                 incEnergyConsumption.tvSummaryValue.text = energyConsumption
                 incSessionEndReason.tvSummaryValue.text = sessionEndReason
-                incSessionTotalCost.tvSummaryValue.text = getString(R.string.lbl_gun_total_cost_in_rs, if(totalCost.isEmpty()) 0.0F else totalCost.toFloat())
+                incSessionTotalCost.tvSummaryValue.text = getString(
+                    R.string.lbl_gun_total_cost_in_rs,
+                    if (totalCost.isEmpty()) 0.0F else totalCost.toFloat()
+                )
             }
             btnClose.setOnClickListener {
                 dialog.dismiss()
@@ -234,6 +246,36 @@ object DialogUtils {
         clearDialogFlags(dialog)
     }
 
+    fun Activity.showLoginDialog(
+        onSubmit: (Dialog,DialogLoginBinding,String, String) -> Unit,
+    ) {
+        val dialog = Dialog(this, R.style.CustomAlertDialog)
+        dialog.setupWithoutTitle()
+        val binding = DialogLoginBinding.inflate(layoutInflater)
+        dialog.setContentView(binding.root)
+
+        binding.apply {
+            btnSubmit.setOnClickListener {
+                val enteredUsername = edtUsername.text.toString()
+                val enteredPassword = edtPassword.text.toString()
+                if (TextUtils.isEmpty(enteredUsername)) {
+                    edtUsername.error = getString(R.string.msg_please_enter_username)
+                    edtUsername.requestFocus()
+                } else if (TextUtils.isEmpty(enteredPassword)) {
+                    edtPassword.error = getString(R.string.msg_please_enter_password)
+                    edtPassword.requestFocus()
+                } else {
+                    onSubmit(dialog, binding, enteredUsername, enteredPassword)
+                }
+            }
+        }
+
+        dialog.setCancelable(true)
+        dialog.setupDialogFlags()
+        dialog.show()
+        clearDialogFlags(dialog)
+    }
+
     fun Fragment.showPinAuthorizationDialog(
         onSuccess: (String) -> Unit,
         onFailed: () -> Unit
@@ -270,9 +312,10 @@ object DialogUtils {
             this.window?.let { window ->
                 val controller = window.decorView.windowInsetsController
                 controller?.hide(WindowInsets.Type.navigationBars() or WindowInsets.Type.statusBars())
-                controller?.systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                controller?.systemBarsBehavior =
+                    WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
                 window.setLayout(
-                    if(isMatchParent) WindowManager.LayoutParams.MATCH_PARENT else WindowManager.LayoutParams.WRAP_CONTENT,
+                    if (isMatchParent) WindowManager.LayoutParams.MATCH_PARENT else WindowManager.LayoutParams.WRAP_CONTENT,
                     WindowManager.LayoutParams.WRAP_CONTENT
                 )
             }
@@ -286,7 +329,10 @@ object DialogUtils {
                     View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
             this.window?.decorView?.systemUiVisibility = uiFlags
         }
-        this.window?.setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
+        this.window?.setFlags(
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+        )
     }
 
     fun Context.clearDialogFlags(dialog: Dialog) {
@@ -295,7 +341,7 @@ object DialogUtils {
         wm.updateViewLayout(dialog.window?.decorView, dialog.window?.attributes)
     }
 
-    private fun Dialog.setupWithoutTitle(){
+    private fun Dialog.setupWithoutTitle() {
         this.requestWindowFeature(Window.FEATURE_NO_TITLE)
     }
 
@@ -315,7 +361,7 @@ object DialogUtils {
                 if (!radioByAuto.isChecked && edtSessionModeValue.text.isEmpty()) {
                     edtSessionModeValue.error = getString(R.string.msg_please_enter_value)
                     return@setOnClickListener
-                } else if(!validateSelectedValueRange()){
+                } else if (!validateSelectedValueRange()) {
                     edtSessionModeValue.error = getString(R.string.msg_value_must_be_in_range)
                     return@setOnClickListener
                 }
@@ -330,7 +376,8 @@ object DialogUtils {
                     radioByEnergy to 3
                 )
 
-                val selectedRadioButton = radioButtonMap.entries.find { it.key.isChecked }?.value ?: 0
+                val selectedRadioButton =
+                    radioButtonMap.entries.find { it.key.isChecked }?.value ?: 0
                 onSuccess(selectedRadioButton, sessionModeValue)
                 dialog.dismiss()
             }
@@ -343,8 +390,8 @@ object DialogUtils {
             radioByAuto.setOnCheckedChangeListener { _, isClicked ->
                 if (isClicked) {
                     lnrAuto.setBackgroundResource(R.drawable.radio_auto_rounded_rect_selected)
-                    handleRadioButtonSelection(this@showSessionModeDialog,radioByAuto)
-                }else{
+                    handleRadioButtonSelection(this@showSessionModeDialog, radioByAuto)
+                } else {
                     lnrAuto.setBackgroundResource(R.drawable.radio_auto_rounded_rect)
                 }
             }
@@ -352,8 +399,8 @@ object DialogUtils {
             radioByTime.setOnCheckedChangeListener { _, isClicked ->
                 if (isClicked) {
                     lnrTime.setBackgroundResource(R.drawable.radio_time_rounded_rect_selected)
-                    handleRadioButtonSelection(this@showSessionModeDialog,radioByTime)
-                }else{
+                    handleRadioButtonSelection(this@showSessionModeDialog, radioByTime)
+                } else {
                     lnrTime.setBackgroundResource(R.drawable.radio_time_rounded_rect)
                 }
             }
@@ -361,8 +408,8 @@ object DialogUtils {
             radioByEnergy.setOnCheckedChangeListener { _, isClicked ->
                 if (isClicked) {
                     lnrEnergy.setBackgroundResource(R.drawable.radio_energy_rounded_rect_selected)
-                    handleRadioButtonSelection(this@showSessionModeDialog,radioByEnergy)
-                }else{
+                    handleRadioButtonSelection(this@showSessionModeDialog, radioByEnergy)
+                } else {
                     lnrEnergy.setBackgroundResource(R.drawable.radio_energy_rounded_rect)
                 }
             }
@@ -370,8 +417,8 @@ object DialogUtils {
             radioBySoc.setOnCheckedChangeListener { _, isClicked ->
                 if (isClicked) {
                     lnrSoC.setBackgroundResource(R.drawable.radio_soc_rounded_rect_selected)
-                    handleRadioButtonSelection(this@showSessionModeDialog,radioBySoc)
-                }else{
+                    handleRadioButtonSelection(this@showSessionModeDialog, radioBySoc)
+                } else {
                     lnrSoC.setBackgroundResource(R.drawable.radio_soc_rounded_rect)
                 }
             }
@@ -394,7 +441,8 @@ object DialogUtils {
         dialog.setCanceledOnTouchOutside(false)
 
         binding.apply {
-            tvStartStopCharging.text = if (isStartCharging) getString(R.string.lbl_start_charging) else getString(R.string.lbl_stop_charging)
+            tvStartStopCharging.text =
+                if (isStartCharging) getString(R.string.lbl_start_charging) else getString(R.string.lbl_stop_charging)
 
             ivEnterOTP.setOnClickListener {
                 dialog.dismiss()
@@ -411,7 +459,10 @@ object DialogUtils {
         return dialog
     }
 
-    private fun DialogSessionModeSelectionBinding.checkValueInRange(minValue: Number, maxValue: Number): Boolean {
+    private fun DialogSessionModeSelectionBinding.checkValueInRange(
+        minValue: Number,
+        maxValue: Number
+    ): Boolean {
         val value = edtSessionModeValue.text.toString().toDoubleOrNull()
         return value != null && (value >= minValue.toDouble() && value <= maxValue.toDouble())
     }
@@ -429,7 +480,10 @@ object DialogUtils {
     private var energyTextWatcher: TextWatcher? = null
     private var socTextWatcher: TextWatcher? = null
 
-    private fun DialogSessionModeSelectionBinding.handleRadioButtonSelection(context: Context,selectedRadioButton: RadioButton) {
+    private fun DialogSessionModeSelectionBinding.handleRadioButtonSelection(
+        context: Context,
+        selectedRadioButton: RadioButton
+    ) {
         // List of all radio buttons
         val radioButtons = listOf(radioByAuto, radioByTime, radioByEnergy, radioBySoc)
 
@@ -454,7 +508,7 @@ object DialogUtils {
                     InputType.TYPE_CLASS_NUMBER,
                     InputFilter.LengthFilter(3)
                 ) { text ->
-                    validateTextValue(context,text, 1, 999)
+                    validateTextValue(context, text, 1, 999)
                 }
             }
 
@@ -465,7 +519,7 @@ object DialogUtils {
                     InputType.TYPE_CLASS_NUMBER,
                     InputFilter.LengthFilter(3)
                 ) { text ->
-                    validateTextValue(context,text, 1, 999)
+                    validateTextValue(context, text, 1, 999)
                 }
             }
 
@@ -476,7 +530,7 @@ object DialogUtils {
                     InputType.TYPE_CLASS_NUMBER,
                     InputFilter.LengthFilter(2)
                 ) { text ->
-                    validateTextValue(context,text, 1, 99)
+                    validateTextValue(context, text, 1, 99)
                 }
             }
         }

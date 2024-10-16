@@ -327,5 +327,11 @@
     <string name="msg_please_enter_value_between_1_50">Lütfen 1–50 arasında bir değer girin</string>
     <string name="msg_please_enter_value_between_200_1000">Lütfen 200–1000 arasında bir değer girin</string>
     <string name="msg_please_enter_value_between_1_100">Lütfen 1–100 arasında bir değer girin</string>
-
+    <string name="lbl_login">Giriş Yap</string>
+    <string name="hint_username">Kullanıcı Adı</string>
+    <string name="hint_password">Şifre</string>
+    <string name="msg_please_enter_username">Lütfen geçerli bir kullanıcı adı girin</string>
+    <string name="msg_please_enter_password">Lütfen geçerli bir şifre girin</string>
+    <string name="lbl_loading">Yükleniyor…</string>
+    <string name="msg_login_failed">Giriş Başarısız</string>
 </resources>
