@@ -206,7 +206,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
     override fun onResume() {
         super.onResume()
-        //loadClientLogoFromDownloads()//remove this when kiosk mode app is built
+        loadClientLogoFromDownloads()//remove this when kiosk mode app is built
         observeDeviceInternetStates()
         startClockTimer()
         //manageKioskMode()
