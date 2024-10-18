@@ -7,7 +7,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.bacancy.ccs2androidhmi.R
@@ -33,18 +32,18 @@ import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_EMERGENCY_STOP
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_ISOLATION_FAIL
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_MAINS_FAIL
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_PLC_FAULT
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.PLUGGED_IN
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_PRECHARGE_FAIL
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_PREPARING_FOR_CHARGING
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_RECTIFIER_FAULT
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_RESERVED
-import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.SELECTED_GUN
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_SMOKE_FAULT
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_SPD_FAULT
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_TAMPER_FAULT
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_TEMPERATURE_FAULT
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_UNAVAILABLE
 import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.LBL_UNPLUGGED
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.PLUGGED_IN
+import com.bacancy.ccs2androidhmi.util.GunsChargingInfoUtils.SELECTED_GUN
 import com.bacancy.ccs2androidhmi.util.NetworkUtils.isInternetConnected
 import com.bacancy.ccs2androidhmi.util.PrefHelper
 import com.bacancy.ccs2androidhmi.util.PrefHelper.Companion.IS_DARK_THEME
@@ -524,7 +523,7 @@ class GunsHomeScreenFragment : BaseFragment() {
                                         prefHelper.setStringValue(GUN_1_CHARGING_END_TIME, "")
                                     }
                                     summaryDialogGun1.show()
-                                    if(isAdded){
+                                    if (isAdded) {
                                         requireActivity().clearDialogFlags(summaryDialogGun1)
                                     }
                                 }
@@ -540,8 +539,8 @@ class GunsHomeScreenFragment : BaseFragment() {
                                         prefHelper.setStringValue(GUN_2_CHARGING_END_TIME, "")
                                     }
                                     summaryDialogGun2.show()
-                                    if(isAdded){
-                                        requireActivity().clearDialogFlags(summaryDialogGun1)
+                                    if (isAdded) {
+                                        requireActivity().clearDialogFlags(summaryDialogGun2)
                                     }
                                 }
                             }
