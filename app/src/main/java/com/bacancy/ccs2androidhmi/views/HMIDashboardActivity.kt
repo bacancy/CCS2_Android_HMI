@@ -186,7 +186,7 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
             }
         }
 
-        binding.incToolbar.ivLogo.setImageResource(R.drawable.sample_logo)//replace with sample_logo
+        binding.incToolbar.ivLogo.setImageResource(R.drawable.ic_statiq_logo)//replace with sample_logo
     }
 
     override fun onRequestPermissionsResult(
