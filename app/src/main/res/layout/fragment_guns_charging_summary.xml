@@ -5,66 +5,78 @@
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    android:padding="@dimen/_10sdp"
+    android:paddingHorizontal="@dimen/_10sdp"
+    android:paddingVertical="@dimen/_3sdp"
     tools:context=".views.fragment.GunsLastChargingSummaryFragment">
 
     <include
         android:id="@+id/incHeader"
         layout="@layout/common_header" />
 
-    <include
-        android:id="@+id/incEVMacAddress"
-        layout="@layout/common_summary_view"
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_3sdp" />
+        android:layout_height="match_parent">
 
-    <include
-        android:id="@+id/incChargingDuration"
-        layout="@layout/common_summary_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-    <include
-        android:id="@+id/incChargingStartDateTime"
-        layout="@layout/common_summary_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+            <include
+                android:id="@+id/incEVMacAddress"
+                layout="@layout/common_summary_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_3sdp" />
 
-    <include
-        android:id="@+id/incChargingEndDateTime"
-        layout="@layout/common_summary_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+            <include
+                android:id="@+id/incChargingDuration"
+                layout="@layout/common_summary_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
-    <include
-        android:id="@+id/incStartSOC"
-        layout="@layout/common_summary_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+            <include
+                android:id="@+id/incChargingStartDateTime"
+                layout="@layout/common_summary_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
-    <include
-        android:id="@+id/incEndSOC"
-        layout="@layout/common_summary_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+            <include
+                android:id="@+id/incChargingEndDateTime"
+                layout="@layout/common_summary_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
-    <include
-        android:id="@+id/incEnergyConsumption"
-        layout="@layout/common_summary_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+            <include
+                android:id="@+id/incStartSOC"
+                layout="@layout/common_summary_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
-    <include
-        android:id="@+id/incSessionEndReason"
-        layout="@layout/common_summary_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+            <include
+                android:id="@+id/incEndSOC"
+                layout="@layout/common_summary_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
-    <include
-        android:id="@+id/incTotalCost"
-        layout="@layout/common_summary_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+            <include
+                android:id="@+id/incEnergyConsumption"
+                layout="@layout/common_summary_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <include
+                android:id="@+id/incSessionEndReason"
+                layout="@layout/common_summary_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <include
+                android:id="@+id/incTotalCost"
+                layout="@layout/common_summary_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
 </LinearLayout>

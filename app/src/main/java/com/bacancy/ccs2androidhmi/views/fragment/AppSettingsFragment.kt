@@ -184,7 +184,7 @@ class AppSettingsFragment : BaseFragment() {
             SET_06 to getString(R.string.lbl_test_mode),
             SET_07 to getString(R.string.lbl_notifications),
             SET_08 to getString(R.string.charger_commissioning),
-            SET_09 to getString(R.string.cdm_configuration)
+            //SET_09 to getString(R.string.cdm_configuration)
         )
 
         if (!AppConfig.SHOW_LOCAL_START_STOP) {

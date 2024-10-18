@@ -54,7 +54,7 @@ class GunsChargingHistoryFragment : BaseFragment() {
     private fun handleViewsVisibility(hasHistoryData: Boolean = false) {
         binding.apply {
             if (SHOW_EXPORT_CHARGING_HISTORY && hasHistoryData) {
-                ivExportChargingHistory.visible()
+                ivExportChargingHistory.gone()
             } else {
                 ivExportChargingHistory.gone()
             }

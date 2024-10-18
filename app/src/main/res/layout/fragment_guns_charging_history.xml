@@ -22,6 +22,7 @@
             android:layout_width="@dimen/_20sdp"
             android:layout_height="@dimen/_20sdp"
             android:layout_gravity="end|center"
+            android:visibility="invisible"
             android:src="@drawable/baseline_download_for_offline_24"
             app:tint="?attr/viewThemeColor" />
     </FrameLayout>

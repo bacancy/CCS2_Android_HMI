@@ -147,7 +147,7 @@ class GunsLastChargingSummaryFragment : BaseFragment() {
 
             incTotalCost.tvSummaryLabel.text = getString(R.string.lbl_total_cost)
             incTotalCost.tvSummaryUnit.invisible()
-            incTotalCost.tvSummaryValue.text = ""
+            incTotalCost.tvSummaryValue.text = "₹0.0"
             incTotalCost.root.setBackgroundColor(resources.getColor(R.color.light_trans_sky_blue))
         }
     }
