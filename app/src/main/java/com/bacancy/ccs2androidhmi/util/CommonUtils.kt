@@ -1,5 +1,6 @@
 package com.bacancy.ccs2androidhmi.util
 
+import android.content.Context
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.getIntValueFromByte
 import com.bacancy.ccs2androidhmi.util.ModbusTypeConverter.hexStringToDecimal
 import com.google.gson.Gson
@@ -159,5 +160,9 @@ object CommonUtils {
 
         // Filter the items which occur only once
         return groupedMap.filter { it.value == 1 }.keys.toMutableList()
+    }
+
+    fun Context.getAppVersion(): String {
+        return this.packageManager.getPackageInfo(this.packageName, 0).versionName
     }
 }

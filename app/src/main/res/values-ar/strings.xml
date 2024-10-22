@@ -336,4 +336,5 @@
     <string name="msg_please_enter_password">يرجى إدخال كلمة مرور صالحة</string>
     <string name="lbl_loading">جار التحميل…</string>
     <string name="msg_login_failed">فشل تسجيل الدخول</string>
+    <string name="app_version">App Version: %s</string>
 </resources>

@@ -17,6 +17,7 @@ import com.bacancy.ccs2androidhmi.util.CommonUtils
 import com.bacancy.ccs2androidhmi.util.CommonUtils.CDM_CONFIG_OPTION_ENTERED
 import com.bacancy.ccs2androidhmi.util.CommonUtils.LOADING
 import com.bacancy.ccs2androidhmi.util.CommonUtils.SUCCESS
+import com.bacancy.ccs2androidhmi.util.CommonUtils.getAppVersion
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showLoginDialog
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showSelectAppLanguageDialog
 import com.bacancy.ccs2androidhmi.util.LanguageConfig.getLanguageName
@@ -50,7 +51,12 @@ class AppSettingsFragment : BaseFragment() {
         (requireActivity() as HMIDashboardActivity).showHideHomeIcon()
         (requireActivity() as HMIDashboardActivity).showHideSettingOptions()
         setupSettingsList()
+        setAppVersion()
         return binding.root
+    }
+
+    private fun setAppVersion() {
+        binding.tvAppVersion.text = getString(R.string.app_version, requireActivity().getAppVersion())
     }
 
     override fun setScreenHeaderViews() {

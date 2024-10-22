@@ -8,9 +8,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.databinding.RowItemChargingHistoryBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbChargingHistory
+import com.bacancy.ccs2androidhmi.models.ChargingHistoryDomainModel
 
-class ChargingHistoryListAdapter(var onItemClick: (TbChargingHistory) -> Unit) :
-    ListAdapter<TbChargingHistory, ChargingHistoryListAdapter.SampleViewHolder>(
+class ChargingHistoryListAdapter(var onItemClick: (ChargingHistoryDomainModel) -> Unit) :
+    ListAdapter<ChargingHistoryDomainModel, ChargingHistoryListAdapter.SampleViewHolder>(
         DiffCallback()
     ) {
 
@@ -44,8 +45,9 @@ class ChargingHistoryListAdapter(var onItemClick: (TbChargingHistory) -> Unit) :
             }
         }
 
-        fun bind(sampleModel: TbChargingHistory, position: Int) {
+        fun bind(sampleModel: ChargingHistoryDomainModel, position: Int) {
             binding.apply {
+                tvSerialNo.text = sampleModel.summaryId.toString()
                 tvEvMacAddress.text = sampleModel.evMacAddress
                 tvChargingDuration.text = sampleModel.totalChargingTime + " " + itemView.context.getString(R.string.lbl_min_lowercase)
                 tvChargingStartTime.text = sampleModel.chargingStartTime
@@ -59,14 +61,14 @@ class ChargingHistoryListAdapter(var onItemClick: (TbChargingHistory) -> Unit) :
         }
     }
 
-    class DiffCallback : DiffUtil.ItemCallback<TbChargingHistory>() {
-        override fun areItemsTheSame(oldItem: TbChargingHistory, newItem: TbChargingHistory): Boolean {
+    class DiffCallback : DiffUtil.ItemCallback<ChargingHistoryDomainModel>() {
+        override fun areItemsTheSame(oldItem: ChargingHistoryDomainModel, newItem: ChargingHistoryDomainModel): Boolean {
             return oldItem.summaryId == newItem.summaryId
         }
 
         override fun areContentsTheSame(
-            oldItem: TbChargingHistory,
-            newItem: TbChargingHistory
+            oldItem: ChargingHistoryDomainModel,
+            newItem: ChargingHistoryDomainModel
         ): Boolean {
             return oldItem == newItem
         }

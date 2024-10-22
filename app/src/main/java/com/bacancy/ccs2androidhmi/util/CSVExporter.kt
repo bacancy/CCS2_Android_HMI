@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.documentfile.provider.DocumentFile
 import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.db.entity.TbChargingHistory
+import com.bacancy.ccs2androidhmi.models.ChargingHistoryDomainModel
 import com.bacancy.ccs2androidhmi.util.CommonUtils.FILE_NAME_DATE_TIME_FORMAT
 import com.bacancy.ccs2androidhmi.util.CommonUtils.FILE_NAME_EXTENSION
 import com.bacancy.ccs2androidhmi.util.CommonUtils.FILE_NAME_PREFIX
@@ -66,7 +67,7 @@ object CSVExporter {
     }
 
     suspend fun Context.exportCSVInCustomDirectory(
-        dataList: List<TbChargingHistory>,
+        dataList: List<ChargingHistoryDomainModel>,
         folderUri: Uri,
         callback: (String) -> Unit
     ) {

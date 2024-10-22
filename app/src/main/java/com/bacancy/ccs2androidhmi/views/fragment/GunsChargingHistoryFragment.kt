@@ -14,6 +14,7 @@ import com.bacancy.ccs2androidhmi.R
 import com.bacancy.ccs2androidhmi.base.BaseFragment
 import com.bacancy.ccs2androidhmi.databinding.FragmentGunsChargingHistoryBinding
 import com.bacancy.ccs2androidhmi.db.entity.TbChargingHistory
+import com.bacancy.ccs2androidhmi.models.ChargingHistoryDomainModel
 import com.bacancy.ccs2androidhmi.util.AppConfig.SHOW_EXPORT_CHARGING_HISTORY
 import com.bacancy.ccs2androidhmi.util.CSVExporter.exportCSVInCustomDirectory
 import com.bacancy.ccs2androidhmi.util.DialogUtils.showCustomDialogForAreYouSure
@@ -61,10 +62,10 @@ class GunsChargingHistoryFragment : BaseFragment() {
         }
     }
 
-    private fun getSampleHistory(): MutableList<TbChargingHistory> {
-        val historyList = mutableListOf<TbChargingHistory>()
-        for (i in 1..10) {
-            val chargingSummary = TbChargingHistory(
+    private fun getSampleHistory(): MutableList<ChargingHistoryDomainModel> {
+        val historyList = mutableListOf<ChargingHistoryDomainModel>()
+        for (i in 10..1) {
+            val chargingSummary = ChargingHistoryDomainModel(
                 summaryId = i,
                 gunNumber = if (i % 2 == 0) 1 else 2,
                 evMacAddress = "00-00-00-02-88-AF-56-39",
@@ -113,7 +114,23 @@ class GunsChargingHistoryFragment : BaseFragment() {
                 if (it.isNotEmpty()) {
                     binding.rvChargingHistory.visible()
                     binding.tvNoDataFound.gone()
-                    chargingHistoryAdapter.submitList(it)
+                    val updatedList = it.mapIndexed { index, tbChargingHistory ->
+                        ChargingHistoryDomainModel(
+                            summaryId = index + 1,
+                            gunNumber = tbChargingHistory.gunNumber,
+                            evMacAddress = tbChargingHistory.evMacAddress,
+                            chargingStartTime = tbChargingHistory.chargingStartTime,
+                            chargingEndTime = tbChargingHistory.chargingEndTime,
+                            totalChargingTime = tbChargingHistory.totalChargingTime,
+                            startSoc = tbChargingHistory.startSoc,
+                            endSoc = tbChargingHistory.endSoc,
+                            energyConsumption = tbChargingHistory.energyConsumption,
+                            sessionEndReason = tbChargingHistory.sessionEndReason,
+                            customSessionEndReason = tbChargingHistory.customSessionEndReason,
+                            totalCost = tbChargingHistory.totalCost
+                        )
+                    }
+                    chargingHistoryAdapter.submitList(updatedList)
                 } else {
                     binding.rvChargingHistory.gone()
                     binding.tvNoDataFound.visible()

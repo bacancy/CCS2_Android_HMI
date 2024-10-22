@@ -14,7 +14,16 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvSettings"
         android:layout_width="match_parent"
+        android:layout_height="0dp"
         android:layout_marginTop="@dimen/_10sdp"
-        android:layout_height="wrap_content"/>
+        android:layout_weight="1" />
+
+    <TextView
+        android:id="@+id/tvAppVersion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="@dimen/_10sdp"
+        android:text="App Version: 1.0.0"
+        android:textSize="@dimen/_10ssp" />
 
 </LinearLayout>
