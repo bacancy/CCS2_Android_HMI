@@ -896,10 +896,10 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
     private fun adjustWifiLevel(wifiLevel: Int) {
         when (wifiLevel) {
-            1 -> binding.incToolbar.imgWifiLevel.setImageResource(R.drawable.ic_wifi_level_1_new)
-            2 -> binding.incToolbar.imgWifiLevel.setImageResource(R.drawable.ic_wifi_level_2_new)
-            3 -> binding.incToolbar.imgWifiLevel.setImageResource(R.drawable.ic_wifi_level_3_new)
-            else -> binding.incToolbar.imgWifiLevel.setImageResource(R.drawable.ic_wifi_level_0_new)
+            1 -> binding.incToolbar.imgWifiLevel.setImageResource(R.drawable.ic_wifi_level_1)
+            2 -> binding.incToolbar.imgWifiLevel.setImageResource(R.drawable.ic_wifi_level_2)
+            3 -> binding.incToolbar.imgWifiLevel.setImageResource(R.drawable.ic_wifi_level_3)
+            else -> binding.incToolbar.imgWifiLevel.setImageResource(R.drawable.ic_wifi_level_0)
         }
     }
 
@@ -913,20 +913,20 @@ class HMIDashboardActivity : SerialPortBaseActivityNew(), FragmentChangeListener
 
     private fun updateServerStatus(serverStatus: String) {
         when (serverStatus) {
-            "Ethernet" -> binding.incToolbar.imgServerStatus.setImageResource(R.drawable.ic_server_connected)
-            "GSM" -> binding.incToolbar.imgServerStatus.setImageResource(R.drawable.ic_server_connected)
-            "Wifi" -> binding.incToolbar.imgServerStatus.setImageResource(R.drawable.ic_server_connected)
-            else -> binding.incToolbar.imgServerStatus.setImageResource(R.drawable.ic_server_disconnected)
+            "Ethernet" -> binding.incToolbar.imgServerStatus.setImageResource(R.drawable.ic_server_with_ethernet)
+            "GSM" -> binding.incToolbar.imgServerStatus.setImageResource(R.drawable.ic_server_with_gsm)
+            "Wifi" -> binding.incToolbar.imgServerStatus.setImageResource(R.drawable.ic_server_with_wifi)
+            else -> binding.incToolbar.imgServerStatus.setImageResource(R.drawable.ic_server_with_nothing)
         }
     }
 
     private fun adjustGSMLevel(level: Int) {
         when (level) {
-            1 -> binding.incToolbar.imgGSMLevel.setImageResource(R.drawable.ic_gsm_level_1_new)
-            2 -> binding.incToolbar.imgGSMLevel.setImageResource(R.drawable.ic_gsm_level_2_new)
-            3 -> binding.incToolbar.imgGSMLevel.setImageResource(R.drawable.ic_gsm_level_3_new)
-            4 -> binding.incToolbar.imgGSMLevel.setImageResource(R.drawable.ic_gsm_level_4_new)
-            else -> binding.incToolbar.imgGSMLevel.setImageResource(R.drawable.ic_gsm_level_0_new)
+            1 -> binding.incToolbar.imgGSMLevel.setImageResource(R.drawable.ic_gsm_level_1)
+            2 -> binding.incToolbar.imgGSMLevel.setImageResource(R.drawable.ic_gsm_level_2)
+            3 -> binding.incToolbar.imgGSMLevel.setImageResource(R.drawable.ic_gsm_level_3)
+            4 -> binding.incToolbar.imgGSMLevel.setImageResource(R.drawable.ic_gsm_level_4)
+            else -> binding.incToolbar.imgGSMLevel.setImageResource(R.drawable.ic_gsm_level_0)
         }
     }
 

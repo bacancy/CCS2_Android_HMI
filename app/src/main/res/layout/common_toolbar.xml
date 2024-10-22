@@ -155,7 +155,7 @@
             android:id="@+id/imgServerStatus"
             android:layout_width="@dimen/_13sdp"
             android:layout_height="@dimen/_13sdp"
-            tools:src="@drawable/ic_server_connected"
+            tools:src="@drawable/ic_server_with_gsm"
             android:contentDescription="@string/cd_server_icon" />
 
         <androidx.appcompat.widget.AppCompatImageView
@@ -171,7 +171,7 @@
             android:layout_width="@dimen/_13sdp"
             android:layout_height="@dimen/_13sdp"
             android:layout_marginStart="@dimen/_5sdp"
-            tools:src="@drawable/ic_gsm_level_2_new"
+            tools:src="@drawable/ic_gsm_level_2"
             android:contentDescription="@string/cd_gsm_icon" />
 
         <androidx.appcompat.widget.AppCompatImageView
@@ -179,7 +179,7 @@
             android:layout_width="@dimen/_13sdp"
             android:layout_height="@dimen/_13sdp"
             android:layout_marginStart="@dimen/_5sdp"
-            tools:src="@drawable/ic_wifi_level_2_new"
+            tools:src="@drawable/ic_wifi_level_2"
             android:contentDescription="@string/cd_wifi_icon" />
 
     </LinearLayout>
