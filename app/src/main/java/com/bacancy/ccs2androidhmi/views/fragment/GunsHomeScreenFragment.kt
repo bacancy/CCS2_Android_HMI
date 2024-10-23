@@ -404,7 +404,7 @@ class GunsHomeScreenFragment : BaseFragment() {
         if (isGun1 && this::summaryDialogGun1.isInitialized && summaryDialogGun1.isShowing) {
             summaryDialogGun1.dismiss()
         } else {
-            if (this::summaryDialogGun2.isInitialized && summaryDialogGun2.isShowing) {
+            if (isGun1.not() && this::summaryDialogGun2.isInitialized && summaryDialogGun2.isShowing) {
                 summaryDialogGun2.dismiss()
             }
         }
