@@ -7,7 +7,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.bacancy.ccs2androidhmi.R
@@ -79,7 +78,7 @@ class GunsHomeScreenFragment : BaseFragment() {
     @Inject
     lateinit var prefHelper: PrefHelper
 
-    private val mqttViewModel: MQTTViewModel by activityViewModels()
+    private val mqttViewModel: MQTTViewModel by viewModels()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -405,7 +404,7 @@ class GunsHomeScreenFragment : BaseFragment() {
         if (isGun1 && this::summaryDialogGun1.isInitialized && summaryDialogGun1.isShowing) {
             summaryDialogGun1.dismiss()
         } else {
-            if (this::summaryDialogGun2.isInitialized && summaryDialogGun2.isShowing) {
+            if (isGun1.not() && this::summaryDialogGun2.isInitialized && summaryDialogGun2.isShowing) {
                 summaryDialogGun2.dismiss()
             }
         }
@@ -524,7 +523,7 @@ class GunsHomeScreenFragment : BaseFragment() {
                                         prefHelper.setStringValue(GUN_1_CHARGING_END_TIME, "")
                                     }
                                     summaryDialogGun1.show()
-                                    if(isAdded){
+                                    if (isAdded) {
                                         requireActivity().clearDialogFlags(summaryDialogGun1)
                                     }
                                 }
@@ -540,8 +539,8 @@ class GunsHomeScreenFragment : BaseFragment() {
                                         prefHelper.setStringValue(GUN_2_CHARGING_END_TIME, "")
                                     }
                                     summaryDialogGun2.show()
-                                    if(isAdded){
-                                        requireActivity().clearDialogFlags(summaryDialogGun1)
+                                    if (isAdded) {
+                                        requireActivity().clearDialogFlags(summaryDialogGun2)
                                     }
                                 }
                             }
