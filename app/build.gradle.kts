@@ -14,8 +14,8 @@ android {
         applicationId = "com.bacancy.ccs2androidhmi"
         minSdk = 24
         targetSdk = 34
-        versionCode = 2
-        versionName = "2.0"
+        versionCode = 3
+        versionName = "2.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -91,4 +91,5 @@ dependencies {
     implementation("androidx.hilt:hilt-work:$hiltCompilerVersion")
 
     implementation("androidx.fragment:fragment-ktx:1.6.2")
+    implementation("com.testfairy:testfairy-android-sdk:1.+@aar")
 }
